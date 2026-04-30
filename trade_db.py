@@ -44,7 +44,12 @@ class TradeDB:
             ''', (bot_name, symbol, side, entry_price, exit_price, quantity, entry_time, exit_time, gross_pnl, fees, net_pnl, reason))
             conn.commit()
 
-    def get_daily_pnl(self):
+    
+    def log_trade(self, symbol, side, entry_price, exit_price, quantity, pnl, timestamp, strategy="grid", stop_loss=None, take_profit=None, exit_reason=None, order_id=None, fees=0.0, leverage=1.0):
+        """Wrapper per compatibilità con DenaroCore."""
+        self.save_trade(symbol, side, entry_price, exit_price, quantity, pnl, timestamp, strategy, stop_loss, take_profit, exit_reason, order_id, fees, leverage)
+
+def get_daily_pnl(self):
         today = datetime.now().strftime('%Y-%m-%d')
         with sqlite3.connect(self.db_path) as conn:
             res = conn.execute('SELECT SUM(net_pnl) FROM trades WHERE date(exit_time) = ?', (today,)).fetchone()

@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 """
+# ============ CONFIG — MOMENTUM FILTERS ============
+BTC_CORR_ENABLED = True
+BTC_CORR_LOOKBACK = 50
+BTC_CORR_MIN = 0.3
+RSI_ENABLED = True
+RSI_PERIOD = 14
+RSI_OVERBOUGHT = 70
+RSI_OVERSOLD = 30
+# ===================================================
 MOMENTUM BOT - PAPER TRADING
 Simulazione di trading su Binance con strategia momentum su meme coins.
 Nessun ordine reale viene inviato. Tutto è loggato.
@@ -13,6 +22,8 @@ import logging
 from datetime import datetime, timedelta
 from dataclasses import dataclass
 from typing import List, Optional, Dict
+import numpy as np
+import pandas as pd
 
 # Setup logging
 logging.basicConfig(
@@ -55,6 +66,13 @@ class MomentumPaperBot:
         self.initial_capital = capital
         self.capital = capital
         self.risk_per_trade = 0.10
+        self.btc_corr_enabled = BTC_CORR_ENABLED
+        self.btc_corr_lookback = BTC_CORR_LOOKBACK
+        self.btc_corr_min = BTC_CORR_MIN
+        self.rsi_enabled = RSI_ENABLED
+        self.rsi_period = RSI_PERIOD
+        self.rsi_overbought = RSI_OVERBOUGHT
+        self.rsi_oversold = RSI_OVERSOLD
         self.max_positions = 3
         self.positions: Dict[str, VirtualPosition] = {}
         self.trade_history: List[TradeSignal] = []

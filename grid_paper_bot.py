@@ -63,10 +63,16 @@ class GridPaperBot:
         self.balance_asset = 0.0  # quantità di asset posseduta (es. SOL)
         
         # Configurazione grid
-        self.grid_levels = 16  # numero di ordini totali (compravendita)
-        self.grid_spacing_pct = 0.003  # 0.8%
-        self.take_profit_pct = 0.006  # 1.2% per ordine chiuso
-        self.stop_loss_pct = 0.015    # 3% stop loss globale
+        self.grid_levels = 24  # numero di ordini totali (compravendita)
+        self.grid_spacing_pct = 0.002  # 0.8%
+        self.take_profit_pct = 0.004  # 1.2% per ordine chiuso
+        self.stop_loss_pct = 0.010
+        self.dynamic_grid = True
+        self.asymmetric = True
+        self.recenter_enabled = True
+        self.recenter_threshold = 0.10
+        self.order_size_pct = 0.02
+        self.grid_range_pct = 0.15    # 3% stop loss globale
         self.max_positions = 5       # max posizioni contemporanee
         
         # Calcolo del range attorno al prezzo corrente

@@ -14,6 +14,13 @@ import logging
 import random
 from datetime import datetime, timedelta
 from dataclasses import dataclass, asdict
+
+# ============ CONFIG — FUNDING LEVERAGE & COMPOUND ============
+FUNDING_LEVERAGE = 5.0
+AUTO_COMPOUND_FUNDING = True
+COMPOUND_REINVEST_PCT = 1.0
+# =============================================================
+
 from typing import List, Optional, Dict
 import argparse
 
@@ -134,7 +141,8 @@ class FundingArbitragePaperBot:
         price = opp['spot_price']
         
         # Alloca capitale: 50% spot, 50% futures
-        allocation = self.capital * 0.5
+        base_allocation = self.capital * 0.5
+        futures_allocation = self.capital * 0.5 * self.leverage
         
         # Quantità spot (compra)
         spot_qty = round(allocation / price, 4)
