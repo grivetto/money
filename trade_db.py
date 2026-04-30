@@ -64,3 +64,67 @@ def get_daily_pnl(self):
             win_rate = (len([p for p in pnls if p > 0]) / len(pnls)) * 100
             total_profit = sum(pnls)
             return {'win_rate': win_rate, 'total_profit': total_profit}
+
+    def get_unrealized_pnl(self, strategy=None):
+        """Somma PnL posizioni ancora aperte (exit_time IS NULL)."""
+        try:
+            conn = sqlite3.connect(self.db_path)
+            cursor = conn.cursor()
+            if strategy:
+                cursor.execute("SELECT SUM(net_pnl) FROM trades WHERE exit_time IS NULL AND strategy = ?", (strategy,))
+            else:
+                cursor.execute("SELECT SUM(net_pnl) FROM trades WHERE exit_time IS NULL")
+            res = cursor.fetchone()
+            conn.close()
+            return res[0] or 0.0
+        except:
+            return 0.0
+
+    def get_open_positions_count(self, strategy=None):
+        """Numero posizioni aperte."""
+        try:
+            conn = sqlite3.connect(self.db_path)
+            cursor = conn.cursor()
+            if strategy:
+                cursor.execute("SELECT COUNT(*) FROM trades WHERE exit_time IS NULL AND strategy = ?", (strategy,))
+            else:
+                cursor.execute("SELECT COUNT(*) FROM trades WHERE exit_time IS NULL")
+            res = cursor.fetchone()
+            conn.close()
+            return res[0] or 0
+        except:
+            return 0
+
+    def get_strategy_roic(self, strategy, days=1):
+        """ROIC: Return on Invested Capital per strategia."""
+        try:
+            conn = sqlite3.connect(self.db_path)
+            cursor = conn.cursor()
+            since = (datetime.date.today() - datetime.timedelta(days=days)).isoformat()
+            cursor.execute("""
+                SELECT SUM(entry_price * quantity), SUM(net_pnl)
+                FROM trades
+                WHERE DATE(exit_time) >= ? AND strategy = ?
+            """, (since, strategy))
+            capital_used, pnl = cursor.fetchone() or (0.0, 0.0)
+            conn.close()
+            roic = (pnl / capital_used * 100) if capital_used > 0 else 0.0
+            return {"capital_used": capital_used, "pnl": pnl, "roic": roic}
+        except:
+            return {"capital_used": 0.0, "pnl": 0.0, "roic": 0.0}
+
+    def get_filter_stats(self, strategy=None, days=1):
+        """Statistiche filtri: conteggio per reason."""
+        try:
+            conn = sqlite3.connect(self.db_path)
+            cursor = conn.cursor()
+            since = (datetime.date.today() - datetime.timedelta(days=days)).isoformat()
+            if strategy:
+                cursor.execute("SELECT reason, COUNT(*) FROM filter_events WHERE DATE(timestamp) >= ? AND strategy = ? GROUP BY reason", (since, strategy))
+            else:
+                cursor.execute("SELECT reason, COUNT(*) FROM filter_events WHERE DATE(timestamp) >= ? GROUP BY reason", (since,))
+            rows = cursor.fetchall()
+            conn.close()
+            return {reason: count for reason, count in rows}
+        except:
+            return {}
