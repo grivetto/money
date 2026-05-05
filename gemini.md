@@ -1,208 +1,258 @@
-# gemini.md — Denaro Data Schema & Behavioral Rules
-**Law of this project. All code must conform. Update only when schema/rule changes.**
+# GEMINI.md — Grid Bot v4 Specification
+## Denaro Trading Infrastructure — Definitive Source of Truth
+
+> "gemini.md is law." — Project Constitution
 
 ---
 
-## 1. tr
+## 1. NORTH STAR
 
-Schema
+**Goal:** Generare profitto discrezionale tramite grid trading automatizzato su Binance Spot (SOL/EUR), con accounting rigoroso e kill switch che previene perdite catastrophic.
 
-### trades Table
-| Column | Type | Description |
-|--------|------|-------------|
-| id | INTEGER | Primary key, auto-increment |
-| bot_name | TEXT | Bot instance name (e.g., "GridBotPro", "mc2", "MARCODG1") |
-| symbol | TEXT | Trading pair (e.g., "SOL/EUR") |
-| side | TEXT | "buy" or "sell" |
-| entry_price | REAL | Price at which order was filled |
-| exit_price | REAL | Price at which position closed (0 if still open) |
-| quantity | REAL | Amount of base asset |
-| entry_time | DATETIME | When buy was filled (ISO 8601) |
-| exit_time | DATETIME | When sell was filled (0 if still open) |
-| gross_pnl | REAL | Gross profit/loss in EUR |
-| fees | REAL | Total fees paid in EUR |
-| net_pnl | REAL | Net profit after fees |
-| exit_reason | TEXT | "grid_profit", "trailing_stop", "kill_switch", "manual" |
-
-### bot_state Table
-| Column | Type | Description |
-|--------|------|-------------|
-| bot_name | TEXT | Primary key |
-| is_in_position | BOOLEAN | True if currently holding asset |
-| entry_price | REAL | Avg entry price of current position |
-| quantity | REAL | Amount held |
-| last_heartbeat | DATETIME | Last alive signal |
+**Obiettivo secondario:** Trasparenza totale su P&L, drawdown, e stato del sistema — report su Telegram ogni ora.
 
 ---
 
-## 2. Node Health Response (JSON)
+## 2. DATA SCHEMA (Input / Output)
 
-Each node returns this from `check_node_health.py`:
+### 2.1 Config (grid_config_v4.json)
 
 ```json
 {
-  "node": "MARCODG1",
-  "timestamp": "2026-05-02T02:10:00Z",
-  "status": "ALIVE",           // ALIVE | DEGRADED | DEAD
-  "uptime_hours": 240.0,
-  "load_avg": [0.11, 0.14, 0.10],
-  "memory_free_mb": 460,
-  "memory_available_mb": 1700,
-  "disk_free_gb": 100,
-  "grid_bot": {
-    "pid": 599632,
-    "running": true,
-    "symbol": "SOL/EUR",
-    "invested_eur": 119.0,
-    "profit_eur": 0.15,
-    "open_orders": 3,
-    "last_log_age_s": 120
-  },
-  "at
+  "symbol": "SOL/EUR",
+  "symbol_ws": "soleur",
+  "grid_levels": 3,
+  "base_order_eur": 50.0,
+  "max_total_invested": 150.0,
+  "min_order_eur": 10.0,
 
-r": 1.42,                      // Current ATR value
-  "current_price_eur": 71.2,
-  "drawdown_pct": 0.0,         // Portfolio drawdown from peak
-  "binance_balance_eur": 39.02,
-  "binance_balance_sol": 0.0
+  "atr_timeframe": "15m",
+  "atr_lookback": 14,
+  "atr_spacing_factor": 0.5,
+  "atr_min_spacing_pct": 0.003,
+  "atr_max_spacing_pct": 0.02,
+
+  "profit_per_grid_pct": 0.003,
+  "fee_rate": 0.00075,
+
+  "kill_switch": {
+    "max_drawdown_pct": 3.0,
+    "out_of_bounds_pct": 0.025,
+    "trailing_stop_pct": 1.5,
+    "trailing_activation_pct": 2.0
+  },
+
+  "rebalance": {
+    "enabled": true,
+    "check_interval_sec": 300,
+    "max_age_without_fill_sec": 1800
+  }
 }
 ```
 
-### Status Values
-- **ALIVE:** Bot running, health metrics nominal
-- **DEGRADED:** Bot running but memory >80% OR load >5 OR last_log >300s OR drawdown >1%
-- **DEAD:** SSH unreachable OR bot process gone OR disk <10%
+**Nota:** Tutte le soglie sono configurabili. Nessun numero magico nel codice.
 
----
-
-## 3. Aggregated Fleet Status (Dashboard API)
-
-```
-/api/v1/fleet/status
-```
+### 2.2 State (in-memory, serialized to .state.json)
 
 ```json
 {
-  "timestamp": "2026-05-02T02:10:00Z",
-  "reference_capital_eur": 300.0,
-  "total_drawdown_pct": 0.5,
-  "kill_switch_armed": true,
-  "kill_switch_triggered": false,
-  "kill_switch_threshold_pct": 3.0,
-  "nodes": {
-    "mc2": { ...Node Health Response... },
-    "nuvola": { ...Node Health Response... },
-    "MARCODG1": { ...Node Health Response... }
+  "bot_name": "GridBotV4",
+  "started_at": "2026-05-03T00:00:00Z",
+
+  "grid": {
+    "buy_levels": [69.50, 69.00, 68.50],
+    "sell_levels": [69.72, 69.22, 68.72],
+    "buy_amounts": [0.720, 0.725, 0.730],
+    "active": false
   },
-  "totals": {
-    "open_orders": 6,
-    "invested_eur": 238.0,
-    "profit_eur": 0.15,
-    "balance_eur": 78.04
+
+  "orders": {
+    "open_buy_ids": ["a1b2c3", "d4e5f6"],
+    "open_sell_ids": ["g7h8i9"],
+    "filled": [
+      {
+        "order_id": "abc123",
+        "side": "buy",
+        "price": 69.50,
+        "amount": 0.720,
+        "cost_eur": 50.03,
+        "fee_eur": 0.037,
+        "filled_at": "2026-05-03T01:00:00Z"
+      }
+    ]
   },
-  "events": [
-    {
-      "node": "MARCODG1",
-      "type": "BOT_RESTARTED",
-      "timestamp": "2026-05-02T01:30:00Z",
-      "details": "Auto-recovery after crash"
-    }
-  ]
+
+  "accounting": {
+    "peak_portfolio_eur": 228.50,
+    "current_portfolio_eur": 224.30,
+    "total_invested_eur": 96.00,
+    "total_fees_eur": 0.22,
+    "net_pnl_eur": -0.87,
+    "drawdown_pct": 1.84,
+    "win_count": 8,
+    "loss_count": 4,
+    "round_trips": 12
+  },
+
+  "risk": {
+    "kill_switch_triggered": false,
+    "kill_switch_reason": "",
+    "paused": false,
+    "pause_reason": "",
+    "last_resume_price": 0.0
+  },
+
+  "atr": {
+    "current": 0.45,
+    "current_pct": 0.0063,
+    "grid_spacing_pct": 0.0032,
+    "calculated_at": "2026-05-03T02:00:00Z"
+  },
+
+  "last_sync": "2026-05-03T02:00:00Z",
+  "ticks_processed": 14200
 }
 ```
 
----
+### 2.3 Trade Record (SQLite — trades.db)
 
-## 4. Kill Switch Payload
+```sql
+CREATE TABLE trades (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    bot_instance    TEXT    NOT NULL,       -- "GridBotV4"
+    strategy        TEXT    NOT NULL,       -- "grid"
+    symbol          TEXT    NOT NULL,       -- "SOL/EUR"
+    side            TEXT    NOT NULL,       -- "buy" | "sell"
+    order_id        TEXT,
+    price           REAL    NOT NULL,
+    amount          REAL    NOT NULL,
+    cost_eur        REAL    NOT NULL,
+    fee_eur         REAL    NOT NULL,
+    fee_currency    TEXT    DEFAULT 'EUR',
+    pnl_eur         REAL,
+    grid_level      INTEGER,
+    round_trip_id   TEXT,
+    timestamp       DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE round_trips (
+    id              TEXT PRIMARY KEY,       -- UUID
+    symbol          TEXT NOT NULL,
+    buy_order_id    TEXT,
+    buy_price       REAL,
+    buy_amount      REAL,
+    buy_fee_eur     REAL,
+    buy_time        DATETIME,
+    sell_order_id   TEXT,
+    sell_price      REAL,
+    sell_amount     REAL,
+    sell_fee_eur    REAL,
+    sell_time       DATETIME,
+    pnl_eur         REAL,
+    duration_sec    INTEGER,
+    bot_instance    TEXT
+);
+
+CREATE TABLE daily_stats (
+    date            DATE PRIMARY KEY,
+    bot_instance    TEXT,
+    symbol          TEXT,
+    opening_price   REAL,
+    closing_price   REAL,
+    trades_count    INTEGER,
+    round_trips     INTEGER,
+    volume_eur      REAL,
+    fees_eur        REAL,
+    pnl_eur         REAL,
+    drawdown_pct    REAL,
+    peak_portfolio  REAL,
+    end_portfolio   REAL
+);
+```
+
+### 2.4 Telegram Alert Payload
 
 ```json
 {
-  "event": "KILL_SWITCH_TRIGGERED",
-  "timestamp": "2026-05-02T02:10:00Z",
-  "trigger_reason": "DRAWDOWN_EXCEEDED_3PCT",
-  "drawdown_pct": 3.2,
-  "reference_capital_eur": 300.0,
-  "current_capital_eur": 290.4,
-  "actions_taken": [
-    "CANCELLED_ALL_ORDERS",
-    "STOPPED_GRID_BOT_MARCODG1",
-    "STOPPED_GRID_BOT_NUVOLA"
-  ],
-  "nodes_affected": ["MARCODG1", "nuvola"],
-  "alert_sent": true,
-  "telegram_message": "🚨 KILL SWITCH ACTIVATED\nDrawdown: 3.2%\nCapital: €290.40\nAll bots stopped. Manual intervention required."
+  "chat_id": "<TELEGRAM_CHAT_ID>",
+  "text": "📊 [GridBotV4] 06:00 Report\n━━━━━━━━━━━━━━━━━━\n💶 Portfolio: €224.30\n📈 P&L: -€0.87 | Trades: 12\n📉 Drawdown: 1.84%\n💾 Investito: €96.00\n🌐 SOL/EUR: €71.29\n⚙️ ATR: 0.45€ (0.63%)\n📏 Grid: 3 livelli × €50\n━━━━━━━━━━━━━━━━━━\n✅ Status: OPERATIVO",
+  "parse_mode": "MarkdownV2"
 }
 ```
 
 ---
 
-## 5. Behavioral Rules (GOLDEN LAW)
+## 3. BEHAVIORAL RULES
 
-| Rule ID | Description | Trigger | Action |
-|---------|-------------|---------|--------|
-| BR-01 | Kill Switch | `total_drawdown_pct > 3.0` | Cancel ALL orders, STOP all bots, Telegram alert |
-| BR-02 | Node Dead | Node status = DEAD for >120s | Auto-recover via `recover_denaro_node.sh` |
-| BR-03 | Bot Zombie | Bot PID exists but no log activity >300s | Restart bot process |
-| BR-04 | Memory Pressure | `memory_available_mb < 200` | Alert, consider restart |
-| BR-05 | Disk Low | `disk_free_gb < 10` | Alert immediately |
-| BR-06 | High Load | `load_avg[0] > 8.0` | Alert, throttle non-critical processes |
-| BR-07 | Drawdown Warning | `total_drawdown_pct > 2.0` | Telegram warning (not kill-switch yet) |
-| BR-08 | Report Window | Outside 06:00-23:00 Europe/Rome | Suppress routine alerts |
-| BR-09 | No Market Orders | Any code path attempting market order | REJECT — log error |
-| BR-10 | Min Order Size | `ORDER_SIZE_EUR < 5.0` | REJECT — enforce minimum |
+### 3.1 Kill Switch (obbligatorio, mai disabilitabile da solo)
 
----
+| Trigger | Azione |
+|---------|--------|
+| Drawdown > 3% da peak | PAUSA totale, annulla tutti gli ordini, alert Telegram |
+| Prezzo fuori range > 2.5% | PAUSA, non annulla ordini (li tiene per recovery) |
+| trailing_stop colpito | EXIT completo, chiude tutto |
+| 30 min senza fill su ordine attivo | Riemetti ordine (self-healing) |
+| Errore API Binance | Retry 3x con backoff esponenziale, poi pausa e alert |
 
-## 6. API Endpoints (Dashboard)
+### 3.2 Grid Logic
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/` | GET | HTML Dashboard |
-| `/api/v1/fleet/status` | GET | Aggregated JSON status of all nodes |
-| `/api/v1/node/<nodename>` | GET | Single node health details |
-| `/api/v1/kill-switch/status` | GET | Kill switch state |
-| `POST /api/v1/kill-switch/trigger` | POST | Manually trigger kill switch |
-| `POST /api/v1/node/<nodename>/recover` | POST | Trigger node recovery |
+- **Buy:** prezzi discendenti sotto prezzo attuale
+- **Sell:** ogni buy ha esattamente 1 sell corrispondente (stesso importo)
+- **Spacing:** `spacing = max(atr_min, min(atr_current_pct * atr_factor, atr_max))`
+- **Recentering:** quando sell viene riempito, nuovo buy viene piazzato al livello originale (ciclo chiuso)
+- **NO market orders** — mai, per nessuna ragione
+- **NO ordini senza fondi** — verifica balance prima di ogni ordine
 
----
+### 3.3 Accounting Rules
 
-## 7. Tool Inputs/Outputs
+- **Entry fee:** addebita al momento del buy fill
+- **Exit fee:** addebita al momento del sell fill
+- **P&L round trip:** `sell_proceeds - buy_cost - entry_fee - exit_fee`
+- **Drawdown:** `(peak - current) / peak * 100`
+- **Peak aggiornato:** solo quando `current > peak`
 
-### tools/check_node_health.py
-- **Input:** `node_name` (str), `ssh_alias` (str)
-- **Output:** JSON Node Health Response (see section 2)
-- **Failsafe:** Returns `status: DEAD` if SSH or bot check fails
+### 3.4 Alerting Rules
 
-### tools/recover_grid.py
-- **Input:** `node_name` (str), `ssh_alias` (str), `bot_script` (str)
-- **Output:** JSON `{"recovered": bool, "pid": int or None, "error": str or None}`
-- **Behavior:** SSH → pkill grid → screen/script restart
-
-### tools/kill_switch.py
-- **Input:** `nodes` (list of ssh_alias), `reason` (str)
-- **Output:** JSON Kill Switch Payload (see section 4)
-- **Behavior:** Cancel orders → stop bots → alert Telegram
-
-### tools/fetch_node_balances.py
-- **Input:** `binance_api_key`, `binance_api_secret`
-- **Output:** `{"eur": float, "sol": float, "bnb": float}`
-
-### tools/atr_calculator.py
-- **Input:** `symbol` (str), `timeframe` (str), `lookback` (int)
-- **Output:** `{"atr": float, "atr_pct": float, "current_price": float}`
+- **Report orario:** 06:00–23:00, solo se drawdown > 0.5% OPPURE stato non-OPERATIVO
+- **Kill switch attivato:** alert immediato
+- **Rimbalzo da kill switch:** alert quando prezzo rientra in range
+- **Zombie order (>30 min):** alert + auto-replace
 
 ---
 
-## 8. Architecture SOP Reference
+## 4. ARCHITECTURE (3-Layer A.N.T.)
 
-| SOP | File | Purpose |
-|-----|------|---------|
-| Bot Health Monitor | `architecture/SOP_BOT_HEALTH_MONITOR.md` | How to check node/bot health |
-| Grid Recovery | `architecture/SOP_GRID_RECOVERY.md` | Step-by-step recovery procedure |
-| Drawdown Kill Switch | `architecture/SOP_DRAWDOWN_KILLSWITCH.md` | 3% drawdown logic |
-| Dashboard Aggregator | `architecture/SOP_DASHBOARD_AGGREGATOR.md` | How to aggregate node data |
-| ATR Grid Spacing | `architecture/SOP_ATR_GRID_SPACING.md` | ATR-based spacing algorithm |
+```
+┌─────────────────────────────────────────────────────────────┐
+│  LAYER 1: architecture/                                     │
+│  ─────────────────────────────────────────────────────────  │
+│  SOPs Markdown che definiscono: GOAL → INPUT → TOOL → EDGE │
+│  Non contengono codice eseguibile                            │
+├─────────────────────────────────────────────────────────────┤
+│  LAYER 2: Navigator (denaro_navigator.py)                   │
+│  ─────────────────────────────────────────────────────────  │
+│  Reasoning: decide quale tool chiamare, in quale ordine,      │
+│  in base allo stato. NON esegue logica di trading.          │
+│  Routing: riceve tick → aggiorna state → decide azioni       │
+├─────────────────────────────────────────────────────────────┤
+│  LAYER 3: tools/                                           │
+│  ─────────────────────────────────────────────────────────  │
+│  atomic_python_scripts.py — testabili, deterministic        │
+│  Non chiamano altri tool. Output = dict.                    │
+│  .env per credenziali, .tmp/ per intermedi                  │
+└─────────────────────────────────────────────────────────────┘
+```
 
 ---
 
-*gemini.md is law. Update this file first if schema, rule, or architecture changes.*
+## 5. PHILOSOPHY
+
+> "Grid Bot v4 è un sistema deterministico. LLMs are probabilistic; business logic must be deterministic."
+
+Qualsiasi logica che non sia esattamente definita in questa spec NON viene implementata.
+
+---
+
+*Last updated: 2026-05-03*
+*Author: Hermes*
+*Status: BLUEPRINT APPROVED — Awaiting Sergio's confirmation to proceed to Phase L*
