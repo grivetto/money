@@ -10,6 +10,7 @@ import logging
 import websockets
 import time
 from denaro_core import DenaroCore
+from denaro_strategies import TrendFilter, VolatilityGrid, MartingaleLite, Rebalancer, ProfitOptimizer
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - GRID-PRO - %(levelname)s - %(message)s')
 logger = logging.getLogger("GridBotPro")
@@ -30,6 +31,12 @@ class GridBot(DenaroCore):
             "paused": False,
             "pause_reason": ""
         }
+        # Initialize v4 Strategies
+        self.trend_filter = TrendFilter(self.config)
+        self.vol_grid = VolatilityGrid(self.config)
+        self.martingale = MartingaleLite(self.config)
+        self.rebalancer = Rebalancer(self.config)
+        self.optimizer = ProfitOptimizer(self.config)
 
     async def on_tick(self, price, client):
         self.state['current_price'] = price
@@ -56,7 +63,27 @@ class GridBot(DenaroCore):
                         logger.error(f"Failed to cancel order {order_id}: {e}")
                 self.state['placed_order_ids'] = []
         
-        # 3. Peak tracking for Trailing Stop
+        # 3. Trend Filter (v4)
+        trend = self.trend_filter.get_trend(client, self.config['symbol'], price)
+        if trend in ("STRONG_DOWN",):
+            if not self.state['paused']:
+                self.state['paused'] = True
+                self.state['pause_reason'] = f"Trend: {trend} - Grid paused"
+                logger.warning(f"⚠️ TREND PAUSE: {trend} - Grid paused, protecting capital")
+                for order_id in self.state['placed_order_ids'][:]:
+                    try:
+                        await asyncio.to_thread(client.cancel_order, order_id, self.config['symbol'])
+                    except: pass
+                self.state['placed_order_ids'] = []
+        elif trend == "DOWN" and not self.state['paused']:
+            logger.info(f"⚠️ Trend: {trend} - Operating cautiously")
+        elif trend in ("UP", "STRONG_UP", "NEUTRAL") and self.state['paused'] and "Trend" in self.state.get('pause_reason', ''):
+            self.state['paused'] = False
+            self.state['pause_reason'] = ""
+            self.state['grid_active'] = False
+            logger.info(f"🟢 TREND RESUME: Trend is now {trend} - Grid resuming")
+        
+        # 4. Peak tracking for Trailing Stop
         if price > self.state['peak_value']:
             self.state['peak_value'] = price
         
@@ -75,7 +102,14 @@ class GridBot(DenaroCore):
             await self.sync_existing_orders(client, price)
             self.state['sync_done'] = True
         
-        # 6. Grid Initialization/Healing (skip if paused)
+        # 6. Rebalance check (v4)
+        if not self.state['paused'] and self.state['grid_active'] and 'grid_buy_levels' in self.state:
+            if self.rebalancer.needs_rebalance(price, self.state['grid_buy_levels'], self.config):
+                logger.info("🔄 Rebalancing grid...")
+                self.state['grid_active'] = False
+                self.rebalancer.mark_rebalanced()
+        
+        # 7. Grid Initialization/Healing (skip if paused)
         if not self.state['paused'] and not self.state['grid_active']:
             await self.init_grid(client, price)
         
@@ -88,6 +122,14 @@ class GridBot(DenaroCore):
         # 6. Check Fills
         await self.check_fills(client)
         
+        # 7. Profit Optimizer adjustment (v4)
+        adj = self.optimizer.get_adjustment(self.config['base_order_eur'])
+        if adj != 1.0:
+            metrics = self.optimizer.get_metrics()
+            if metrics:
+                logger.info(f"📊 Performance: WR={metrics['win_rate']:.0f}% PF={metrics['profit_factor']:.2f} Trades={metrics['total_trades']} Adj={adj:.2f}x")
+        
+        # 8. Periodic status log
         if int(time.time()) % 60 < 5:
             logger.info(f"Price: {price}€ | Invested: {self.state['total_invested']:.2f}€ | Profit: {self.state['total_profit']:.2f}€")
 
@@ -116,44 +158,48 @@ class GridBot(DenaroCore):
     async def init_grid(self, client, current_price):
         eur_free = self.get_balance('EUR')
         num_levels = self.config['grid_levels']
-        budget = self.config['base_order_eur']
+        base_size = self.config['base_order_eur']
         
-        if eur_free < (num_levels * budget * 0.9):
-            max_ordable = max(1, int(eur_free / (budget * 1.1)))
-            num_levels = min(max_ordable, self.config['grid_levels'])
+        # Martingale: calculate total budget needed
+        mart_total = self.martingale.get_total_for_levels(num_levels)
+        budget_eur = max(base_size, min(mart_total, self.config['max_total_invested'] - self.state['total_invested']))
+        
+        if eur_free < (budget_eur * 0.9):
+            # Scale down levels based on available EUR
+            for n in range(num_levels, 0, -1):
+                if self.martingale.get_total_for_levels(n) <= eur_free * 0.9:
+                    num_levels = n
+                    break
+            else:
+                num_levels = max(1, int(eur_free / (base_size * 1.1)))
             if num_levels == 0:
                 logger.error("Insufficient EUR for grid")
                 self.state['grid_active'] = True 
                 return
 
-        # Dynamic ATR-based spacing
+        # Volatility-adaptive grid spacing (v4)
         atr = await self.get_atr(self.config['symbol'], timeframe='1h', lookback=14)
-        atr_spacing_factor = self.config.get('atr_spacing_factor', 1.0)
-        if atr is not None and atr > 0:
-            # ATR is in price units, convert to percentage of current price
-            atr_pct = atr / current_price
-            grid_range = atr_pct * atr_spacing_factor
-            logger.info(f"[{self.bot_name}] ATR: {atr:.4f} ({atr_pct:.2%}), grid_range: {grid_range:.2%}")
-        else:
-            grid_range = self.config["grid_range_pct"]
-            logger.warning(f"[{self.bot_name}] Using static grid_range: {grid_range:.2%}")
+        grid_range_pct, profit_pct = self.vol_grid.get_spacing(atr, current_price)
+        logger.info(f"🔄 Volatility Adaptive: ATR={atr:.4f} ({atr/current_price*100:.2f}%), grid_range={grid_range_pct:.2%}, profit={profit_pct:.2%}")
         
-        step = grid_range / self.config["grid_levels"]
+        step = grid_range_pct / num_levels
         buy_prices = [round(current_price * (1 - (i * step)), 2) for i in range(1, num_levels + 1)]
-        sell_prices = [round(bp * (1 + self.config['profit_per_grid']), 2) for bp in buy_prices]
+        sell_prices = [round(bp * (1 + profit_pct), 2) for bp in buy_prices]
         
         # Store absolute grid levels for re-centering
         self.state['grid_buy_levels'] = buy_prices
         self.state['grid_sell_levels'] = sell_prices
         
         placed = 0
-        for bp in reversed(buy_prices):
+        for i, bp in enumerate(reversed(buy_prices)):
             if self.state['total_invested'] >= self.config['max_total_invested']: break
-            amount = budget / bp
+            order_eur = self.martingale.get_size(i)  # Martingale sizing (v4)
+            order_eur = min(order_eur, self.config['max_total_invested'] - self.state['total_invested'])
+            amount = order_eur / bp
             try:
                 order = await asyncio.to_thread(client.create_limit_buy_order, self.config['symbol'], round(amount, 5), bp)
                 self.state['placed_order_ids'].append(order['id'])
-                self.state['total_invested'] += budget
+                self.state['total_invested'] += order_eur
                 placed += 1
                 await asyncio.sleep(0.2)
             except Exception as e:
@@ -210,10 +256,20 @@ class GridBot(DenaroCore):
                             except Exception as e:
                                 logger.error(f"Failed to place SELL order @ {closest}€: {e}")
                     else:
-                        fee = price * (self.config['base_order_eur']/price) * 0.00075
-                        profit = (self.config['profit_per_grid'] * self.config['base_order_eur']) - fee
+                        fee = price * (amount if 'amount' in dir() else self.config['base_order_eur']/price) * 0.00075
+                        # Find original level index for martingale profit calculation
+                        orig_eur = self.config['base_order_eur']
+                        if 'orig_level_idx' in self.state and self.state['grid_buy_levels']:
+                            target_price = price / (1 + profit_pct if 'profit_pct' in dir() else self.config['profit_per_grid'])
+                            closest_bp = min(self.state['grid_buy_levels'], key=lambda x: abs(x - target_price))
+                            try:
+                                level_i = self.state['grid_buy_levels'].index(closest_bp)
+                                orig_eur = self.martingale.get_size(level_i)
+                            except: pass
+                        profit = (self.config['profit_per_grid'] * orig_eur) - fee
                         self.state['total_profit'] += profit
-                        self.log_trade(self.config['symbol'], 'SELL', price, self.config['base_order_eur']/price, self.config['base_order_eur'], fee, profit)
+                        self.log_trade(self.config['symbol'], 'SELL', price, orig_eur/price, orig_eur, fee, profit)
+                        self.optimizer.add_trade(profit)  # Track for optimizer
                         logger.info(f"💰 SELL filled @ {price}€, Profit: {profit:.2f}€")
                         
                         # Grid re-centering: replace the sold level with a new BUY order at original price
@@ -221,12 +277,14 @@ class GridBot(DenaroCore):
                             # Find the closest original buy price (should be price / (1 + profit_per_grid))
                             target_buy_price = price / (1 + self.config['profit_per_grid'])
                             closest = min(self.state['grid_buy_levels'], key=lambda x: abs(x - target_buy_price))
-                            # Place a new BUY order at the original level
+                            # Place a new BUY order at the original level with Martingale sizing
                             try:
-                                amount = self.config['base_order_eur'] / closest
-                                new_order = await asyncio.to_thread(client.create_limit_buy_order, self.config['symbol'], round(amount, 5), closest)
+                                level_i_rebuy = self.state['grid_buy_levels'].index(closest)
+                                rebuy_eur = self.martingale.get_size(level_i_rebuy)
+                                rebuy_amount = rebuy_eur / closest
+                                new_order = await asyncio.to_thread(client.create_limit_buy_order, self.config['symbol'], round(rebuy_amount, 5), closest)
                                 self.state['placed_order_ids'].append(new_order['id'])
-                                logger.info(f"🔄 Grid re-centered: new BUY order @ {closest}€")
+                                logger.info(f"🔄 Grid re-centered: new BUY order @ {closest}€ ({rebuy_eur:.2f}€ martingale)")
                             except Exception as e:
                                 logger.error(f"Failed to place re-centered BUY order @ {closest}€: {e}")
                     self.state['placed_order_ids'].remove(order_id)
