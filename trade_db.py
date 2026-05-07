@@ -36,6 +36,16 @@ class TradeDB:
             ''')
             conn.commit()
 
+    def log_trade(self, symbol, side, price, amount, cost, fee, profit, strategy="grid"):
+        """Called by DenaroCore - logs a completed trade to DB"""
+        now = datetime.now().isoformat()
+        with sqlite3.connect(self.db_path) as conn:
+            conn.execute('''
+                INSERT INTO trades (bot_name, symbol, side, entry_price, exit_price, quantity, entry_time, exit_time, gross_pnl, fees, net_pnl, exit_reason)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (strategy, symbol, side, price, price, amount, now, now, profit + fee, fee, profit, 'TP_SL'))
+            conn.commit()
+
     def save_trade(self, bot_name, symbol, side, entry_price, exit_price, quantity, entry_time, exit_time, gross_pnl, fees, net_pnl, reason):
         with sqlite3.connect(self.db_path) as conn:
             conn.execute('''
@@ -47,8 +57,21 @@ class TradeDB:
     def get_daily_pnl(self):
         today = datetime.now().strftime('%Y-%m-%d')
         with sqlite3.connect(self.db_path) as conn:
-            res = conn.execute('SELECT SUM(net_pnl) FROM trades WHERE date(exit_time) = ?', (today,)).fetchone()
-            return res[0] if res[0] else 0.0
+            res = conn.execute('SELECT COALESCE(SUM(net_pnl),0) FROM trades WHERE date(exit_time) = ?', (today,)).fetchone()
+            return res[0] if res and res[0] else 0.0
+    
+    def get_total_pnl(self, bot_name=None):
+        with sqlite3.connect(self.db_path) as conn:
+            if bot_name:
+                res = conn.execute('SELECT COALESCE(SUM(net_pnl),0) FROM trades WHERE bot_name = ?', (bot_name,)).fetchone()
+            else:
+                res = conn.execute('SELECT COALESCE(SUM(net_pnl),0) FROM trades').fetchone()
+            return res[0] if res and res[0] else 0.0
+    
+    def get_recent_trades(self, limit=10):
+        with sqlite3.connect(self.db_path) as conn:
+            rows = conn.execute('SELECT exit_time, symbol, side, net_pnl, fees FROM trades ORDER BY exit_time DESC LIMIT ?', (limit,)).fetchall()
+            return [{'time':r[0],'symbol':r[1],'side':r[2],'pnl':r[3],'fee':r[4]} for r in rows]
 
     def get_metrics(self):
         with sqlite3.connect(self.db_path) as conn:
