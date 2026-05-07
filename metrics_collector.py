@@ -6,7 +6,10 @@ os.makedirs(BASE, exist_ok=True)
 
 def ssh(host, cmd, timeout=10):
     try:
-        r = subprocess.run(["ssh", host, cmd], capture_output=True, text=True, timeout=timeout)
+        if host in ("nuvola", "127.0.0.1", "localhost"):
+            r = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=timeout)
+            return r.stdout.strip()
+        r = subprocess.run(["ssh", "-o", "ConnectTimeout=5", host, cmd], capture_output=True, text=True, timeout=timeout)
         return r.stdout.strip()
     except: return ""
 
@@ -43,11 +46,10 @@ json.dump(marcodg1, open(f"{BASE}/marcodg1.json","w"))
 
 # MC2 + Scalper
 log = "/home/sergio/denaro/scalper.log"
-scp = 0; spp = 0; sppr = 0; sr = 0; sb = 0; se = 0
+scp = 0; spp = 0; sppr = 0; sr = 0; sb = 0; se = 0; sdisk = 0; smem = 0
 if os.path.exists(log):
-    with open(log) as f:
-        txt = f.read()
     scp = int(subprocess.run(["pgrep","-c","-f","scalper_v1.py"], capture_output=True,text=True).stdout.strip() or "0")
+    txt = open(log).read()
     for l in txt.split("\n")[-50:]:
         if "PnL:" in l:
             try: spp = float(l.split("PnL:")[1].strip().split("€")[0])
@@ -58,14 +60,17 @@ if os.path.exists(log):
         if "RSI=" in l:
             try: sr = float(l.split("RSI=")[1].split("|")[0].strip())
             except: pass
+    sdisk = 0  # MC2 data not available from remote
+    smem = 0
+else:
+    sdisk = int(subprocess.run(["df","-h","/"], capture_output=True,text=True).stdout.split("\n")[1].split()[4].strip("%"))
+    smem = round(float(subprocess.run(["free","-m"], capture_output=True,text=True).stdout.split("\n")[1].split()[2]) / float(subprocess.run(["free","-m"], capture_output=True,text=True).stdout.split("\n")[1].split()[1]) * 100)
 
 mc2 = {
     "ts": time.strftime("%H:%M"), "sc": scp, "sp": round(spp,2),
-    "spr": sppr, "sr": round(sr,1), "sb": int(subprocess.run(["grep","-c","BUY|SELL",log], capture_output=True,text=True).stdout.strip() or "0"),
-    "se": float(subprocess.run(["grep","-oP","EUR=\\K[0-9.]+",log], capture_output=True,text=True).stdout.strip().split("\n")[-1] or "0"),
-    "d": int(subprocess.run(["df","-h","/"], capture_output=True,text=True).stdout.split("\n")[1].split()[4].strip("%")),
-    "m": round(float(subprocess.run(["free","-m"], capture_output=True,text=True).stdout.split("\n")[1].split()[2]) / float(subprocess.run(["free","-m"], capture_output=True,text=True).stdout.split("\n")[1].split()[1]) * 100),
-    "z": 1
+    "spr": sppr, "sr": round(sr,1), "sb": int(subprocess.run(["grep","-c","BUY|SELL",log], capture_output=True,text=True).stdout.strip() or "0") if os.path.exists(log) else 0,
+    "se": float(subprocess.run(["grep","-oP","EUR=\\K[0-9.]+",log], capture_output=True,text=True).stdout.strip().split("\n")[-1] or "0") if os.path.exists(log) else 0,
+    "d": sdisk, "m": smem, "z": 1 if scp > 0 else 0
 }
 json.dump(mc2, open(f"{BASE}/mc2.json","w"))
 

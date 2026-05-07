@@ -11,6 +11,7 @@ import websockets
 import time
 from denaro_core import DenaroCore
 from denaro_strategies import TrendFilter, VolatilityGrid, MartingaleLite, Rebalancer, ProfitOptimizer
+from vault_utils import atomic_write
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - GRID-PRO - %(levelname)s - %(message)s')
 logger = logging.getLogger("GridBotPro")
