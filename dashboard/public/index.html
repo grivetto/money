@@ -40,8 +40,11 @@ h1{font-size:22px;color:#00d4ff;letter-spacing:1px}
 <div class="grid" id="marcodg1-card">
   <div class="card"><h3>🟠 MARCODG1 · ADA/EUR</h3><div class="status" id="marcodg1-stats"><div class="stat"><div class="lab">caricamento...</div></div></div></div>
 </div>
-<div class="grid" id="mc2-card">
+ <div class="grid" id="mc2-card">
   <div class="card"><h3>💻 MC2 · SCALPER ETH/EUR</h3><div class="status" id="mc2-stats"><div class="stat"><div class="lab">caricamento...</div></div></div></div>
+</div>
+<div class="grid" id="sentiment-card">
+  <div class="card"><h3>📊 SENTIMENT</h3><div class="status" id="sentiment-stats"><div class="stat"><div class="lab">caricamento...</div></div></div></div>
 </div>
 
 <script>
@@ -88,9 +91,21 @@ function load(){
     <div class="stat"><div class="val">${d.z?'✅':'❌'}</div><div class="lab">Zabbix</div></div>`;
  }).catch(()=>$('mc2-stats').innerHTML='<div class="stat"><div class="lab" style="color:#ef4444">offline</div></div>');
  
- $('clock').textContent=new Date().toLocaleString('it-IT');
-}
-load();
+  $('clock').textContent=new Date().toLocaleString('it-IT');
+ }
+ 
+ fetch('sentiment.json?'+Date.now()).then(r=>r.json()).then(d=>{
+  let fng=d.fng||50;
+  let cls=fng>60?'green':fng>40?'yellow':'red';
+  let lbl=cls==='green'?'🚀':'⚠️';
+  $('sentiment-stats').innerHTML=
+   `<div class="stat"><div class="val ${cls}">${d.fng||'?'}</div><div class="lab">F&G Index</div></div>
+    <div class="stat"><div class="val">${d.label||'?'}</div><div class="lab">Sentiment</div></div>
+    <div class="stat"><div class="val blue">${d.btc_dom||'?'}%</div><div class="lab">BTC Dominance</div></div>
+    <div class="stat"><div class="val">${lbl} ${cls==='green'?'2025 Corrida':cls==='red'?'Paura':'Neutrale'}</div><div class="lab">${d.fng>60?'Ottimo per acquisti':d.fng<40?'Cautela':'Attesa'}</div></div>`;
+ }).catch(()=>{});
+ 
+ load();
 setInterval(load,15000);
 </script>
 </body>

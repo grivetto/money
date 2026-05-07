@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-DENARO CORE ENGINE v1.0
+DENARO CORE ENGINE v1.1
 Standardized base for all Denaro trading bots.
-Provides: Unified Binance Client, State Recovery, ATR Volatility, and DB Logging.
+Provides: Unified Binance Client, State Recovery, ATR Volatility, DB Logging.
 """
 
 import os
@@ -10,6 +10,7 @@ import json
 import logging
 import asyncio
 import ccxt
+import time
 from dotenv import load_dotenv
 from pathlib import Path
 from trade_db import TradeDB
@@ -65,6 +66,34 @@ class DenaroCore:
             'enableRateLimit': True,
             'options': {'defaultType': 'spot', 'defaultFeeCurrency': 'BNB'},
         })
+
+    def api_call(self, fn, *args, max_retries=3, **kwargs):
+        """Exponential backoff wrapper for all exchange API calls.
+        Retries on rate limits, timeouts, and temporary errors."""
+        for attempt in range(max_retries):
+            try:
+                return fn(*args, **kwargs)
+            except ccxt.RateLimitExceeded as e:
+                wait = (2 ** attempt) * 5
+                logger.warning(f"Rate limited. Retry {attempt+1}/{max_retries} in {wait}s")
+                time.sleep(wait)
+            except ccxt.NetworkError as e:
+                wait = (2 ** attempt) * 3
+                logger.warning(f"Network error: {e}. Retry in {wait}s")
+                time.sleep(wait)
+            except ccxt.BadSymbol as e:
+                logger.error(f"Bad symbol: {e}")
+                raise
+            except Exception as e:
+                if 'Not enough balance' in str(e) or 'insufficient' in str(e).lower():
+                    logger.warning(f"Insufficient balance: {e}")
+                    raise  # Don't retry balance errors
+                if attempt == max_retries - 1:
+                    raise
+                wait = (2 ** attempt) * 2
+                logger.warning(f"API error: {e}. Retry {attempt+1}/{max_retries} in {wait}s")
+                time.sleep(wait)
+        return None
 
     def load_config(self):
         """Loads and updates configuration from JSON file with flexible key mapping"""
