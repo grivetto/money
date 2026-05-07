@@ -195,4 +195,8 @@ For inquiries, contact the repository owner.
 
 *Built with 💻 & 💸 by the Denaro team.*  
 *Last updated: $(date -u +"%Y-%m-%d %H:%M UTC")*
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
 Sviluppato da Sergio con l'aiuto dell' AI
