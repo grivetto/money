@@ -195,3 +195,4 @@ For inquiries, contact the repository owner.
 
 *Built with 💻 & 💸 by the Denaro team.*  
 *Last updated: $(date -u +"%Y-%m-%d %H:%M UTC")*
+Sviluppato da Sergio con l'aiuto dell' AI
