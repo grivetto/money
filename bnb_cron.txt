@@ -1,0 +1,1 @@
+0 * * * * /home/marco/denaro/bnb_monitor_service.sh

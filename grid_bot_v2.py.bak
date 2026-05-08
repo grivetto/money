@@ -1,0 +1,19 @@
+#!/usr/bin/env python3
+import time
+import sys
+
+print("Denaro Bot Started", flush=True)
+
+try:
+    import talib
+    print("TA-Lib loaded", flush=True)
+except ImportError as e:
+    print(f"Warning: {e}", flush=True)
+
+print("Bot running...", flush=True)
+
+try:
+    while True:
+        time.sleep(30)
+except KeyboardInterrupt:
+    print("Bot stopped", flush=True)

@@ -1,0 +1,297 @@
+#!/usr/bin/env python3
+"""
+DENARO GRID BOT v3 - ETH/EUR
+WebSocket-driven grid trading con trailing stop + self-healing
+"""
+
+from dotenv import load_dotenv
+load_dotenv("/home/marco/denaro/.env")
+import os, sys, time, json, logging, asyncio
+import ccxt
+import websockets
+
+logging.basicConfig(
+ level=logging.INFO,
+ format='%(asctime)s - GRID - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger("GridBot")
+
+CONFIG = {
+    "symbol": "SOL/EUR",
+    "symbol_ws": "soleur",
+    "grid_levels": 5,
+    "grid_range_pct": 0.01,       # ±3%
+    "profit_per_grid": 0.003,     # 0.3% per griglia
+    "base_order_eur": 50.0,        # 8€ per griglia
+    "max_total_invested": 300.0,
+    "min_order_eur": 5.0,         # Minimo per singolo ordine
+    "trailing_stop_pct": 1.5,
+    "trailing_activation_pct": 2.0,
+}
+
+state = {
+    "filled_orders": [],
+    "total_invested": 0.0,
+    "total_profit": 0.0,
+    "peak_value": 0.0,
+    "grid_active": False,
+    "current_price": 0.0,
+    "placed_order_ids": [],
+    "sync_done": False,
+    "init_retry_wait": 0,
+}
+
+# ─── BINANCE CLIENT ───────────────────────────────────────────────
+def get_client():
+    api_key = os.getenv("BINANCE_API_KEY")
+    api_secret = os.getenv("BINANCE_API_SECRET")
+    if not api_key or not api_secret:
+        logger.error("BINANCE_API_KEY/SECRET missing!")
+        return None
+    exchange = ccxt.binance({
+        'apiKey': api_key,
+        'secret': api_secret,
+        'enableRateLimit': True,
+        'options': {'defaultType': 'spot'},
+    })
+    return exchange
+
+# ─── WEBSOCKET PRICE FEED ─────────────────────────────────────────
+async def price_ws(client):
+    url = f"wss://stream.binance.com:9443/ws/{CONFIG['symbol_ws']}@ticker"
+    logger.info(f"Connecting to WebSocket: {url}")
+    
+    while True:
+        try:
+            async with websockets.connect(url, ping_interval=30) as ws:
+                logger.info("WebSocket connected!")
+                while True:
+                    msg = await ws.recv()
+                    data = json.loads(msg)
+                    
+                    if data.get('e') == '24hrTicker':
+                        price = float(data['c'])
+                        volume = float(data['v'])
+                        await on_tick(price, volume, client)
+                        
+        except Exception as e:
+            logger.error(f"WS Error: {e}. Reconnecting in 5s...")
+            await asyncio.sleep(5)
+
+# ─── TICK HANDLER ─────────────────────────────────────────────────
+async def on_tick(price, volume, client):
+    state['current_price'] = price
+    
+    # Update peak
+    if price > state['peak_value']:
+        state['peak_value'] = price
+    
+    # Sync existing orders on first tick
+    if not state['sync_done']:
+        await sync_existing_orders(client, price)
+        state['sync_done'] = True
+    
+    # Init or heal grid
+    if not state['grid_active']:
+        if state['init_retry_wait'] > 0:
+            state['init_retry_wait'] -= 1
+            if state['init_retry_wait'] == 0:
+                await init_grid(client, price)
+        else:
+            await init_grid(client, price)
+    
+    # Check trailing stop
+    ts_action = trailing_stop_check(price)
+    if ts_action == "EXIT":
+        logger.warning(f"🚨 TRAILING STOP EXIT @ {price}€")
+        await close_all_positions(client, price)
+        return
+    
+    # Check fills
+    await check_fills(client)
+    
+    # Log every minute
+    if int(time.time()) % 60 < 5:
+        logger.info(f"Price: {price}€ | Invested: {state['total_invested']:.2f}€ | Profit: {state['total_profit']:.2f}€")
+
+# ─── SYNC EXISTING ORDERS ON STARTUP ─────────────────────────────
+async def sync_existing_orders(client, current_price):
+    """Scan ordini aperti esistenti e ripristina stato + limpia duplicati"""
+    logger.info("Syncing with existing open orders...")
+    try:
+        open_orders = client.fetch_open_orders(CONFIG['symbol'])
+        logger.info(f"Found {len(open_orders)} open orders on exchange")
+        
+        # Cancella tutti gli ordini duplicati oltre i primi 10 (5 buy + 5 sell)
+        # Mantieni solo i più vicini al prezzo corrente
+        buy_orders = sorted([o for o in open_orders if o['side'] == 'buy'], key=lambda x: abs(x['price'] - current_price))
+        sell_orders = sorted([o for o in open_orders if o['side'] == 'sell'], key=lambda x: abs(x['price'] - current_price))
+        
+        keep_buys = buy_orders[:CONFIG['grid_levels']]
+        keep_sells = sell_orders[:CONFIG['grid_levels']]
+        cancel_orders = buy_orders[CONFIG['grid_levels']:] + sell_orders[CONFIG['grid_levels']:]
+        
+        for o in cancel_orders:
+            try:
+                client.cancel_order(o['id'], CONFIG['symbol'])
+                logger.info(f"  🗑 Cancelled duplicate {o['side']} @ {o['price']}")
+            except:
+                pass
+        
+        # Registra gli ordini mantenuti
+        state['placed_order_ids'] = [o['id'] for o in keep_buys + keep_sells]
+        state['grid_active'] = len(state['placed_order_ids']) > 0
+        
+        # Calcola invested approssimativo dai buy orders attivi
+        state['total_invested'] = len(keep_buys) * CONFIG['base_order_eur']
+        
+        logger.info(f"  Kept {len(keep_buys)} buy + {len(keep_sells)} sell orders, invested ~{state['total_invested']:.2f}€")
+        
+    except Exception as e:
+        logger.error(f"Sync error: {e}")
+
+# ─── INIT GRID ────────────────────────────────────────────────────
+async def init_grid(client, current_price):
+    balance = get_balance(client)
+    eur_free = balance['EUR']
+    logger.info(f"EUR free: {eur_free:.2f} | USDT free: {balance['USDT']:.2f}")
+    
+    # Calcola quanti ordini possiamo permetterci
+    # Ogni buy order blocca ~base_order_eur
+    # Ma se abbiamo ETH, dobbiamo anche piazzare sell orders
+    # Strategia: se non abbiamo abbastanza per 5 buy completi, adatta
+    
+    num_levels = CONFIG['grid_levels']
+    budget_per_buy = CONFIG['base_order_eur']
+    
+    # Se non abbastanza per tutti i 5 buy, adatta
+    needed_for_full = num_levels * budget_per_buy
+    if eur_free < needed_for_full * 0.9:  # 90% perché i sell aggiungono ETH
+        # Proporziona: quanti ordini buy possiamo fare?
+        max_ordable = max(1, int(eur_free / (budget_per_buy * 1.1)))
+        num_levels = min(max_ordable, CONFIG['grid_levels'])
+        logger.warning(f"Balance {eur_free:.2f}€ → scaling grid to {num_levels} levels")
+        if num_levels == 0:
+            logger.error("Insufficient EUR — waiting for sells to free capital")
+            state['init_retry_wait'] = 30  # aspetta ~30 tick
+            state['grid_active'] = True  # Flag attivo così non ritenta subito
+            return
+    
+    step = CONFIG["grid_range_pct"] / CONFIG["grid_levels"]
+    buy_prices = []
+    sell_prices = []
+    
+    for i in range(1, CONFIG["grid_levels"] + 1):
+        offset = i * step
+        buy_prices.append(round(current_price * (1 - offset), 2))
+        sell_prices.append(round(current_price * (1 + offset), 2))
+    
+    logger.info(f"Grid: buys={buy_prices} | sells={sell_prices}")
+    
+    # Place buy orders (lowest first — deepest support)
+    placed = 0
+    for bp in reversed(buy_prices[-num_levels:]):
+        if state['total_invested'] >= CONFIG['max_total_invested']:
+            break
+        amount_eth = CONFIG['base_order_eur'] / bp
+        try:
+            order = client.create_limit_buy_order(
+                symbol=CONFIG['symbol'],
+                amount=round(amount_eth, 5),
+                price=bp
+            )
+            state['placed_order_ids'].append(order['id'])
+            state['total_invested'] += CONFIG['base_order_eur']
+            logger.info(f"  BUY  @ {bp}€ ({amount_eth:.5f} ETH)")
+            placed += 1
+            await asyncio.sleep(0.3)
+        except Exception as e:
+            logger.error(f"  BUY failed @ {bp}€: {e}")
+    
+    logger.info(f"Grid started: {placed} buy orders, {state['total_invested']:.2f}€ invested")
+    state['grid_active'] = True
+
+# ─── TRAILING STOP ────────────────────────────────────────────────
+def trailing_stop_check(current_price):
+    if current_price <= 0 or not state['filled_orders']:
+        return "HOLD"
+    
+    if state['peak_value'] > 0:
+        profit_pct = (current_price - state['peak_value'] * 0.98) / (state['peak_value'] * 0.98) * 100
+        if profit_pct >= CONFIG['trailing_activation_pct']:
+            stop = state['peak_value'] * (1 - CONFIG['trailing_stop_pct'] / 100)
+            if current_price < stop:
+                return "EXIT"
+    return "HOLD"
+
+# ─── CHECK FILLS ──────────────────────────────────────────────────
+async def check_fills(client):
+    for order_id in state['placed_order_ids'][:]:
+        try:
+            status = client.fetch_order(order_id, CONFIG['symbol'])
+            if status['status'] == 'closed':
+                side = status['side']
+                filled_price = float(status['average'])
+                amount = float(status['amount'])
+                
+                if order_id in [o['id'] for o in state['filled_orders']]:
+                    continue
+                
+                state['filled_orders'].append({'id': order_id, 'side': side, 'price': filled_price, 'amount': amount})
+                
+                if side == 'buy':
+                    cost_eur = filled_price * amount
+                    logger.info(f"  ✅ BUY filled @ {filled_price}€ ({amount:.5f} ETH = {cost_eur:.2f}€)")
+                else:
+                    profit = CONFIG['profit_per_grid'] * CONFIG['base_order_eur']
+                    state['total_profit'] += profit
+                    logger.info(f"  💰 SELL filled @ {filled_price}€, Profit: {profit:.2f}€")
+                
+                state['placed_order_ids'].remove(order_id)
+                
+        except Exception as e:
+            if 'Not found' in str(e) or 'Unknown' in str(e):
+                state['placed_order_ids'].remove(order_id)
+            pass
+
+# ─── CLOSE ALL ────────────────────────────────────────────────────
+async def close_all_positions(client, price):
+    logger.info("Closing all positions...")
+    try:
+        balances = client.fetch_balance()
+        eth_free = balances['free'].get('ETH', 0)
+        if eth_free > 0.001:
+            order = client.create_market_sell_order(CONFIG['symbol'], eth_free)
+            logger.info(f"  Sold {eth_free} ETH @ market price")
+    except Exception as e:
+        logger.error(f"Close error: {e}")
+
+# ─── BALANCE ─────────────────────────────────────────────────────
+def get_balance(client):
+    b = client.fetch_balance()
+    return {
+        'EUR': b['free'].get('EUR', 0),
+        'USDT': b['free'].get('USDT', 0),
+        'ETH': b['free'].get('ETH', 0),
+    }
+
+# ─── MAIN ─────────────────────────────────────────────────────────
+async def main():
+    logger.info("🚀 DENARO GRID BOT v3 - ETH/EUR Starting...")
+    
+    client = get_client()
+    if not client:
+        return
+    
+    try:
+        ticker = client.fetch_ticker(CONFIG['symbol'])
+        state['peak_value'] = ticker['last']
+        logger.info(f"Starting price: {state['peak_value']}€")
+    except Exception as e:
+        logger.error(f"Cannot fetch initial price: {e}")
+        return
+    
+    await price_ws(client)
+
+if __name__ == "__main__":
+    asyncio.run(main())
