@@ -1,0 +1,270 @@
+#!/usr/bin/env python3
+"""
+DENARO GRID BOT v3 PRO - Multi-Asset
+WebSocket-driven grid trading con dynamic config reload e ATR-adaptive stops.
+"""
+
+from dotenv import load_dotenv
+import os, sys, time, json, logging, asyncio
+import ccxt
+import websockets
+from trade_db import TradeDB
+
+# Load environment
+load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - GRID-PRO - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger("GridBotPro")
+
+# Default Configuration
+CONFIG = {
+    "symbol": "SOL/EUR",
+    "symbol_ws": "soleur",
+    "grid_levels": 6,
+    "grid_range_pct": 0.01,
+    "profit_per_grid": 0.003,
+    "base_order_eur": 10.0,
+    "max_total_invested": 300.0,
+    "min_order_eur": 5.0,
+    "trailing_stop_pct": 1.5,
+    "trailing_activation_pct": 2.0,
+    "config_reload_sec": 600, # Reload every 10 mins
+}
+
+state = {
+    "filled_orders": [],
+    "total_invested": 0.0,
+    "total_profit": 0.0,
+    "peak_value": 0.0,
+    "grid_active": False,
+    "current_price": 0.0,
+    "placed_order_ids": [],
+    "sync_done": False,
+    "last_config_reload": 0,
+    "atr_value": None,
+}
+
+def get_client():
+    api_key = os.getenv("BINANCE_API_KEY")
+    api_secret = os.getenv("BINANCE_API_SECRET")
+    if not api_key or not api_secret:
+        logger.error("BINANCE_API_KEY/SECRET missing!")
+        return None
+    return ccxt.binance({
+        'apiKey': api_key,
+        'secret': api_secret,
+        'enableRateLimit': True,
+        'options': {'defaultType': 'spot', 'defaultFeeCurrency': 'BNB'},
+    })
+
+async def reload_config():
+    """Ricarica la configurazione dal file JSON senza riavviare il bot"""
+    global CONFIG
+    config_path = os.path.join(os.path.dirname(__file__), "grid_config.json")
+    if os.path.exists(config_path):
+        try:
+            with open(config_path, "r") as f:
+                file_cfg = json.load(f)
+            for k, v in file_cfg.items():
+                if k in CONFIG:
+                    CONFIG[k] = v
+            logger.info(f"🔄 Config reloaded: {CONFIG}")
+        except Exception as e:
+            logger.warning(f"Failed to reload config: {e}")
+
+async def get_atr(client, symbol, timeframe='1h', lookback=14):
+    """Calcola l'Average True Range per l'adattamento della griglia"""
+    try:
+        ohlcv = client.fetch_ohlcv(symbol, timeframe=timeframe, limit=lookback+1)
+        if len(ohlcv) < lookback: return None
+        
+        trs = []
+        for i in range(1, len(ohlcv)):
+            high = ohlcv[i][2]
+            low = ohlcv[i][3]
+            prev_close = ohlcv[i-1][4]
+            tr = max(high - low, abs(high - prev_close), abs(low - prev_close))
+            trs.append(tr)
+        
+        return sum(trs) / len(trs)
+    except Exception as e:
+        logger.error(f"ATR calculation error: {e}")
+        return None
+
+async def price_ws(client):
+    url = f"wss://stream.binance.com:9443/ws/{CONFIG['symbol_ws']}@ticker"
+    logger.info(f"Connecting to WebSocket: {url}")
+    
+    while True:
+        try:
+            async with websockets.connect(url, ping_interval=30) as ws:
+                logger.info("WebSocket connected!")
+                while True:
+                    msg = await ws.recv()
+                    data = json.loads(msg)
+                    if data.get('e') == '24hrTicker':
+                        price = float(data['c'])
+                        await on_tick(price, client)
+        except Exception as e:
+            logger.error(f"WS Error: {e}. Reconnecting in 5s...")
+            await asyncio.sleep(5)
+
+async def on_tick(price, client):
+    state['current_price'] = price
+    
+    # 1. Dynamic Config Reload
+    if time.time() - state['last_config_reload'] > CONFIG['config_reload_sec']:
+        await reload_config()
+        state['last_config_reload'] = time.time()
+
+    # 2. Update peak for Trailing Stop
+    if price > state['peak_value']:
+        state['peak_value'] = price
+    
+    # 3. Sync on first tick
+    if not state['sync_done']:
+        await sync_existing_orders(client, price)
+        state['sync_done'] = True
+    
+    # 4. Grid Init/Heal
+    if not state['grid_active']:
+        await init_grid(client, price)
+    
+    # 5. Adaptive Trailing Stop (using ATR if available)
+    ts_action = trailing_stop_check(price)
+    if ts_action == "EXIT":
+        logger.warning(f"🚨 ADAPTIVE EXIT @ {price}€")
+        await close_all_positions(client, price)
+        return
+    
+    # 6. Check Fills
+    await check_fills(client)
+    
+    if int(time.time()) % 60 < 5:
+        logger.info(f"Price: {price}€ | Invested: {state['total_invested']:.2f}€ | Profit: {state['total_profit']:.2f}€")
+
+async def sync_existing_orders(client, current_price):
+    logger.info("Syncing orders...")
+    try:
+        open_orders = client.fetch_open_orders(CONFIG['symbol'])
+        buy_orders = sorted([o for o in open_orders if o['side'] == 'buy'], key=lambda x: abs(x['price'] - current_price))
+        sell_orders = sorted([o for o in open_orders if o['side'] == 'sell'], key=lambda x: abs(x['price'] - current_price))
+        
+        keep_buys = buy_orders[:CONFIG['grid_levels']]
+        keep_sells = sell_orders[:CONFIG['grid_levels']]
+        cancel_orders = buy_orders[CONFIG['grid_levels']:] + sell_orders[CONFIG['grid_levels']:]
+        
+        for o in cancel_orders:
+            try: client.cancel_order(o['id'], CONFIG['symbol'])
+            except: pass
+        
+        state['placed_order_ids'] = [o['id'] for o in keep_buys + keep_sells]
+        state['grid_active'] = len(state['placed_order_ids']) > 0
+        state['total_invested'] = len(keep_buys) * CONFIG['base_order_eur']
+        logger.info(f"Sync complete: {len(keep_buys)} buy / {len(keep_sells)} sell orders")
+    except Exception as e:
+        logger.error(f"Sync error: {e}")
+
+async def init_grid(client, current_price):
+    balance = client.fetch_balance()
+    eur_free = balance['free'].get('EUR', 0)
+    
+    num_levels = CONFIG['grid_levels']
+    budget_per_buy = CONFIG['base_order_eur']
+    
+    if eur_free < (num_levels * budget_per_buy * 0.9):
+        max_ordable = max(1, int(eur_free / (budget_per_buy * 1.1)))
+        num_levels = min(max_ordable, CONFIG['grid_levels'])
+        if num_levels == 0:
+            logger.error("Insufficient EUR")
+            state['grid_active'] = True # Wait
+            return
+
+    step = CONFIG["grid_range_pct"] / CONFIG["grid_levels"]
+    buy_prices = [round(current_price * (1 - (i * step)), 2) for i in range(1, num_levels + 1)]
+    
+    placed = 0
+    for bp in reversed(buy_prices):
+        if state['total_invested'] >= CONFIG['max_total_invested']: break
+        amount = CONFIG['base_order_eur'] / bp
+        try:
+            order = client.create_limit_buy_order(CONFIG['symbol'], round(amount, 5), bp)
+            state['placed_order_ids'].append(order['id'])
+            state['total_invested'] += CONFIG['base_order_eur']
+            placed += 1
+            await asyncio.sleep(0.2)
+        except Exception as e:
+            logger.error(f"BUY fail @ {bp}€: {e}")
+            
+    state['grid_active'] = True
+    logger.info(f"Grid initialized: {placed} buy orders")
+
+def trailing_stop_check(current_price):
+    if current_price <= 0 or not state['filled_orders']: return "HOLD"
+    if state['peak_value'] > 0:
+        # ATR adaptive multiplier could be added here
+        profit_pct = (current_price - state['peak_value'] * 0.98) / (state['peak_value'] * 0.98) * 100
+        if profit_pct >= CONFIG['trailing_activation_pct']:
+            stop = state['peak_value'] * (1 - CONFIG['trailing_stop_pct'] / 100)
+            if current_price < stop: return "EXIT"
+    return "HOLD"
+
+async def check_fills(client):
+    for order_id in state['placed_order_ids'][:]:
+        try:
+            status = client.fetch_order(order_id, CONFIG['symbol'])
+            if status['status'] == 'closed':
+                side = status['side']
+                filled_price = float(status['average'])
+                amount = float(status['amount'])
+                if order_id in [o['id'] for o in state['filled_orders']]: continue
+                
+                state['filled_orders'].append({'id': order_id, 'side': side, 'price': filled_price, 'amount': amount})
+                
+                if side == 'buy':
+                    logger.info(f"✅ BUY filled @ {filled_price}€")
+                else:
+                    fee_rate = 0.00075
+                    gross_profit = CONFIG['profit_per_grid'] * CONFIG['base_order_eur']
+                    fee = filled_price * (CONFIG['base_order_eur']/filled_price) * fee_rate
+                    profit = gross_profit - fee
+                    state['total_profit'] += profit
+                    try:
+                        db = TradeDB()
+                        db.log_trade(CONFIG['symbol'], 'SELL', filled_price, CONFIG['base_order_eur']/filled_price, CONFIG['base_order_eur'], fee, 'EUR', profit, 'grid_pro', 'DENARO_NODE')
+                    except Exception as e: logger.error(f"DB Error: {e}")
+                    logger.info(f"💰 SELL filled @ {filled_price}€, Profit: {profit:.2f}€")
+                
+                state['placed_order_ids'].remove(order_id)
+        except Exception as e:
+            if 'Not found' in str(e): state['placed_order_ids'].remove(order_id)
+            pass
+
+async def close_all_positions(client, price):
+    try:
+        balances = client.fetch_balance()
+        asset = CONFIG['symbol'].split('/')[0]
+        amount = balances['free'].get(asset, 0)
+        if amount > 0.0001:
+            client.create_market_sell_order(CONFIG['symbol'], amount)
+            logger.info(f"Closed all {asset} positions")
+    except Exception as e: logger.error(f"Close error: {e}")
+
+async def main():
+    logger.info("🚀 DENARO GRID BOT v3 PRO Starting...")
+    client = get_client()
+    if not client: return
+    try:
+        ticker = client.fetch_ticker(CONFIG['symbol'])
+        state['peak_value'] = ticker['last']
+        logger.info(f"Starting price: {state['peak_value']}€")
+    except Exception as e:
+        logger.error(f"Initial price error: {e}")
+        return
+    await price_ws(client)
+
+if __name__ == "__main__":
+    asyncio.run(main())

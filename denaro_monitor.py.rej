@@ -1,0 +1,12 @@
+--- denaro_monitor.py
++++ denaro_monitor.py
+@@ -26,8 +26,8 @@ logging.basicConfig(
+ )
+ logger = logging.getLogger("Monitor")
+ 
+-BOTS = ["simple_grid.py", "simple_sniper.py"]
++BOTS = ["grid_bot_v3.py"]
+ 
+ BINANCE_API_KEY = os.getenv("BINANCE_API_KEY")
+ BINANCE_SECRET_KEY = os.getenv("BINANCE_SECRET_KEY")
+ 

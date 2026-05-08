@@ -1,0 +1,96 @@
+#!/usr/bin/env python3
+"""
+DENARO MONITOR - Health monitoring system
+Checks bot status, API connectivity, and account balances
+"""
+
+import os
+import subprocess
+import time
+import json
+import logging
+import ccxt
+from datetime import datetime
+from dotenv import load_dotenv
+
+DENARO_DIR = os.path.expanduser('~/denaro')
+LOG_DIR = f"{DENARO_DIR}/logs"
+STATUS_FILE = f"{DENARO_DIR}/status/bot_status.json"
+os.makedirs(LOG_DIR, exist_ok=True)
+os.makedirs(f"{DENARO_DIR}/status", exist_ok=True)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - [MONITOR] - %(message)s',
+    handlers=[logging.FileHandler(f'{LOG_DIR}/monitor.log')]
+)
+logger = logging.getLogger("Monitor")
+
+BOTS = ["simple_grid.py", "simple_sniper.py"]
+
+def load_env():
+    env_file = f"{DENARO_DIR}/.env"
+    load_dotenv(env_file)
+    return os.getenv('BINANCE_API_KEY'), os.getenv('BINANCE_API_SECRET')
+
+def check_bots():
+    """Check all bots are running"""
+    status = {}
+    result = subprocess.run(["pgrep", "-la", "python"], capture_output=True, text=True)
+    for bot in BOTS:
+        is_online = bot in result.stdout
+        status[bot] = "ONLINE" if is_online else "OFFLINE"
+    return status
+
+def check_api():
+    """Check Binance API connectivity"""
+    try:
+        api_key, api_secret = load_env()
+        if not api_key:
+            return "MISSING_KEY"
+        exchange = ccxt.binance({'apiKey': api_key, 'secret': api_secret, 'enableRateLimit': True})
+        exchange.fetch_balance()
+        return "OK"
+    except Exception as e:
+        return f"ERROR: {str(e)[:50]}"
+
+def check_balance():
+    """Get account balance"""
+    try:
+        api_key, api_secret = load_env()
+        exchange = ccxt.binance({'apiKey': api_key, 'secret': api_secret, 'enableRateLimit': True})
+        balances = exchange.fetch_balance()
+        eur = float(balances['EUR']['free']) if 'EUR' in balances else 0
+        return {"EUR": eur}
+    except:
+        return {"EUR": 0}
+
+def main():
+    logger.info("🔍 Denaro Monitor check")
+    
+    bot_status = check_bots()
+    api_status = check_api()
+    balance = check_balance()
+    
+    report = {
+        "timestamp": datetime.now().isoformat(),
+        "bots": bot_status,
+        "api": api_status,
+        "balance": balance,
+        "all_ok": all(v == "ONLINE" for v in bot_status.values()) and api_status == "OK"
+    }
+    
+    with open(STATUS_FILE, 'w') as f:
+        json.dump(report, f, indent=2)
+    
+    if report['all_ok']:
+        logger.info("✅ All systems OK")
+    else:
+        offline = [k for k, v in bot_status.items() if v == "OFFLINE"]
+        logger.warning(f"⚠️ Issues: {offline} | API: {api_status}")
+    
+    print(json.dumps(report, indent=2))
+    return 0 if report['all_ok'] else 1
+
+if __name__ == "__main__":
+    exit(main())
