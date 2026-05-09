@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-DENARO DCA BOT v1 — Dollar-Cost Averaging
-Compra importi fissi a intervalli regolari.
-Complementa il grid trading per accumulo a lungo termine.
+DENARO DCA BOT v2 — Dollar-Cost Averaging Condizionale
+Compra solo quando il prezzo scende >=2% sotto la media mobile.
+Riduce le commissioni acquistando meno frequentemente ma a prezzi migliori.
 """
 import os, json, time, logging, ccxt
 from dotenv import load_dotenv
@@ -12,11 +12,13 @@ load_dotenv(os.path.join(os.path.dirname(__file__) or ".", ".env"))
 
 # === CONFIG ===
 SYMBOL = "ETH/EUR"
-AMOUNT_EUR = 10.0       # Quantita' fissa in EUR ad ogni esecuzione
-INTERVAL_HOURS = 6       # Ogni 6 ore
+AMOUNT_EUR = 10.0          # Quantita' fissa in EUR ad ogni esecuzione
+INTERVAL_HOURS = 6          # Controlla ogni 6 ore (non acquista sempre)
+MIN_DIP_PCT = 2.0           # Acquista solo se prezzo >=2% sotto la media 7gg
+MAX_PRICE_HISTORY = 50      # Quanti prezzi giornalieri tenere in memoria
 STATE_FILE = os.path.join(os.path.dirname(__file__) or ".", "dca_state.json")
-
 LOG_FILE = os.path.join(os.path.dirname(__file__) or ".", "dca.log")
+
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - DCA - %(levelname)s - %(message)s',
                     handlers=[logging.FileHandler(LOG_FILE)])
 logger = logging.getLogger("DCA")
@@ -30,7 +32,8 @@ ex = ccxt.binance({
 
 def load_state():
     try: return json.load(open(STATE_FILE))
-    except: return {"last_buy": 0, "total_invested": 0.0, "total_asset": 0.0, "trades": []}
+    except: return {"last_check": 0, "last_buy": 0, "total_invested": 0.0, 
+                    "total_asset": 0.0, "price_history": [], "trades": []}
 
 def save_state(s):
     tmp = STATE_FILE + ".tmp"
@@ -41,29 +44,60 @@ def dca():
     state = load_state()
     now = time.time()
     
-    # Check if enough time has passed
-    if now - state.get("last_buy", 0) < INTERVAL_HOURS * 3600:
-        next_buy = datetime.fromtimestamp(state["last_buy"] + INTERVAL_HOURS * 3600)
-        logger.info(f"Prossimo acquisto: {next_buy.strftime('%Y-%m-%d %H:%M')}")
+    # Always check at INTERVAL_HOURS
+    if now - state.get("last_check", 0) < INTERVAL_HOURS * 3600:
+        next_check = datetime.fromtimestamp(state["last_check"] + INTERVAL_HOURS * 3600)
+        logger.info(f"Prossimo controllo: {next_check.strftime('%Y-%m-%d %H:%M')}")
         return
+    
+    state["last_check"] = now
     
     try:
         ticker = ex.fetch_ticker(SYMBOL)
         price = ticker['last']
-        amount = AMOUNT_EUR / price
+        
+        # Update price history (1 entry per check, ~4 entries/day)
+        state.setdefault("price_history", []).append({
+            'time': now,
+            'price': price
+        })
+        # Keep only last N entries
+        if len(state['price_history']) > MAX_PRICE_HISTORY:
+            state['price_history'] = state['price_history'][-MAX_PRICE_HISTORY:]
+        save_state(state)
+        
+        # Calculate moving average from history
+        prices = [p['price'] for p in state['price_history']]
+        avg_price = sum(prices) / len(prices) if prices else price
+        
+        # Calculate dip percentage
+        dip_pct = (avg_price - price) / avg_price * 100
+        logger.info(f"ETH: {price:.2f}€ | Media {len(prices)} campioni: {avg_price:.2f}€ | Dip: {dip_pct:+.2f}%")
+        
+        # Check if price is low enough for a buy
+        if dip_pct < MIN_DIP_PCT:
+            logger.info(f"Dip {dip_pct:.1f}% < soglia {MIN_DIP_PCT}%, acquisto rimandato")
+            return
+        
+        # Check minimum time since last buy (at least 24h)
+        if now - state.get("last_buy", 0) < 86400:
+            last_buy_time = datetime.fromtimestamp(state["last_buy"])
+            logger.info(f"Ultimo acquisto: {last_buy_time.strftime('%Y-%m-%d %H:%M')} (<24h, aspetta)")
+            return
         
         # Check balance
         bal = ex.fetch_balance()
         eur_free = bal['free'].get('EUR', 0)
         
-        if eur_free < AMOUNT_EUR * 1.01:  # 1% buffer for fees
+        if eur_free < AMOUNT_EUR * 1.01:
             logger.warning(f"EUR insufficiente: {eur_free:.2f}€ (servono {AMOUNT_EUR:.2f}€)")
             return
         
         # Execute buy
-        order = ex.create_market_buy_order(SYMBOL, round(amount, 5))
-        actual_cost = float(order['cost']) if order.get('cost') else AMOUNT_EUR
-        actual_amount = float(order['filled']) if order.get('filled') else amount
+        logger.info(f"✅ CONDIZIONE SODDISFATTA: dip {dip_pct:.1f}% >= {MIN_DIP_PCT}%")
+        order = ex.create_market_buy_order(SYMBOL, round(AMOUNT_EUR / price, 5))
+        actual_cost = float(order.get('cost', AMOUNT_EUR))
+        actual_amount = float(order.get('filled', AMOUNT_EUR / price))
         
         state["last_buy"] = now
         state["total_invested"] += actual_cost
@@ -73,24 +107,22 @@ def dca():
             "price": price,
             "cost": round(actual_cost, 2),
             "amount": round(actual_amount, 5),
+            "dip_pct": round(dip_pct, 2),
             "symbol": SYMBOL
         })
-        # Keep last 50 trades
         state["trades"] = state["trades"][-50:]
-        
         save_state(state)
         
         current_value = state["total_asset"] * price
         pnl = current_value - state["total_invested"]
-        
-        logger.info(f"✅ DCA: comprato {actual_amount:.5f} {SYMBOL.split('/')[0]} @ {price:.2f}€")
+        logger.info(f"✅ Comprato {actual_amount:.5f} ETH @ {price:.2f}€ (dip {dip_pct:.1f}%)")
         logger.info(f"   Investito: {state['total_invested']:.2f}€ | Valore: {current_value:.2f}€ | PnL: {pnl:.2f}€")
         
     except Exception as e:
         logger.error(f"Errore DCA: {e}")
 
 if __name__ == "__main__":
-    logger.info(f"🟢 DCA Bot avviato: {SYMBOL} {AMOUNT_EUR}€ ogni {INTERVAL_HOURS}h")
+    logger.info(f"🟢 DCA v2 avviato: {SYMBOL} {AMOUNT_EUR}€, minimo dip {MIN_DIP_PCT}%, check ogni {INTERVAL_HOURS}h")
     while True:
         dca()
-        time.sleep(3600)  # Check every hour
+        time.sleep(3600)

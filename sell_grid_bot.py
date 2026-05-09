@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-DENARO SELL GRID BOT v1 - SOL Utilization Layer
+DENARO SELL GRID BOT v1.1 - SOL Utilization Layer
 Sells existing SOL at predefined profit levels above market.
 Auto-replenishes when the main grid bot buys more SOL.
+Fixed: handles restart correctly (cancelled vs filled orders)
 """
 import os, json, time, logging, hmac, hashlib, urllib.parse, requests, sys
 from datetime import datetime
@@ -97,12 +98,11 @@ def main():
             logger.error(f"Failed to initialize: {price}")
     
     errors = 0
+    startup_cycle = True  # First iteration: missing orders = cancelled, not filled
+    
     while True:
         try:
             tick = time.time()
-            logger.info("DEBUG: loop iteration start")
-            sys.stdout.flush()
-            sys.stderr.flush()
             
             # 1. Get current price
             price_data = binance_get('/api/v3/ticker/price', {'symbol': 'SOLEUR'}, signed=False)
@@ -119,7 +119,7 @@ def main():
             
             # 2. Get open orders
             open_orders = binance_get('/api/v3/openOrders')
-            if not open_orders or '_error' in open_orders:
+            if open_orders is None or (isinstance(open_orders, dict) and '_error' in open_orders):
                 logger.warning(f"Failed to fetch open orders: {open_orders}")
                 time.sleep(CHECK_INTERVAL)
                 continue
@@ -149,14 +149,20 @@ def main():
             for level in state['levels']:
                 oid = level.get('order_id')
                 if oid and oid not in active_order_ids:
-                    # Order was filled or cancelled
-                    price_filled = active_sell_prices.get(oid, level['price'])
-                    profit_eur = level['qty'] * price_filled * (level['pct'])
-                    state['total_profit'] += profit_eur
-                    pct_str = f"{level['pct']*100:.1f}%"
-                    logger.info(f"💰 SELL FILLED @ {price_filled}€ ({pct_str}) | Profit: {profit_eur:.2f}€ | Total: {state['total_profit']:.2f}€")
-                    level['order_id'] = None
-                    save_state(state)
+                    if startup_cycle:
+                        # First cycle after restart: order was cancelled, not filled
+                        logger.info(f"🔄 Restart sync: order {oid} gone (cancelled during restart)")
+                        level['order_id'] = None
+                        save_state(state)
+                    else:
+                        # Normal cycle: order was filled
+                        price_filled = active_sell_prices.get(oid, level['price'])
+                        profit_eur = level['qty'] * price_filled * (level['pct'])
+                        state['total_profit'] += profit_eur
+                        pct_str = f"{level['pct']*100:.1f}%"
+                        logger.info(f"💰 SELL FILLED @ {price_filled}€ ({pct_str}) | Profit: {profit_eur:.2f}€ | Total: {state['total_profit']:.2f}€")
+                        level['order_id'] = None
+                        save_state(state)
                 
                 # Check if we can place/replace this level
                 if level.get('order_id') is None and sol_free >= level['qty'] * 0.95:
@@ -181,10 +187,10 @@ def main():
             
             # 5. Log status periodically
             active_count = sum(1 for l in state['levels'] if l.get('order_id') is not None)
-            missing_count = sum(1 for l in state['levels'] if l.get('order_id') is None)
-            if missing_count > 0:
-                logger.info(f"Status: {active_count} active, {missing_count} waiting, SOL free={sol_free:.4f}, total_profit={state['total_profit']:.2f}€")
+            logger.info(f"Status: {active_count}/4 sells active, SOL free={sol_free:.4f}, profit={state['total_profit']:.4f}€")
             
+            # End startup cycle
+            startup_cycle = False
             errors = 0
             elapsed = time.time() - tick
             sleep_time = max(1, CHECK_INTERVAL - elapsed)
