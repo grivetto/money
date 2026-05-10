@@ -12,9 +12,11 @@ load_dotenv(os.path.join(os.path.dirname(__file__) or ".", ".env"))
 
 # === CONFIG ===
 SYMBOL = "ETH/EUR"
-AMOUNT_EUR = 10.0          # Quantita' fissa in EUR ad ogni esecuzione
-INTERVAL_HOURS = 6          # Controlla ogni 6 ore (non acquista sempre)
-MIN_DIP_PCT = 2.0           # Acquista solo se prezzo >=2% sotto la media 7gg
+AMOUNT_EUR = 5.0          # Acquisto base ridotto a 5€
+INTERVAL_HOURS = 24        # Controlla ogni 24 ore
+MIN_DIP_PCT = 3.0          # Acquista solo se prezzo >=3% sotto la media (più selettivo)
+USE_PROFIT_ONLY = True     # Se True, usa solo i profitti del grid (non tocca il capitale EUR)
+PROFIT_FILE = os.path.join(os.path.dirname(__file__) or ".", ".tmp/futures_state.json")
 MAX_PRICE_HISTORY = 50      # Quanti prezzi giornalieri tenere in memoria
 STATE_FILE = os.path.join(os.path.dirname(__file__) or ".", "dca_state.json")
 LOG_FILE = os.path.join(os.path.dirname(__file__) or ".", "dca.log")
@@ -89,13 +91,34 @@ def dca():
         bal = ex.fetch_balance()
         eur_free = bal['free'].get('EUR', 0)
         
-        if eur_free < AMOUNT_EUR * 1.01:
-            logger.warning(f"EUR insufficiente: {eur_free:.2f}€ (servono {AMOUNT_EUR:.2f}€)")
+        # Profit-only mode: use only grid profits, not capital
+        if USE_PROFIT_ONLY:
+            try:
+                with open(PROFIT_FILE) as f:
+                    pf = json.load(f)
+                total_profit = pf.get('current_pnl', 0)
+                if total_profit < AMOUNT_EUR:
+                    logger.info(f"Profitto ({total_profit:.2f}€) < {AMOUNT_EUR}€, DCA rimandato (usa profitti)")
+                    return
+                available = min(eur_free, total_profit * 0.5)
+                if available < AMOUNT_EUR:
+                    logger.info(f"Disponibile {available:.2f}€ < {AMOUNT_EUR}€, aspetta")
+                    return
+                actual_amount_eur = min(AMOUNT_EUR, available)
+                logger.info(f"Profit-only: {total_profit:.2f}€ profitti, usando {actual_amount_eur:.2f}€")
+            except:
+                logger.info("Profit file non disponibile, DCA rimandato")
+                return
+        else:
+            actual_amount_eur = AMOUNT_EUR
+        
+        if eur_free < actual_amount_eur * 1.01:
+            logger.warning(f"EUR insufficiente: {eur_free:.2f}€ (servono {actual_amount_eur:.2f}€)")
             return
         
         # Execute buy
         logger.info(f"✅ CONDIZIONE SODDISFATTA: dip {dip_pct:.1f}% >= {MIN_DIP_PCT}%")
-        order = ex.create_market_buy_order(SYMBOL, round(AMOUNT_EUR / price, 5))
+        order = ex.create_market_buy_order(SYMBOL, round(actual_amount_eur / price, 5))
         actual_cost = float(order.get('cost', AMOUNT_EUR))
         actual_amount = float(order.get('filled', AMOUNT_EUR / price))
         
