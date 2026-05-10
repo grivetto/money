@@ -89,6 +89,16 @@ BOTS = {
         'service': 'futures_grid', 'capital': 0,
         'description': 'Futures grid 5x (richiede permesso API)'
     },
+    'shadow': {
+        'script': 'shadow_grid.py', 'type': 'process',
+        'service': 'shadow_grid', 'capital': 30,
+        'description': 'Shadow grid crash recovery'
+    },
+    'rebalancer': {
+        'script': 'flash_rebalancer.py', 'type': 'process',
+        'service': 'flash_rebalancer', 'capital': 20,
+        'description': 'Flash rebalancer SOL/ETH'
+    },
 }
 
 class BotManager:
