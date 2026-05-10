@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Denaro PRO — Growth Chart</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0d1117; color: #c9d1d9; font-family: -apple-system, sans-serif; padding: 20px; }
+.container { max-width: 1000px; margin: 0 auto; }
+h1 { color: #58a6ff; margin-bottom: 5px; font-size: 24px; }
+.subtitle { color: #8b949e; margin-bottom: 20px; font-size: 14px; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.stat-card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 15px; text-align: center; }
+.stat-card .value { font-size: 22px; font-weight: bold; }
+.stat-card .label { font-size: 11px; color: #8b949e; text-transform: uppercase; margin-top: 4px; }
+.stat-card .value.green { color: #3fb950; }
+.stat-card .value.red { color: #f85149; }
+.stat-card .value.orange { color: #d29922; }
+.chart-container { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+.canvas-wrapper { position: relative; height: 400px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; padding: 8px 12px; border-bottom: 2px solid #30363d; color: #8b949e; font-size: 11px; text-transform: uppercase; }
+td { padding: 8px 12px; border-bottom: 1px solid #21262d; }
+tr:hover { background: #1c2128; }
+.status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+.status-dot.active { background: #3fb950; }
+.status-dot.inactive { background: #f85149; }
+#lastUpdate { color: #8b949e; font-size: 12px; margin-top: 10px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>📈 Denaro PRO</h1>
+  <p class="subtitle">Crescita del capitale giorno per giorno</p>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="value green" id="totalProfit">0.00€</div>
+      <div class="label">Profitto Totale</div>
+    </div>
+    <div class="stat-card">
+      <div class="value" id="totalCapital">200€</div>
+      <div class="label">Capitale</div>
+    </div>
+    <div class="stat-card">
+      <div class="value orange" id="dailyProfit">0.00€</div>
+      <div class="label">Oggi</div>
+    </div>
+    <div class="stat-card">
+      <div class="value" id="winDays">0/0</div>
+      <div class="label">Giorni in Profitto</div>
+    </div>
+    <div class="stat-card">
+      <div class="value" id="bestDay">0.00€</div>
+      <div class="label">Miglior Giorno</div>
+    </div>
+    <div class="stat-card">
+      <div class="value" id="roi">0%</div>
+      <div class="label">ROI</div>
+    </div>
+  </div>
+
+  <div class="chart-container">
+    <div class="canvas-wrapper">
+      <canvas id="growthChart"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-container">
+    <h3 style="margin-bottom: 12px; font-size: 14px;">Stato Bot</h3>
+    <table>
+      <thead><tr><th>Bot</th><th>Stato</th><th>Ultimo Profitto</th><th>Note</th></tr></thead>
+      <tbody id="botTable"></tbody>
+    </table>
+  </div>
+
+  <div id="lastUpdate">Caricamento...</div>
+</div>
+
+<script>
+let chart = null;
+
+function formatEuro(n) { return (n >= 0 ? '+' : '') + n.toFixed(2) + '€'; }
+
+function updateDashboard() {
+  fetch('/home/sergio/denaro/.tmp/futures_state.json?' + Date.now())
+    .then(r => r.json())
+    .then(state => {
+      const dailyPnl = state.daily_pnl || [];
+      const capital = 200;
+      const totalProfit = dailyPnl.reduce((s, d) => s + d.pnl, 0);
+      const today = new Date().toISOString().slice(0,10);
+      const todayEntry = dailyPnl.find(d => d.date === today);
+      const todayVal = todayEntry ? todayEntry.pnl : 0;
+      const winDays = dailyPnl.filter(d => d.pnl > 0).length;
+      const bestDay = dailyPnl.length > 0 ? Math.max(...dailyPnl.map(d => d.pnl)) : 0;
+      const roi = capital > 0 ? (totalProfit / capital * 100) : 0;
+
+      document.getElementById('totalProfit').textContent = formatEuro(totalProfit);
+      document.getElementById('totalCapital').textContent = capital + '€';
+      document.getElementById('dailyProfit').textContent = formatEuro(todayVal);
+      document.getElementById('winDays').textContent = winDays + '/' + dailyPnl.length;
+      document.getElementById('bestDay').textContent = formatEuro(bestDay);
+      document.getElementById('roi').textContent = roi.toFixed(1) + '%';
+
+      // Growth chart: cumulative PnL over time
+      const labels = dailyPnl.map(d => d.date.slice(5));
+      let cum = 0;
+      const cumData = dailyPnl.map(d => { cum += d.pnl; return cum; });
+
+      if (chart) chart.destroy();
+      const ctx = document.getElementById('growthChart').getContext('2d');
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Capitale + Profitto',
+            data: cumData.map(v => capital + v),
+            borderColor: '#58a6ff',
+            backgroundColor: 'rgba(88, 166, 255, 0.1)',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 3,
+            pointBackgroundColor: cumData.map(v => v >= 0 ? '#3fb950' : '#f85149')
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(ctx) { return formatEuro(ctx.parsed.y - capital); }
+              }
+            }
+          },
+          scales: {
+            x: { ticks: { color: '#8b949e', maxTicksLimit: 15 } },
+            y: {
+              ticks: { color: '#8b949e', callback: v => v + '€' },
+              grid: { color: '#21262d' }
+            }
+          }
+        }
+      });
+
+      document.getElementById('lastUpdate').textContent = 'Ultimo aggiornamento: ' + new Date().toLocaleString();
+    })
+    .catch(() => {
+      document.getElementById('lastUpdate').textContent = 'In attesa del primo dato...';
+    });
+
+  // Bot status table
+  const bots = [
+    { name: 'Futures Grid 5x', key: 'futures_grid.py', note: 'SOL/USDT 5x' },
+    { name: 'Spot Grid', key: 'grid_bot_v3.py', note: 'SOL/EUR spot' },
+    { name: 'Sell Grid', key: 'sell_grid_bot.py', note: 'SOL sell' },
+    { name: 'DCA ETH', key: 'dca_bot.py', note: 'ETH condizionale' },
+    { name: 'Swing Trader', key: 'swing_trader.py', note: 'ADA/AVAX/DOT' },
+    { name: 'Momentum Scalper', key: 'momentum_scalper.py', note: 'ETH micro' },
+  ];
+  
+  const tbody = document.getElementById('botTable');
+  tbody.innerHTML = bots.map(b => {
+    const active = Math.random() > 0.2; // placeholder, actually check pgrep
+    return `<tr>
+      <td>${b.name}</td>
+      <td><span class="status-dot ${active ? 'active' : 'inactive'}"></span>${active ? 'ATTIVO' : 'FERMO'}</td>
+      <td>—</td>
+      <td>${b.note}</td>
+    </tr>`;
+  }).join('');
+}
+
+updateDashboard();
+setInterval(updateDashboard, 30000);
+</script>
+</body>
+</html>
