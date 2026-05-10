@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-DENARO CORE — Base class for trading bots.
+DENARO CORE — Base class for trading bots (ASYNC version).
 Provides: config management, Binance client, balance, ATR, order sync, trade logging.
 """
-import os, json, time, logging, ccxt
+import os, json, time, logging, asyncio, ccxt
 from dotenv import load_dotenv
 
 load_dotenv(os.path.join(os.path.dirname(__file__) or ".", ".env"))
@@ -45,22 +45,25 @@ class DenaroCore:
                 "profit_per_grid": 0.0025, "config_reload_sec": 60,
             }
     
-    def get_balance(self, currency='EUR'):
+    async def get_balance(self, currency='EUR'):
         try:
-            bal = self.client.fetch_balance()
+            bal = await asyncio.to_thread(self.client.fetch_balance)
             return bal['free'].get(currency, 0)
         except:
             return 0
     
-    def sync_orders(self, symbol):
+    async def sync_orders(self, symbol):
         try:
-            return self.client.fetch_open_orders(symbol)
+            orders = await asyncio.to_thread(self.client.fetch_open_orders, symbol)
+            return orders
         except:
             return []
     
-    def get_atr(self, symbol, timeframe='1h', lookback=14):
+    async def get_atr(self, symbol, timeframe='1h', lookback=14):
         try:
-            ohlcv = self.client.fetch_ohlcv(symbol, timeframe=timeframe, limit=lookback + 1)
+            ohlcv = await asyncio.to_thread(
+                self.client.fetch_ohlcv, symbol, timeframe=timeframe, limit=lookback + 1
+            )
             if len(ohlcv) < lookback + 1:
                 return 0
             trs = []
@@ -71,6 +74,6 @@ class DenaroCore:
         except:
             return 0
     
-    def log_trade(self, symbol, side, price, amount, cost, fee, profit):
+    async def log_trade(self, symbol, side, price, amount, cost, fee, profit):
         logger.info(f"[TRADE] {side} {symbol}: {amount:.4f} @ {price:.2f}€ | "
                    f"Cost: {cost:.2f}€ Fee: {fee:.4f}€ Profit: {profit:.4f}€")
