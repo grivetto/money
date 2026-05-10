@@ -98,7 +98,8 @@ def main():
             logger.error(f"Failed to initialize: {price}")
     
     errors = 0
-    startup_cycle = True  # First iteration: missing orders = cancelled, not filled
+    startup_cycle = True
+    recalc_counter = 0  # Recalculate prices every 60 checks (~30 min)
     
     while True:
         try:
@@ -192,6 +193,32 @@ def main():
             # End startup cycle
             startup_cycle = False
             errors = 0
+            
+            # Dynamic price recalc: every 60 iterations (~30 min)
+            recalc_counter += 1
+            if recalc_counter >= 60:
+                recalc_counter = 0
+                new_price = binance_get('/api/v3/ticker/price', {'symbol': 'SOLEUR'}, signed=False)
+                if new_price and 'price' in new_price:
+                    cp = float(new_price['price'])
+                    new_levels = []
+                    for i, pct in enumerate(SELL_LEVELS_PCT):
+                        new_price_val = round(cp * (1 + pct), 2)
+                        # Update if price changed more than 0.5%
+                        old_price = state['levels'][i]['price']
+                        if abs(new_price_val - old_price) / old_price > 0.005:
+                            # Cancel old order if exists
+                            if state['levels'][i].get('order_id'):
+                                cancel_ts = int(time.time() * 1000)
+                                c_params = {'symbol': 'SOLEUR', 'orderId': state['levels'][i]['order_id'], 'timestamp': cancel_ts}
+                                c_sig = hmac.new(API_SECRET.encode(), urllib.parse.urlencode(c_params).encode(), hashlib.sha256).hexdigest()
+                                c_params['signature'] = c_sig
+                                requests.delete(BASE + '/api/v3/order', params=c_params, headers={'X-MBX-APIKEY': API_KEY})
+                                state['levels'][i]['order_id'] = None
+                                logger.info(f"🔄 Recalc: updated level {i+1} from {old_price}€ to {new_price_val}€")
+                            state['levels'][i]['price'] = new_price_val
+                    save_state(state)
+            
             elapsed = time.time() - tick
             sleep_time = max(1, CHECK_INTERVAL - elapsed)
             time.sleep(sleep_time)

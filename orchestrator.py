@@ -60,33 +60,33 @@ def init_db():
 # ── BOT MANAGER ──────────────────────────────────────
 BOTS = {
     'grid_spot': {
-        'script': 'grid_bot_v3.py', 'type': 'systemd',
-        'service': 'grid_bot_v3.service', 'capital': 100,
+        'script': 'grid_bot_v3.py', 'type': 'process',
+        'service': 'grid_bot_v3', 'capital': 100,
         'description': 'Spot grid SOL/EUR'
     },
     'sell_grid': {
-        'script': 'sell_grid_bot.py', 'type': 'systemd',
-        'service': 'sell_grid_bot.service', 'capital': 0,
+        'script': 'sell_grid_bot.py', 'type': 'process',
+        'service': 'sell_grid_bot', 'capital': 0,
         'description': 'Sell grid SOL'
     },
     'dca': {
-        'script': 'dca_bot.py', 'type': 'systemd',
-        'service': 'dca_bot.service', 'capital': 10,
+        'script': 'dca_bot.py', 'type': 'process',
+        'service': 'dca_bot', 'capital': 10,
         'description': 'DCA ETH condizionale'
     },
     'swing': {
-        'script': 'swing_trader.py', 'type': 'systemd',
-        'service': 'swing_trader.service', 'capital': 30,
+        'script': 'swing_trader.py', 'type': 'process',
+        'service': 'swing_trader', 'capital': 30,
         'description': 'Swing ADA/AVAX/DOT'
     },
     'scalper': {
-        'script': 'momentum_scalper.py', 'type': 'systemd',
-        'service': 'momentum_scalper.service', 'capital': 20,
+        'script': 'momentum_scalper.py', 'type': 'process',
+        'service': 'momentum_scalper', 'capital': 20,
         'description': 'Momentum scalper ETH'
     },
     'futures': {
-        'script': 'futures_grid.py', 'type': 'systemd',
-        'service': 'futures_grid.service', 'capital': 0,
+        'script': 'futures_grid.py', 'type': 'process',
+        'service': 'futures_grid', 'capital': 0,
         'description': 'Futures grid 5x (richiede permesso API)'
     },
 }
@@ -94,24 +94,18 @@ BOTS = {
 class BotManager:
     def __init__(self):
         self.status = {}
+        self.processes = {}  # name -> subprocess.Popen
         self.conn = sqlite3.connect(str(DB_PATH), check_same_thread=False)
     
     def check_all(self):
-        """Check status of all bots via systemctl --user"""
+        """Check status of all bots via pgrep (no systemd dependency)."""
         for name, cfg in BOTS.items():
             try:
                 r = subprocess.run(
-                    ['systemctl', '--user', 'is-active', cfg['service']],
-                    capture_output=True, text=True, timeout=5
+                    ['pgrep', '-f', cfg['script']],
+                    capture_output=True, timeout=5
                 )
-                active = r.stdout.strip() == 'active'
-                # Also check process directly as fallback
-                if not active:
-                    r2 = subprocess.run(
-                        ['pgrep', '-f', cfg['script']],
-                        capture_output=True, timeout=5
-                    )
-                    active = r2.returncode == 0
+                active = r.returncode == 0
                 self.status[name] = 'active' if active else 'inactive'
             except:
                 self.status[name] = 'unknown'
@@ -120,21 +114,37 @@ class BotManager:
     def start(self, name):
         if name not in BOTS: return False
         cfg = BOTS[name]
+        script = str(BASE_DIR / cfg['script'])
+        if not os.path.exists(script): return False
         try:
-            subprocess.run(['systemctl', '--user', 'start', cfg['service']], timeout=10)
+            # Check if already running
+            r = subprocess.run(['pgrep', '-f', cfg['script']], capture_output=True, timeout=5)
+            if r.returncode == 0: return True  # Already running
+            
+            # Launch as subprocess
+            logfile = open(str(BASE_DIR / f"{cfg['service']}.log"), 'a')
+            proc = subprocess.Popen(
+                [str(BASE_DIR / 'venv/bin/python3'), '-u', script],
+                stdout=logfile, stderr=subprocess.STDOUT,
+                cwd=str(BASE_DIR)
+            )
+            self.processes[name] = proc
+            logger.info(f"Started {name} (PID {proc.pid})")
             return True
-        except: return False
+        except Exception as e:
+            logger.error(f"Failed to start {name}: {e}")
+            return False
     
     def stop(self, name):
         if name not in BOTS: return False
         cfg = BOTS[name]
         try:
-            subprocess.run(['systemctl', '--user', 'stop', cfg['service']], timeout=10)
+            subprocess.run(['pkill', '-f', cfg['script']], timeout=10)
+            logger.info(f"Stopped {name}")
             return True
         except: return False
     
     def restart(self, name):
-        if name not in BOTS: return False
         self.stop(name)
         time.sleep(1)
         return self.start(name)
@@ -388,9 +398,9 @@ class DenaroCore:
                     for a in alerts:
                         logger.warning(a)
                 
-                # 4. Auto-restart dead bots
+                # Auto-restart dead bots
                 for name, status in bot_status.items():
-                    if status == 'inactive' and BOTS.get(name, {}).get('type') == 'systemd':
+                    if status == 'inactive':
                         self.bots.start(name)
                         logger.info(f"Auto-restarted: {name}")
                 
