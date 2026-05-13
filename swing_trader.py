@@ -19,14 +19,17 @@ STATE_FILE = os.path.join(BASE_DIR, "swing_state.json")
 LOG_FILE = os.path.join(BASE_DIR, "swing_trader.log")
 os.makedirs(TMP_DIR, exist_ok=True)
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - SWING - %(levelname)s - %(message)s',
-    handlers=[logging.FileHandler(LOG_FILE), logging.StreamHandler()])
+handler = logging.FileHandler(LOG_FILE)
+handler.setFormatter(logging.Formatter('%(asctime)s - SWING - %(levelname)s - %(message)s'))
 logger = logging.getLogger("Swing")
+logger.setLevel(logging.INFO)
+logger.addHandler(handler)
+logger.propagate = False
 
 # ── CONFIG ─────────────────────────────────────────
-SYMBOLS = ['ADAEUR', 'AVAXEUR', 'DOTEUR']  # Altcoin target
+SYMBOLS = ['ADAEUR', 'AVAXEUR', 'DOTEUR', 'LINKEUR', 'MATICEUR']  # Altcoin target
 MAX_POSITIONS = 2          # Max posizioni aperte contemporaneamente
-MAX_PER_TRADE = 15.0       # EUR massimi per trade
+MAX_PER_TRADE = 25.0       # EUR massimi per trade (da 15)
 STOP_LOSS_PCT = 5.0        # Stop loss percentuale
 TAKE_PROFIT_PCT = 8.0      # Take profit percentuale
 CHECK_INTERVAL = 300       # Ogni 5 minuti

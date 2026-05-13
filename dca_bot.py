@@ -16,7 +16,7 @@ AMOUNT_EUR = 5.0          # Acquisto base ridotto a 5€
 INTERVAL_HOURS = 24        # Controlla ogni 24 ore
 MIN_DIP_PCT = 3.0          # Acquista solo se prezzo >=3% sotto la media (più selettivo)
 USE_PROFIT_ONLY = True     # Se True, usa solo i profitti del grid (non tocca il capitale EUR)
-PROFIT_FILE = os.path.join(os.path.dirname(__file__) or ".", ".tmp/futures_state.json")
+PROFIT_FILE = os.path.join(os.path.dirname(__file__) or ".", "pnl_state.json")  # PnL aggregator
 MAX_PRICE_HISTORY = 50      # Quanti prezzi giornalieri tenere in memoria
 STATE_FILE = os.path.join(os.path.dirname(__file__) or ".", "dca_state.json")
 LOG_FILE = os.path.join(os.path.dirname(__file__) or ".", "dca.log")

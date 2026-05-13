@@ -15,7 +15,7 @@ API_KEY = os.getenv('BINANCE_API_KEY')
 API_SECRET = os.getenv('BINANCE_API_SECRET')
 BINANCE = 'https://api1.binance.com'
 DB_PATH = os.path.join(BASE_DIR, '.tmp', 'denaro.db')
-LOG_FILE = os.path.join(BASE_DIR, "momentum_scalper.log")
+LOG_FILE = os.path.join(BASE_DIR, "momentum_scalper_sol.log")
 
 handler = logging.FileHandler(LOG_FILE)
 handler.setFormatter(logging.Formatter('%(asctime)s - SCALPER - %(levelname)s - %(message)s'))
@@ -25,10 +25,10 @@ logger.addHandler(handler)
 logger.propagate = False  # Non inondare stdout/stderr
 
 # ── CONFIG ─────────────────────────────────────────
-SYMBOL = "XRPEUR"
+SYMBOL = "SOLEUR"
 # MAX_PER_TRADE rimosso — ora dinamico via get_trade_size()
-PROFIT_TARGET = 0.008      # +0.8% (netto ~+0.55% dopo commissioni)
-STOP_LOSS = 0.004          # -0.4% (netto ~-0.65% dopo commissioni, R:R 2:1)
+PROFIT_TARGET = 0.010      # +1.0% (SOL più volatile, netto ~+0.75%)
+STOP_LOSS = 0.005          # -0.5% (netto ~-0.75%, R:R 2:1)
 CHECK_INTERVAL = 15        # secondi
 MIN_VOLUME_MULT = 0.0      # Volume filter disattivato (mercato spesso piatto di notte)
 SOFT_ENTRY_MULT = 0.5      # Size multiplier per soft entry
@@ -72,7 +72,7 @@ def ema(values, period=20):
 
 # ── POSITION SIZE (dinamico dal capital pool) ─────
 def get_trade_size(eur_free):
-    """15% del capitale disponibile, min 6€ (adattato per capitale limitato), max 30€."""
+    """15% del capitale disponibile, min 8€ (adattato per capitale limitato), max 30€."""
     pool_file = os.path.join(BASE_DIR, '.tmp', 'capital_pool.json')
     try:
         with open(pool_file) as f:
@@ -175,7 +175,6 @@ def check_position(pos, current_price):
     side = pos.get('side', 'BUY')
     
     if side == 'BUY':
-        # Long: TP quando prezzo sale, SL quando prezzo scende
         change = (current_price - entry) / entry
         if change >= PROFIT_TARGET:
             qty = f"{pos['qty']:.{pos.get('precision', 4)}f}"
@@ -197,10 +196,8 @@ def check_position(pos, current_price):
                 return {'filled': 'sl', 'profit': -loss, 'exit_price': current_price}
     
     elif side == 'SELL':
-        # Short/Swing: TP quando prezzo scende (riacquistiamo a meno), SL quando prezzo sale
-        change = (entry - current_price) / entry  # Invertito: profitto se prezzo scende
+        change = (entry - current_price) / entry
         if change >= PROFIT_TARGET:
-            # TP: prezzo e' sceso, riacquistiamo (BUY) per chiudere lo short
             qty = f"{pos['qty']:.{pos.get('precision', 4)}f}"
             result = api_post('/api/v3/order', {
                 'symbol': SYMBOL, 'side': 'BUY', 'type': 'MARKET', 'quantity': qty
@@ -210,7 +207,6 @@ def check_position(pos, current_price):
                 logger.info(f"🎯 TP SHORT: riacquistato {pos['qty']:.4f} @ {current_price}€, profit {profit:.4f}€")
                 return {'filled': 'tp', 'profit': profit, 'exit_price': current_price}
         elif change <= -STOP_LOSS:
-            # SL: prezzo e' salito, riacquistiamo (BUY) per fermare la perdita
             qty = f"{pos['qty']:.{pos.get('precision', 4)}f}"
             result = api_post('/api/v3/order', {
                 'symbol': SYMBOL, 'side': 'BUY', 'type': 'MARKET', 'quantity': qty
@@ -243,33 +239,27 @@ def look_for_entry(current_price, closes, volumes):
     turning_down = (closes[-1] < closes[-2]) and (closes[-2] < closes[-3]) if len(closes) >= 3 else False
     
     # === LONG SIGNALS ===
-    # FULL LONG: prezzo > EMA20 + volume ok + momentum up
     if price_above_ema and vol_ok and upward:
         logger.info(f"⚡ BUY: {current_price:.4f} > EMA20 {ema20:.4f}, vol ok, upward")
         return 'BUY', 1.0
     
-    # SOFT LONG: prezzo vicino EMA20 + momentum
     if price_near_ema and vol_ok and upward:
         logger.info(f"🟡 Soft BUY: {current_price:.4f} ~ EMA20 {ema20:.4f}")
         return 'BUY', SOFT_ENTRY_MULT
     
-    # MEAN REVERSION LONG: sotto EMA20 ma risalendo
     if current_price < ema20 and turning_up and vol_ok:
         logger.info(f"🔄 MR BUY: {current_price:.4f} < EMA20 {ema20:.4f} ma risalendo")
         return 'BUY', SOFT_ENTRY_MULT * 0.5
     
-    # === SHORT SIGNALI SIMMETRICI ===
-    # FULL SHORT: prezzo < EMA20 + volume ok + momentum down
+    # === SHORT SIGNALS ===
     if price_below_ema and vol_ok and downward:
         logger.info(f"⚡ SELL SHORT: {current_price:.4f} < EMA20 {ema20:.4f}, vol ok, downward")
         return 'SELL', 1.0
     
-    # SOFT SHORT: prezzo vicino EMA20 + momentum down
     if price_near_ema and vol_ok and downward:
         logger.info(f"🟠 Soft SELL: {current_price:.4f} ~ EMA20 {ema20:.4f}")
         return 'SELL', SOFT_ENTRY_MULT
     
-    # MEAN REVERSION SHORT: sopra EMA20 ma scendendo
     if current_price > ema20 and turning_down and vol_ok:
         logger.info(f"🔄 MR SELL: {current_price:.4f} > EMA20 {ema20:.4f} ma scendendo")
         return 'SELL', SOFT_ENTRY_MULT * 0.5
@@ -339,7 +329,6 @@ def main():
         qty = 0.0
 
         if signal == 'BUY':
-            # Controlla EUR balance
             try:
                 eur_free = float([b for b in bal['balances'] if b['asset'] == 'EUR'][0]['free'])
             except (IndexError, KeyError, TypeError):
@@ -353,13 +342,11 @@ def main():
             qty = invest / current_price
 
         elif signal == 'SELL':
-            # Controlla balance dell'asset (per vendere)
             try:
                 asset_free = float([b for b in bal['balances'] if b['asset'] == asset][0]['free'])
             except (IndexError, KeyError, TypeError):
                 logger.info(f"Asset {asset} non disponibile per SELL — skip")
                 return
-            # Vendiamo fino al 50% dell'asset disponibile
             max_sell_qty = asset_free * 0.5
             max_sell_value = max_sell_qty * current_price
             invest = max(max_sell_value * size_mult, MIN_NOTIONAL)
@@ -370,13 +357,11 @@ def main():
                 logger.info(f"Valore SELL troppo basso: {qty * current_price:.2f}€ < {MIN_NOTIONAL}€")
                 return
 
-        # NOTIONAL guard
         notional = qty * current_price
         if notional < MIN_NOTIONAL:
             logger.warning(f"Notional {notional:.2f}€ < {MIN_NOTIONAL}€ minimo — entry saltata")
             return
 
-        # Round to LOT_SIZE
         info = api_get('/api/v3/exchangeInfo', {'symbol': SYMBOL}, signed=False)
         step_size = 0.0001
         if info and info.get('symbols'):

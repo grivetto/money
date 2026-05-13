@@ -45,32 +45,53 @@ marcodg1 = {
 json.dump(marcodg1, open(f"{BASE}/marcodg1.json","w"))
 
 # MC2 + Scalper
-log = "/home/sergio/denaro/scalper.log"
+log_xrp = "/home/sergio/denaro/momentum_scalper.log"
+log_sol = "/home/sergio/denaro/momentum_scalper_sol.log"
+log = log_xrp  # Primary log for backward compat
 scp = 0; spp = 0; sppr = 0; sr = 0; sb = 0; se = 0; sdisk = 0; smem = 0
-if os.path.exists(log):
-    scp = int(subprocess.run(["pgrep","-c","-f","scalper_v1.py"], capture_output=True,text=True).stdout.strip() or "0")
-    txt = open(log).read()
-    for l in txt.split("\n")[-50:]:
-        if "PnL:" in l:
-            try: spp = float(l.split("PnL:")[1].strip().split("€")[0])
-            except: pass
-        if "ETH/EUR @" in l:
-            try: sppr = float(l.split("@")[1].strip().split("€")[0])
-            except: pass
-        if "RSI=" in l:
-            try: sr = float(l.split("RSI=")[1].split("|")[0].strip())
-            except: pass
-    sdisk = 0  # MC2 data not available from remote
-    smem = 0
-else:
-    sdisk = int(subprocess.run(["df","-h","/"], capture_output=True,text=True).stdout.split("\n")[1].split()[4].strip("%"))
-    smem = round(float(subprocess.run(["free","-m"], capture_output=True,text=True).stdout.split("\n")[1].split()[2]) / float(subprocess.run(["free","-m"], capture_output=True,text=True).stdout.split("\n")[1].split()[1]) * 100)
+
+# Count both scalper processes
+scp_xrp = int(subprocess.run(["pgrep","-c","-f","momentum_scalper.py"], capture_output=True,text=True).stdout.strip() or "0")
+scp_sol = int(subprocess.run(["pgrep","-c","-f","momentum_scalper_sol.py"], capture_output=True,text=True).stdout.strip() or "0")
+scp = scp_xrp + scp_sol
+
+# Read PnL from both logs (cumulative)
+for lg in [log_xrp, log_sol]:
+    if os.path.exists(lg):
+        txt = open(lg).read()
+        for line in txt.split("\n")[-100:]:
+            if "PnL totale:" in line:
+                try:
+                    # "📊 PnL totale: 0.1234€ (5 trade)"
+                    p_str = line.split("PnL totale:")[1].split("€")[0].strip()
+                    spp += float(p_str)
+                except: pass
+            if "ENTRY:" in line and "@" in line:
+                try:
+                    # Last entry price
+                    sppr = float(line.split("@")[1].strip().split("€")[0].strip())
+                except: pass
+            if "RSI=" in line:
+                try:
+                    sr = float(line.split("RSI=")[1].split("|")[0].strip())
+                except: pass
+            if "BUY" in line and "ENTRY" in line:
+                sb += 1
+
+# Also count SELLs
+for lg in [log_xrp, log_sol]:
+    if os.path.exists(lg):
+        sb += int(subprocess.run(["grep","-c","SELL|TP|SL",lg], capture_output=True,text=True).stdout.strip() or "0")
+
+sdisk = int(subprocess.run(["df","-h","/"], capture_output=True,text=True).stdout.split("\n")[1].split()[4].strip("%"))
+smem = round(float(subprocess.run(["free","-m"], capture_output=True,text=True).stdout.split("\n")[1].split()[2]) / float(subprocess.run(["free","-m"], capture_output=True,text=True).stdout.split("\n")[1].split()[1]) * 100)
 
 mc2 = {
-    "ts": time.strftime("%H:%M"), "sc": scp, "sp": round(spp,2),
-    "spr": sppr, "sr": round(sr,1), "sb": int(subprocess.run(["grep","-c","BUY|SELL",log], capture_output=True,text=True).stdout.strip() or "0") if os.path.exists(log) else 0,
-    "se": float(subprocess.run(["grep","-oP","EUR=\\K[0-9.]+",log], capture_output=True,text=True).stdout.strip().split("\n")[-1] or "0") if os.path.exists(log) else 0,
-    "d": sdisk, "m": smem, "z": 1 if scp > 0 else 0
+    "ts": time.strftime("%H:%M"), "sc": scp, "sp": round(spp,4),
+    "spr": sppr, "sr": round(sr,1), "sb": sb,
+    "se": se, "d": sdisk, "m": smem, "z": 1 if scp > 0 else 0,
+    "profit": round(spp, 4),  # Cumulative PnL for dashboard
+    "sc_xrp": scp_xrp, "sc_sol": scp_sol,
 }
 json.dump(mc2, open(f"{BASE}/mc2.json","w"))
 

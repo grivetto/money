@@ -10,23 +10,21 @@ from datetime import datetime
 from dotenv import load_dotenv
 
 # ── CONFIG ──────────────────────────────────────────
-SELL_LEVELS_PCT = [0.006, 0.013, 0.021, 0.030]  # % above price
-SELL_QTY = 0.159          # SOL per order
+SELL_LEVELS_PCT = [0.004, 0.008, 0.014, 0.022]  # % above price — tighter for small inventory
+SELL_QTY = 0.13             # SOL per order (min 0.12 to meet 10€ notional at 83€)
+MAX_SELL_LEVELS = 3         # 3 levels planned (0.39 SOL). Currently 2 active, 3rd auto-activates when sells fill.
 CHECK_INTERVAL = 30       # seconds between checks
 LOG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sell_grid.log")
 STATE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sell_grid_state.json")
 TIMEOUT = 10              # HTTP request timeout
 
 # ── SETUP ────────────────────────────────────────────
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - SELL-GRID - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler(LOG_FILE),
-        logging.StreamHandler()
-    ]
-)
+handler = logging.FileHandler(LOG_FILE)
+handler.setFormatter(logging.Formatter('%(asctime)s - SELL-GRID - %(levelname)s - %(message)s'))
 logger = logging.getLogger("SellGrid")
+logger.setLevel(logging.INFO)
+logger.addHandler(handler)
+logger.propagate = False
 
 # ── BINANCE CLIENT ────────────────────────────────────
 env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
@@ -89,7 +87,7 @@ def main():
         price = binance_get('/api/v3/ticker/price', {'symbol': 'SOLEUR'}, signed=False)
         if price and 'price' in price and '_error' not in price:
             cp = float(price['price'])
-            for pct in SELL_LEVELS_PCT:
+            for pct in SELL_LEVELS_PCT[:MAX_SELL_LEVELS]:  # Only first N levels
                 level = {'pct': pct, 'price': round(cp * (1 + pct), 2), 'qty': SELL_QTY, 'order_id': None}
                 state['levels'].append(level)
             logger.info(f"Initialized {len(state['levels'])} sell levels from price {cp}")
@@ -188,7 +186,7 @@ def main():
             
             # 5. Log status periodically
             active_count = sum(1 for l in state['levels'] if l.get('order_id') is not None)
-            logger.info(f"Status: {active_count}/4 sells active, SOL free={sol_free:.4f}, profit={state['total_profit']:.4f}€")
+            logger.info(f"Status: {active_count}/{len(state['levels'])} sells active, SOL free={sol_free:.4f}, profit={state['total_profit']:.4f}€")
             
             # End startup cycle
             startup_cycle = False
@@ -202,7 +200,7 @@ def main():
                 if new_price and 'price' in new_price:
                     cp = float(new_price['price'])
                     new_levels = []
-                    for i, pct in enumerate(SELL_LEVELS_PCT):
+                    for i, pct in enumerate(SELL_LEVELS_PCT[:MAX_SELL_LEVELS]):
                         new_price_val = round(cp * (1 + pct), 2)
                         # Update if price changed more than 0.5%
                         old_price = state['levels'][i]['price']

@@ -35,18 +35,40 @@ def write_json(path, data):
         json.dump(data, f, indent=2)
 
 def get_performance():
-    """Read grid bot log for recent profit performance"""
+    """Read profit performance from persistent JSON (written by ProfitOptimizer)"""
+    json_file = os.path.join(TMP_DIR, "profit_optimizer_trades.json")
+    if not os.path.exists(json_file):
+        # Fallback: try parsing grid.log (legacy)
+        return _get_performance_from_log()
+    try:
+        with open(json_file) as f:
+            trades = json.load(f)
+        if not trades:
+            return None
+        recent = trades[-10:]
+        recent_profit = sum(t['profit'] for t in recent)
+        total_profit = sum(t['profit'] for t in trades)
+        return {
+            'total_orders': len(trades),
+            'recent_profit': round(recent_profit, 4),
+            'avg_profit_per_trade': round(total_profit / len(trades), 4),
+            'total_profit': round(total_profit, 4),
+        }
+    except Exception as e:
+        logger.warning(f"Errore lettura profit_optimizer_trades.json: {e}")
+        return _get_performance_from_log()
+
+def _get_performance_from_log():
+    """Legacy fallback: parse grid.log for profit lines"""
     log_file = os.path.join(BASE_DIR, "grid.log")
     if not os.path.exists(log_file): return None
     try:
         with open(log_file) as f:
             lines = f.readlines()
-        # Parse last 20 profit-related lines
         profits = []
         for line in lines[-100:]:
             if 'Profit:' in line:
                 try:
-                    # "Profit: 0.05€" or "Profit: 0.05€ |"
                     p_str = line.split('Profit:')[1].split('€')[0].strip()
                     profits.append(float(p_str))
                 except: pass

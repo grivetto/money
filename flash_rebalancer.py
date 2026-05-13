@@ -17,9 +17,12 @@ STATE_FILE = os.path.join(BASE_DIR, ".tmp/rebalancer_state.json")
 LOG_FILE = os.path.join(BASE_DIR, "rebalancer.log")
 os.makedirs(os.path.join(BASE_DIR, ".tmp"), exist_ok=True)
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - REBAL - %(levelname)s - %(message)s',
-    handlers=[logging.FileHandler(LOG_FILE), logging.StreamHandler()])
+handler = logging.FileHandler(LOG_FILE)
+handler.setFormatter(logging.Formatter('%(asctime)s - REBAL - %(levelname)s - %(message)s'))
 logger = logging.getLogger("Rebalancer")
+logger.setLevel(logging.INFO)
+logger.addHandler(handler)
+logger.propagate = False
 
 # Config
 PAIR_A = "SOLEUR"   # Asset principale

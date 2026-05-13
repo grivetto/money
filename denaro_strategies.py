@@ -7,7 +7,10 @@ Implements: TrendFilter, VolatilityAdaptiveGrid, MartingaleLite,
 import time
 import logging
 import json
+import os
 from pathlib import Path
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 logger = logging.getLogger("GridStrategy")
 
@@ -46,9 +49,9 @@ class TrendFilter:
                 result = "STRONG_UP"
             elif ema_dist > 0 and rsi < 75:
                 result = "UP"
-            elif ema_dist < -1.0 and rsi > 30:
+            elif ema_dist < -1.0 and rsi > 40:
                 result = "STRONG_DOWN"
-            elif ema_dist < 0 and rsi > 25:
+            elif ema_dist < 0 and rsi > 35:
                 result = "DOWN"
             
             self.cache = {'trend': result, 'trend_ts': now, 'ema': ema_current, 'rsi': rsi}
@@ -154,16 +157,40 @@ class Rebalancer:
 class ProfitOptimizer:
     """Real-time performance tracking and risk adjustment"""
     
+    TRADES_FILE = os.path.join(BASE_DIR, ".tmp", "profit_optimizer_trades.json")
+    
     def __init__(self, config):
         self.trades = []
         self.last_adjustment = 0
         self.adjustment_interval = 3600  # Check hourly
-        
+        self._load_trades()
+    
+    def _load_trades(self):
+        """Load trades from disk on startup"""
+        try:
+            if os.path.exists(self.TRADES_FILE):
+                with open(self.TRADES_FILE) as f:
+                    self.trades = json.load(f)
+                logger.info(f"📂 ProfitOptimizer: {len(self.trades)} trade caricati da {self.TRADES_FILE}")
+        except Exception as e:
+            logger.warning(f"⚠️ ProfitOptimizer: errore caricamento trades: {e}")
+            self.trades = []
+    
+    def _save_trades(self):
+        """Persist trades to disk"""
+        try:
+            os.makedirs(os.path.dirname(self.TRADES_FILE), exist_ok=True)
+            with open(self.TRADES_FILE, 'w') as f:
+                json.dump(self.trades, f, indent=2)
+        except Exception as e:
+            logger.warning(f"⚠️ ProfitOptimizer: errore salvataggio trades: {e}")
+    
     def add_trade(self, profit):
         self.trades.append({'profit': profit, 'time': time.time()})
-        # Keep last 50 trades
-        if len(self.trades) > 50:
-            self.trades = self.trades[-50:]
+        # Keep last 100 trades
+        if len(self.trades) > 100:
+            self.trades = self.trades[-100:]
+        self._save_trades()
     
     def get_metrics(self):
         if not self.trades:

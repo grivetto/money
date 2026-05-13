@@ -59,46 +59,46 @@ def init_db():
 
 # ── BOT MANAGER ──────────────────────────────────────
 BOTS = {
-    'grid_spot': {
-        'script': 'grid_bot_v3.py', 'type': 'process',
-        'service': 'grid_bot_v3', 'capital': 100,
-        'description': 'Spot grid SOL/EUR'
-    },
-    'sell_grid': {
-        'script': 'sell_grid_bot.py', 'type': 'process',
-        'service': 'sell_grid_bot', 'capital': 0,
-        'description': 'Sell grid SOL'
-    },
-    'dca': {
-        'script': 'dca_bot.py', 'type': 'process',
-        'service': 'dca_bot', 'capital': 10,
-        'description': 'DCA ETH condizionale'
-    },
-    'swing': {
-        'script': 'swing_trader.py', 'type': 'process',
-        'service': 'swing_trader', 'capital': 30,
-        'description': 'Swing ADA/AVAX/DOT'
-    },
+    #'grid_spot': {               # PAUSATO — capitale concentrato sullo scalper
+    #    'script': 'grid_bot_v3.py', 'type': 'process',
+    #    'service': 'grid_bot_v3', 'capital': 100,
+    #    'description': 'Spot grid SOL/EUR'
+    #},
+    #'sell_grid': {               # PAUSATO
+    #    'script': 'sell_grid_bot.py', 'type': 'process',
+    #    'service': 'sell_grid_bot', 'capital': 0,
+    #    'description': 'Sell grid SOL'
+    #},
+    #'dca': {                     # PAUSATO
+    #    'script': 'dca_bot.py', 'type': 'process',
+    #    'service': 'dca_bot', 'capital': 10,
+    #    'description': 'DCA ETH condizionale'
+    #},
+    #'swing': {                   # PAUSATO
+    #    'script': 'swing_trader.py', 'type': 'process',
+    #    'service': 'swing_trader', 'capital': 30,
+    #    'description': 'Swing ADA/AVAX/DOT'
+    #},
     'scalper': {
         'script': 'momentum_scalper.py', 'type': 'process',
-        'service': 'momentum_scalper', 'capital': 20,
-        'description': 'Momentum scalper ETH'
+        'service': 'momentum_scalper', 'capital': 200,
+        'description': 'Momentum scalper XRP — capitale concentrato'
     },
-    'futures': {
-        'script': 'futures_grid.py', 'type': 'process',
-        'service': 'futures_grid', 'capital': 0,
-        'description': 'Futures grid 5x (richiede permesso API)'
+    'scalper_sol': {
+        'script': 'momentum_scalper_sol.py', 'type': 'process',
+        'service': 'momentum_scalper_sol', 'capital': 50,
+        'description': 'Momentum scalper SOL'
     },
-    'shadow': {
-        'script': 'shadow_grid.py', 'type': 'process',
-        'service': 'shadow_grid', 'capital': 30,
-        'description': 'Shadow grid crash recovery'
-    },
-    'rebalancer': {
-        'script': 'flash_rebalancer.py', 'type': 'process',
-        'service': 'flash_rebalancer', 'capital': 20,
-        'description': 'Flash rebalancer SOL/ETH'
-    },
+    #'shadow': {    # DISABLED — capitale insufficiente, shadow in screen
+    #    'script': 'shadow_grid.py', 'type': 'process',
+    #    'service': 'shadow_grid', 'capital': 30,
+    #    'description': 'Shadow grid crash recovery'
+    #},
+    #'rebalancer': {  # DISABLED — capitale insufficiente
+    #    'script': 'flash_rebalancer.py', 'type': 'process',
+    #    'service': 'flash_rebalancer', 'capital': 20,
+    #    'description': 'Flash rebalancer SOL/ETH'
+    #},
 }
 
 class BotManager:
@@ -390,6 +390,57 @@ class DenaroCore:
         thread.start()
         logger.info(f"Dashboard: http://0.0.0.0:{self.port}")
     
+    def _pool_capital(self):
+        """Capital pooling — calcola EUR realmente disponibili (free) e li scrive per lo scalper."""
+        try:
+            from datetime import datetime
+            ts = int(time.time() * 1000)
+            sig = hmac.new(API_SECRET.encode(), urllib.parse.urlencode({'timestamp': ts}).encode(), hashlib.sha256).hexdigest()
+            bal = requests.get(f'{BINANCE}/api/v3/account', params={'timestamp': ts, 'signature': sig},
+                              headers={'X-MBX-APIKEY': API_KEY}, timeout=10)
+            if bal.status_code != 200:
+                logger.warning(f"Pool: API Binance status {bal.status_code}")
+                return
+
+            # Solo EUR realmente liberi (non locked in ordini)
+            eur_free = 0.0
+            sol_balance = 0.0
+            xrp_balance = 0.0
+            prices = {}
+            for b in bal.json()['balances']:
+                if b['asset'] == 'EUR':
+                    eur_free = float(b['free'])
+                elif b['asset'] == 'SOL':
+                    sol_balance = float(b['free'])
+
+            # Get prices for non-EUR assets
+            pr = requests.get(f'{BINANCE}/api/v3/ticker/price', timeout=10)
+            if pr.status_code == 200:
+                prices = {p['symbol']: float(p['price']) for p in pr.json()}
+
+            sol_eur = sol_balance * prices.get('SOLEUR', 0) if prices else 0
+            xrp_eur = xrp_balance * prices.get('XRPEUR', 0) if prices else 0
+
+            # Total portfolio in EUR (not just free EUR)
+            total_portfolio = eur_free + sol_eur + xrp_eur
+
+            # Max trade: 15% del totale, ma non più degli EUR disponibili
+            capital = self.tracker.snapshot() or total_portfolio
+            max_trade = min(round(capital * 0.15, 2), round(eur_free + sol_eur, 2))
+            logger.info(f"Pool: {eur_free:.2f}€ EUR free, SOL={sol_eur:.2f}€ ({sol_balance:.4f} SOL), max_trade={max_trade:.2f}€")
+            pool_file = BASE_DIR / '.tmp' / 'capital_pool.json'
+            pool_state = {
+                'available_eur': round(eur_free, 2),
+                'max_per_trade': max_trade,
+                'updated': datetime.now().isoformat()
+            }
+            os.makedirs(str(BASE_DIR / '.tmp'), exist_ok=True)
+            with open(str(pool_file), 'w') as f:
+                json.dump(pool_state, f)
+            logger.debug(f"Capital pool: {eur_free:.2f}€ liberi, max_trade={max_trade:.2f}€")
+        except Exception as e:
+            logger.error(f"Capital pool error: {e}")
+    
     def main_loop(self):
         """Main orchestration loop - runs every 60 seconds."""
         while self.running:
@@ -402,11 +453,23 @@ class DenaroCore:
                 if capital:
                     self.tracker.save_snapshot(capital, bot_status)
                 
+                # 2b. Capital pooling — concentra liquidità sullo scalper
+                self._pool_capital()
+                
                 # 3. Check risk
                 alerts = self.risk.check(capital or 200)
                 if alerts:
                     for a in alerts:
                         logger.warning(a)
+                
+                # 3b. Circuit breaker — ferma TUTTI i bot se drawdown > 15%
+                if self.risk.circuit_breaker:
+                    logger.critical("🔴 CIRCUIT BREAKER — fermo tutti i bot per drawdown eccessivo")
+                    for name in BOTS:
+                        self.bots.stop(name)
+                    self.running = False
+                    logger.critical("🔴 Orchestrator fermato. Riavvia manualmente dopo aver verificato.")
+                    break
                 
                 # Auto-restart dead bots
                 for name, status in bot_status.items():

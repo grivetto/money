@@ -138,26 +138,26 @@ class GridBot(DenaroCore):
         logger.info("Syncing orders with exchange...")
         try:
             open_orders = await self.sync_orders(self.config['symbol'])
+            # Only count BUY orders for grid-active (sell orders are from range/sell grid)
             buy_orders = sorted([o for o in open_orders if o['side'] == 'buy'], key=lambda x: abs(x['price'] - current_price))
-            sell_orders = sorted([o for o in open_orders if o['side'] == 'sell'], key=lambda x: abs(x['price'] - current_price))
+            sell_orders_from_grid = [o for o in open_orders if o['side'] == 'sell' and o.get('clientOrderId', '').startswith('x-')]
             
             keep_buys = buy_orders[:self.config['grid_levels']]
-            keep_sells = sell_orders[:self.config['grid_levels']]
-            cancel_orders = buy_orders[self.config['grid_levels']:] + sell_orders[self.config['grid_levels']:]
+            cancel_orders = buy_orders[self.config['grid_levels']:]
             
             for o in cancel_orders:
                 try: await asyncio.to_thread(client.cancel_order, o['id'], self.config['symbol'])
                 except: pass
             
             self.state['placed_order_ids'] = [o['id'] for o in keep_buys + keep_sells]
-            self.state['grid_active'] = len(self.state['placed_order_ids']) > 0
+            self.state['grid_active'] = len(keep_buys) > 0
             self.state['total_invested'] = len(keep_buys) * self.config['base_order_eur']
-            logger.info(f"Sync complete: {len(keep_buys)} buy / {len(keep_sells)} sell orders")
+            logger.info(f"Sync complete: {len(keep_buys)} buy / {len(keep_sells)} sell orders (grid_active={self.state['grid_active']})")
         except Exception as e:
             logger.error(f"Sync error: {e}")
 
     async def init_grid(self, client, current_price):
-        eur_free = self.get_balance('EUR')
+        eur_free = await self.get_balance('EUR')
         num_levels = self.config['grid_levels']
         base_size = self.config['base_order_eur']
         
@@ -208,6 +208,33 @@ class GridBot(DenaroCore):
         
         self.state['grid_active'] = True
         logger.info(f"Grid initialized: {placed} buy orders")
+
+        # ── Range Trading: also place SELL orders above market using free SOL ──
+        try:
+            balances = await asyncio.to_thread(client.fetch_balance)
+            sol_free = balances['free'].get('SOL', 0)
+            if sol_free > 0.01:
+                sol_per_sell = 0.05  # Use 0.05 SOL per sell level
+                sell_levels = 3
+                max_sol_use = min(sol_free, sol_per_sell * sell_levels)
+                num_sells = int(max_sol_use / sol_per_sell)
+                for i in range(num_sells):
+                    sell_pct = (i + 1) * 0.004  # 0.4%, 0.8%, 1.2% above market
+                    sell_price = round(current_price * (1 + sell_pct), 2)
+                    try:
+                        order = await asyncio.to_thread(
+                            client.create_limit_sell_order,
+                            self.config['symbol'],
+                            round(sol_per_sell, 5),
+                            sell_price
+                        )
+                        self.state['placed_order_ids'].append(order['id'])
+                        logger.info(f"📈 RANGE SELL @ {sell_price}€ (+{sell_pct*100:.1f}%) {sol_per_sell} SOL")
+                    except Exception as e:
+                        logger.error(f"RANGE SELL fail @ {sell_price}€: {e}")
+                self.state['range_sell_qty'] = sol_per_sell
+        except Exception as e:
+            logger.warning(f"Range sell init failed: {e}")
 
     def trailing_stop_check(self, current_price):
         if current_price <= 0 or not self.state['filled_orders']: return "HOLD"

@@ -18,13 +18,16 @@ STATE_FILE = os.path.join(BASE_DIR, ".tmp/shadow_grid_state.json")
 LOG_FILE = os.path.join(BASE_DIR, "shadow_grid.log")
 os.makedirs(os.path.join(BASE_DIR, ".tmp"), exist_ok=True)
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - SHADOW - %(levelname)s - %(message)s',
-    handlers=[logging.FileHandler(LOG_FILE), logging.StreamHandler()])
+handler = logging.FileHandler(LOG_FILE)
+handler.setFormatter(logging.Formatter('%(asctime)s - SHADOW - %(levelname)s - %(message)s'))
 logger = logging.getLogger("ShadowGrid")
+logger.setLevel(logging.INFO)
+logger.addHandler(handler)
+logger.propagate = False
 
 SYMBOL = "SOLEUR"
-SHADOW_LEVELS = [0.08, 0.12, 0.18]  # -8%, -12%, -18% from current price
-SHADOW_EUR = [10.0, 10.0, 10.0]     # EUR per level (total 30€ reserve)
+SHADOW_LEVELS = [0.03, 0.08]       # Solo -3% e -8%
+SHADOW_EUR = [15.0, 15.0]          # 30€ totali riserva (il resto lavora)
 CHECK_INTERVAL = 60
 RECOVER_TARGET = 0.04                 # Sell at +4% above buy price after recovery
 
@@ -50,8 +53,7 @@ def get_price():
     return float(d['price']) if d and 'price' in d else None
 
 def get_eur_free():
-    ts = int(time.time() * 1000)
-    bal = api_get('/api/v3/account', {'timestamp': ts, 'signature': sign({})['signature']})
+    bal = api_get('/api/v3/account', {})
     if bal:
         for b in bal.get('balances', []):
             if b['asset'] == 'EUR': return float(b['free'])
