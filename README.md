@@ -1,6 +1,5 @@
 # Denaro – Autonomous Crypto Trading Infrastructure
-A production‑grade, multi‑node trading system for Binance that runs 24/7 with zero manual intervention.  
-Built for capital protection, self‑healing, and continuous profit generation through grid trading, scalping, DCA and portfolio rebalancing.
+A production‑grade, multi‑node trading system for Binance that runs 24/7 with zero manual intervention. Built for capital protection, self‑healing, and continuous profit generation through grid trading, scalping, DCA and portfolio rebalancing.
 
 ---
 
@@ -32,6 +31,13 @@ Built for capital protection, self‑healing, and continuous profit generation t
 └──────────────┘ └──────────────┘ └──────────────┘
 ```
 *Each trading node runs isolated systemd‑user services. The orchestrator (MC2) handles DCA, rebalancing, health checks and metric collection.*
+
+### Node‑wise Service Mapping
+| Node       | Services (enabled)                                            | Purpose                                      |
+|------------|---------------------------------------------------------------|----------------------------------------------|
+| NUVOLA     | `wdg-watchdog.service`, `eth_scalper.service`                | Grid SOL/EUR + ETH scalper                  |
+| MARCODG1   | `denaro-watchdog.service`, `bnb_scalper.service`             | Grid ADA/EUR + BNB scalper                  |
+| MC2        | `mc2_eth_scalper.service`, `mc2_bnb_scalper.service`, `dca_bot.service`, `rebalancer_bot.service` | ETH & BNB scalpers, DCA, rebalancer |
 
 ---
 
@@ -65,7 +71,7 @@ Built for capital protection, self‑healing, and continuous profit generation t
 - `zabbix_healer.sh` – every 5 minutes, queries Zabbix `UserParameter`s and restarts failing services.
 
 ### 6. Observability
-- **Dashboard** – `<https://sgrivett.ddns.net/denaro/>` (auto‑refresh 15 s) shows bot status, invested capital, profit, price, trend, RSI, watchdog count.
+- **Dashboard** – <https://sgrivett.ddns.net/denaro/> (auto‑refresh 15 s) shows bot status, invested capital, profit, price, trend, RSI, watchdog count.
 - **Sentiment** – Fear & Greed Index + BTC dominance updated every 15 min (`sentiment_monitor.py`).
 - **Logs** – `grid.log`, `scalper_*.log`, `dca.log`, `rebalancer.log`, `health_monitor.log`.
 - **Metrics** – `metrics_collector.py` (runs every minute via cron) exports JSON for the dashboard and Zabbix.
@@ -74,18 +80,12 @@ Built for capital protection, self‑healing, and continuous profit generation t
 
 ## 📦 Deployment
 All nodes share the same Git repository (`grivetto/money`).  
-Each node runs a Python 3.10+ virtual environment (`venv/`) and the following systemd‑user services:
-
-| Node          | Service (enabled)                              | Purpose                              |
-|---------------|-----------------------------------------------|--------------------------------------|
-| NUVOLA        | `wdg-watchdog.service`, `eth_scalper.service` | Grid SOL/EUR + ETH scalper           |
-| MARCODG1      | `denaro-watchdog.service`, `bnb_scalper.service`| Grid ADA/EUR + BNB scalper           |
-| MC2           | `mc2_eth_scalper.service`, `mc2_bnb_scalper.service`, `dca_bot.service`, `rebalancer_bot.service` | ETH & BNB scalpers, DCA, rebalancer |
+Each node runs a Python 3.10+ virtual environment (`venv/`) and the following systemd‑user services.
 
 **Enable & start (example for NUVOLA):**
 ```bash
 # On the node
-cd /home/sergio/denaro
+cd /home/sergio/money
 cp denaro_core.py denaro_strategies.py grid_bot_v3.py scalper_v2.py trade_db.py vault_utils.py .
 cp watchdog.sh .
 systemctl --user daemon-reload
@@ -93,7 +93,6 @@ systemctl --user enable wdg-watchdog.service eth_scalper.service
 systemctl --user start   wdg-watchdog.service eth_scalper.service
 loginctl enable-linger sergio   # keep --user services after logout
 ```
-
 Repeat on each node with the appropriate service names.  
 The `git pull` + `systemctl --user restart <service>` workflow updates the binaries safely.
 
@@ -129,9 +128,9 @@ The `git pull` + `systemctl --user restart <service>` workflow updates the binar
 | Mechanism       | Description                                   |
 |-----------------|-----------------------------------------------|
 | Trend Filter    | Pause grid when price < EMA‑200 & RSI < 40    |
-| Kill Switch     | Stop all trading if API returns error‑2015/2014|
+| Kill Switch     | Stop all trading if API returns error‑2015/2014 |
 | Max Daily Loss  | Halt trading after 5 € loss in 24 h           |
-| Stop‑Loss       | 0.8 % per scalper order, trailing 1.2 % for grid|
+| Stop‑Loss       | 0.8 % per scalper order, trailing 1.2 % for grid |
 | Break‑Even      | Move SL to entry after first profit tick      |
 | Fee Discount    | Pay fees in BNB → 25 % lower trading cost     |
 | Atomic Writes   | Prevent JSON corruption on sudden shutdown   |
@@ -154,8 +153,7 @@ All protections are enforced in `denaro_core.py` (`api_call` with exponential ba
 ---
 
 ## 🐳 Docker‑Ready (optional)
-A `Dockerfile` is provided in the repo for those who prefer containerised deployment.  
-Example:
+A `Dockerfile` is provided in the repo for those who prefer containerised deployment.
 ```bash
 docker build -t denaro .
 docker run -d \
@@ -188,15 +186,18 @@ docker run -d \
 ---
 
 ## 📄 License
-Private – Denaro Autonomous Trading Infrastructure.  
-For inquiries, contact the repository owner.
+This project is licensed under the **MIT License** – see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 📧 Contact
+For questions, support, or collaboration please reach out to:
+
+**Sergio Grivetto**  
+Email: sergio@example.com  
+GitHub: [@grivetto](https://github.com/grivetto)
 
 ---
 
 *Built with 💻 & 💸 by the Denaro team.*  
 *Last updated: $(date -u +"%Y-%m-%d %H:%M UTC")*
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-Sviluppato da Sergio con l'aiuto dell' AI
