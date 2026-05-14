@@ -194,7 +194,7 @@ This project is licensed under the **MIT License** – see the [LICENSE](LICENSE
 For questions, support, or collaboration please reach out to:
 
 **Sergio Grivetto**  
-Email: sergio@example.com  
+Email: sergio@grivetto.eu  
 GitHub: [@grivetto](https://github.com/grivetto)
 
 ---
