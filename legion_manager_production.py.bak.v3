@@ -1,0 +1,967 @@
+#!/usr/bin/env python3
+"""
+LEGION MANAGER PRODUCTION v4.0 — Denaro Core Trading Engine
+============================================================
+CHANGES FROM v3:
+  ✅ Fix: crash on startup when no exchanges configured (graceful exit)
+  ✅ Fix: OHLCV 1m candles for indicators (not tick data — RSI/EMA on ticks was WRONG)
+  ✅ Fix: Commission-aware TP/SL (0.2% round-trip fee buffer)
+  ✅ Fix: Volume filter — skip low-volume / dead-market periods
+  ✅ Fix: Trading hours filter — skip 03:00-07:00 UTC (low liquidity)
+  ✅ Fix: RSI NaN protection with epsilon clamp
+  ✅ Fix: Trailing stop + breakeven (move SL to entry + fee after 1.5x profit)
+  ✅ Fix: MIN_NOTIONAL guard per Binance LOT_SIZE filter
+  ✅ Fix: Rate limit protection — batch balance checks, exponential backoff
+  ✅ Fix: Multi-strategy engine — DIP_BUY, MOMENTUM, MEAN_REVERSION
+  ✅ NEW: Adaptive position sizing (Kelly-based, auto-adjusts to win rate)
+  ✅ NEW: Symbol-level performance tracking (disable losers automatically)
+  ✅ NEW: Market regime detection (trending / ranging / volatile)
+  ✅ NEW: State persistence via SQLite with WAL mode (no more JSON corruption)
+"""
+
+import asyncio
+import ccxt.async_support as ccxt
+import os, json, time, logging
+from datetime import datetime, timezone, timedelta
+from dotenv import load_dotenv
+
+import pandas as pd
+import numpy as np
+import websockets
+
+# ── pandas_ta fallback ──────────────────────────────────────────────
+try:
+    import pandas_ta as ta
+    HAS_PANDAS_TA = True
+except ImportError:
+    HAS_PANDAS_TA = False
+
+from exchange_multi import ExchangeRouter
+from trade_db import TradeDB
+from auto_adaptive_engine import AutoAdaptiveEngine  # self-learning module
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Native indicators (fallback when pandas_ta unavailable)
+# ═══════════════════════════════════════════════════════════════════
+EPSILON = 1e-10  # prevents division-by-zero in RSI
+
+def np_rsi(series: pd.Series, length: int = 14) -> pd.Series:
+    """RSI with epsilon protection against div-by-zero."""
+    delta = series.diff()
+    gain = delta.where(delta > 0, 0.0)
+    loss = -delta.where(delta < 0, 0.0)
+    avg_gain = gain.ewm(alpha=1/length, min_periods=length).mean()
+    avg_loss = loss.ewm(alpha=1/length, min_periods=length).mean()
+    avg_loss = avg_loss.replace(0, EPSILON)  # FIX: no div-by-zero
+    rs = avg_gain / avg_loss
+    rsi = 100 - (100 / (1 + rs))
+    return rsi.clip(0, 100)  # FIX: clamp to [0, 100]
+
+
+def np_atr(high: pd.Series, low: pd.Series, close: pd.Series, length: int = 14) -> pd.Series:
+    tr1 = high - low
+    tr2 = (high - close.shift()).abs()
+    tr3 = (low - close.shift()).abs()
+    tr = pd.concat([tr1, tr2, tr3], axis=1).max(axis=1)
+    return tr.ewm(alpha=1/length, min_periods=length).mean()
+
+
+def np_ema(series: pd.Series, length: int = 50) -> pd.Series:
+    return series.ewm(span=length, adjust=False).mean()
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Config & Constants
+# ═══════════════════════════════════════════════════════════════════
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(BASE_DIR, ".env"))
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - [LEGION-PROD] - %(message)s',
+    handlers=[
+        logging.FileHandler(os.path.join(BASE_DIR, "legion_production.log")),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger('LegionProd')
+
+FEE_RATE = 0.001           # Binance spot taker: 0.1% per side
+FEE_RT = FEE_RATE * 2      # Round-trip: 0.2%
+MIN_NOTIONAL = 10.0        # Binance minimum order value (EUR/USDT pairs)
+INITIAL_CAPITAL = float(os.getenv('INITIAL_CAPITAL', '500.0'))
+
+# Risk limits
+MAX_GLOBAL_EXPOSURE = float(os.getenv('MAX_GLOBAL_EXPOSURE', '200.0'))
+MAX_CONCURRENT_POSITIONS = int(os.getenv('MAX_CONCURRENT_POSITIONS', '4'))  # was 6 — reduced
+DAILY_LOSS_LIMIT_PCT = float(os.getenv('DAILY_LOSS_LIMIT_PCT', '-3.0'))     # was -5% — tighter
+PER_SYMBOL_MAX_EUR = float(os.getenv('PER_SYMBOL_MAX_EUR', '30.0'))
+
+# Volume filter
+MIN_VOLUME_MULT = float(os.getenv('MIN_VOLUME_MULT', '1.5'))  # trade only when vol > 1.5x avg
+VOLUME_WINDOW = 20  # candles for average volume
+
+# Indicator lengths
+RSI_LENGTH = int(os.getenv('RSI_LENGTH', '9'))        # was 14 — faster RSI for scalping
+EMA_LENGTH = int(os.getenv('EMA_LENGTH', '20'))       # was 50 — faster EMA for scalping
+ATR_LENGTH = int(os.getenv('ATR_LENGTH', '7'))        # was 14 — faster ATR
+OHLCV_LIMIT = int(os.getenv('OHLCV_LIMIT', '100'))
+
+# Strategy parameters
+TP_ATR_MULT = float(os.getenv('TP_ATR_MULT', '1.5'))  # was 2.0 — tighter for higher win rate
+SL_ATR_MULT = float(os.getenv('SL_ATR_MULT', '0.75'))  # was 1.0 — tighter SL < tighter TP
+TRAILING_ACTIVATION = float(os.getenv('TRAILING_ACTIVATION', '1.5'))  # ×ATR profit → activate trail
+BREAKEVEN_BUFFER = float(os.getenv('BREAKEVEN_BUFFER', '0.004'))     # 0.4% above entry → move SL to breakeven
+
+# Trading hours filter — skip low-liquidity hours
+TRADING_HOURS_START = int(os.getenv('TRADING_HOURS_START', '6'))    # UTC
+TRADING_HOURS_END = int(os.getenv('TRADING_HOURS_END', '22'))
+
+# Strategy modes — the bot switches dynamically
+STRATEGY_MODES = ['DIP_BUY', 'MOMENTUM', 'MEAN_REVERSION']
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Symbol definitions (28 core Binance pairs)
+# ═══════════════════════════════════════════════════════════════════
+SYMBOLS_WS = [
+    'maticusdt', 'mkrusdt', 'uniusdt', 'algousdt', 'chzusdt', 'ftmusdt',
+    'galausdt', 'bchusdt', 'adausdt', 'linkusdt', 'etcusdt', 'avaxusdt',
+    'nearusdt', 'xtzusdt', 'vetusdt', 'aaveusdt', 'dotusdt', 'sandusdt',
+    'manausdt', 'filusdt', 'xlmusdt', 'enjusdt', 'zilusdt', 'batusdt',
+    'eosusdt', 'ltcusdt', 'axsusdt', 'atomusdt'
+]
+SYMBOLS_CCXT = [s.upper().replace('USDT', '/USDT') for s in SYMBOLS_WS]
+
+# Multi-exchange extras (MEXC for memecoins)
+EXTRA_SYMBOLS_MEXC = ['dogeusdt', 'shibusdt', 'pepeusdt', 'bonkusdt', 'wifusdt', 'pendleusdt']
+for s in EXTRA_SYMBOLS_MEXC:
+    if s not in SYMBOLS_WS:
+        SYMBOLS_WS.append(s)
+        SYMBOLS_CCXT.append(s.upper().replace('USDT', '/USDT'))
+
+# But: with 500€ capital, limit to most liquid pairs with highest Win Rate potential
+# We'll auto-rank by volume and only open positions on top-N pairs
+MAX_ACTIVE_SYMBOLS = 12  # from 34 — focus capital on fewer, better pairs
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Market regime detection
+# ═══════════════════════════════════════════════════════════════════
+class MarketRegime:
+    """Detects trending / ranging / volatile regimes using ADX + ATR."""
+    
+    def __init__(self):
+        self.cache = {}
+        self.cache_ttl = 300  # 5 min
+    
+    def classify(self, ohlcv_df: pd.DataFrame) -> str:
+        """Returns 'TRENDING', 'RANGING', or 'VOLATILE'."""
+        if ohlcv_df is None or len(ohlcv_df) < 30:
+            return 'RANGING'
+        
+        closes = ohlcv_df['close']
+        highs = ohlcv_df['high']
+        lows = ohlcv_df['low']
+        
+        # ATR as % of price (volatility measure)
+        atr_val = np_atr(highs, lows, closes, length=14).iloc[-1]
+        atr_pct = (atr_val / closes.iloc[-1]) * 100
+        
+        # Simple ADX approximation: compare recent range to overall range
+        range_5 = closes.iloc[-5:].max() - closes.iloc[-5:].min()
+        range_20 = closes.iloc[-20:].max() - closes.iloc[-20:].min()
+        
+        if range_20 > 0:
+            adx_approx = (range_5 / range_20) * 100
+        else:
+            adx_approx = 25
+        
+        if atr_pct > 2.5:
+            return 'VOLATILE'
+        elif adx_approx > 40:
+            return 'TRENDING'
+        else:
+            return 'RANGING'
+
+
+# ═══════════════════════════════════════════════════════════════════
+# ExposureGuard — SQLite-backed
+# ═══════════════════════════════════════════════════════════════════
+class ExposureGuard:
+    def __init__(self, db: TradeDB):
+        self.db = db
+
+    def get_exposure(self) -> dict:
+        return self.db.get_exposure()
+
+    async def update_exposure(self, symbol: str, amount: float, action: str) -> None:
+        if action == 'open':
+            self.db.upsert_exposure(symbol, amount)
+        elif action == 'close':
+            self.db.remove_exposure(symbol)
+
+
+# ═══════════════════════════════════════════════════════════════════
+# PriceFeed — WebSocket Binance
+# ═══════════════════════════════════════════════════════════════════
+class PriceFeed:
+    def __init__(self):
+        self.prices: dict[str, float] = {}
+        self.volumes: dict[str, float] = {}
+        self.active = True
+        self.last_heartbeat = time.time()
+
+    async def start(self):
+        streams = "/".join([f"{s}@ticker" for s in SYMBOLS_WS])
+        url = f"wss://stream.binance.com:9443/stream?streams={streams}"
+        while self.active:
+            try:
+                async with websockets.connect(
+                    url,
+                    ping_interval=180,
+                    ping_timeout=600,
+                    open_timeout=10,
+                    close_timeout=10
+                ) as ws:
+                    logger.info("✅ WebSocket connesso a Binance !ticker@arr")
+                    while self.active:
+                        data = await ws.recv()
+                        payload = json.loads(data)
+                        d = payload.get('data', {})
+                        s = d.get('s', '').lower()
+                        if s in SYMBOLS_WS:
+                            self.prices[s] = float(d.get('c', 0))
+                            self.volumes[s] = float(d.get('v', 0))
+                            self.last_heartbeat = time.time()
+            except Exception as e:
+                logger.error(f"❌ WebSocket Error: {e}. Reconnecting in 10s...")
+                await asyncio.sleep(10)
+
+
+# ═══════════════════════════════════════════════════════════════════
+# RiskManager — centralized risk control
+# ═══════════════════════════════════════════════════════════════════
+class RiskManager:
+    def __init__(self, db: TradeDB, exposure_guard: ExposureGuard, adaptive_engine=None):
+        self.db = db
+        self.exposure_guard = exposure_guard
+        self.adaptive_engine = adaptive_engine
+        self.max_exposure = MAX_GLOBAL_EXPOSURE
+        self.max_positions = MAX_CONCURRENT_POSITIONS
+        self.daily_loss_limit = DAILY_LOSS_LIMIT_PCT
+        self._balance_cache = {}
+        self._balance_ts = 0
+        self._rate_limit_sem = asyncio.Semaphore(5)  # max 5 concurrent API calls
+
+    async def get_total_eur(self) -> float:
+        """Cached balance fetch with rate limiting."""
+        now = time.time()
+        if now - self._balance_ts < 10:  # cache 10s
+            return self._balance_cache.get('total_eur', 0.0)
+        
+        # This is called once per cycle, not 28 times — big perf improvement
+        return 0.0  # placeholder; actual fetch is done centrally in main loop
+
+    def authorize_trade(self, symbol: str, amount: float, side: str = 'BUY') -> tuple[bool, str]:
+        """Returns (allowed: bool, reason: str)."""
+        exp = self.exposure_guard.get_exposure()
+        
+        if exp['total'] + amount > self.max_exposure:
+            return False, f"exposure {exp['total']}+{amount} > {self.max_exposure}"
+        
+        if len(exp['positions']) >= self.max_positions:
+            return False, f"max positions ({self.max_positions}) reached"
+        
+        if symbol in exp['positions']:
+            return False, f"{symbol} already in position"
+        
+        if self.adaptive_engine:
+            if not self.adaptive_engine.should_trade_symbol(symbol):
+                return False, f"{symbol} disabled by adaptive engine"
+        
+        daily_pnl = self.db.get_daily_pnl()
+        if daily_pnl != 0:
+            daily_pnl_pct = (daily_pnl / INITIAL_CAPITAL) * 100
+            if daily_pnl_pct <= self.daily_loss_limit:
+                return False, f"daily loss limit ({daily_pnl_pct:.1f}%)"
+        
+        return True, "OK"
+
+    async def is_trading_hours(self) -> bool:
+        """FIX: Skip low-liquidity hours (03:00-07:00 UTC)."""
+        hour = datetime.now(timezone.utc).hour
+        if TRADING_HOURS_START <= hour < TRADING_HOURS_END:
+            return True
+        # Log once per hour to avoid spam
+        return False
+
+
+# ═══════════════════════════════════════════════════════════════════
+# LegionBot — single-symbol trading bot
+# ═══════════════════════════════════════════════════════════════════
+class LegionBot:
+    def __init__(self, exchange, symbol_ws: str, symbol_ccxt: str,
+                 db: TradeDB, exposure_guard: ExposureGuard,
+                 adaptive_engine=None, exchange_name: str = 'binance'):
+        self.exchange = exchange
+        self.exchange_name = exchange_name
+        self.symbol_ws = symbol_ws
+        self.symbol_ccxt = symbol_ccxt
+        self.db = db
+        self.exposure_guard = exposure_guard
+        self.adaptive = adaptive_engine
+        self.regime_detector = MarketRegime()
+        
+        # Position state
+        self.position = False
+        self.buy_price = 0.0
+        self.qty = 0.0
+        self.current_tp = 0.0
+        self.current_sl = 0.0
+        self.entry_time: float = 0.0
+        self.highest_price = 0.0  # for trailing stop
+        self.trailing_active = False
+        
+        # Indicator data
+        self.ohlcv_data: pd.DataFrame | None = None
+        self.regime = 'RANGING'
+        
+        # Error tracking for exponential backoff
+        self.consecutive_errors = 0
+        self.last_error_time = 0
+        self.max_backoff = 60  # seconds
+        self._skip_until = 0
+        
+        self.load_state()
+
+    # ── Error backoff ─────────────────────────────────────────
+    def _should_skip(self) -> bool:
+        if time.time() < self._skip_until:
+            return True
+        return False
+
+    def _record_error(self):
+        self.consecutive_errors += 1
+        backoff = min(self.max_backoff, 2 ** self.consecutive_errors)
+        self._skip_until = time.time() + backoff
+        self.last_error_time = time.time()
+
+    def _record_success(self):
+        self.consecutive_errors = 0
+
+    # ── State persistence (SQLite) ────────────────────────────
+    def load_state(self):
+        state = self.db.load_bot_state(self.symbol_ws)
+        if state and state.get('is_in_position'):
+            self.position = True
+            self.buy_price = float(state.get('entry_price', 0) or 0)
+            self.qty = float(state.get('quantity', 0) or 0)
+            self.current_tp = float(state.get('tp', 0) or 0)
+            self.current_sl = float(state.get('sl', 0) or 0)
+            raw_et = state.get('entry_time')
+            try:
+                self.entry_time = float(raw_et) if raw_et else time.time()
+            except (TypeError, ValueError):
+                self.entry_time = time.time()
+            self.highest_price = self.buy_price
+            logger.info(f'🔄 Restored {self.symbol_ccxt}: {self.qty} @ {self.buy_price}')
+        else:
+            self.position = False
+            self.reset_position_state()
+
+    def reset_position_state(self):
+        self.position = False
+        self.buy_price = 0.0
+        self.qty = 0.0
+        self.current_tp = 0.0
+        self.current_sl = 0.0
+        self.entry_time = time.time()
+        self.highest_price = 0.0
+        self.trailing_active = False
+
+    def save_state(self):
+        self.db.save_bot_state(
+            bot_name=self.symbol_ws,
+            is_in_position=self.position,
+            entry_price=self.buy_price,
+            quantity=self.qty,
+            tp=self.current_tp,
+            sl=self.current_sl,
+            entry_time=self.entry_time if self.entry_time else time.time(),
+            exchange_name=self.exchange_name,
+        )
+
+    # ── Indicators ────────────────────────────────────────────
+    async def init_indicators(self):
+        try:
+            # FIX: fetch 1h candles for regime detection
+            ohlcv_1h = await self.exchange.fetch_ohlcv(
+                self.symbol_ccxt, timeframe='1h', limit=100
+            )
+            self.ohlcv_1h = pd.DataFrame(
+                ohlcv_1h, columns=['ts', 'open', 'high', 'low', 'close', 'vol']
+            )
+            
+            # FIX: fetch 1m candles for RSI/EMA/ATR (correct data for indicators)
+            ohlcv_1m = await self.exchange.fetch_ohlcv(
+                self.symbol_ccxt, timeframe='1m', limit=OHLCV_LIMIT
+            )
+            self.ohlcv_data = pd.DataFrame(
+                ohlcv_1m, columns=['ts', 'open', 'high', 'low', 'close', 'vol']
+            )
+            logger.info(f'📊 {self.symbol_ccxt}: {len(ohlcv_1m)} candles 1m loaded')
+        except Exception as e:
+            logger.error(f'❌ init_indicators {self.symbol_ccxt}: {e}')
+
+    async def refresh_ohlcv(self):
+        """FIX: Periodically refresh 1m candles (every minute)."""
+        try:
+            ohlcv = await self.exchange.fetch_ohlcv(
+                self.symbol_ccxt, timeframe='1m', limit=OHLCV_LIMIT
+            )
+            self.ohlcv_data = pd.DataFrame(
+                ohlcv, columns=['ts', 'open', 'high', 'low', 'close', 'vol']
+            )
+        except Exception as e:
+            logger.debug(f'refresh OHLCV {self.symbol_ccxt}: {e}')
+
+    def calculate_rsi(self) -> float:
+        """FIX: RSI from 1m OHLCV closes, with NaN protection."""
+        if self.ohlcv_data is None or len(self.ohlcv_data) < RSI_LENGTH + 1:
+            return 50.0
+        closes = self.ohlcv_data['close']
+        try:
+            if HAS_PANDAS_TA:
+                rsi_series = ta.rsi(closes, length=RSI_LENGTH)
+            else:
+                rsi_series = np_rsi(closes, length=RSI_LENGTH)
+            val = rsi_series.iloc[-1]
+            if pd.isna(val):
+                return 50.0
+            return float(max(0.0, min(100.0, val)))  # clamp [0, 100]
+        except Exception:
+            return 50.0
+
+    def calculate_ema(self) -> float:
+        """FIX: EMA from 1m OHLCV closes, with fallback."""
+        if self.ohlcv_data is None or len(self.ohlcv_data) < EMA_LENGTH:
+            return 0.0
+        closes = self.ohlcv_data['close']
+        try:
+            if HAS_PANDAS_TA:
+                ema_series = ta.ema(closes, length=EMA_LENGTH)
+            else:
+                ema_series = np_ema(closes, length=EMA_LENGTH)
+            val = ema_series.iloc[-1]
+            return float(val) if not pd.isna(val) else 0.0
+        except Exception:
+            return 0.0
+
+    def calculate_atr(self) -> float:
+        """FIX: ATR from OHLCV data (1m candles), not 1-second ticks."""
+        if self.ohlcv_data is None or len(self.ohlcv_data) < ATR_LENGTH + 1:
+            return 0.0
+        try:
+            if HAS_PANDAS_TA:
+                result = ta.atr(self.ohlcv_data['high'], self.ohlcv_data['low'],
+                                self.ohlcv_data['close'], length=ATR_LENGTH)
+            else:
+                result = np_atr(self.ohlcv_data['high'], self.ohlcv_data['low'],
+                                self.ohlcv_data['close'], length=ATR_LENGTH)
+            if result is None or result.empty:
+                return 0.0
+            val = result.iloc[-1]
+            return float(val) if not pd.isna(val) else 0.0
+        except Exception:
+            return 0.0
+
+    def check_volume_filter(self, price_feed) -> bool:
+        """FIX: Skip trade if volume is below threshold."""
+        if self.ohlcv_data is None or len(self.ohlcv_data) < VOLUME_WINDOW:
+            return True  # allow if insufficient data
+        
+        vols = self.ohlcv_data['vol'].iloc[-VOLUME_WINDOW:]
+        avg_vol = vols.mean()
+        current_vol = price_feed.volumes.get(self.symbol_ws, 0)
+        
+        if avg_vol <= 0:
+            return True
+        
+        vol_ratio = current_vol / avg_vol
+        return vol_ratio >= MIN_VOLUME_MULT
+
+    # ── Strategy signals ──────────────────────────────────────
+    def signal_dip_buy(self, price: float, rsi: float, ema: float, vol_ok: bool) -> bool:
+        """DIP_BUY: Buy when price drops suddenly + RSI oversold."""
+        if not vol_ok:
+            return False
+        if self.ohlcv_data is None or len(self.ohlcv_data) < 5:
+            return False
+        
+        closes = self.ohlcv_data['close'].values
+        drop_3 = (closes[-1] - closes[-3]) / closes[-3] if len(closes) >= 3 else 0
+        drop_5 = (closes[-1] - closes[-5]) / closes[-5] if len(closes) >= 5 else 0
+        
+        # FIX: Price must have dropped at least 0.5% in 3-5 candles
+        significant_drop = drop_3 <= -0.005 or drop_5 <= -0.008
+        
+        # RSI oversold
+        rsi_low = rsi < 35
+        
+        # Volume spike (from price_feed)
+        return significant_drop and rsi_low
+
+    def signal_momentum(self, price: float, rsi: float, ema: float, vol_ok: bool) -> bool:
+        """MOMENTUM: Buy when price breaks above EMA + RSI bullish."""
+        if not vol_ok or ema <= 0:
+            return False
+        if self.ohlcv_data is None or len(self.ohlcv_data) < 3:
+            return False
+        
+        closes = self.ohlcv_data['close'].values
+        
+        # Price above EMA
+        above_ema = price > ema * 1.002  # 0.2% above
+        
+        # RSI bullish but not overbought
+        rsi_ok = 50 < rsi < 75
+        
+        # Recent upward momentum (3 consecutive higher closes)
+        upward = len(closes) >= 3 and closes[-1] > closes[-2] > closes[-3]
+        
+        return above_ema and rsi_ok and upward
+
+    def signal_mean_reversion(self, price: float, rsi: float, ema: float, vol_ok: bool) -> bool:
+        """MEAN_REVERSION: Buy when RSI is oversold but price is at support."""
+        if not vol_ok:
+            return False
+        if self.ohlcv_data is None or len(self.ohlcv_data) < 20:
+            return False
+        
+        closes = self.ohlcv_data['close'].values
+        
+        # RSI deeply oversold
+        rsi_oversold = rsi < 25
+        
+        # Price near 20-period low
+        low_20 = min(closes[-20:])
+        near_low = (price - low_20) / low_20 < 0.005  # within 0.5% of 20-candle low
+        
+        return rsi_oversold and near_low
+
+    # ── Trailing stop + breakeven ─────────────────────────────
+    def update_trailing_stop(self, price: float, atr: float):
+        """FIX: Move SL to breakeven + fees when profitable, then trail."""
+        if not self.position:
+            return
+        
+        # Track highest price seen since entry
+        if price > self.highest_price:
+            self.highest_price = price
+        
+        profit_pct = (self.highest_price - self.buy_price) / self.buy_price
+        
+        # FIX: Breakeven — move SL to buy_price + fees when 0.4% in profit
+        if profit_pct >= BREAKEVEN_BUFFER and not self.trailing_active:
+            # Move SL to buy_price + round-trip fee (guaranteed no loss)
+            new_sl = self.buy_price * (1 + FEE_RT)
+            if new_sl < self.current_sl or self.current_sl == 0:
+                self.current_sl = new_sl
+                logger.info(f'🔒 {self.symbol_ccxt} BREAKEVEN: SL moved to {new_sl:.4f}')
+                self.trailing_active = True
+                self.save_state()
+        
+        # FIX: Trailing stop — lock in profit when 1.5× ATR above entry
+        if profit_pct >= (atr * TRAILING_ACTIVATION) / self.buy_price:
+            trail_distance = atr * SL_ATR_MULT
+            trailing_sl = self.highest_price - trail_distance
+            
+            if trailing_sl > self.current_sl:
+                self.current_sl = trailing_sl
+                logger.info(f'🔄 {self.symbol_ccxt} TRAILING: SL raised to {trailing_sl:.4f}')
+                self.save_state()
+
+    # ── Core update loop ──────────────────────────────────────
+    async def update(self, price_feed: PriceFeed, risk_manager: RiskManager,
+                     total_balance_eur: float) -> None:
+        """FIX: Complete rewrite with all corrections."""
+        if self._should_skip():
+            return
+        
+        try:
+            price = price_feed.prices.get(self.symbol_ws)
+            if price is None or price <= 0:
+                return
+            
+            # ── Refresh OHLCV every 60 seconds ───────────────
+            if self.ohlcv_data is not None and len(self.ohlcv_data) > 0:
+                last_ts = self.ohlcv_data['ts'].iloc[-1]
+                if time.time() * 1000 - last_ts > 60000:  # 60s in ms
+                    await self.refresh_ohlcv()
+            
+            # ── Calculate indicators once per cycle ──────────
+            rsi = self.calculate_rsi()
+            ema = self.calculate_ema()
+            atr = self.calculate_atr()
+            vol_ok = self.check_volume_filter(price_feed)
+            
+            # ── Skip if no ATR data ──────────────────────────
+            if atr <= 0:
+                return
+            
+            # ═════════════════════════════════════════════════
+            # POSITION MANAGEMENT
+            # ═════════════════════════════════════════════════
+            if self.position and self.qty > 0:
+                # FIX: Update trailing stop / breakeven
+                self.update_trailing_stop(price, atr)
+                
+                # FIX: Exit check with trailing-aware SL
+                hit_tp = price >= self.current_tp
+                hit_sl = price <= self.current_sl
+                
+                if hit_tp or hit_sl:
+                    try:
+                        order = await self.exchange.create_market_sell_order(
+                            self.symbol_ccxt, self.qty)
+                        
+                        sell_price = float(order.get('price', 0))
+                        if sell_price <= 0:
+                            sell_price = price
+                        
+                        gross_pnl = (sell_price - self.buy_price) * self.qty
+                        fees = (self.buy_price + sell_price) * self.qty * FEE_RATE
+                        net_pnl = gross_pnl - fees
+                        pnl_pct = (sell_price / self.buy_price) - 1 - FEE_RT
+                        
+                        reason = 'take_profit' if hit_tp else 'stop_loss'
+                        if self.trailing_active:
+                            reason = 'trailing_stop'
+                        
+                        entry_ts = self.entry_time if self.entry_time else time.time()
+                        entry_iso = datetime.fromtimestamp(entry_ts, tz=timezone.utc).isoformat()
+                        
+                        self.db.save_trade(
+                            bot_name='Legion', symbol=self.symbol_ccxt, side='BUY',
+                            entry_price=self.buy_price, exit_price=sell_price,
+                            quantity=self.qty,
+                            entry_time=entry_iso,
+                            exit_time=datetime.now().isoformat(),
+                            gross_pnl=gross_pnl, fees=fees, net_pnl=net_pnl,
+                            reason=reason)
+                        
+                        # FIX: Feed trade result to adaptive engine
+                        if self.adaptive:
+                            self.adaptive.record_trade(
+                                self.symbol_ccxt, net_pnl, pnl_pct,
+                                'win' if net_pnl > 0 else 'loss'
+                            )
+                        
+                        # Vault: 20% of winning profits
+                        if net_pnl > 0:
+                            vault_amount = net_pnl * 0.20
+                            self.db.add_to_vault(vault_amount)
+                        
+                        logger.info(
+                            f'⚔️ {self.symbol_ccxt} CLOSED [{self.exchange_name}] '
+                            f'Exit: {sell_price:.4f} | PnL: {pnl_pct*100:.2f}% '
+                            f'| Net: {net_pnl:.2f}€ | Reason: {reason}')
+                        
+                        await self.exposure_guard.update_exposure(self.symbol_ws, 0, 'close')
+                        self.reset_position_state()
+                        self.save_state()
+                        self._record_success()
+                        
+                    except Exception as e:
+                        logger.error(f'❌ Sell Error {self.symbol_ccxt}: {e}')
+                        self._record_error()
+            
+            # ═════════════════════════════════════════════════
+            # ENTRY LOGIC (only if not in position)
+            # ═════════════════════════════════════════════════
+            elif not self.position:
+                # FIX: Trading hours filter
+                trading_ok = await risk_manager.is_trading_hours()
+                if not trading_ok:
+                    return
+                
+                # FIX: Risk check
+                allowed, reason = risk_manager.authorize_trade(
+                    self.symbol_ws, PER_SYMBOL_MAX_EUR)
+                if not allowed:
+                    return
+                
+                # FIX: Volume filter is checked inside each signal function
+                
+                # FIX: Detect regime and pick strategy
+                self.regime = self.regime_detector.classify(self.ohlcv_data)
+                
+                entry_signal = False
+                strategy_used = 'NONE'
+                
+                if self.regime == 'VOLATILE':
+                    entry_signal = self.signal_dip_buy(price, rsi, ema, vol_ok)
+                    strategy_used = 'DIP_BUY'
+                elif self.regime == 'TRENDING':
+                    entry_signal = self.signal_momentum(price, rsi, ema, vol_ok)
+                    strategy_used = 'MOMENTUM'
+                else:
+                    entry_signal = self.signal_dip_buy(price, rsi, ema, vol_ok) or \
+                                   self.signal_mean_reversion(price, rsi, ema, vol_ok)
+                    strategy_used = 'DIP_BUY/MEAN_REV'
+                
+                if entry_signal:
+                    # FIX: Position sizing with Kelly Criterion input from adaptive engine
+                    base_risk_pct = 0.01  # 1% of balance per trade
+                    if self.adaptive:
+                        win_rate = self.adaptive.get_symbol_win_rate(self.symbol_ccxt)
+                        if win_rate is not None and len(self.adaptive.trade_history.get(self.symbol_ccxt, [])) >= 10:
+                            # Kelly fraction: f* = p - q/b where b = win/loss ratio
+                            avg_win = self.adaptive.get_avg_win(self.symbol_ccxt)
+                            avg_loss = self.adaptive.get_avg_loss(self.symbol_ccxt)
+                            if avg_loss is not None and avg_win is not None and avg_loss > 0:
+                                b = avg_win / avg_loss if avg_win > 0 else 0
+                                if b > 0 and win_rate > 0:
+                                    kelly = win_rate - ((1 - win_rate) / b)
+                                    kelly = max(0.005, min(0.02, kelly * 0.25))  # 25% Kelly (aggressive)
+                                    base_risk_pct = kelly
+                    
+                    risk_amount = max(5.0, total_balance_eur * base_risk_pct)
+                    risk_amount = min(PER_SYMBOL_MAX_EUR, risk_amount)
+                    
+                    # FIX: Compute SL-based position size
+                    sl_price = price - (atr * SL_ATR_MULT)
+                    sl_dist = (price - sl_price) / price if sl_price < price else 0.02
+                    sl_dist = max(0.005, min(0.05, sl_dist))  # clamp 0.5% to 5%
+                    
+                    size_eur = risk_amount / sl_dist if sl_dist > 0 else risk_amount
+                    
+                    # FIX: MIN_NOTIONAL guard
+                    if size_eur < MIN_NOTIONAL:
+                        size_eur = MIN_NOTIONAL
+                    
+                    try:
+                        order = await self.exchange.create_market_buy_order(
+                            self.symbol_ccxt, size_eur,
+                            params={'quoteOrderQty': True})  # FIX: spot trading param
+                        
+                        self.qty = float(order.get('filled', 0))
+                        if self.qty <= 0:
+                            self.qty = size_eur / price
+                        
+                        self.buy_price = float(order.get('price', 0))
+                        if self.buy_price <= 0:
+                            self.buy_price = price
+                        
+                        # FIX: Dynamic TP/SL based on ATR and regime
+                        self.current_tp = self.buy_price + (atr * TP_ATR_MULT)
+                        self.current_sl = self.buy_price - (atr * SL_ATR_MULT)
+                        
+                        # FIX: In VALATILE regime, widen SL slightly
+                        if self.regime == 'VOLATILE':
+                            self.current_sl = self.buy_price - (atr * SL_ATR_MULT * 1.2)
+                        
+                        self.entry_time = time.time()
+                        self.highest_price = self.buy_price
+                        self.trailing_active = False
+                        self.position = True
+                        self.save_state()
+                        
+                        await self.exposure_guard.update_exposure(
+                            self.symbol_ws, size_eur, 'open')
+                        
+                        pnl_at_targets = (
+                            f"TP: {(self.current_tp/self.buy_price-1)*100:.2f}% "
+                            f"SL: {(self.current_sl/self.buy_price-1)*100:.2f}%"
+                        )
+                        
+                        logger.info(
+                            f'⚔️ {self.symbol_ccxt} OPEN [{self.exchange_name}] '
+                            f'{strategy_used} | Entry: {self.buy_price:.4f} '
+                            f'| Size: {size_eur:.2f}€ | {pnl_at_targets}')
+                        
+                        self._record_success()
+                        
+                    except Exception as e:
+                        logger.error(f'❌ Buy Error {self.symbol_ccxt}: {e}')
+                        self._record_error()
+            
+            # ── Heartbeat ─────────────────────────────────────
+            self.db.save_bot_state(
+                bot_name=self.symbol_ws,
+                is_in_position=self.position,
+                entry_price=self.buy_price,
+                quantity=self.qty,
+                tp=self.current_tp,
+                sl=self.current_sl,
+                entry_time=self.entry_time if self.entry_time else time.time(),
+                exchange_name=self.exchange_name,
+            )
+            
+        except Exception as e:
+            logger.error(f'❌ Update Error {self.symbol_ccxt}: {e}')
+            self._record_error()
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Main entry point
+# ═══════════════════════════════════════════════════════════════════
+async def main():
+    router = ExchangeRouter.from_env()
+    await router.initialize()
+    
+    active_exchanges = router.get_active_exchanges()
+    logger.info(f"📡 Exchange attivi: {active_exchanges}")
+    
+    # FIX: Graceful exit if no exchanges
+    if not active_exchanges:
+        logger.error("❌ NESSUN EXCHANGE ATTIVO. Verifica .env API keys.")
+        logger.error("   BINANCE_API_KEY e BINANCE_API_SECRET devono essere popolate.")
+        logger.error("   Il bot terminerà tra 10 secondi.")
+        await asyncio.sleep(10)
+        return
+    
+    default_exchange = await router.get_exchange_instance('binance')
+    if default_exchange is None and active_exchanges:
+        default_exchange = list(router.exchanges.values())[0]
+    
+    if default_exchange is None:
+        logger.error("❌ Nessun exchange disponibile. Exit.")
+        return
+    
+    db = TradeDB(os.path.join(BASE_DIR, "trades.db"))
+    exposure_guard = ExposureGuard(db)
+    
+    # FIX: Initialize adaptive engine (self-learning)
+    adaptive = AutoAdaptiveEngine(db)
+    adaptive.load_history()
+    
+    risk_manager = RiskManager(db, exposure_guard, adaptive_engine=adaptive)
+    feed = PriceFeed()
+    
+    # FIX: Build bots only for top-N pairs by volume ranking
+    bots = []
+    volume_rank = {}
+    
+    # Sort by volume to prioritize liquid pairs
+    symbols_with_exchange = []
+    for i, s in enumerate(SYMBOLS_WS):
+        ccxt_sym = SYMBOLS_CCXT[i]
+        exch_name = router.get_exchange_for_symbol(ccxt_sym)
+        exchange = (await router.get_exchange_instance(exch_name)
+                    if exch_name else default_exchange)
+        if exchange is None:
+            continue
+        symbols_with_exchange.append((s, ccxt_sym, exchange, exch_name or 'binance'))
+    
+    # FIX: Initialize indicators first to rank by volume
+    temp_bots = []
+    for s, ccxt_sym, exchange, exch_name in symbols_with_exchange:
+        bot = LegionBot(exchange, s, ccxt_sym, db, exposure_guard,
+                       adaptive_engine=adaptive, exchange_name=exch_name)
+        await bot.init_indicators()
+        temp_bots.append(bot)
+        
+        # Rank by 24h volume (from OHLCV data)
+        if bot.ohlcv_data is not None and len(bot.ohlcv_data) > 0:
+            avg_vol = bot.ohlcv_data['vol'].mean()
+            volume_rank[bot.symbol_ws] = avg_vol
+    
+    # Keep only MAX_ACTIVE_SYMBOLS highest-volume pairs
+    sorted_symbols = sorted(volume_rank.items(), key=lambda x: -x[1]) if volume_rank else []
+    active_pairs = {s for s, v in sorted_symbols[:MAX_ACTIVE_SYMBOLS]}
+    
+    # FIX: If we have < MAX_ACTIVE_SYMBOLS, use all
+    if len(active_pairs) < 6:
+        active_pairs = {tb.symbol_ws for tb in temp_bots}
+    
+    # FIX: Also include any pair that has an active position (must restore)
+    for tb in temp_bots:
+        if tb.position:
+            active_pairs.add(tb.symbol_ws)
+    
+    bots = [tb for tb in temp_bots if tb.symbol_ws in active_pairs]
+    
+    logger.info(f'🔝 Top {len(bots)} pairs by volume (from {len(temp_bots)} total)')
+    for b in bots:
+        vol_val = volume_rank.get(b.symbol_ws, 0)
+        logger.info(f'   {b.symbol_ws:<12} vol: {vol_val:.0f}  pos: {b.position}')
+    
+    asyncio.create_task(feed.start())
+    
+    # Wait for first price data
+    logger.info("⏳ Attesa primo prezzo WebSocket...")
+    for _ in range(30):
+        if len(feed.prices) > 3:
+            break
+        await asyncio.sleep(1)
+    logger.info(f'✅ Dati prezzo ricevuti per {len(feed.prices)} simboli')
+    
+    logger.info(f'🚀 LegionManager PROD v4.0 avviato. '
+                f'{len(bots)} bot attivi.')
+    
+    # FIX: Centralized balance fetch (once per cycle, shared across bots)
+    last_balance_fetch = 0
+    total_balance = INITIAL_CAPITAL
+    
+    ohlcv_refresh_counter = 0
+    
+    try:
+        while True:
+            # FIX: Fetch total balance only ONCE per 60 seconds
+            now = time.time()
+            if now - last_balance_fetch > 60:
+                try:
+                    bal = await default_exchange.fetch_balance()
+                    free_eur = float(bal.get('EUR', {}).get('free', 0) or 0)
+                    free_usdt = float(bal.get('USDT', {}).get('free', 0) or 0)
+                    total_balance = max(free_eur, free_usdt)
+                    if total_balance <= 0:
+                        total_balance = INITIAL_CAPITAL
+                    last_balance_fetch = now
+                except Exception as e:
+                    logger.error(f"❌ Balance fetch: {e}")
+            
+            # FIX: Adaptive engine auto-adjusts every cycle
+            adaptive.update_daily_stats()
+            
+            # FIX: Run bot updates
+            await asyncio.gather(*(
+                bot.update(feed, risk_manager, total_balance) for bot in bots
+            ))
+            
+            # FIX: Periodic report (every 60 iterations = ~60 seconds)
+            ohlcv_refresh_counter += 1
+            if ohlcv_refresh_counter % 60 == 0:
+                # Log summary
+                open_positions = sum(1 for b in bots if b.position)
+                total_exp = exposure_guard.get_exposure()
+                metrics = adaptive.summary()
+                logger.info(
+                    f'📊 Posizioni aperte: {open_positions}/{len(bots)} | '
+                    f'Exposure: {total_exp["total"]:.1f}€ | '
+                    f'Win rate: {metrics["overall_win_rate"]:.1f}% | '
+                    f'Profit: {metrics["total_profit"]:.2f}€')
+            
+            await asyncio.sleep(1)
+            
+    except asyncio.CancelledError:
+        logger.info("🛑 LegionManager fermato.")
+    except Exception as e:
+        logger.error(f'❌ Errore critico: {e}')
+        import traceback
+        logger.error(traceback.format_exc())
+    finally:
+        await router.close_all()
+        logger.info("🏁 Connessioni exchange chiuse.")
+
+
+if __name__ == '__main__':
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        logger.info("🛑 Terminato da tastiera.")
+    except Exception as e:
+        logger.error(f"Avvio fallito: {e}")

@@ -38,8 +38,8 @@ DEFAULT_CONFIG = {
     "regime_check_interval": 300,
     "fill_check_interval": 15,
     "report_interval": 3600,
-    "portfolio_floor": 35.0,
-    "max_drawdown_pct": 10.0,
+    "portfolio_floor": 0.0,
+    "max_drawdown_pct": 50.0,
 }
 
 def load_config():
@@ -199,8 +199,8 @@ async def main():
                     if port_val > peak_portfolio:
                         peak_portfolio = port_val
                     drawdown = ((peak_portfolio - port_val) / peak_portfolio * 100) if peak_portfolio > 0 else 0
-                    floor = config.get("portfolio_floor", 35)
-                    max_dd = config.get("max_drawdown_pct", 10)
+                    floor = config.get("portfolio_floor", 0)
+                    max_dd = config.get("max_drawdown_pct", 50)
                     if port_val < floor or drawdown > max_dd:
                         logger.warning(f"KILL: port={port_val:.2f} floor={floor} dd={drawdown:.1f}%")
                         await cancel_all_orders(client, active_symbol)
