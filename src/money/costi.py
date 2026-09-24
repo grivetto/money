@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""denaro.costi — la matematica che decide se un'operazione puo' esistere.
+"""money.costi — la matematica che decide se un'operazione puo' esistere.
 
 PERCHE' QUESTO E' IL PRIMO MODULO DEL PROGETTO
 ==============================================

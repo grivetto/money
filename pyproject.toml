@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "denaro"
+name = "money"
 version = "0.1.0"
-description = "Denaro — riscritto da zero: prima si misura se esiste un edge, poi si automatizza. Tre macchine, tre famiglie, tre conti."
+description = "Money — riscritto da zero: prima si misura se esiste un edge, poi si automatizza. Tre macchine, tre famiglie, tre conti."
 requires-python = ">=3.11"
 dependencies = [
     "ccxt>=4.0",
@@ -24,10 +24,20 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-# NIENTE pytest-asyncio finche' non e' installato davvero: nel progetto precedente
-# `asyncio_mode = "auto"` era dichiarato e il plugin assente, quindi i test async
-# giravano per un meccanismo non spiegato. Un test che passa per caso non e' un test.
-asyncio_mode = "strict"
+# I test importano il pacchetto da `src/` senza installazione: cosi' `python -m pytest tests`
+# funziona su un checkout appena fatto, senza variabili d'ambiente da ricordare.
+pythonpath = ["src"]
+# NIENTE `asyncio_mode` finche' pytest-asyncio non e' installato DAVVERO.
+#
+# Nel progetto precedente l'opzione era dichiarata e il plugin assente: i test `async`
+# giravano lo stesso, per un meccanismo che nessuno aveva spiegato, e nessuno si era
+# accorto che il risultato non era quello che il file di configurazione prometteva.
+# Un test che passa per caso e' peggio di un test rosso.
+#
+# Qui l'opzione e' stata tolta proprio per questo: dichiararla senza il plugin produce un
+# `PytestConfigWarning: Unknown config option` a OGNI esecuzione, che e' esattamente il
+# rumore che insegna a ignorare l'output dei test. Quando servira' un test asincrono, si
+# installa il plugin e si rimette l'opzione — con il plugin presente.
 
 [tool.ruff]
 line-length = 120
