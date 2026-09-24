@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "denaro"
+version = "0.1.0"
+description = "Denaro — riscritto da zero: prima si misura se esiste un edge, poi si automatizza. Tre macchine, tre famiglie, tre conti."
+requires-python = ">=3.11"
+dependencies = [
+    "ccxt>=4.0",
+    "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.5",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# NIENTE pytest-asyncio finche' non e' installato davvero: nel progetto precedente
+# `asyncio_mode = "auto"` era dichiarato e il plugin assente, quindi i test async
+# giravano per un meccanismo non spiegato. Un test che passa per caso non e' un test.
+asyncio_mode = "strict"
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+# Solo regole che intercettano errori reali. Il codebase precedente aveva una CI rossa
+# per stile e nessuno la guardava piu': una CI che grida sempre non protegge niente.
+select = ["E9", "F"]
+ignore = ["F401", "F841"]

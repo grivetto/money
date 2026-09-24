@@ -1,0 +1,11 @@
+# Il progetto riscritto da zero
+data/
+*.db
+
+# Ambiente
+venv/
+.env
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.pytmp/
