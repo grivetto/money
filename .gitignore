@@ -9,3 +9,8 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .pytmp/
+.ruff_cache/
+
+# Nota sull'ambiente (Windows + sandbox): 	empfile.mkdtemp e le directory appena
+# create non sono scrivibili. Per questo i test usano cartella_temporanea() sotto
+# .pytmp/ e le cache degli strumenti restano qui dentro invece che in %TEMP%.
