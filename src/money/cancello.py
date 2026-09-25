@@ -18,8 +18,8 @@ per "promosso", quindi il codice di produzione si scrive come
 e non esiste modo di dimenticarsene, perche' non c'e' nessuna scorciatoia: ogni criterio
 produce un motivo **con il numero dentro**, e i motivi si leggono.
 
-I SETTE CRITERI (tutti devono passare)
-======================================
+GLI OTTO CRITERI (tutti devono passare)
+=======================================
 1. Numerosita'   : almeno `MIN_OPERAZIONI` = 30 operazioni. Sotto, il verdetto e'
                    **"insufficiente"**, non "archiviato".
 2. Expectancy    : intervallo di confidenza bootstrap al 90% con estremo inferiore > 0,
@@ -37,6 +37,8 @@ I SETTE CRITERI (tutti devono passare)
 7. Rilevanza     : guadagno atteso annuo in EUR >= `SOGLIA_EUR_ANNO`. Un edge che vale
                    0,40 EUR/anno non giustifica un sistema acceso 24 ore su 7. E' un
                    **estrapolazione** e va dichiarata come tale (vedi sotto).
+8. Indipendenza  : l'expectancy non deve dipendere da un solo blocco contiguo. Se togliendo
+                   il blocco migliore diventa negativa, si archivia (vedi sotto).
 
 CRITERIO 8 — LA DIPENDENZA DA UN SOLO BLOCCO
 ============================================

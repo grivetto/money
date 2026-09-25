@@ -64,6 +64,22 @@ def test_le_tariffe_sono_ordinate_come_la_realtа_misurata():
     assert con.giro_taker == pytest.approx(0.0020)
 
 
+def test_la_tariffa_swap_misurata_sull_account_non_sostituisce_l_assunzione():
+    """La tariffa SWAP letta dal conto (0,070%) e' piu' bassa di quella assunta (0,180%).
+
+    Il test fissa ENTRAMBE, e il motivo e' preciso: `okx_eea_con_perp` e' l'assunzione
+    conservativa valida **finche' `acctLv` non e' 2**, la tariffa misurata vale solo con i
+    derivati attivi. Se qualcuno "allinea" l'assunzione al numero misurato senza che
+    l'account sia salito di livello, il cancello diventa piu' permissivo di quanto sia lecito:
+    e' il modo silenzioso di abbassare il pedaggio sulla carta.
+    """
+    assunto = get_tariffa("okx_eea_con_perp")
+    misurato = get_tariffa("okx_eea_swap_lv1")
+    assert misurato.giro_misto == pytest.approx(0.0007)
+    assert misurato.giro_misto < assunto.giro_misto
+    assert "acctLv 2" in misurato.condizione
+
+
 # --- il movimento minimo: la disuguaglianza che uccide le strategie --------------
 
 def test_movimento_minimo_a_pareggio_e_il_pedaggio():

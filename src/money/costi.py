@@ -103,6 +103,14 @@ TARIFFE: Dict[str, Tariffa] = {
         condizione="conto OKX EEA con X-Perps aperti (KYC + appropriateness assessment)",
         note="nessun requisito di volume o capitale: e' il salto piu' conveniente",
     ),
+    "okx_eea_swap_lv1": Tariffa(
+        Venue.OKX_EEA, maker=0.0002, taker=0.0005,
+        condizione="conto OKX EEA con derivati attivi (acctLv 2), livello Lv1, SWAP regolati in stablecoin",
+        note="misurata SULL'ACCOUNT il 2026-09-25 con privateGetAccountTradeFee: giro misto 0,070%. "
+             "E' piu' economica di okx_eea_con_perp (0,180%), che resta l'assunzione conservativa da "
+             "usare finche' acctLv non e' 2. Attenzione a cosa NON include: regolamento in USDT/USDC "
+             "invece che in EUR (esposizione stablecoin) e funding ogni 8 ore, misurato ~0,4x la fee",
+    ),
     "bybit_eu_spot": Tariffa(
         Venue.BYBIT_EU, maker=0.0010, taker=0.0025,
         condizione="conto Bybit EU (residente EEA)",
