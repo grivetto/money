@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 640" width="1080" height="640" role="img" aria-label="money — dalla barra al verdetto">
+  <rect width="1080" height="640" fill="#f8fafc"/>
+  <text x="40" y="46" font-family="Helvetica,Arial,sans-serif" font-size="26" font-weight="bold" fill="#0f172a">money — dalla barra al verdetto</text>
+  <text x="40" y="72" font-family="Helvetica,Arial,sans-serif" font-size="14" fill="#475569">Nessuna strategia entra in produzione senza aver superato il cancello. Il cancello e' codice, e il suo rifiuto e' vincolante.</text>
+
+  <!-- pipeline -->
+  <g font-family="Helvetica,Arial,sans-serif">
+    <rect x="40" y="110" width="180" height="78" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+    <text x="130" y="140" font-size="15" font-weight="bold" text-anchor="middle" fill="#0f172a">OKX EEA</text>
+    <text x="130" y="162" font-size="12" text-anchor="middle" fill="#475569">eea.okx.com</text>
+    <text x="130" y="178" font-size="12" text-anchor="middle" fill="#475569">barre OHLCV reali</text>
+
+    <rect x="250" y="110" width="180" height="78" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+    <text x="340" y="140" font-size="15" font-weight="bold" text-anchor="middle" fill="#0f172a">dati.py</text>
+    <text x="340" y="162" font-size="12" text-anchor="middle" fill="#475569">point-in-time, cache</text>
+    <text x="340" y="178" font-size="12" text-anchor="middle" fill="#475569">nessun look-ahead</text>
+
+    <rect x="460" y="110" width="180" height="78" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+    <text x="550" y="140" font-size="15" font-weight="bold" text-anchor="middle" fill="#0f172a">ricerca/</text>
+    <text x="550" y="162" font-size="12" text-anchor="middle" fill="#475569">una ipotesi per file</text>
+    <text x="550" y="178" font-size="12" text-anchor="middle" fill="#475569">simula(...) -&gt; Esito</text>
+
+    <rect x="670" y="110" width="180" height="78" rx="10" fill="#1e293b" stroke="#0f172a" stroke-width="1.5"/>
+    <text x="760" y="140" font-size="15" font-weight="bold" text-anchor="middle" fill="#f8fafc">cancello.py</text>
+    <text x="760" y="162" font-size="12" text-anchor="middle" fill="#cbd5e1">8 criteri, 3 esiti</text>
+    <text x="760" y="178" font-size="12" text-anchor="middle" fill="#cbd5e1">prove numeriche</text>
+
+    <rect x="880" y="110" width="160" height="78" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+    <text x="960" y="140" font-size="15" font-weight="bold" text-anchor="middle" fill="#0f172a">verdetto</text>
+    <text x="960" y="162" font-size="12" text-anchor="middle" fill="#475569">vincolante</text>
+    <text x="960" y="178" font-size="12" text-anchor="middle" fill="#475569">nessun ricorso</text>
+
+    <g stroke="#64748b" stroke-width="2" marker-end="url(#a)">
+      <line x1="222" y1="149" x2="246" y2="149"/>
+      <line x1="432" y1="149" x2="456" y2="149"/>
+      <line x1="642" y1="149" x2="666" y2="149"/>
+      <line x1="852" y1="149" x2="876" y2="149"/>
+    </g>
+  </g>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <!-- tre esiti -->
+  <g font-family="Helvetica,Arial,sans-serif">
+    <rect x="40" y="220" width="320" height="52" rx="8" fill="#dcfce7" stroke="#16a34a"/>
+    <text x="56" y="243" font-size="14" font-weight="bold" fill="#14532d">PROMOSSO</text>
+    <text x="56" y="261" font-size="12" fill="#14532d">entra in pre-produzione (banco a secco, nessun ordine)</text>
+
+    <rect x="380" y="220" width="320" height="52" rx="8" fill="#fee2e2" stroke="#dc2626"/>
+    <text x="396" y="243" font-size="14" font-weight="bold" fill="#7f1d1d">ARCHIVIATO</text>
+    <text x="396" y="261" font-size="12" fill="#7f1d1d">la strategia non ha un edge: si archivia, non si ottimizza</text>
+
+    <rect x="720" y="220" width="320" height="52" rx="8" fill="#fef9c3" stroke="#ca8a04"/>
+    <text x="736" y="243" font-size="14" font-weight="bold" fill="#713f12">INSUFFICIENTE</text>
+    <text x="736" y="261" font-size="12" fill="#713f12">meno di 30 operazioni: non si sa, non si decide</text>
+  </g>
+
+  <!-- il pedaggio -->
+  <g font-family="Helvetica,Arial,sans-serif">
+    <text x="40" y="322" font-size="17" font-weight="bold" fill="#0f172a">Il pedaggio decide — misurato sull'account, non stimato</text>
+
+    <rect x="40" y="338" width="300" height="30" rx="6" fill="#b91c1c"/>
+    <text x="52" y="358" font-size="13" fill="#ffffff">0,550% per giro — spot, acctLv 1 (oggi)</text>
+
+    <rect x="370" y="338" width="220" height="30" rx="6" fill="#ea580c"/>
+    <text x="382" y="358" font-size="13" fill="#ffffff">0,180% — con X-Perps (assunto)</text>
+
+    <rect x="620" y="338" width="260" height="30" rx="6" fill="#15803d"/>
+    <text x="632" y="358" font-size="13" fill="#ffffff">0,070% — swap Lv1, misurato sul conto</text>
+
+    <text x="40" y="392" font-size="13" fill="#475569">Sotto 4 EUR di capitale, con minimo d'ordine 1 EUR e un quarto per posizione, non esiste nessun ordine sensato.</text>
+  </g>
+
+  <!-- i tre nodi -->
+  <g font-family="Helvetica,Arial,sans-serif">
+    <text x="40" y="440" font-size="17" font-weight="bold" fill="#0f172a">Tre macchine, tre famiglie, un conto ciascuna</text>
+
+    <rect x="40" y="458" width="320" height="120" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+    <text x="58" y="484" font-size="15" font-weight="bold" fill="#0f172a">A — trend a orizzonte lungo</text>
+    <text x="58" y="508" font-size="12" fill="#475569">documenta un'ipotesi che sopravviva al pedaggio</text>
+    <text x="58" y="530" font-size="13" font-weight="bold" fill="#b91c1c">archiviato</text>
+    <text x="58" y="552" font-size="12" fill="#475569">+1,96%/op in campione, -1,21%/op fuori campione</text>
+    <text x="58" y="570" font-size="12" fill="#475569">gli X-Perps valgono 0,94 EUR/anno: non lo salvano</text>
+
+    <rect x="380" y="458" width="320" height="120" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+    <text x="398" y="484" font-size="15" font-weight="bold" fill="#0f172a">B — griglia adattiva</text>
+    <text x="398" y="508" font-size="12" fill="#475569">la spaziatura minima deve battere il pedaggio</text>
+    <text x="398" y="530" font-size="13" font-weight="bold" fill="#b91c1c">archiviato</text>
+    <text x="398" y="552" font-size="12" fill="#475569">1581 operazioni, -1,18%/op, t -8,54</text>
+    <text x="398" y="570" font-size="12" fill="#475569">negativa a ogni spaziatura fino a 7,00%</text>
+
+    <rect x="720" y="458" width="320" height="120" rx="10" fill="#ffffff" stroke="#cbd5e1"/>
+    <text x="738" y="484" font-size="15" font-weight="bold" fill="#0f172a">C — momento a 4 ore</text>
+    <text x="738" y="508" font-size="12" fill="#475569">~8x le occasioni del giornaliero: misurato 5,47x</text>
+    <text x="738" y="530" font-size="13" font-weight="bold" fill="#b91c1c">archiviato</text>
+    <text x="738" y="552" font-size="12" fill="#475569">4h -0,36%/op, 1d -1,67%/op</text>
+    <text x="738" y="570" font-size="12" fill="#475569">il pedaggio basso migliora, non promuove</text>
+  </g>
+</svg>
