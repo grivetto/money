@@ -11,6 +11,13 @@ __pycache__/
 .pytmp/
 .ruff_cache/
 
-# Nota sull'ambiente (Windows + sandbox): 	empfile.mkdtemp e le directory appena
+# Output grezzi dei runner di misura.
+# Le prove curate stanno in prove/ e sono versionate: queste cartelle no, perche' chi
+# riproduce una misura da un clone pulito non deve trovarsi git status sporco.
+risultati/
+report/
+dati_cache/
+
+# Nota sull'ambiente (Windows + sandbox): 	tempfile.mkdtemp e le directory appena
 # create non sono scrivibili. Per questo i test usano cartella_temporanea() sotto
 # .pytmp/ e le cache degli strumenti restano qui dentro invece che in %TEMP%.
