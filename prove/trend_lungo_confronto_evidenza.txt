@@ -1,0 +1,37 @@
+fatal: bad revision 'HEAD'
+============================================================================================================
+1) TUTTA LA STORIA (grandezza confrontabile con la mediana +17,47% di �20.3)
+============================================================================================================
+paniere 3 simboli, tutta la storia n=  35  somma lorda-net   +68.57%  composto   +44.08%  DD  37.88%  exp/op  +1.959%
+
+  BTC/EUR                          n=  13  somma lorda-net   +22.75%  composto   +14.30%  DD  37.05%  exp/op  +1.750%
+  ETH/EUR                          n=  11  somma lorda-net   +44.31%  composto   +36.74%  DD  25.23%  exp/op  +4.028%
+  SOL/EUR                          n=  11  somma lorda-net    +1.51%  composto    -7.81%  DD  26.36%  exp/op  +0.137%
+
+============================================================================================================
+2) PARTIZIONE WALK-FORWARD: addestramento vs verifica (parametri FISSI)
+============================================================================================================
+ADDESTRAMENTO (prime 550 barre)    n=  19  somma lorda-net   +87.86%  composto   +91.55%  DD  23.68%  exp/op  +4.624%
+VERIFICA (finestre mai viste)      n=  16  somma lorda-net   -19.29%  composto   -24.78%  DD  39.31%  exp/op  -1.206%
+
+finestre di verifica: ['BTC/EUR#1', 'ETH/EUR#1', 'SOL/EUR#1']
+  BTC/EUR#1    2025-05-25 -> 2026-09-16 (480 barre)
+  ETH/EUR#1    2025-05-25 -> 2026-09-16 (480 barre)
+  SOL/EUR#1    2025-05-25 -> 2026-09-16 (480 barre)
+
+============================================================================================================
+3) ROBUSTEZZA SU FINESTRE CORTE � quante hanno expectancy netta > 0
+   (il confronto diretto con '0/24 configurazioni robuste su 4 finestre su 5')
+============================================================================================================
+  BTC/EUR#1   2025-04-25 -> 2025-10-01  n= 2  exp/op   -5,195%
+  BTC/EUR#2   2025-10-02 -> 2026-03-10  n= 1  exp/op   -8,515%
+  BTC/EUR#3   2026-03-11 -> 2026-08-17  n= 2  exp/op   -5,161%
+  ETH/EUR#1   2025-04-25 -> 2025-10-01  n= 3  exp/op   +2,037%
+  ETH/EUR#2   2025-10-02 -> 2026-03-10  n= 0  exp/op       n/d
+  ETH/EUR#3   2026-03-11 -> 2026-08-17  n= 0  exp/op       n/d
+  SOL/EUR#1   2025-04-25 -> 2025-10-01  n= 2  exp/op   +0,880%
+  SOL/EUR#2   2025-10-02 -> 2026-03-10  n= 0  exp/op       n/d
+  SOL/EUR#3   2026-03-11 -> 2026-08-17  n= 1  exp/op   -5,174%
+
+finestre con expectancy netta > 0: 2/9 (22%)
+finestre con n >= 5 operazioni   : 0

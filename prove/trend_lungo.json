@@ -1,0 +1,277 @@
+{
+  "protocollo": {
+    "simboli": [
+      "BTC/EUR",
+      "ETH/EUR",
+      "SOL/EUR"
+    ],
+    "timeframe": "1d",
+    "inizio": "2023-11-10",
+    "fine": "2026-09-24",
+    "tariffa": "okx_eea_spot",
+    "tipo": "misto",
+    "pedaggio_per_operazione": 0.0055,
+    "slippage_per_lato": 0.0005,
+    "slippage_per_giro": 0.001,
+    "parametri": {
+      "donchian_ingresso": 40,
+      "uscita_canale": 20,
+      "atr_periodo": 18,
+      "atr_stop": 3.0,
+      "stop_tempo": 60
+    },
+    "capitale_riferimento": 1000.0,
+    "soglia_eur_anno": 10.0,
+    "n_blocchi": 4,
+    "walk_forward": {
+      "addestra": 550,
+      "verifica": 480,
+      "passo": 480,
+      "embargo": 1
+    }
+  },
+  "dati": {
+    "BTC/EUR": {
+      "barre": 1039,
+      "chiave": "okx_eea:BTC/EUR:1d:1700524800000-1790208000000:1039:704e70a7f0478e0b",
+      "dal": "2023-11-21",
+      "al": "2026-09-24",
+      "problemi_verifica": []
+    },
+    "ETH/EUR": {
+      "barre": 1039,
+      "chiave": "okx_eea:ETH/EUR:1d:1700524800000-1790208000000:1039:f15c12ce12a7f78d",
+      "dal": "2023-11-21",
+      "al": "2026-09-24",
+      "problemi_verifica": []
+    },
+    "SOL/EUR": {
+      "barre": 1039,
+      "chiave": "okx_eea:SOL/EUR:1d:1700524800000-1790208000000:1039:51f46b19ed25031d",
+      "dal": "2023-11-21",
+      "al": "2026-09-24",
+      "problemi_verifica": []
+    }
+  },
+  "per_simbolo": {
+    "BTC/EUR": {
+      "operazioni": 13,
+      "max_drawdown": 0.37050562188849256,
+      "netto_medio": 0.017496243879006695,
+      "uscite": {
+        "canale uscita": 1,
+        "stop in gap": 12
+      }
+    },
+    "ETH/EUR": {
+      "operazioni": 11,
+      "max_drawdown": 0.2522981570170081,
+      "netto_medio": 0.04028453410896346,
+      "uscite": {
+        "stop tempo": 1,
+        "stop in gap": 10
+      }
+    },
+    "SOL/EUR": {
+      "operazioni": 11,
+      "max_drawdown": 0.2635583048774871,
+      "netto_medio": 0.001370744589157038,
+      "uscite": {
+        "stop in gap": 11
+      }
+    }
+  },
+  "esito_principale": {
+    "verdetto": "archiviato",
+    "motivi": [
+      "[expectancy_ic90] expectancy netta +1,96% con IC bootstrap al 90% [-1,96%, +5,91%] (seme 20260101, 10000 ricampionamenti): estremo inferiore <= 0",
+      "[t_stat] t-statistic 0,821 <= 1,650 a una coda (5%)",
+      "[drawdown] drawdown massimo 53,18% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge",
+      "[rilevanza_economica] rilevanza economica insufficiente: 4,97 EUR/anno attesi < 10,00 EUR di soglia (12 operazioni/anno su capitale 1000,00 EUR x esposizione 2,06%): un edge di questa dimensione non giustifica un sistema H24, estrapolazione: 35 operazioni in 1038,0 giorni proiettate a 12/anno con expectancy costante — e' un limite superiore, non una previsione"
+    ],
+    "criteri": {
+      "numerosita'": true,
+      "expectancy_ic90": false,
+      "t_stat": false,
+      "profit_factor": true,
+      "drawdown": false,
+      "pedaggio_coperto": true,
+      "rilevanza_economica": false,
+      "indipendenza_dai_blocchi": true
+    },
+    "n": 35,
+    "giorni_osservati": 1038.0,
+    "expectancy": 0.019590263888754643,
+    "ic_bootstrap": [
+      -0.01957220434942024,
+      0.059136933171538855
+    ],
+    "t_stat": 0.821461227257589,
+    "profit_factor": 1.4195064450331312,
+    "max_drawdown": 0.5317788699901268,
+    "esposizione_media": 0.020624226591502818,
+    "pedaggio_per_operazione": 0.0055,
+    "eur_anno": 4.972576954966874,
+    "eu_anno_per_anno": {
+      "disponibile": true,
+      "eur_anno": 4.972576954966874,
+      "capitale_per_operazione": 20.62422659150282,
+      "operazioni_per_anno": 12.307321772639693,
+      "anno_coperto": 2.8438356164383563,
+      "avvertenza": "estrapolazione: 35 operazioni in 1038.0 giorni proiettate a 12/anno con expectancy costante — e' un limite superiore, non una previsione"
+    },
+    "scomposizione": {
+      "expectancy_lorda_per_blocco": [
+        0.03008700863977827,
+        0.05993482554146677,
+        0.001336693786972182,
+        -0.017070939450942804
+      ],
+      "n_per_blocco": [
+        9,
+        9,
+        9,
+        8
+      ],
+      "expectancy_senza_migliore": 0.00012483870127737162,
+      "dipende_da_un_solo_blocco": false,
+      "motivo": "expectancy distribuita: blocco 2/4 e' il migliore a +5,99% lordo, e senza di esso resta +0,01% netto > 0"
+    }
+  },
+  "addestramento": {
+    "verdetto": "insufficiente",
+    "motivi": [
+      "numerosita' 19 operazioni < 30 minime: con cosi' pochi campioni la stima dell'expectancy (+4,62%) e' dominata dal rumore — l'errore standard della media e' +3,63% contro un'expectancy di +4,62%. Promuovere sarebbe un azzardo, archiviare sarebbe buttare via la strategia: in entrambi i casi sarebbe una finzione"
+    ],
+    "criteri": null,
+    "n": 19,
+    "giorni_osservati": null,
+    "expectancy": 0.046241181132239906,
+    "ic_bootstrap": null,
+    "t_stat": 1.2726213889592928,
+    "profit_factor": 2.0109354119458436,
+    "max_drawdown": null,
+    "eur_anno": null
+  },
+  "verifica_walk_forward": {
+    "verdetto": "insufficiente",
+    "motivi": [
+      "numerosita' 16 operazioni < 30 minime: con cosi' pochi campioni la stima dell'expectancy (-1,21%) e' dominata dal rumore — l'errore standard della media e' +2,73% contro un'expectancy di -1,21%. Promuovere sarebbe un azzardo, archiviare sarebbe buttare via la strategia: in entrambi i casi sarebbe una finzione"
+    ],
+    "criteri": null,
+    "n": 16,
+    "giorni_osservati": null,
+    "expectancy": -0.012057700337884104,
+    "ic_bootstrap": null,
+    "t_stat": -0.44194505382924565,
+    "profit_factor": 0.7479327303905962,
+    "max_drawdown": null,
+    "eur_anno": null,
+    "finestre": [
+      {
+        "finestra": "BTC/EUR#1",
+        "barre": 480,
+        "dal": "2025-05-25",
+        "al": "2026-09-16"
+      },
+      {
+        "finestra": "ETH/EUR#1",
+        "barre": 480,
+        "dal": "2025-05-25",
+        "al": "2026-09-16"
+      },
+      {
+        "finestra": "SOL/EUR#1",
+        "barre": 480,
+        "dal": "2025-05-25",
+        "al": "2026-09-16"
+      }
+    ]
+  },
+  "finestre_corte": [
+    {
+      "finestra": "BTC/EUR#1",
+      "barre": 160,
+      "dal": "2025-04-25",
+      "al": "2025-10-01",
+      "n": 2,
+      "expectancy": -0.05195141168745365
+    },
+    {
+      "finestra": "BTC/EUR#2",
+      "barre": 160,
+      "dal": "2025-10-02",
+      "al": "2026-03-10",
+      "n": 1,
+      "expectancy": -0.08514901139430647
+    },
+    {
+      "finestra": "BTC/EUR#3",
+      "barre": 160,
+      "dal": "2026-03-11",
+      "al": "2026-08-17",
+      "n": 2,
+      "expectancy": -0.05160562859005513
+    },
+    {
+      "finestra": "ETH/EUR#1",
+      "barre": 160,
+      "dal": "2025-04-25",
+      "al": "2025-10-01",
+      "n": 3,
+      "expectancy": 0.020366592007016203
+    },
+    {
+      "finestra": "ETH/EUR#2",
+      "barre": 160,
+      "dal": "2025-10-02",
+      "al": "2026-03-10",
+      "n": 0,
+      "expectancy": null
+    },
+    {
+      "finestra": "ETH/EUR#3",
+      "barre": 160,
+      "dal": "2026-03-11",
+      "al": "2026-08-17",
+      "n": 0,
+      "expectancy": null
+    },
+    {
+      "finestra": "SOL/EUR#1",
+      "barre": 160,
+      "dal": "2025-04-25",
+      "al": "2025-10-01",
+      "n": 2,
+      "expectancy": 0.008797441153865332
+    },
+    {
+      "finestra": "SOL/EUR#2",
+      "barre": 160,
+      "dal": "2025-10-02",
+      "al": "2026-03-10",
+      "n": 0,
+      "expectancy": null
+    },
+    {
+      "finestra": "SOL/EUR#3",
+      "barre": 160,
+      "dal": "2026-03-11",
+      "al": "2026-08-17",
+      "n": 1,
+      "expectancy": -0.05174055334955812
+    }
+  ],
+  "finestre_corte_positive": 2,
+  "finestre_corte_totali": 9,
+  "confronto_tariffe": {
+    "sintesi": "da okx_eea_spot a okx_eea_con_perp non cambia nessun criterio: il verdetto resta 'archiviato'. Il pedaggio piu' basso non sposta la decisione",
+    "criteri_cambiati": [],
+    "verdetto_a": "archiviato",
+    "verdetto_b": "archiviato",
+    "expectancy_a": 0.019590263888754643,
+    "expectancy_b": 0.02329026388875464,
+    "eur_anno_a": 4.972576954966874,
+    "eur_anno_b": 5.911744228968665
+  }
+}

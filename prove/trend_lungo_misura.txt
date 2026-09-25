@@ -1,0 +1,215 @@
+fatal: bad revision 'HEAD'
+
+============================================================================================================
+NODO A � TREND A ORIZZONTE LUNGO: MISURA E GIUDIZIO
+============================================================================================================
+cache MONEY_CACHE : C:\dev\alpha-omega-trading\.pytmp\money_verifica\dati_cache
+tariffa assunta   : okx_eea_spot (tipo misto) -> pedaggio +0,550% per operazione
+slippage assunto  : +0,100% per giro (+0,050% per lato) � ASSUNTO, non misurato
+parametri (fissi) : Donchian40 ingresso, canale20 uscita, ATR18 x 3.0 trailing, stop tempo 60 barre
+esecuzione        : all'apertura della barra SUCCESSIVA al segnale; decisione alla chiusura della barra del segnale
+capitale soglia   : +1000,00 EUR capitale, +10,00 EUR/anno di soglia (criterio 7)
+
+============================================================================================================
+1) I DATI (reali, OKX EEA, barre verificate)
+============================================================================================================
+  simbolo  barre         dal          al  giorni problemi verifica  chiave
+  BTC/EUR   1039  2023-11-21  2026-09-24    1038                 0  okx_eea:BTC/EUR:1d:1700524800000-1790208000000:1039:704e70a7f0478e0b
+  ETH/EUR   1039  2023-11-21  2026-09-24    1038                 0  okx_eea:ETH/EUR:1d:1700524800000-1790208000000:1039:f15c12ce12a7f78d
+  SOL/EUR   1039  2023-11-21  2026-09-24    1038                 0  okx_eea:SOL/EUR:1d:1700524800000-1790208000000:1039:51f46b19ed25031d
+
+============================================================================================================
+2) OPERAZIONI PER SIMBOLO (prima di giudicare: i conteggi, non il merito)
+============================================================================================================
+  simbolo   op  op/anno  lordo medio  netto medio       DD esposizione  uscite
+  BTC/EUR   13     4.57      +2,307%      +1,750%  +37,05%      0,0227  {'stop in gap': 12, 'canale uscita': 1}
+  ETH/EUR   11     3.87      +4,588%      +4,028%  +25,23%      0,0229  {'stop in gap': 10, 'stop tempo': 1}
+  SOL/EUR   11     3.87      +0,687%      +0,137%  +26,36%      0,0159  {'stop in gap': 11}
+   TOTALE   35
+
+============================================================================================================
+3) VERDETTO � misura principale (storia intera del paniere, parametri a priori)
+============================================================================================================
+--- VERDETTO PRINCIPALE (verbatim)
+esito : 'archiviato'
+motivi:
+  - [expectancy_ic90] expectancy netta +1,96% con IC bootstrap al 90% [-1,96%, +5,91%] (seme 20260101, 10000 ricampionamenti): estremo inferiore <= 0
+  - [t_stat] t-statistic 0,821 <= 1,650 a una coda (5%)
+  - [drawdown] drawdown massimo 53,18% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge
+  - [rilevanza_economica] rilevanza economica insufficiente: 4,97 EUR/anno attesi < 10,00 EUR di soglia (12 operazioni/anno su capitale 1000,00 EUR x esposizione 2,06%): un edge di questa dimensione non giustifica un sistema H24, estrapolazione: 35 operazioni in 1038,0 giorni proiettate a 12/anno con expectancy costante � e' un limite superiore, non una previsione
+statistiche salienti:
+  nome                : trend lungo Donchian40/20 ATR18x3.0 � paniere 3 simboli 1d
+  n operazioni        : 35
+  giorni osservati    : 1038,0
+  expectancy netta/op : +1,959%   (+1,959026% esatto)
+  IC90 bootstrap      : [-1,957%, +5,914%]  (seme 20260101, 10000 ricampionamenti)
+  t-statistic         : 0,821
+  profit factor       : 1,420
+  hit rate            : +42,9%   (positivi 15 / negativi 20 / nulli 0)
+  somma positivi      : +232,010%   somma negativi -163,444%
+  dev std / mediana   : +14,11% / -3,11%
+  guadagno/peggiore   : +37,03% / -15,79%
+  max drawdown        : +53,18%
+  esposizione media   : 0,0206
+  pedaggio/op         : +0,550%   tariffa okx_eea | conto OKX EEA senza derivati attivi (acctLv 1)   tipo misto
+  copertura pedaggio  : 3,562x
+  EUR/anno attesi     : +4,97 EUR   (capitale +1000,00 EUR)
+  estrapolazione      : 12,3 op/anno, anno coperto 2,84
+  avvertenza          : estrapolazione: 35 operazioni in 1038.0 giorni proiettate a 12/anno con expectancy costante � e' un limite superiore, non una previsione
+  criteri             : {"numerosita'": True, 'expectancy_ic90': False, 't_stat': False, 'profit_factor': True, 'drawdown': False, 'pedaggio_coperto': True, 'rilevanza_economica': False, 'indipendenza_dai_blocchi': True}
+  criteri falliti     : ('expectancy_ic90', 't_stat', 'drawdown', 'rilevanza_economica')
+
+Definizione del drawdown qui sopra: curva equity **composta a capitale pieno** (equity *= 1 + netto per
+ogni operazione, in ordine di chiusura). Il criterio 5 chiede una frazione del capitale, e questo e'
+il denominatore che riceve; ma la curva reinveste in ogni operazione tutto il guadagno precedente,
+quindi **amplifica i drawdown** rispetto a un conto che tiene fermo il nozionale. Va detto due volte:
+una perche' il numero e' vero, una perche' e' sfavorevole.
+
+Nel modello d'esecuzione di questo file ogni posizione impegna una frazione piccola e costante del
+conto (nessuna piramide, nessun reinvestimento). Con capitale di riferimento +1000,00 EUR e capitale per
+operazione +20,62 EUR, la perdita peggiore (-15,79%) vale -3,26 EUR sul conto.
+
+ATTENZIONE ALLE DIMENSIONI: `esposizione_media` e' la frazione di **capitale per operazione**
+(barre detenute medie / barre totali), ed e' quella che il criterio 7 di `cancello` usa. NON e' il
+tempo in mercato, che qui vale +29,5%: la prima versione di questa riga le scambiava e stampava un
+drawdown di conto privo di significato, perche' moltiplicava un rendimento per operazione per una
+frazione di tempo. `esposizione_media` = +2,06% e' capitale per operazione (+20,62 EUR su +1000,00 EUR).
+L'unico modo corretto di dare la lettura **a nozionale fisso** e':
+  drawdown della curva a nozionale pieno        : +53,18%
+  drawdown a nozionale fisso (somma dei ritorni) : +71,75%
+  dello stesso modello con il 25% del conto per posizione: +17,94% del conto
+(il 25% e' il `frazione_massima` di `money.costi.capitale_minimo`: non e' una scelta di questo
+file, e' il valore che il progetto usa altrove).
+
+La conclusione non dipende da quale lettura del drawdown si preferisce: il verdetto e' **archiviato**
+comunque, e i criteri che lo archiviano (expectancy_ic90, t_stat, rilevanza) non guardano il
+drawdown. Ma il criterio 5 va riportato con accanto la sua definizione, perche' un numero di rischio
+senza definizione e' un numero che qualcuno usera' male.
+
+Nota obbligatoria su questa misura: la storia intera **include** il periodo in cui ho scelto i
+valori dei parametri. I valori sono convenzionali e non sono stati ottimizzati su questa serie
+(nessuna griglia, nessuna ricerca), ma 'non ottimizzato' non e' 'out-of-sample'. Il verdetto
+qui sotto e' una misura **in-sample** del progetto di strategia.
+
+============================================================================================================
+4) CRITERIO 8 � L'EDGE DIPENDE DA UN SOLO BLOCCO?
+============================================================================================================
+--- criterio 8: 4 blocchi contigui di tempo (quartili di operazioni)
+ blocco   n op   expectancy lorda   expectancy netta
+      1      9            +3,009%            +2,459%
+      2      9            +5,993%            +5,443%
+      3      9            +0,134%            -0,416%
+      4      8            -1,707%            -2,257%
+  pedaggio sottratto per blocco  : +0,550% (tariffa assunta)
+  indipendenza dai blocchi passa : True
+  motivo                         : expectancy distribuita: blocco 2/4 e' il migliore a +5,99% lordo, e senza di esso resta +0,01% netto > 0
+  migliore                       : blocco 2/4 a +5,993% lordo (+5,443% netto)
+  expectancy netta senza il migliore: +0,012%
+  criteri falliti                : ('expectancy_ic90', 't_stat', 'drawdown', 'rilevanza_economica')
+
+============================================================================================================
+5) VERIFICA DI STABILITA' � barre di verifica walk-forward (mai viste)
+============================================================================================================
+      finestra  barre         dal          al
+     BTC/EUR#1    480  2025-05-25  2026-09-16
+     ETH/EUR#1    480  2025-05-25  2026-09-16
+     SOL/EUR#1    480  2025-05-25  2026-09-16
+
+operazioni fuori dalle finestre (addestramento): 19
+operazioni dentro le finestre (verifica)       : 16
+
+--- VERDETTO � barre di ADDESTRAMENTO (verbatim)
+esito : 'insufficiente'
+motivi:
+  - numerosita' 19 operazioni < 30 minime: con cosi' pochi campioni la stima dell'expectancy (+4,62%) e' dominata dal rumore � l'errore standard della media e' +3,63% contro un'expectancy di +4,62%. Promuovere sarebbe un azzardo, archiviare sarebbe buttare via la strategia: in entrambi i casi sarebbe una finzione
+statistiche salienti:
+  nome                : trend lungo � barre di ADDESTRAMENTO walk-forward (prime 550 barre per simbolo)
+  n operazioni        : 19
+  giorni osservati    : n/d
+  expectancy netta/op : +4,624%   (+4,624118% esatto)
+  IC90 bootstrap      : n/d  (seme None, None ricampionamenti)
+  t-statistic         : 1,273
+  profit factor       : 2,011
+  hit rate            : +47,4%   (positivi 9 / negativi 10 / nulli 0)
+  somma positivi      : +174,766%   somma negativi -86,908%
+  dev std / mediana   : +15,84% / -1,75%
+  guadagno/peggiore   : +37,03% / -12,98%
+  max drawdown        : n/d
+  esposizione media   : n/d
+  pedaggio/op         : n/d   tariffa okx_eea | conto OKX EEA senza derivati attivi (acctLv 1)   tipo None
+  copertura pedaggio  : n/dx
+  EUR/anno attesi     : n/d   (capitale n/d)
+  estrapolazione      : non disponibile � None
+  criteri             : None
+  criteri falliti     : None
+
+--- VERDETTO � barre di VERIFICA (verbatim)
+esito : 'insufficiente'
+motivi:
+  - numerosita' 16 operazioni < 30 minime: con cosi' pochi campioni la stima dell'expectancy (-1,21%) e' dominata dal rumore � l'errore standard della media e' +2,73% contro un'expectancy di -1,21%. Promuovere sarebbe un azzardo, archiviare sarebbe buttare via la strategia: in entrambi i casi sarebbe una finzione
+statistiche salienti:
+  nome                : trend lungo � barre di VERIFICA walk-forward (addestra 550, verifica 480, passo 480, embargo 1)
+  n operazioni        : 16
+  giorni osservati    : n/d
+  expectancy netta/op : -1,206%   (-1,205770% esatto)
+  IC90 bootstrap      : n/d  (seme None, None ricampionamenti)
+  t-statistic         : -0,442
+  profit factor       : 0,748
+  hit rate            : +37,5%   (positivi 6 / negativi 10 / nulli 0)
+  somma positivi      : +57,244%   somma negativi -76,536%
+  dev std / mediana   : +10,91% / -3,12%
+  guadagno/peggiore   : +28,45% / -15,79%
+  max drawdown        : n/d
+  esposizione media   : n/d
+  pedaggio/op         : n/d   tariffa okx_eea | conto OKX EEA senza derivati attivi (acctLv 1)   tipo None
+  copertura pedaggio  : n/dx
+  EUR/anno attesi     : n/d   (capitale n/d)
+  estrapolazione      : non disponibile � None
+  criteri             : None
+  criteri falliti     : None
+
+============================================================================================================
+5b) ROBUSTEZZA � piu' finestre di verifica corte (multi-finestra)
+============================================================================================================
+      finestra  barre         dal          al  n op  expectancy netta   EUR/anno
+     BTC/EUR#1    160  2025-04-25  2025-10-01     2           -5,195%        n/d
+     BTC/EUR#2    160  2025-10-02  2026-03-10     1           -8,515%        n/d
+     BTC/EUR#3    160  2026-03-11  2026-08-17     2           -5,161%        n/d
+     ETH/EUR#1    160  2025-04-25  2025-10-01     3           +2,037%        n/d
+     ETH/EUR#2    160  2025-10-02  2026-03-10     0               n/d        n/d
+     ETH/EUR#3    160  2026-03-11  2026-08-17     0               n/d        n/d
+     SOL/EUR#1    160  2025-04-25  2025-10-01     2           +0,880%        n/d
+     SOL/EUR#2    160  2025-10-02  2026-03-10     0               n/d        n/d
+     SOL/EUR#3    160  2026-03-11  2026-08-17     1           -5,174%        n/d
+finestre con expectancy netta > 0: 2/9
+
+============================================================================================================
+6) CONFRONTO TARIFFE � quanto vale aprire gli X-Perps
+============================================================================================================
+da okx_eea_spot a okx_eea_con_perp non cambia nessun criterio: il verdetto resta 'archiviato'. Il pedaggio piu' basso non sposta la decisione
+
+criterio                     okx_eea_spot    con_perp   cambia
+numerosita'                         passa       passa   
+expectancy_ic90                  FALLISCE    FALLISCE   
+t_stat                           FALLISCE    FALLISCE   
+profit_factor                       passa       passa   
+drawdown                         FALLISCE    FALLISCE   
+pedaggio_coperto                    passa       passa   
+rilevanza_economica              FALLISCE    FALLISCE   
+indipendenza_dai_blocchi            passa       passa   
+
+pedaggio per operazione : +0,550% -> +0,180%
+expectancy netta        : +1,959% -> +2,329%
+EUR/anno attesi         : +4,97 EUR -> +5,91 EUR
+verdetto                : archiviato -> archiviato
+
+riepilogo JSON scritto in report\misura_trend_lungo.json
+
+============================================================================================================
+SINTESI (una riga per verdetto)
+============================================================================================================
+storia intera  : archiviato     n=35   expectancy +1,959%  t 0,82  EUR/anno +4,97 EUR
+addestramento  : insufficiente  n=19   expectancy +4,624%  t 1,27  EUR/anno n/d
+verifica WF    : insufficiente  n=16   expectancy -1,206%  t -0,44  EUR/anno n/d
+finestre corte : 2/9 con expectancy netta > 0
+X-Perps        : archiviato     expectancy +2,329%  EUR/anno +5,91 EUR
