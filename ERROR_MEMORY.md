@@ -42,6 +42,12 @@ file PRIMA di modificare percorsi che muovono capitale.
 - Sintomo: clone su MARCODG1 indietro di 6 giorni rispetto a origin/main; serviva il banco appena versionato.
 - Regola: prima di qualsiasi deploy su un nodo: `git fetch`, verifica distanza da origin/main, backup branch dello stato locale, poi fast-forward. Mai deploy su codice non sincronizzato.
 
+## 2026-09-27 — Criteri del cancello citati a memoria (sbagliati)
+- Sintomo: in un task a DSH ho citato criteri del cancello (10k trade, Sharpe>=1.5, maxDD<=12%, PSR, K-S, turnover) che NON esistono nel repo.
+- Causa radice: valori presi da un riassunto di sessione invece che dal codice (`src/money/cancello.py`: numerosita>=30, IC bootstrap 90% con estremo>0, t>1.65, PF>1.20, maxDD<=25%, expectancy>=3x pedaggio, rilevanza>=10 EUR/anno, indipendenza blocchi).
+- Fix: DSH ha verificato il repo e obiettato; decisione DEC-20260927-HERMES-01: il cancello del codice e' vincolante, le altre metriche solo in aggiunta.
+- Regola: qualsiasi parametro di governance (criteri, fee, limiti) si cita SOLO dal codice/config vigente, mai da memoria o riassunti. Stessa famiglia dell'errore fee: 0,070% e' il giro SWAP; una strategia spot si giudica a okx_eea_spot 0,550% (misurato 27/09: maker 0,200/taker 0,350, Lv1).
+
 ## 2026-09-27 — Servizio critico non supervisionato
 - Sintomo: cloudflared su mc2 (PID 2531) girava senza systemd: un crash = web.grivetto.eu giù in silenzio.
 - Regola: ogni processo che serve traffico o muove dati sta sotto systemd con Restart=always + watchdog + alert. Nessun demone "a mano".
