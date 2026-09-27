@@ -1,0 +1,17 @@
+
+=== NODO L_momentum_assoluto — griglia completa in addestramento (3 configurazioni) ===
+  long se ritorno 60g > 0, altrimenti fermo      n= 171  expectancy netta +4,8490%
+  long se ritorno 90g > 0, altrimenti fermo      n= 132  expectancy netta +3,3587%
+  long se ritorno 126g > 0, altrimenti fermo     n=  81  expectancy netta -1,5717%
+  SCELTA: long se ritorno 60g > 0, altrimenti fermo
+
+  VERIFICA [confine -> 2026-09-25]:
+    operazioni 100 in 389.0 giorni | expectancy netta +2,6082% | pedaggio +0,550% (copertura 4,74x, servono 3x)
+    IC90 ['-1,0056%', '+6,9607%'] | t 1,08 | PF 1,64 | maxDD +57,2% | EUR/anno 611,81
+    VERDETTO: archiviato
+      - [expectancy_ic90] expectancy netta +2,61% con IC bootstrap al 90% [-1,01%, +6,96%] (seme 20260101, 10000 ricampionamenti): estremo inferiore <= 0
+      - [t_stat] t-statistic 1,081 <= 1,650 a una coda (5%)
+      - [drawdown] drawdown massimo 57,17% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge
+      - [indipendenza_dai_blocchi] expectancy concentrata in un solo blocco: blocco 3/3 vale +14,08% lordo (+13,53% netto) su 33 operazioni, ma tolto quello l'expectancy netta e' -3,59% <= 0: l'edge e' un evento con una data, non una proprieta' della strategia
+    scenario okx_eea_con_perp: verdetto archiviato, expectancy +2,9782%, EUR/anno 698,61
+    scenario okx_eea_swap_lv1: verdetto archiviato, expectancy +3,0882%, EUR/anno 724,41

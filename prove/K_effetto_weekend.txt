@@ -1,0 +1,19 @@
+
+=== NODO K_effetto_weekend — griglia completa in addestramento (2 configurazioni) ===
+  compra sabato -> vendi mercoledi'              n= 920  expectancy netta -0,6955%
+  compra sabato -> vendi giovedi'                n= 920  expectancy netta +0,0241%
+  SCELTA: compra sabato -> vendi giovedi'
+
+  VERIFICA [confine -> 2026-09-25]:
+    operazioni 550 in 389.0 giorni | expectancy netta -0,6886% | pedaggio +0,550% (copertura -1,25x, servono 3x)
+    IC90 ['-1,1329%', '-0,2464%'] | t -2,54 | PF 0,74 | maxDD +80,2% | EUR/anno -888,47
+    VERDETTO: archiviato
+      - [expectancy_ic90] expectancy netta -0,69% con IC bootstrap al 90% [-1,13%, -0,25%] (seme 20260101, 10000 ricampionamenti): estremo inferiore <= 0
+      - [t_stat] t-statistic -2,545 <= 1,650 a una coda (5%)
+      - [profit_factor] profit factor 0,744 <= 1,200 (positivi +1099,25% / negativi -1478,01%)
+      - [drawdown] drawdown massimo 80,22% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge
+      - [pedaggio_coperto] pedaggio NON coperto con margine: expectancy netta -0,69% < 3,000x pedaggio +0,55% = +1,65% (manca +2,34% per operazione; tariffa okx_eea, tipo misto)
+      - [rilevanza_economica] rilevanza economica insufficiente: -888,47 EUR/anno attesi < 10,00 EUR di soglia (516 operazioni/anno su capitale 1000,00 EUR x esposizione 25,00%): un edge di questa dimensione non giustifica un sistema H24, estrapolazione: 550 operazioni in 389,0 giorni proiettate a 516/anno con expectancy costante — e' un limite superiore, non una previsione
+      - [indipendenza_dai_blocchi] expectancy concentrata in un solo blocco: blocco 3/3 vale -0,19% lordo (-0,74% netto) su 183 operazioni, ma tolto quello l'expectancy netta e' -1,49% <= 0: l'edge e' un evento con una data, non una proprieta' della strategia
+    scenario okx_eea_con_perp: verdetto archiviato, expectancy -0,3186%, EUR/anno -411,10
+    scenario okx_eea_swap_lv1: verdetto archiviato, expectancy -0,2086%, EUR/anno -269,19

@@ -1,0 +1,86 @@
+{
+  "nodo": "L_momentum_assoluto",
+  "config_scelta": "long se ritorno 60g > 0, altrimenti fermo",
+  "griglia_n": 3,
+  "griglia": [
+    {
+      "config": "long se ritorno 60g > 0, altrimenti fermo",
+      "n": 171,
+      "expectancy_netta": 0.04849036684202561
+    },
+    {
+      "config": "long se ritorno 90g > 0, altrimenti fermo",
+      "n": 132,
+      "expectancy_netta": 0.03358685101664043
+    },
+    {
+      "config": "long se ritorno 126g > 0, altrimenti fermo",
+      "n": 81,
+      "expectancy_netta": -0.015716988386545803
+    }
+  ],
+  "verifica": {
+    "verdetto": "archiviato",
+    "motivi": [
+      "[expectancy_ic90] expectancy netta +2,61% con IC bootstrap al 90% [-1,01%, +6,96%] (seme 20260101, 10000 ricampionamenti): estremo inferiore <= 0",
+      "[t_stat] t-statistic 1,081 <= 1,650 a una coda (5%)",
+      "[drawdown] drawdown massimo 57,17% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge",
+      "[indipendenza_dai_blocchi] expectancy concentrata in un solo blocco: blocco 3/3 vale +14,08% lordo (+13,53% netto) su 33 operazioni, ma tolto quello l'expectancy netta e' -3,59% <= 0: l'edge e' un evento con una data, non una proprieta' della strategia"
+    ],
+    "operazioni": 100,
+    "giorni": 389.0,
+    "expectancy_netta": 0.026081736009079752,
+    "ic90": [
+      -0.010055606030493675,
+      0.06960721433334573
+    ],
+    "t_stat": 1.0805175548909898,
+    "profit_factor": 1.6367797219938152,
+    "max_drawdown": 0.5716551747105434,
+    "pedaggio": 0.0055,
+    "copertura_3x": 4.742133819832683,
+    "eur_anno": 611.814501498336,
+    "criteri_falliti": [
+      "expectancy_ic90",
+      "t_stat",
+      "drawdown",
+      "indipendenza_dai_blocchi"
+    ]
+  },
+  "scenari_tariffa": {
+    "okx_eea_con_perp": {
+      "verdetto": "archiviato",
+      "expectancy_netta": 0.029781736009079754,
+      "eur_anno": 698.6075606243
+    },
+    "okx_eea_swap_lv1": {
+      "verdetto": "archiviato",
+      "expectancy_netta": 0.03088173600907975,
+      "eur_anno": 724.4109025266137
+    }
+  },
+  "meta": {
+    "periodo": [
+      "2023-12-01",
+      "2026-09-25"
+    ],
+    "confine": "2025-09-01",
+    "confine_reale_iso": "2025-09-01T00:00:00+00:00",
+    "universo": [
+      "ADA/EUR",
+      "AVAX/EUR",
+      "BTC/EUR",
+      "DOGE/EUR",
+      "DOT/EUR",
+      "ETH/EUR",
+      "LINK/EUR",
+      "LTC/EUR",
+      "SOL/EUR",
+      "UNI/EUR"
+    ],
+    "tariffa": "okx_eea_spot",
+    "tipo": "misto",
+    "slippage_per_lato": 0.0004,
+    "esposizione": 0.25
+  }
+}

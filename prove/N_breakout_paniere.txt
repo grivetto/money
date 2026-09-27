@@ -1,0 +1,21 @@
+
+=== NODO N_breakout_paniere — griglia completa in addestramento (4 configurazioni) ===
+  breakout 20g solo se breadth>=50% | uscita rottura 10g n=  87  expectancy netta +7,0054%
+  breakout 20g solo se breadth>=60% | uscita rottura 10g n=  83  expectancy netta +7,1623%
+  breakout 40g solo se breadth>=50% | uscita rottura 10g n=  65  expectancy netta +8,1542%
+  breakout 40g solo se breadth>=60% | uscita rottura 10g n=  64  expectancy netta +8,4813%
+  SCELTA: breakout 40g solo se breadth>=60% | uscita rottura 10g
+
+  VERIFICA [confine -> 2026-09-25]:
+    operazioni 39 in 389.0 giorni | expectancy netta -0,5401% | pedaggio +0,550% (copertura -0,98x, servono 3x)
+    IC90 ['-5,8313%', '+5,6309%'] | t -0,15 | PF 0,93 | maxDD +48,3% | EUR/anno -49,41
+    VERDETTO: archiviato
+      - [expectancy_ic90] expectancy netta -0,54% con IC bootstrap al 90% [-5,83%, +5,63%] (seme 20260101, 10000 ricampionamenti): estremo inferiore <= 0
+      - [t_stat] t-statistic -0,154 <= 1,650 a una coda (5%)
+      - [profit_factor] profit factor 0,925 <= 1,200 (positivi +260,77% / negativi -281,84%)
+      - [drawdown] drawdown massimo 48,29% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge
+      - [pedaggio_coperto] pedaggio NON coperto con margine: expectancy netta -0,54% < 3,000x pedaggio +0,55% = +1,65% (manca +2,19% per operazione; tariffa okx_eea, tipo misto)
+      - [rilevanza_economica] rilevanza economica insufficiente: -49,41 EUR/anno attesi < 10,00 EUR di soglia (37 operazioni/anno su capitale 1000,00 EUR x esposizione 25,00%): un edge di questa dimensione non giustifica un sistema H24, estrapolazione: 39 operazioni in 389,0 giorni proiettate a 37/anno con expectancy costante — e' un limite superiore, non una previsione
+      - [indipendenza_dai_blocchi] expectancy concentrata in un solo blocco: blocco 3/3 vale +17,55% lordo (+17,00% netto) su 13 operazioni, ma tolto quello l'expectancy netta e' -10,14% <= 0: l'edge e' un evento con una data, non una proprieta' della strategia
+    scenario okx_eea_con_perp: verdetto archiviato, expectancy -0,1701%, EUR/anno -15,56
+    scenario okx_eea_swap_lv1: verdetto archiviato, expectancy -0,0601%, EUR/anno -5,50

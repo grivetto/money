@@ -1,0 +1,17 @@
+
+=== NODO J_rotazione_forza — griglia completa in addestramento (6 configurazioni) ===
+  lookback 60g | top 2 | ribilancio ogni 20g     n=  28  expectancy netta +7,5605%
+  lookback 60g | top 3 | ribilancio ogni 20g     n=  37  expectancy netta +5,1951%
+  lookback 90g | top 2 | ribilancio ogni 20g     n=  20  expectancy netta +4,9922%
+  lookback 90g | top 3 | ribilancio ogni 20g     n=  30  expectancy netta +1,2783%
+  lookback 126g | top 2 | ribilancio ogni 20g    n=  16  expectancy netta +5,5938%
+  lookback 126g | top 3 | ribilancio ogni 20g    n=  23  expectancy netta +1,7516%
+  SCELTA: lookback 60g | top 3 | ribilancio ogni 20g
+
+  VERIFICA [confine -> 2026-09-25]:
+    operazioni 29 in 389.0 giorni | expectancy netta -3,5655% | pedaggio +0,550% (copertura -6,48x, servono 3x)
+    IC90 [] | t -0,43 | PF 0,74 | maxDD +64,2% | EUR/anno n/d
+    VERDETTO: insufficiente
+      - numerosita' 29 operazioni < 30 minime: con cosi' pochi campioni la stima dell'expectancy (-3,57%) e' dominata dal rumore — l'errore standard della media e' +8,32% contro un'expectancy di -3,57%. Promuovere sarebbe un azzardo, archiviare sarebbe buttare via la strategia: in entrambi i casi sarebbe una finzione
+    scenario okx_eea_con_perp: verdetto insufficiente, expectancy -3,1955%, EUR/anno n/d
+    scenario okx_eea_swap_lv1: verdetto insufficiente, expectancy -3,0855%, EUR/anno n/d

@@ -1,0 +1,97 @@
+{
+  "nodo": "O_reversal_2giorni",
+  "config_scelta": "dopo 2 chiusure in calo -> tieni 4g",
+  "griglia_n": 4,
+  "griglia": [
+    {
+      "config": "dopo 2 chiusure in calo -> tieni 2g",
+      "n": 857,
+      "expectancy_netta": -0.03569223364382469
+    },
+    {
+      "config": "dopo 2 chiusure in calo -> tieni 4g",
+      "n": 695,
+      "expectancy_netta": -0.028327726312765
+    },
+    {
+      "config": "dopo 3 chiusure in calo -> tieni 2g",
+      "n": 413,
+      "expectancy_netta": -0.03241364889728042
+    },
+    {
+      "config": "dopo 3 chiusure in calo -> tieni 4g",
+      "n": 369,
+      "expectancy_netta": -0.028535249304958155
+    }
+  ],
+  "verifica": {
+    "verdetto": "archiviato",
+    "motivi": [
+      "[expectancy_ic90] expectancy netta -3,67% con IC bootstrap al 90% [-4,10%, -3,23%] (seme 20260101, 10000 ricampionamenti): estremo inferiore <= 0",
+      "[t_stat] t-statistic -14,017 <= 1,650 a una coda (5%)",
+      "[profit_factor] profit factor 0,167 <= 1,200 (positivi +358,87% / negativi -2151,92%)",
+      "[drawdown] drawdown massimo 98,96% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge",
+      "[pedaggio_coperto] pedaggio NON coperto con margine: expectancy netta -3,67% < 3,000x pedaggio +0,55% = +1,65% (manca +5,32% per operazione; tariffa okx_eea, tipo misto)",
+      "[rilevanza_economica] rilevanza economica insufficiente: -4206,06 EUR/anno attesi < 10,00 EUR di soglia (459 operazioni/anno su capitale 1000,00 EUR x esposizione 25,00%): un edge di questa dimensione non giustifica un sistema H24, estrapolazione: 489 operazioni in 389,0 giorni proiettate a 459/anno con expectancy costante — e' un limite superiore, non una previsione",
+      "[indipendenza_dai_blocchi] expectancy concentrata in un solo blocco: blocco 3/3 vale -3,21% lordo (-3,76% netto) su 163 operazioni, ma tolto quello l'expectancy netta e' -4,44% <= 0: l'edge e' un evento con una data, non una proprieta' della strategia"
+    ],
+    "operazioni": 489,
+    "giorni": 389.0,
+    "expectancy_netta": -0.03666767414648263,
+    "ic90": [
+      -0.04101402588344875,
+      -0.03234472237284833
+    ],
+    "t_stat": -14.017467985975179,
+    "profit_factor": 0.16676661720270308,
+    "max_drawdown": 0.9896322586673337,
+    "pedaggio": 0.0055,
+    "copertura_3x": -6.666849844815024,
+    "eur_anno": -4206.0602956522835,
+    "criteri_falliti": [
+      "expectancy_ic90",
+      "t_stat",
+      "profit_factor",
+      "drawdown",
+      "pedaggio_coperto",
+      "rilevanza_economica",
+      "indipendenza_dai_blocchi"
+    ]
+  },
+  "scenari_tariffa": {
+    "okx_eea_con_perp": {
+      "verdetto": "archiviato",
+      "expectancy_netta": -0.03296767414648263,
+      "eur_anno": -3781.642236526319
+    },
+    "okx_eea_swap_lv1": {
+      "verdetto": "archiviato",
+      "expectancy_netta": -0.03186767414648262,
+      "eur_anno": -3655.4638946240048
+    }
+  },
+  "meta": {
+    "periodo": [
+      "2023-12-01",
+      "2026-09-25"
+    ],
+    "confine": "2025-09-01",
+    "confine_reale_iso": "2025-09-01T00:00:00+00:00",
+    "universo": [
+      "ADA/EUR",
+      "AVAX/EUR",
+      "BTC/EUR",
+      "DOGE/EUR",
+      "DOT/EUR",
+      "ETH/EUR",
+      "LINK/EUR",
+      "LTC/EUR",
+      "SOL/EUR",
+      "UNI/EUR"
+    ],
+    "tariffa": "okx_eea_spot",
+    "tipo": "misto",
+    "slippage_per_lato": 0.0004,
+    "esposizione": 0.25
+  }
+}

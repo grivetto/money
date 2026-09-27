@@ -1,0 +1,87 @@
+{
+  "nodo": "K_effetto_weekend",
+  "config_scelta": "compra sabato -> vendi giovedi'",
+  "griglia_n": 2,
+  "griglia": [
+    {
+      "config": "compra sabato -> vendi mercoledi'",
+      "n": 920,
+      "expectancy_netta": -0.006955344366509536
+    },
+    {
+      "config": "compra sabato -> vendi giovedi'",
+      "n": 920,
+      "expectancy_netta": 0.00024119299295398663
+    }
+  ],
+  "verifica": {
+    "verdetto": "archiviato",
+    "motivi": [
+      "[expectancy_ic90] expectancy netta -0,69% con IC bootstrap al 90% [-1,13%, -0,25%] (seme 20260101, 10000 ricampionamenti): estremo inferiore <= 0",
+      "[t_stat] t-statistic -2,545 <= 1,650 a una coda (5%)",
+      "[profit_factor] profit factor 0,744 <= 1,200 (positivi +1099,25% / negativi -1478,01%)",
+      "[drawdown] drawdown massimo 80,22% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge",
+      "[pedaggio_coperto] pedaggio NON coperto con margine: expectancy netta -0,69% < 3,000x pedaggio +0,55% = +1,65% (manca +2,34% per operazione; tariffa okx_eea, tipo misto)",
+      "[rilevanza_economica] rilevanza economica insufficiente: -888,47 EUR/anno attesi < 10,00 EUR di soglia (516 operazioni/anno su capitale 1000,00 EUR x esposizione 25,00%): un edge di questa dimensione non giustifica un sistema H24, estrapolazione: 550 operazioni in 389,0 giorni proiettate a 516/anno con expectancy costante — e' un limite superiore, non una previsione",
+      "[indipendenza_dai_blocchi] expectancy concentrata in un solo blocco: blocco 3/3 vale -0,19% lordo (-0,74% netto) su 183 operazioni, ma tolto quello l'expectancy netta e' -1,49% <= 0: l'edge e' un evento con una data, non una proprieta' della strategia"
+    ],
+    "operazioni": 550,
+    "giorni": 389.0,
+    "expectancy_netta": -0.00688644635121839,
+    "ic90": [
+      -0.01132904241279988,
+      -0.002463794007801395
+    ],
+    "t_stat": -2.5445004291374627,
+    "profit_factor": 0.7437395023546922,
+    "max_drawdown": 0.8022328157275914,
+    "pedaggio": 0.0055,
+    "copertura_3x": -1.2520811547669801,
+    "eur_anno": -888.4666484621413,
+    "criteri_falliti": [
+      "expectancy_ic90",
+      "t_stat",
+      "profit_factor",
+      "drawdown",
+      "pedaggio_coperto",
+      "rilevanza_economica",
+      "indipendenza_dai_blocchi"
+    ]
+  },
+  "scenari_tariffa": {
+    "okx_eea_con_perp": {
+      "verdetto": "archiviato",
+      "expectancy_netta": -0.0031864463512183915,
+      "eur_anno": -411.1048232693393
+    },
+    "okx_eea_swap_lv1": {
+      "verdetto": "archiviato",
+      "expectancy_netta": -0.0020864463512183912,
+      "eur_anno": -269.1864428066144
+    }
+  },
+  "meta": {
+    "periodo": [
+      "2023-12-01",
+      "2026-09-25"
+    ],
+    "confine": "2025-09-01",
+    "confine_reale_iso": "2025-09-01T00:00:00+00:00",
+    "universo": [
+      "ADA/EUR",
+      "AVAX/EUR",
+      "BTC/EUR",
+      "DOGE/EUR",
+      "DOT/EUR",
+      "ETH/EUR",
+      "LINK/EUR",
+      "LTC/EUR",
+      "SOL/EUR",
+      "UNI/EUR"
+    ],
+    "tariffa": "okx_eea_spot",
+    "tipo": "misto",
+    "slippage_per_lato": 0.0004,
+    "esposizione": 0.25
+  }
+}

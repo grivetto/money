@@ -1,0 +1,21 @@
+
+=== NODO O_reversal_2giorni — griglia completa in addestramento (4 configurazioni) ===
+  dopo 2 chiusure in calo -> tieni 2g            n= 857  expectancy netta -3,5692%
+  dopo 2 chiusure in calo -> tieni 4g            n= 695  expectancy netta -2,8328%
+  dopo 3 chiusure in calo -> tieni 2g            n= 413  expectancy netta -3,2414%
+  dopo 3 chiusure in calo -> tieni 4g            n= 369  expectancy netta -2,8535%
+  SCELTA: dopo 2 chiusure in calo -> tieni 4g
+
+  VERIFICA [confine -> 2026-09-25]:
+    operazioni 489 in 389.0 giorni | expectancy netta -3,6668% | pedaggio +0,550% (copertura -6,67x, servono 3x)
+    IC90 ['-4,1014%', '-3,2345%'] | t -14,02 | PF 0,17 | maxDD +99,0% | EUR/anno -4206,06
+    VERDETTO: archiviato
+      - [expectancy_ic90] expectancy netta -3,67% con IC bootstrap al 90% [-4,10%, -3,23%] (seme 20260101, 10000 ricampionamenti): estremo inferiore <= 0
+      - [t_stat] t-statistic -14,017 <= 1,650 a una coda (5%)
+      - [profit_factor] profit factor 0,167 <= 1,200 (positivi +358,87% / negativi -2151,92%)
+      - [drawdown] drawdown massimo 98,96% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge
+      - [pedaggio_coperto] pedaggio NON coperto con margine: expectancy netta -3,67% < 3,000x pedaggio +0,55% = +1,65% (manca +5,32% per operazione; tariffa okx_eea, tipo misto)
+      - [rilevanza_economica] rilevanza economica insufficiente: -4206,06 EUR/anno attesi < 10,00 EUR di soglia (459 operazioni/anno su capitale 1000,00 EUR x esposizione 25,00%): un edge di questa dimensione non giustifica un sistema H24, estrapolazione: 489 operazioni in 389,0 giorni proiettate a 459/anno con expectancy costante — e' un limite superiore, non una previsione
+      - [indipendenza_dai_blocchi] expectancy concentrata in un solo blocco: blocco 3/3 vale -3,21% lordo (-3,76% netto) su 163 operazioni, ma tolto quello l'expectancy netta e' -4,44% <= 0: l'edge e' un evento con una data, non una proprieta' della strategia
+    scenario okx_eea_con_perp: verdetto archiviato, expectancy -3,2968%, EUR/anno -3781,64
+    scenario okx_eea_swap_lv1: verdetto archiviato, expectancy -3,1868%, EUR/anno -3655,46

@@ -1,0 +1,90 @@
+{
+  "nodo": "J_rotazione_forza",
+  "config_scelta": "lookback 60g | top 3 | ribilancio ogni 20g",
+  "griglia_n": 6,
+  "griglia": [
+    {
+      "config": "lookback 60g | top 2 | ribilancio ogni 20g",
+      "n": 28,
+      "expectancy_netta": 0.07560547977486128
+    },
+    {
+      "config": "lookback 60g | top 3 | ribilancio ogni 20g",
+      "n": 37,
+      "expectancy_netta": 0.05195084981573318
+    },
+    {
+      "config": "lookback 90g | top 2 | ribilancio ogni 20g",
+      "n": 20,
+      "expectancy_netta": 0.049922104383381384
+    },
+    {
+      "config": "lookback 90g | top 3 | ribilancio ogni 20g",
+      "n": 30,
+      "expectancy_netta": 0.012783381573329334
+    },
+    {
+      "config": "lookback 126g | top 2 | ribilancio ogni 20g",
+      "n": 16,
+      "expectancy_netta": 0.055938135811732584
+    },
+    {
+      "config": "lookback 126g | top 3 | ribilancio ogni 20g",
+      "n": 23,
+      "expectancy_netta": 0.017515662491501584
+    }
+  ],
+  "verifica": {
+    "verdetto": "insufficiente",
+    "motivi": [
+      "numerosita' 29 operazioni < 30 minime: con cosi' pochi campioni la stima dell'expectancy (-3,57%) e' dominata dal rumore — l'errore standard della media e' +8,32% contro un'expectancy di -3,57%. Promuovere sarebbe un azzardo, archiviare sarebbe buttare via la strategia: in entrambi i casi sarebbe una finzione"
+    ],
+    "operazioni": 29,
+    "giorni": 389.0,
+    "expectancy_netta": -0.03565461616068722,
+    "ic90": [],
+    "t_stat": -0.4284979048242697,
+    "profit_factor": 0.7388130065477302,
+    "max_drawdown": 0.6419794501675191,
+    "pedaggio": 0.0055,
+    "copertura_3x": -6.482657483761313,
+    "eur_anno": null,
+    "criteri_falliti": []
+  },
+  "scenari_tariffa": {
+    "okx_eea_con_perp": {
+      "verdetto": "insufficiente",
+      "expectancy_netta": -0.03195461616068723,
+      "eur_anno": null
+    },
+    "okx_eea_swap_lv1": {
+      "verdetto": "insufficiente",
+      "expectancy_netta": -0.03085461616068722,
+      "eur_anno": null
+    }
+  },
+  "meta": {
+    "periodo": [
+      "2023-12-01",
+      "2026-09-25"
+    ],
+    "confine": "2025-09-01",
+    "confine_reale_iso": "2025-09-01T00:00:00+00:00",
+    "universo": [
+      "ADA/EUR",
+      "AVAX/EUR",
+      "BTC/EUR",
+      "DOGE/EUR",
+      "DOT/EUR",
+      "ETH/EUR",
+      "LINK/EUR",
+      "LTC/EUR",
+      "SOL/EUR",
+      "UNI/EUR"
+    ],
+    "tariffa": "okx_eea_spot",
+    "tipo": "misto",
+    "slippage_per_lato": 0.0004,
+    "esposizione": 0.25
+  }
+}

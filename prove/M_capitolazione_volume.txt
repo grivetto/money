@@ -1,0 +1,21 @@
+
+=== NODO M_capitolazione_volume — griglia completa in addestramento (4 configurazioni) ===
+  caduta>1.5xATR & vol>1.5x | target 15% | stop 10% | max 5g n= 125  expectancy netta -2,7278%
+  caduta>1.5xATR & vol>2x | target 15% | stop 10% | max 5g n= 110  expectancy netta -2,3687%
+  caduta>2xATR & vol>1.5x | target 15% | stop 10% | max 5g n=  57  expectancy netta -3,3413%
+  caduta>2xATR & vol>2x | target 15% | stop 10% | max 5g n=  49  expectancy netta -3,4390%
+  SCELTA: caduta>1.5xATR & vol>2x | target 15% | stop 10% | max 5g
+
+  VERIFICA [confine -> 2026-09-25]:
+    operazioni 46 in 389.0 giorni | expectancy netta -3,3492% | pedaggio +0,550% (copertura -6,09x, servono 3x)
+    IC90 ['-5,2631%', '-1,3112%'] | t -2,79 | PF 0,39 | maxDD +32,7% | EUR/anno -361,39
+    VERDETTO: archiviato
+      - [expectancy_ic90] expectancy netta -3,35% con IC bootstrap al 90% [-5,26%, -1,31%] (seme 20260101, 10000 ricampionamenti): estremo inferiore <= 0
+      - [t_stat] t-statistic -2,790 <= 1,650 a una coda (5%)
+      - [profit_factor] profit factor 0,393 <= 1,200 (positivi +99,83% / negativi -253,89%)
+      - [drawdown] drawdown massimo 32,72% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge
+      - [pedaggio_coperto] pedaggio NON coperto con margine: expectancy netta -3,35% < 3,000x pedaggio +0,55% = +1,65% (manca +5,00% per operazione; tariffa okx_eea, tipo misto)
+      - [rilevanza_economica] rilevanza economica insufficiente: -361,39 EUR/anno attesi < 10,00 EUR di soglia (43 operazioni/anno su capitale 1000,00 EUR x esposizione 25,00%): un edge di questa dimensione non giustifica un sistema H24, estrapolazione: 46 operazioni in 389,0 giorni proiettate a 43/anno con expectancy costante — e' un limite superiore, non una previsione
+      - [indipendenza_dai_blocchi] expectancy concentrata in un solo blocco: blocco 1/3 vale -1,29% lordo (-1,84% netto) su 16 operazioni, ma tolto quello l'expectancy netta e' -5,00% <= 0: l'edge e' un evento con una data, non una proprieta' della strategia
+    scenario okx_eea_con_perp: verdetto archiviato, expectancy -2,9792%, EUR/anno -321,47
+    scenario okx_eea_swap_lv1: verdetto archiviato, expectancy -2,8692%, EUR/anno -309,60
