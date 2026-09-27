@@ -1,0 +1,105 @@
+{
+  "nodo": "I_donchian_breakout",
+  "config_scelta": "entrata 40g | uscita 20g",
+  "griglia_n": 6,
+  "griglia": [
+    {
+      "config": "entrata 20g | uscita 10g",
+      "n": 100,
+      "expectancy_netta": 0.04662948930263386
+    },
+    {
+      "config": "entrata 20g | uscita 20g",
+      "n": 73,
+      "expectancy_netta": 0.08410456204103124
+    },
+    {
+      "config": "entrata 40g | uscita 10g",
+      "n": 68,
+      "expectancy_netta": 0.0683398588545303
+    },
+    {
+      "config": "entrata 40g | uscita 20g",
+      "n": 51,
+      "expectancy_netta": 0.11687789142204452
+    },
+    {
+      "config": "entrata 55g | uscita 10g",
+      "n": 58,
+      "expectancy_netta": 0.0758350256308202
+    },
+    {
+      "config": "entrata 55g | uscita 20g",
+      "n": 46,
+      "expectancy_netta": 0.09440561362949593
+    }
+  ],
+  "verifica": {
+    "verdetto": "archiviato",
+    "motivi": [
+      "[expectancy_ic90] expectancy netta +2,10% con IC bootstrap al 90% [-6,57%, +11,52%] (seme 20260101, 10000 ricampionamenti): estremo inferiore <= 0",
+      "[t_stat] t-statistic 0,380 <= 1,650 a una coda (5%)",
+      "[profit_factor] profit factor 1,193 <= 1,200 (positivi +403,54% / negativi -338,31%)",
+      "[drawdown] drawdown massimo 56,77% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge",
+      "[indipendenza_dai_blocchi] expectancy concentrata in un solo blocco: blocco 3/3 vale +29,36% lordo (+28,81% netto) su 10 operazioni, ma tolto quello l'expectancy netta e' -11,43% <= 0: l'edge e' un evento con una data, non una proprieta' della strategia"
+    ],
+    "operazioni": 31,
+    "giorni": 389.0,
+    "expectancy_netta": 0.021041676794482964,
+    "ic90": [
+      -0.06571606829408806,
+      0.11519298868781329
+    ],
+    "t_stat": 0.3798998457103494,
+    "profit_factor": 1.192810844747386,
+    "max_drawdown": 0.5676810420274457,
+    "pedaggio": 0.0055,
+    "copertura_3x": 3.825759417178721,
+    "eur_anno": 153.01193633006088,
+    "criteri_falliti": [
+      "expectancy_ic90",
+      "t_stat",
+      "profit_factor",
+      "drawdown",
+      "indipendenza_dai_blocchi"
+    ]
+  },
+  "scenari_tariffa": {
+    "okx_eea_con_perp": {
+      "verdetto": "archiviato",
+      "expectancy_netta": 0.024741676794482963,
+      "eur_anno": 179.9177846591097
+    },
+    "okx_eea_swap_lv1": {
+      "verdetto": "archiviato",
+      "expectancy_netta": 0.025841676794482973,
+      "eur_anno": 187.91682064882704
+    }
+  },
+  "meta": {
+    "periodo": [
+      "2023-12-01",
+      "2026-09-25"
+    ],
+    "confine": "2025-09-01",
+    "confine_reale_iso": "2025-09-01T00:00:00+00:00",
+    "universo": [
+      "ADA/EUR",
+      "AVAX/EUR",
+      "BTC/EUR",
+      "DOGE/EUR",
+      "DOT/EUR",
+      "ETH/EUR",
+      "LINK/EUR",
+      "LTC/EUR",
+      "SOL/EUR",
+      "UNI/EUR"
+    ],
+    "tariffa": "okx_eea_spot",
+    "tipo": "misto",
+    "slippage_per_lato": 0.0004,
+    "esposizione": 0.25,
+    "capitale_riferimento": 1000.0,
+    "soglia_eur_anno": 10.0
+  }
+}

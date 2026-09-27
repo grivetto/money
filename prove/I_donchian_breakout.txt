@@ -1,0 +1,21 @@
+
+=== NODO I_donchian_breakout — griglia completa in addestramento (6 configurazioni) ===
+  entrata 20g | uscita 10g                       n= 100  expectancy netta +4,6629%
+  entrata 20g | uscita 20g                       n=  73  expectancy netta +8,4105%
+  entrata 40g | uscita 10g                       n=  68  expectancy netta +6,8340%
+  entrata 40g | uscita 20g                       n=  51  expectancy netta +11,6878%
+  entrata 55g | uscita 10g                       n=  58  expectancy netta +7,5835%
+  entrata 55g | uscita 20g                       n=  46  expectancy netta +9,4406%
+  SCELTA: entrata 40g | uscita 20g
+
+  VERIFICA [confine -> 2026-09-25]:
+    operazioni 31 in 389.0 giorni | expectancy netta +2,1042% | pedaggio +0,550% (copertura 3,83x, servono 3x)
+    IC90 ['-6,5716%', '+11,5193%'] | t 0,38 | PF 1,19 | maxDD +56,8% | EUR/anno 153,01
+    VERDETTO: archiviato
+      - [expectancy_ic90] expectancy netta +2,10% con IC bootstrap al 90% [-6,57%, +11,52%] (seme 20260101, 10000 ricampionamenti): estremo inferiore <= 0
+      - [t_stat] t-statistic 0,380 <= 1,650 a una coda (5%)
+      - [profit_factor] profit factor 1,193 <= 1,200 (positivi +403,54% / negativi -338,31%)
+      - [drawdown] drawdown massimo 56,77% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge
+      - [indipendenza_dai_blocchi] expectancy concentrata in un solo blocco: blocco 3/3 vale +29,36% lordo (+28,81% netto) su 10 operazioni, ma tolto quello l'expectancy netta e' -11,43% <= 0: l'edge e' un evento con una data, non una proprieta' della strategia
+    scenario okx_eea_con_perp: verdetto archiviato, expectancy +2,4742%, EUR/anno 179,92
+    scenario okx_eea_swap_lv1: verdetto archiviato, expectancy +2,5842%, EUR/anno 187,92

@@ -1,0 +1,29 @@
+
+=== NODO H_rsi_mean_reversion — griglia completa in addestramento (12 configurazioni) ===
+  RSI<25 -> RSI>50 | senza stop perdita | stop tempo 20 barre n=  12  expectancy netta +12,0396%
+  RSI<25 -> RSI>50 | stop perdita 10% | stop tempo 20 barre n=  13  expectancy netta +6,1542%
+  RSI<25 -> RSI>55 | senza stop perdita | stop tempo 20 barre n=  12  expectancy netta +7,9232%
+  RSI<25 -> RSI>55 | stop perdita 10% | stop tempo 20 barre n=  13  expectancy netta +5,2080%
+  RSI<30 -> RSI>50 | senza stop perdita | stop tempo 20 barre n=  43  expectancy netta +2,5205%
+  RSI<30 -> RSI>50 | stop perdita 10% | stop tempo 20 barre n=  59  expectancy netta -0,5697%
+  RSI<30 -> RSI>55 | senza stop perdita | stop tempo 20 barre n=  41  expectancy netta +0,8111%
+  RSI<30 -> RSI>55 | stop perdita 10% | stop tempo 20 barre n=  59  expectancy netta -0,4074%
+  RSI<35 -> RSI>50 | senza stop perdita | stop tempo 20 barre n=  91  expectancy netta +3,0222%
+  RSI<35 -> RSI>50 | stop perdita 10% | stop tempo 20 barre n= 145  expectancy netta +0,9591%
+  RSI<35 -> RSI>55 | senza stop perdita | stop tempo 20 barre n=  86  expectancy netta +2,3272%
+  RSI<35 -> RSI>55 | stop perdita 10% | stop tempo 20 barre n= 142  expectancy netta +0,4331%
+  SCELTA: RSI<35 -> RSI>50 | senza stop perdita | stop tempo 20 barre
+
+  VERIFICA [confine -> 2026-09-25]:
+    operazioni 77 in 389.0 giorni | expectancy netta -2,7764% | pedaggio +0,550% (copertura -5,05x, servono 3x)
+    IC90 ['-5,4178%', '-0,1802%'] | t -1,76 | PF 0,62 | maxDD +52,6% | EUR/anno -501,48
+    VERDETTO: archiviato
+      - [expectancy_ic90] expectancy netta -2,78% con IC bootstrap al 90% [-5,42%, -0,18%] (seme 20260101, 10000 ricampionamenti): estremo inferiore <= 0
+      - [t_stat] t-statistic -1,763 <= 1,650 a una coda (5%)
+      - [profit_factor] profit factor 0,618 <= 1,200 (positivi +346,21% / negativi -559,99%)
+      - [drawdown] drawdown massimo 52,57% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge
+      - [pedaggio_coperto] pedaggio NON coperto con margine: expectancy netta -2,78% < 3,000x pedaggio +0,55% = +1,65% (manca +4,43% per operazione; tariffa okx_eea, tipo misto)
+      - [rilevanza_economica] rilevanza economica insufficiente: -501,48 EUR/anno attesi < 10,00 EUR di soglia (72 operazioni/anno su capitale 1000,00 EUR x esposizione 25,00%): un edge di questa dimensione non giustifica un sistema H24, estrapolazione: 77 operazioni in 389,0 giorni proiettate a 72/anno con expectancy costante — e' un limite superiore, non una previsione
+      - [indipendenza_dai_blocchi] expectancy concentrata in un solo blocco: blocco 3/3 vale -1,65% lordo (-2,20% netto) su 25 operazioni, ma tolto quello l'expectancy netta e' -3,87% <= 0: l'edge e' un evento con una data, non una proprieta' della strategia
+    scenario okx_eea_con_perp: verdetto archiviato, expectancy -2,4064%, EUR/anno -434,65
+    scenario okx_eea_swap_lv1: verdetto archiviato, expectancy -2,2964%, EUR/anno -414,78

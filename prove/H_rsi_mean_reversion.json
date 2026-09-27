@@ -1,0 +1,139 @@
+{
+  "nodo": "H_rsi_mean_reversion",
+  "config_scelta": "RSI<35 -> RSI>50 | senza stop perdita | stop tempo 20 barre",
+  "griglia_n": 12,
+  "griglia": [
+    {
+      "config": "RSI<25 -> RSI>50 | senza stop perdita | stop tempo 20 barre",
+      "n": 12,
+      "expectancy_netta": 0.12039569811705425
+    },
+    {
+      "config": "RSI<25 -> RSI>50 | stop perdita 10% | stop tempo 20 barre",
+      "n": 13,
+      "expectancy_netta": 0.06154170241137606
+    },
+    {
+      "config": "RSI<25 -> RSI>55 | senza stop perdita | stop tempo 20 barre",
+      "n": 12,
+      "expectancy_netta": 0.07923161397517368
+    },
+    {
+      "config": "RSI<25 -> RSI>55 | stop perdita 10% | stop tempo 20 barre",
+      "n": 13,
+      "expectancy_netta": 0.052079861131023024
+    },
+    {
+      "config": "RSI<30 -> RSI>50 | senza stop perdita | stop tempo 20 barre",
+      "n": 43,
+      "expectancy_netta": 0.025204784432038222
+    },
+    {
+      "config": "RSI<30 -> RSI>50 | stop perdita 10% | stop tempo 20 barre",
+      "n": 59,
+      "expectancy_netta": -0.0056970378196833675
+    },
+    {
+      "config": "RSI<30 -> RSI>55 | senza stop perdita | stop tempo 20 barre",
+      "n": 41,
+      "expectancy_netta": 0.008111434765282031
+    },
+    {
+      "config": "RSI<30 -> RSI>55 | stop perdita 10% | stop tempo 20 barre",
+      "n": 59,
+      "expectancy_netta": -0.004073828610975961
+    },
+    {
+      "config": "RSI<35 -> RSI>50 | senza stop perdita | stop tempo 20 barre",
+      "n": 91,
+      "expectancy_netta": 0.03022211540466832
+    },
+    {
+      "config": "RSI<35 -> RSI>50 | stop perdita 10% | stop tempo 20 barre",
+      "n": 145,
+      "expectancy_netta": 0.009591161876506034
+    },
+    {
+      "config": "RSI<35 -> RSI>55 | senza stop perdita | stop tempo 20 barre",
+      "n": 86,
+      "expectancy_netta": 0.023271598380154634
+    },
+    {
+      "config": "RSI<35 -> RSI>55 | stop perdita 10% | stop tempo 20 barre",
+      "n": 142,
+      "expectancy_netta": 0.004330570000482012
+    }
+  ],
+  "verifica": {
+    "verdetto": "archiviato",
+    "motivi": [
+      "[expectancy_ic90] expectancy netta -2,78% con IC bootstrap al 90% [-5,42%, -0,18%] (seme 20260101, 10000 ricampionamenti): estremo inferiore <= 0",
+      "[t_stat] t-statistic -1,763 <= 1,650 a una coda (5%)",
+      "[profit_factor] profit factor 0,618 <= 1,200 (positivi +346,21% / negativi -559,99%)",
+      "[drawdown] drawdown massimo 52,57% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge",
+      "[pedaggio_coperto] pedaggio NON coperto con margine: expectancy netta -2,78% < 3,000x pedaggio +0,55% = +1,65% (manca +4,43% per operazione; tariffa okx_eea, tipo misto)",
+      "[rilevanza_economica] rilevanza economica insufficiente: -501,48 EUR/anno attesi < 10,00 EUR di soglia (72 operazioni/anno su capitale 1000,00 EUR x esposizione 25,00%): un edge di questa dimensione non giustifica un sistema H24, estrapolazione: 77 operazioni in 389,0 giorni proiettate a 72/anno con expectancy costante — e' un limite superiore, non una previsione",
+      "[indipendenza_dai_blocchi] expectancy concentrata in un solo blocco: blocco 3/3 vale -1,65% lordo (-2,20% netto) su 25 operazioni, ma tolto quello l'expectancy netta e' -3,87% <= 0: l'edge e' un evento con una data, non una proprieta' della strategia"
+    ],
+    "operazioni": 77,
+    "giorni": 389.0,
+    "expectancy_netta": -0.027763734561450242,
+    "ic90": [
+      -0.05417774210366654,
+      -0.0018021364242049288
+    ],
+    "t_stat": -1.7633538301344782,
+    "profit_factor": 0.6182425429658205,
+    "max_drawdown": 0.5257012304038904,
+    "pedaggio": 0.0055,
+    "copertura_3x": -5.047951738445499,
+    "eur_anno": -501.4779947619274,
+    "criteri_falliti": [
+      "expectancy_ic90",
+      "t_stat",
+      "profit_factor",
+      "drawdown",
+      "pedaggio_coperto",
+      "rilevanza_economica",
+      "indipendenza_dai_blocchi"
+    ]
+  },
+  "scenari_tariffa": {
+    "okx_eea_con_perp": {
+      "verdetto": "archiviato",
+      "expectancy_netta": -0.024063734561450244,
+      "eur_anno": -434.64733923493515
+    },
+    "okx_eea_swap_lv1": {
+      "verdetto": "archiviato",
+      "expectancy_netta": -0.02296373456145024,
+      "eur_anno": -414.7787659701536
+    }
+  },
+  "meta": {
+    "periodo": [
+      "2023-12-01",
+      "2026-09-25"
+    ],
+    "confine": "2025-09-01",
+    "confine_reale_iso": "2025-09-01T00:00:00+00:00",
+    "universo": [
+      "ADA/EUR",
+      "AVAX/EUR",
+      "BTC/EUR",
+      "DOGE/EUR",
+      "DOT/EUR",
+      "ETH/EUR",
+      "LINK/EUR",
+      "LTC/EUR",
+      "SOL/EUR",
+      "UNI/EUR"
+    ],
+    "tariffa": "okx_eea_spot",
+    "tipo": "misto",
+    "slippage_per_lato": 0.0004,
+    "esposizione": 0.25,
+    "capitale_riferimento": 1000.0,
+    "soglia_eur_anno": 10.0
+  }
+}

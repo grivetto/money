@@ -223,7 +223,9 @@ def scegli_config(serie_per_simbolo: dict, *, i_da: int, i_a: int,
                        tariffa=tariffa, i_da=i_da, i_a=i_a)
         exp = math.fsum(esito.ritorni_netti) / len(esito.ritorni_netti) if esito.ritorni_netti else float("nan")
         tabella.append({"config": config, "n": esito.n_operazioni, "expectancy_netta": exp})
-    valide = [r for r in tabella if r["n"] >= 10 and not math.isnan(r["expectancy_netta"])]
+    # n >= 30 IN ADDESTRAMENTO, non solo al cancello (lezione DSH 2026-09-27: una
+    # configurazione scelta su 12 operazioni e' una configurazione scelta sul rumore).
+    valide = [r for r in tabella if r["n"] >= 30 and not math.isnan(r["expectancy_netta"])]
     if not valide:
         return Config(**GRIGLIA_ADDESTRAMENTO[0]), tabella
     return max(valide, key=lambda r: r["expectancy_netta"])["config"], tabella
