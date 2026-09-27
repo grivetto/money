@@ -26,7 +26,7 @@ La conferma finale prima della promozione si rifa' SEMPRE sulle EUR (campione co
 
 STATO DELLA CODA
 ================
-- P1_trend_atr_stop.md ...... LIBERA   (priorita' massima: la sola direzione con evidenza)
+- P1_trend_atr_stop.md ...... PRESA_DA hermes 2026-09-27
 - P2_momentum_vol_target.md . LIBERA
 - P3_trend_filtro_200g.md ... LIBERA
 - P4_funding_carry.md ....... LIBERA (richiede raccolta funding swap, endpoint verificato)

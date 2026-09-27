@@ -1,5 +1,5 @@
 # P1 — Trend giornaliero con trailing stop ATR
-STATO: LIBERA
+STATO: PRESA_DA hermes 2026-09-27
 DATI: USDT-lungo (2019-01-01 -> oggi; confine 2024-06-01)
 
 ## Ipotesi
