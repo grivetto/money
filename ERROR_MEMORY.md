@@ -51,3 +51,9 @@ file PRIMA di modificare percorsi che muovono capitale.
 ## 2026-09-27 — Servizio critico non supervisionato
 - Sintomo: cloudflared su mc2 (PID 2531) girava senza systemd: un crash = web.grivetto.eu giù in silenzio.
 - Regola: ogni processo che serve traffico o muove dati sta sotto systemd con Restart=always + watchdog + alert. Nessun demone "a mano".
+
+## 2026-09-27 — Nodi legacy LIVE dimenticati sui sub-account
+- Sintomo: denaro-node-marcodg1-xrp (marcosub1) e denaro-node-nuvola-trade (nuvolasub1) ancora active/running con chiavi trade, equity 0, tick a vuoto.
+- Causa radice: la flotta legacy non era mai stata spenta davvero; un nodo live dimenticato su un conto e' una collisione di ordini in attesa (regola: MAI due bot sullo stesso conto).
+- Fix: stop+disable su entrambi; verificato zero nodi live su 3 nodi (resta solo il paper su MARCODG1). denaro-node-mc2 resta fermo per scelta.
+- Regola: prima che un conto entri nel perimetro money, il suo nodo legacy deve essere stop+disable. La flotta live riparte SOLO dalla catena cancello -> esecuzione, mai riaccendendo un legacy.
