@@ -32,7 +32,12 @@ from .rsi_mean_reversion import (TARIFFA_ASSUNTA, TIPO_ORDINE, SLIPPAGE_PER_LATO
                                  ESPOSIZIONE, esito_da_operazioni, pedaggio,
                                  ritorno_netto)
 
-INIZIO_STORIA = "2019-01-01"
+#: 2020-10-01 e non 2019-01: verificato il 2026-09-27 che eea.okx.com serve gli alt/USDT
+#: solo dal ~2020-06 (a 2019-01-01 risponde vuoto e la serie fallisce la verifica). Con
+#: questa data il paniere e' COMPLETO (10/10 simboli, copertura ~99%) e restano tre regimi
+#: (toro 2021, orso 2022, ripresa 2024-25). Il run-pilota su BTC/ETH dal 2019 resta in
+#: prove/P1_pilota_btceth_2019.* come documentazione della scelta.
+INIZIO_STORIA = "2020-10-01"
 FINE_STORIA = "2026-09-25"
 CONFINE_ADDESTRAMENTO = "2024-06-01"
 

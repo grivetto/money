@@ -26,7 +26,8 @@ La conferma finale prima della promozione si rifa' SEMPRE sulle EUR (campione co
 
 STATO DELLA CODA
 ================
-- P1_trend_atr_stop.md ...... PRESA_DA hermes 2026-09-27
-- P2_momentum_vol_target.md . LIBERA
+- P1_trend_atr_stop.md ...... FATTA, ARCHIVIATA (ipotesi chandelier smentita; A/B: Donchian 6/8)
+- P2_momentum_vol_target.md . LIBERA -> ASSEGNATA a dsh (priorita' massima: fix DD)
 - P3_trend_filtro_200g.md ... LIBERA
-- P4_funding_carry.md ....... LIBERA (richiede raccolta funding swap, endpoint verificato)
+- P4_funding_carry.md ....... PARCHEGGIATA (funding EEA = 96gg di storia, verificato da dsh: niente misura)
+- P5_donchian_esteso.md ..... LIBERA -> la prende hermes (robustezza t su universo esteso)

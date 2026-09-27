@@ -1,0 +1,134 @@
+{
+  "nodo": "P1_trend_atr_stop",
+  "config_scelta": "breakout 40g + chandelier 3xATR",
+  "griglia_n": 6,
+  "griglia": [
+    {
+      "config": "breakout 20g + chandelier 2xATR",
+      "n": 343,
+      "expectancy_netta": 0.012853333150284346
+    },
+    {
+      "config": "breakout 20g + chandelier 2.5xATR",
+      "n": 291,
+      "expectancy_netta": 0.04362650284788957
+    },
+    {
+      "config": "breakout 20g + chandelier 3xATR",
+      "n": 240,
+      "expectancy_netta": 0.09895424746964529
+    },
+    {
+      "config": "breakout 40g + chandelier 2xATR",
+      "n": 266,
+      "expectancy_netta": 0.009869373467035886
+    },
+    {
+      "config": "breakout 40g + chandelier 2.5xATR",
+      "n": 226,
+      "expectancy_netta": 0.045556634394095324
+    },
+    {
+      "config": "breakout 40g + chandelier 3xATR",
+      "n": 189,
+      "expectancy_netta": 0.10134127290935395
+    }
+  ],
+  "verifica": {
+    "verdetto": "archiviato",
+    "motivi": [
+      "[expectancy_ic90] expectancy netta -1,07% con IC bootstrap al 90% [-3,33%, +1,30%] (seme 20260101, 10000 ricampionamenti): estremo inferiore <= 0",
+      "[t_stat] t-statistic -0,763 <= 1,650 a una coda (5%)",
+      "[profit_factor] profit factor 0,818 <= 1,200 (positivi +506,88% / negativi -619,90%)",
+      "[drawdown] drawdown massimo 55,58% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge",
+      "[pedaggio_coperto] pedaggio NON coperto con margine: expectancy netta -1,07% < 3,000x pedaggio +0,55% = +1,65% (manca +2,72% per operazione; tariffa okx_eea, tipo misto)",
+      "[rilevanza_economica] rilevanza economica insufficiente: -121,90 EUR/anno attesi < 10,00 EUR di soglia (46 operazioni/anno su capitale 1000,00 EUR x esposizione 25,00%): un edge di questa dimensione non giustifica un sistema H24, estrapolazione: 106 operazioni in 846,0 giorni proiettate a 46/anno con expectancy costante — e' un limite superiore, non una previsione",
+      "[indipendenza_dai_blocchi] expectancy concentrata in un solo blocco: blocco 1/3 vale +1,41% lordo (+0,86% netto) su 36 operazioni, ma tolto quello l'expectancy netta e' -2,89% <= 0: l'edge e' un evento con una data, non una proprieta' della strategia"
+    ],
+    "operazioni": 106,
+    "giorni": 846.0,
+    "expectancy_netta": -0.010662181827350391,
+    "ic90": [
+      -0.03325069704347863,
+      0.012964262501686554
+    ],
+    "t_stat": -0.7631710829690517,
+    "profit_factor": 0.8176807005798465,
+    "max_drawdown": 0.5557522129458928,
+    "pedaggio": 0.0055,
+    "copertura_3x": -1.9385785140637075,
+    "eur_anno": -121.90301858752558,
+    "criteri_falliti": [
+      "expectancy_ic90",
+      "t_stat",
+      "profit_factor",
+      "drawdown",
+      "pedaggio_coperto",
+      "rilevanza_economica",
+      "indipendenza_dai_blocchi"
+    ]
+  },
+  "scenari_tariffa": {
+    "okx_eea_con_perp": {
+      "verdetto": "archiviato",
+      "expectancy_netta": -0.006962181827350391,
+      "eur_anno": -79.60012260643812
+    },
+    "okx_eea_swap_lv1": {
+      "verdetto": "archiviato",
+      "expectancy_netta": -0.005862181827350391,
+      "eur_anno": -67.0235859634121
+    }
+  },
+  "ab_donchian": {
+    "config": "entrata 55g | uscita 20g",
+    "verdetto": "archiviato",
+    "motivi": [
+      "[t_stat] t-statistic 1,620 <= 1,650 a una coda (5%)",
+      "[drawdown] drawdown massimo 46,99% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge"
+    ],
+    "operazioni": 55,
+    "giorni": 846.0,
+    "expectancy_netta": 0.07991393628560962,
+    "ic90": [
+      0.0037929498424264046,
+      0.16436377467146326
+    ],
+    "t_stat": 1.6201609881566827,
+    "profit_factor": 1.967154265976492,
+    "max_drawdown": 0.4698544450653146,
+    "pedaggio": 0.0055,
+    "copertura_3x": 14.529806597383569,
+    "eur_anno": 474.07573018132774,
+    "criteri_falliti": [
+      "t_stat",
+      "drawdown"
+    ]
+  },
+  "meta": {
+    "periodo": [
+      "2020-10-01",
+      "2026-09-25"
+    ],
+    "confine": "2024-06-01",
+    "confine_reale_iso": "2024-06-01T00:00:00+00:00",
+    "universo": [
+      "ADA/USDT",
+      "AVAX/USDT",
+      "BTC/USDT",
+      "DOGE/USDT",
+      "DOT/USDT",
+      "ETH/USDT",
+      "LINK/USDT",
+      "LTC/USDT",
+      "SOL/USDT",
+      "UNI/USDT"
+    ],
+    "tariffa": "okx_eea_spot",
+    "tipo": "misto",
+    "slippage_per_lato": 0.0004,
+    "esposizione": 0.25,
+    "capitale_riferimento": 1000.0,
+    "soglia_eur_anno": 10.0
+  }
+}

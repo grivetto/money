@@ -1,0 +1,29 @@
+
+=== NODO P1_trend_atr_stop — griglia completa in addestramento (6 configurazioni) ===
+  breakout 20g + chandelier 2xATR                n= 343  expectancy netta +1,2853%
+  breakout 20g + chandelier 2.5xATR              n= 291  expectancy netta +4,3627%
+  breakout 20g + chandelier 3xATR                n= 240  expectancy netta +9,8954%
+  breakout 40g + chandelier 2xATR                n= 266  expectancy netta +0,9869%
+  breakout 40g + chandelier 2.5xATR              n= 226  expectancy netta +4,5557%
+  breakout 40g + chandelier 3xATR                n= 189  expectancy netta +10,1341%
+  SCELTA: breakout 40g + chandelier 3xATR
+
+  VERIFICA [confine -> 2026-09-25]:
+    operazioni 106 in 846.0 giorni | expectancy netta -1,0662% | pedaggio +0,550% (copertura -1,94x, servono 3x)
+    IC90 ['-3,3251%', '+1,2964%'] | t -0,76 | PF 0,82 | maxDD +55,6% | EUR/anno -121,90
+    VERDETTO: archiviato
+      - [expectancy_ic90] expectancy netta -1,07% con IC bootstrap al 90% [-3,33%, +1,30%] (seme 20260101, 10000 ricampionamenti): estremo inferiore <= 0
+      - [t_stat] t-statistic -0,763 <= 1,650 a una coda (5%)
+      - [profit_factor] profit factor 0,818 <= 1,200 (positivi +506,88% / negativi -619,90%)
+      - [drawdown] drawdown massimo 55,58% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge
+      - [pedaggio_coperto] pedaggio NON coperto con margine: expectancy netta -1,07% < 3,000x pedaggio +0,55% = +1,65% (manca +2,72% per operazione; tariffa okx_eea, tipo misto)
+      - [rilevanza_economica] rilevanza economica insufficiente: -121,90 EUR/anno attesi < 10,00 EUR di soglia (46 operazioni/anno su capitale 1000,00 EUR x esposizione 25,00%): un edge di questa dimensione non giustifica un sistema H24, estrapolazione: 106 operazioni in 846,0 giorni proiettate a 46/anno con expectancy costante — e' un limite superiore, non una previsione
+      - [indipendenza_dai_blocchi] expectancy concentrata in un solo blocco: blocco 1/3 vale +1,41% lordo (+0,86% netto) su 36 operazioni, ma tolto quello l'expectancy netta e' -2,89% <= 0: l'edge e' un evento con una data, non una proprieta' della strategia
+    scenario okx_eea_con_perp: verdetto archiviato, expectancy -0,6962%, EUR/anno -79,60
+    scenario okx_eea_swap_lv1: verdetto archiviato, expectancy -0,5862%, EUR/anno -67,02
+
+=== A/B OBBLIGATORIO: Donchian puro (nodo I) stessa finestra ===
+  config scelta: entrata 55g | uscita 20g
+  operazioni 55 | expectancy netta +7,9914% | maxDD +47,0% | verdetto archiviato
+
+  CONFRONTO P1 vs Donchian: maxDD +55,6% vs +47,0% | expectancy -1,0662% vs +7,9914%
