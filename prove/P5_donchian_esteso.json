@@ -1,0 +1,156 @@
+{
+  "nodo": "P5_donchian_esteso",
+  "config_scelta": "entrata 55g | uscita 20g",
+  "griglia_n": 6,
+  "griglia": [
+    {
+      "config": "entrata 20g | uscita 10g",
+      "n": 945,
+      "expectancy_netta": 0.22268337135517227
+    },
+    {
+      "config": "entrata 20g | uscita 20g",
+      "n": 747,
+      "expectancy_netta": 0.3776518012532416
+    },
+    {
+      "config": "entrata 40g | uscita 10g",
+      "n": 676,
+      "expectancy_netta": 0.24207146729777823
+    },
+    {
+      "config": "entrata 40g | uscita 20g",
+      "n": 533,
+      "expectancy_netta": 0.43467203849972424
+    },
+    {
+      "config": "entrata 55g | uscita 10g",
+      "n": 527,
+      "expectancy_netta": 0.2727152977312109
+    },
+    {
+      "config": "entrata 55g | uscita 20g",
+      "n": 410,
+      "expectancy_netta": 0.48402288698870166
+    }
+  ],
+  "verifica": {
+    "verdetto": "archiviato",
+    "motivi": [
+      "[expectancy_ic90] expectancy netta +4,03% con IC bootstrap al 90% [-0,28%, +8,93%] (seme 20260101, 10000 ricampionamenti): estremo inferiore <= 0",
+      "[t_stat] t-statistic 1,441 <= 1,650 a una coda (5%)",
+      "[drawdown] drawdown massimo 98,90% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge",
+      "[indipendenza_dai_blocchi] expectancy concentrata in un solo blocco: blocco 1/3 vale +19,50% lordo (+18,95% netto) su 88 operazioni, ma tolto quello l'expectancy netta e' -4,29% <= 0: l'edge e' un evento con una data, non una proprieta' della strategia"
+    ],
+    "operazioni": 263,
+    "giorni": 846.0,
+    "expectancy_netta": 0.04034486302437886,
+    "ic90": [
+      -0.00283815478683747,
+      0.08930882037625318
+    ],
+    "t_stat": 1.4411069097554738,
+    "profit_factor": 1.3999652562879266,
+    "max_drawdown": 0.9890420197975511,
+    "pedaggio": 0.0055,
+    "copertura_3x": 7.335429640796157,
+    "eur_anno": 1144.4755100547425,
+    "criteri_falliti": [
+      "expectancy_ic90",
+      "t_stat",
+      "drawdown",
+      "indipendenza_dai_blocchi"
+    ]
+  },
+  "scenari_tariffa": {
+    "okx_eea_con_perp": {
+      "verdetto": "archiviato",
+      "expectancy_netta": 0.044044863024378864,
+      "eur_anno": 1249.4345821587615
+    },
+    "okx_eea_swap_lv1": {
+      "verdetto": "archiviato",
+      "expectancy_netta": 0.04514486302437887,
+      "eur_anno": 1280.6386306221186
+    }
+  },
+  "meta": {
+    "periodo": [
+      "2020-10-01",
+      "2026-09-25"
+    ],
+    "confine": "2024-06-01",
+    "confine_reale_iso": "2024-06-01T00:00:00+00:00",
+    "universo": [
+      "ADA/USDT",
+      "ALGO/USDT",
+      "ATOM/USDT",
+      "AVAX/USDT",
+      "BAND/USDT",
+      "BAT/USDT",
+      "BCH/USDT",
+      "BNT/USDT",
+      "BTC/USDT",
+      "CELO/USDT",
+      "COMP/USDT",
+      "CRO/USDT",
+      "CRV/USDT",
+      "CTC/USDT",
+      "CVC/USDT",
+      "DGB/USDT",
+      "DOGE/USDT",
+      "DOT/USDT",
+      "EGLD/USDT",
+      "ELF/USDT",
+      "ETC/USDT",
+      "ETH/USDT",
+      "GAS/USDT",
+      "HBAR/USDT",
+      "ICX/USDT",
+      "IOST/USDT",
+      "IOTA/USDT",
+      "KNC/USDT",
+      "KSM/USDT",
+      "LEO/USDT",
+      "LINK/USDT",
+      "LRC/USDT",
+      "LSK/USDT",
+      "LTC/USDT",
+      "MANA/USDT",
+      "NEO/USDT",
+      "NMR/USDT",
+      "OKB/USDT",
+      "ONT/USDT",
+      "ORBS/USDT",
+      "QTUM/USDT",
+      "RSR/USDT",
+      "RVN/USDT",
+      "SNT/USDT",
+      "SNX/USDT",
+      "SOL/USDT",
+      "STORJ/USDT",
+      "SUSHI/USDT",
+      "SWFTC/USDT",
+      "THETA/USDT",
+      "TRB/USDT",
+      "TRX/USDT",
+      "UMA/USDT",
+      "UNI/USDT",
+      "USDC/USDT",
+      "XLM/USDT",
+      "XRP/USDT",
+      "XTZ/USDT",
+      "YFI/USDT",
+      "ZIL/USDT",
+      "ZRX/USDT"
+    ],
+    "n_universo": 61,
+    "tariffa": "okx_eea_spot",
+    "tipo": "misto",
+    "slippage_per_lato": 0.0004,
+    "esposizione": 0.25,
+    "capitale_riferimento": 1000.0,
+    "soglia_eur_anno": 10.0,
+    "selezione": "copertura >= 95% finestra + prima barra entro 7 giorni (vedi prove/P5_universo.json)"
+  }
+}

@@ -30,4 +30,4 @@ STATO DELLA CODA
 - P2_momentum_vol_target.md . LIBERA -> ASSEGNATA a dsh (priorita' massima: fix DD)
 - P3_trend_filtro_200g.md ... PRESA_DA agent-zero 2026-09-27 (codice in site/projects/denaro-p3, integrazione Hermes dopo review)
 - P4_funding_carry.md ....... PARCHEGGIATA (funding EEA = 96gg di storia, verificato da dsh: niente misura)
-- P5_donchian_esteso.md ..... LIBERA -> la prende hermes (robustezza t su universo esteso)
+- P5_donchian_esteso.md ..... FATTA 28/09 — ARCHIVIATA: l'allargamento non regge (61 coppie; t 1,44; prove/P5_donchian_esteso.*)

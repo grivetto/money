@@ -1,0 +1,1765 @@
+{
+ "finestra": [
+  "2020-10-01",
+  "2026-09-25"
+ ],
+ "copertura_minima": 0.95,
+ "tolleranza_prima_barra_giorni": 7,
+ "n_candidati": 407,
+ "n_inclusi": 61,
+ "inclusi": [
+  "ADA/USDT",
+  "ALGO/USDT",
+  "ATOM/USDT",
+  "AVAX/USDT",
+  "BAND/USDT",
+  "BAT/USDT",
+  "BCH/USDT",
+  "BNT/USDT",
+  "BTC/USDT",
+  "CELO/USDT",
+  "COMP/USDT",
+  "CRO/USDT",
+  "CRV/USDT",
+  "CTC/USDT",
+  "CVC/USDT",
+  "DGB/USDT",
+  "DOGE/USDT",
+  "DOT/USDT",
+  "EGLD/USDT",
+  "ELF/USDT",
+  "ETC/USDT",
+  "ETH/USDT",
+  "GAS/USDT",
+  "HBAR/USDT",
+  "ICX/USDT",
+  "IOST/USDT",
+  "IOTA/USDT",
+  "KNC/USDT",
+  "KSM/USDT",
+  "LEO/USDT",
+  "LINK/USDT",
+  "LRC/USDT",
+  "LSK/USDT",
+  "LTC/USDT",
+  "MANA/USDT",
+  "NEO/USDT",
+  "NMR/USDT",
+  "OKB/USDT",
+  "ONT/USDT",
+  "ORBS/USDT",
+  "QTUM/USDT",
+  "RSR/USDT",
+  "RVN/USDT",
+  "SNT/USDT",
+  "SNX/USDT",
+  "SOL/USDT",
+  "STORJ/USDT",
+  "SUSHI/USDT",
+  "SWFTC/USDT",
+  "THETA/USDT",
+  "TRB/USDT",
+  "TRX/USDT",
+  "UMA/USDT",
+  "UNI/USDT",
+  "USDC/USDT",
+  "XLM/USDT",
+  "XRP/USDT",
+  "XTZ/USDT",
+  "YFI/USDT",
+  "ZIL/USDT",
+  "ZRX/USDT"
+ ],
+ "dettaglio": [
+  {
+   "simbolo": "1INCH/USDT",
+   "escluso": "storia corta: prima barra 86 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "2Z/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "A/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "AAVE/USDT",
+   "escluso": "storia corta: prima barra 22 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "ACE/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ACH/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ACT/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ADA/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "AEON/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "AEVO/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "AGLD/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "AI/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "AIXBT/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ALGO/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "ALLO/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ANIME/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "APE/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "API3/USDT",
+   "escluso": "storia corta: prima barra 70 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "APT/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "AR/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ARB/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ARG/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ARKM/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ASP/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ASTER/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ASTR/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ATH/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ATOM/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "AUCTION/USDT",
+   "escluso": "storia corta: prima barra 189 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "AUDF/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "AUDM/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "AVAX/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "AVNT/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "AXS/USDT",
+   "escluso": "storia corta: prima barra 299 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "BABY/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "BABYDOGE/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "BANANA/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "BAND/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "BARD/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "BASED/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "BAT/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "BCH/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "BERA/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "BETH/USDT",
+   "escluso": "storia corta: prima barra 84 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "BICO/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "BIGTIME/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "BIO/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "BLUR/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "BNB/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "BNT/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "BOME/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "BONK/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "BREV/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "BRL1/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "BTC/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "CARDS/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "CAT/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "CATI/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "CC/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "CELO/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "CELR/USDT",
+   "escluso": "storia corta: prima barra 180 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "CETUS/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "CFG/USDT",
+   "escluso": "storia corta: prima barra 287 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "CFX/USDT",
+   "escluso": "storia corta: prima barra 154 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "CHIP/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "CHZ/USDT",
+   "escluso": "storia corta: prima barra 154 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "CITY/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "COMP/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "CORE/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "CP/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "CRO/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "CRV/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "CSPR/USDT",
+   "escluso": "storia corta: prima barra 223 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "CTC/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "CVC/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "CVX/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "DASH/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "DATA/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "DEGEN/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "DGB/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "DOGE/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "DOGS/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "DOOD/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "DORA/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "DOS/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "DOT/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "DYDX/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "EDGE/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "EGLD/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "EIGEN/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ELF/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "ENA/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ENJ/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ENS/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ETC/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "ETH/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "ETHFI/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ETHW/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "FET/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "FIL/USDT",
+   "escluso": "storia corta: prima barra 64 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "FLOKI/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "FLOW/USDT",
+   "escluso": "storia corta: prima barra 146 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "FLR/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "FLUID/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "FOGO/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "G/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "GALA/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "GALFT/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "GAS/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "GLM/USDT",
+   "escluso": "storia corta: prima barra 142 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "GMT/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "GMX/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "GOAT/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "GRAM/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "GRASS/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "GRT/USDT",
+   "escluso": "storia corta: prima barra 79 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "GRVT/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "HBAR/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "HMSTR/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "HUMA/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "HYPE/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ICP/USDT",
+   "escluso": "storia corta: prima barra 222 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "ICX/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "ID/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ILV/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "IMX/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "INJ/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "IOST/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "IOTA/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "IRYS/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "JITOSOL/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "JOE/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "JTO/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "JUP/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "KAIA/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "KAITO/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "KAT/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "KITE/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "KMNO/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "KNC/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "KSM/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "LAT/USDT",
+   "escluso": "storia corta: prima barra 223 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "LAYER/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "LDO/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "LEO/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "LINEA/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "LINK/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "LIT/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "LPT/USDT",
+   "escluso": "storia corta: prima barra 184 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "LQTY/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "LRC/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "LSK/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "LTC/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "LUNA/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "MAGIC/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "MANA/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "MASK/USDT",
+   "escluso": "storia corta: prima barra 147 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "ME/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "MEGA/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "MEME/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "MENGO/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "MERL/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "MET/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "METIS/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "MEW/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "MINA/USDT",
+   "escluso": "storia corta: prima barra 243 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "MMT/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "MON/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "MOODENG/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "MORPHO/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "MOVE/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "NAVX/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "NEAR/USDT",
+   "escluso": "storia corta: prima barra 64 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "NEIRO/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "NEO/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "NES/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "NFT/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "NIGHT/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "NMR/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "NOT/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "OFC/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "OKB/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "OKSOL/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "OL/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "OMI/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ONDO/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ONE/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ONT/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "OP/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ORBS/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "ORDI/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "PARTI/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "PAXG/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "PENDLE/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "PENGU/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "PEOPLE/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "PEPE/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "PHA/USDT",
+   "escluso": "storia corta: prima barra 119 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "PI/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "PIXEL/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "PNUT/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "POL/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "PONS/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "POR/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "PROMPT/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "PROS/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "PROVE/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "PUMP/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "PYTH/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "PYUSD/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "QTUM/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "RAY/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "RE/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "RENDER/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "RESOLV/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "RLUSD/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ROBO/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "RON/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "RPL/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "RSR/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "RVN/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "S/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "SAFE/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "SAHARA/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "SAND/USDT",
+   "escluso": "storia corta: prima barra 169 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "SATS/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "SCR/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "SD/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "SEI/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "SENT/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "SHIB/USDT",
+   "escluso": "storia corta: prima barra 220 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "SKL/USDT",
+   "escluso": "storia corta: prima barra 180 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "SKY/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "SLP/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "SLX/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "SNT/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "SNX/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "SOL/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "SONIC/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "SOPH/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "SPACE/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "SPK/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "SPURS/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "SSV/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "STETH/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "STORJ/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "STRK/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "STX/USDT",
+   "escluso": "storia corta: prima barra 155 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "SUI/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "SUSHI/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "SWFTC/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "T/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "TAO/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "THETA/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "TIA/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "TNSR/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "TOSHI/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "TRA/USDT",
+   "escluso": "storia corta: prima barra 191 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "TRB/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "TRUMP/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "TRX/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "TURBO/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "UMA/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "UNI/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "USAT/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "USD1/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "USDC/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "USDG/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "USDS/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "VELO/USDT",
+   "escluso": "storia corta: prima barra 159 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "VELODROME/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "VINE/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "VIRTUAL/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "VVV/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "W/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "WAXP/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "WCT/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "WET/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "WIF/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "WIN/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "WLD/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "WLFI/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "WOO/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XAAOI/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XAAPL/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XADBE/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XALAB/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XAMAT/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XAMD/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XAMZN/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XAPLD/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XAPP/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XARM/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XASML/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XASTS/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XAUT/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XAVGO/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XBE/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XBMNR/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XBOT/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XBSP/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XBX/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XCBRS/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XCH/USDT",
+   "escluso": "storia corta: prima barra 215 giorni dopo l'inizio (tolleranza inclusa)"
+  },
+  {
+   "simbolo": "XCIEN/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XCOHR/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XCOIN/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XCRCL/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XCRM/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XCRWD/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XCRWV/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XCSCO/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XDELL/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XDKNG/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XDP/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XDRAM/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XEWY/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XGEV/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XGLW/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XGME/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XGOOGL/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XHIMS/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XHOOD/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XHPE/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XIBM/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XINTC/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XINTW/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XIREN/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XISRG/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XIWM/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XJNJ/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XKLAC/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XKO/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XKORU/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XLITE/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XLLY/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XLM/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "XLRCX/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XMETA/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XMRVL/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XMSFT/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XMSTR/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XMU/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XMUU/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XMVLL/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XNBIS/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XNFLX/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XNOW/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XNVDA/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XOKTA/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XON/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XONDS/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XORCL/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XPL/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XPLTR/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XPOPMART/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XQCOM/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XQQQ/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XRDDT/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XRIVN/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XRKLB/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XROK/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XRP/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "XSHAZ/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XSHEIN/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XSKHY/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XSMCI/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XSMH/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XSNDK/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XSNOW/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XSNXX/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XSOXL/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XSOXS/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XSPCX/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XSPY/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XSTRC/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XTER/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XTESTA/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XTQQQ/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XTSLA/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XTSM/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XTTWO/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XTWLO/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XTZ/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "XUNH/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XUSAR/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XVRT/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XWDC/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XXIAOMI/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XXLE/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "XZM/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "YB/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "YFI/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "YGG/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ZAMA/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ZBCN/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ZEC/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ZEN/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ZENT/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ZETA/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ZEUS/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ZIL/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  },
+  {
+   "simbolo": "ZK/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ZKJ/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ZORA/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ZRO/USDT",
+   "escluso": "storia corta oltre 300 giorni: nessun dato nella prima finestra"
+  },
+  {
+   "simbolo": "ZRX/USDT",
+   "barre": 2186,
+   "copertura": 1.0
+  }
+ ],
+ "timestamp_utc": "2026-09-28T17:10:20Z"
+}

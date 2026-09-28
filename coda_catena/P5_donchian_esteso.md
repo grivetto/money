@@ -1,5 +1,5 @@
 # P5 — Donchian puro su universo ESTESO (robustezza del t-stat)
-STATO: PRESA_DA hermes 2026-09-27
+STATO: FATTA 2026-09-28 — ARCHIVIATA (universo esteso diluisce l'edge: t 1,62 -> 1,44 su 263 op; IC90 lato inferiore sotto zero; blocchi concentrati; DD 98,9%. L'edge era dei 10 majors + un regime)
 DATI: USDT-lungo (2020-10-01 -> oggi; confine 2024-06-01)
 
 ## Perche' esiste (nato dalla misura, non dalla speranza)

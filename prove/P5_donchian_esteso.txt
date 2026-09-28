@@ -1,0 +1,23 @@
+P5 — Donchian puro su universo ESTESO (61 coppie, 2020-10-01 -> 2026-09-25; confine 2024-06-01 @ 2024-06-01T00:00:00+00:00)
+universo: ADA/USDT, ALGO/USDT, ATOM/USDT, AVAX/USDT, BAND/USDT, BAT/USDT, BCH/USDT, BNT/USDT, BTC/USDT, CELO/USDT, COMP/USDT, CRO/USDT, CRV/USDT, CTC/USDT, CVC/USDT, DGB/USDT, DOGE/USDT, DOT/USDT, EGLD/USDT, ELF/USDT, ETC/USDT, ETH/USDT, GAS/USDT, HBAR/USDT, ICX/USDT, IOST/USDT, IOTA/USDT, KNC/USDT, KSM/USDT, LEO/USDT, LINK/USDT, LRC/USDT, LSK/USDT, LTC/USDT, MANA/USDT, NEO/USDT, NMR/USDT, OKB/USDT, ONT/USDT, ORBS/USDT, QTUM/USDT, RSR/USDT, RVN/USDT, SNT/USDT, SNX/USDT, SOL/USDT, STORJ/USDT, SUSHI/USDT, SWFTC/USDT, THETA/USDT, TRB/USDT, TRX/USDT, UMA/USDT, UNI/USDT, USDC/USDT, XLM/USDT, XRP/USDT, XTZ/USDT, YFI/USDT, ZIL/USDT, ZRX/USDT
+(dettaglio selezioni: prove/P5_universo.json; criteri: money.ricerca.universo)
+
+=== NODO P5_donchian_esteso — griglia completa in addestramento (6 configurazioni) ===
+  entrata 20g | uscita 10g                       n= 945  expectancy netta +22,2683%
+  entrata 20g | uscita 20g                       n= 747  expectancy netta +37,7652%
+  entrata 40g | uscita 10g                       n= 676  expectancy netta +24,2071%
+  entrata 40g | uscita 20g                       n= 533  expectancy netta +43,4672%
+  entrata 55g | uscita 10g                       n= 527  expectancy netta +27,2715%
+  entrata 55g | uscita 20g                       n= 410  expectancy netta +48,4023%
+  SCELTA: entrata 55g | uscita 20g
+
+  VERIFICA [confine -> 2026-09-25]:
+    operazioni 263 in 846.0 giorni | expectancy netta +4,0345% | pedaggio +0,550% (copertura 7,34x, servono 3x)
+    IC90 ['-0,2838%', '+8,9309%'] | t 1,44 | PF 1,40 | maxDD +98,9% | EUR/anno 1144,48
+    VERDETTO: archiviato
+      - [expectancy_ic90] expectancy netta +4,03% con IC bootstrap al 90% [-0,28%, +8,93%] (seme 20260101, 10000 ricampionamenti): estremo inferiore <= 0
+      - [t_stat] t-statistic 1,441 <= 1,650 a una coda (5%)
+      - [drawdown] drawdown massimo 98,90% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge
+      - [indipendenza_dai_blocchi] expectancy concentrata in un solo blocco: blocco 1/3 vale +19,50% lordo (+18,95% netto) su 88 operazioni, ma tolto quello l'expectancy netta e' -4,29% <= 0: l'edge e' un evento con una data, non una proprieta' della strategia
+    scenario okx_eea_con_perp: verdetto archiviato, expectancy +4,4045%, EUR/anno 1249,43
+    scenario okx_eea_swap_lv1: verdetto archiviato, expectancy +4,5145%, EUR/anno 1280,64
