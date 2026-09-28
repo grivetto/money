@@ -1,0 +1,293 @@
+{
+  "VERIFICA [2024-06-01 -> 2026-09-25] | Donchian": {
+    "nome": "Donchian",
+    "config": "entrata 55g | uscita 20g",
+    "operazioni": 55,
+    "esposizioni": [
+      {
+        "esposizione": 0.25,
+        "dd_serializzato": 0.4698544450653145,
+        "dd_portafoglio": 0.42836371274309226,
+        "max_esposizione": 0.9983834183265338,
+        "max_posizioni": 4,
+        "eseguite": 28,
+        "saltate": 27,
+        "eur_anno": -99.24730054005798,
+        "t_giornaliero": -0.36845061595356626,
+        "capitale_finale": 769.9637910770163
+      },
+      {
+        "esposizione": 0.125,
+        "dd_serializzato": 0.266432499716331,
+        "dd_portafoglio": 0.44005882564944365,
+        "max_esposizione": 0.9783360832958891,
+        "max_posizioni": 7,
+        "eseguite": 46,
+        "saltate": 9,
+        "eur_anno": 94.73695697409616,
+        "t_giornaliero": 0.6548453732557287,
+        "capitale_finale": 1219.5820975344805
+      },
+      {
+        "esposizione": 0.1,
+        "dd_serializzato": 0.21861372743694507,
+        "dd_portafoglio": 0.43484383637922586,
+        "max_esposizione": 0.9944358653400392,
+        "max_posizioni": 9,
+        "eseguite": 52,
+        "saltate": 3,
+        "eur_anno": 100.15372720904595,
+        "t_giornaliero": 0.6932029339992739,
+        "capitale_finale": 1232.1371321064462
+      },
+      {
+        "esposizione": 0.05,
+        "dd_serializzato": 0.11499775984117011,
+        "dd_portafoglio": 0.27465606882655336,
+        "max_esposizione": 0.6928765978944651,
+        "max_posizioni": 10,
+        "eseguite": 55,
+        "saltate": 0,
+        "eur_anno": 89.46940574141618,
+        "t_giornaliero": 0.8267506649570538,
+        "capitale_finale": 1207.372923992433
+      },
+      {
+        "esposizione": 0.02,
+        "dd_serializzato": 0.04742325545171988,
+        "dd_portafoglio": 0.1309304273081272,
+        "max_esposizione": 0.34191530363569067,
+        "max_posizioni": 10,
+        "eseguite": 55,
+        "saltate": 0,
+        "eur_anno": 37.15123206653733,
+        "t_giornaliero": 0.75422874910365,
+        "capitale_finale": 1086.1094310364126
+      }
+    ],
+    "verdetto_serializzato": "archiviato",
+    "verdetto_portafoglio_25": "archiviato",
+    "motivi_portafoglio_25": [
+      "[t_stat] t-statistic 1,620 <= 1,650 a una coda (5%)",
+      "[drawdown] drawdown massimo 42,84% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge"
+    ]
+  },
+  "VERIFICA [2024-06-01 -> 2026-09-25] | P3 filtro SMA200": {
+    "nome": "P3 filtro SMA200",
+    "config": "breakout 40g | uscita canale20",
+    "operazioni": 45,
+    "esposizioni": [
+      {
+        "esposizione": 0.25,
+        "dd_serializzato": 0.45460099067933823,
+        "dd_portafoglio": 0.5553121212647832,
+        "max_esposizione": 0.876687187696806,
+        "max_posizioni": 3,
+        "eseguite": 25,
+        "saltate": 20,
+        "eur_anno": -63.07437902854329,
+        "t_giornaliero": -0.09657654106108961,
+        "capitale_finale": 853.8056858680887
+      },
+      {
+        "esposizione": 0.125,
+        "dd_serializzato": 0.253920641189624,
+        "dd_portafoglio": 0.4262259837424499,
+        "max_esposizione": 0.9557776019805754,
+        "max_posizioni": 7,
+        "eseguite": 38,
+        "saltate": 7,
+        "eur_anno": 92.86263803543012,
+        "t_giornaliero": 0.6579237309940842,
+        "capitale_finale": 1215.237785693079
+      },
+      {
+        "esposizione": 0.1,
+        "dd_serializzato": 0.2076442012175307,
+        "dd_portafoglio": 0.4035226264119419,
+        "max_esposizione": 0.9720985876308557,
+        "max_posizioni": 9,
+        "eseguite": 44,
+        "saltate": 1,
+        "eur_anno": 136.23530785228806,
+        "t_giornaliero": 0.8273765936328396,
+        "capitale_finale": 1315.7673162822896
+      },
+      {
+        "esposizione": 0.05,
+        "dd_serializzato": 0.10845144683372765,
+        "dd_portafoglio": 0.2639844979082405,
+        "max_esposizione": 0.6828897261076385,
+        "max_posizioni": 10,
+        "eseguite": 45,
+        "saltate": 0,
+        "eur_anno": 80.98944432304376,
+        "t_giornaliero": 0.7782981921675913,
+        "capitale_finale": 1187.7179997186165
+      },
+      {
+        "esposizione": 0.02,
+        "dd_serializzato": 0.04452222386530391,
+        "dd_portafoglio": 0.12542480359236385,
+        "max_esposizione": 0.3370036606766532,
+        "max_posizioni": 10,
+        "eseguite": 45,
+        "saltate": 0,
+        "eur_anno": 33.999987470967866,
+        "t_giornaliero": 0.70718792282129,
+        "capitale_finale": 1078.8054504121612
+      }
+    ],
+    "verdetto_serializzato": "archiviato",
+    "verdetto_portafoglio_25": "archiviato",
+    "motivi_portafoglio_25": [
+      "[t_stat] t-statistic 1,577 <= 1,650 a una coda (5%)",
+      "[drawdown] drawdown massimo 55,53% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge"
+    ]
+  },
+  "FINESTRA PIENA [2020-10-01 -> 2026-09-25] | Donchian": {
+    "nome": "Donchian",
+    "config": "entrata 55g | uscita 20g",
+    "operazioni": 135,
+    "esposizioni": [
+      {
+        "esposizione": 0.25,
+        "dd_serializzato": 0.7382763278195686,
+        "dd_portafoglio": 0.679913275980565,
+        "max_esposizione": 0.9988894895286518,
+        "max_posizioni": 4,
+        "eseguite": 63,
+        "saltate": 72,
+        "eur_anno": 196.95499040431022,
+        "t_giornaliero": 1.2747026095532592,
+        "capitale_finale": 2179.031928858679
+      },
+      {
+        "esposizione": 0.125,
+        "dd_serializzato": 0.48261735315764387,
+        "dd_portafoglio": 0.6731999439769354,
+        "max_esposizione": 0.987185478005663,
+        "max_posizioni": 7,
+        "eseguite": 111,
+        "saltate": 24,
+        "eur_anno": 3409.283485813908,
+        "t_giornaliero": 2.699526506161821,
+        "capitale_finale": 21408.99840137915
+      },
+      {
+        "esposizione": 0.1,
+        "dd_serializzato": 0.4086899385958128,
+        "dd_portafoglio": 0.5962495982382295,
+        "max_esposizione": 0.9944358653400392,
+        "max_posizioni": 9,
+        "eseguite": 123,
+        "saltate": 12,
+        "eur_anno": 4138.867429801547,
+        "t_giornaliero": 3.020539105021388,
+        "capitale_finale": 25776.507764702408
+      },
+      {
+        "esposizione": 0.05,
+        "dd_serializzato": 0.22969014599726933,
+        "dd_portafoglio": 0.5752652442153118,
+        "max_esposizione": 0.9510590299502605,
+        "max_posizioni": 10,
+        "eseguite": 135,
+        "saltate": 0,
+        "eur_anno": 1454.5955839121764,
+        "t_giornaliero": 2.6459399399395966,
+        "capitale_finale": 9707.647536570154
+      },
+      {
+        "esposizione": 0.02,
+        "dd_serializzato": 0.09874836119867092,
+        "dd_portafoglio": 0.5053452568701513,
+        "max_esposizione": 0.8276508116725624,
+        "max_posizioni": 10,
+        "eseguite": 135,
+        "saltate": 0,
+        "eur_anno": 407.65429397632073,
+        "t_giornaliero": 2.025241772208431,
+        "capitale_finale": 3440.3414584609886
+      }
+    ],
+    "verdetto_serializzato": "archiviato",
+    "verdetto_portafoglio_25": "archiviato",
+    "motivi_portafoglio_25": [
+      "[drawdown] drawdown massimo 67,99% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge"
+    ]
+  },
+  "FINESTRA PIENA [2020-10-01 -> 2026-09-25] | P3 filtro SMA200": {
+    "nome": "P3 filtro SMA200",
+    "config": "breakout 40g | uscita canale20",
+    "operazioni": 117,
+    "esposizioni": [
+      {
+        "esposizione": 0.25,
+        "dd_serializzato": 0.799831405829565,
+        "dd_portafoglio": 0.6529941538209666,
+        "max_esposizione": 0.9991454273907472,
+        "max_posizioni": 4,
+        "eseguite": 56,
+        "saltate": 61,
+        "eur_anno": 141.59312932882807,
+        "t_giornaliero": 1.1301705622900555,
+        "capitale_finale": 1847.6191440643543
+      },
+      {
+        "esposizione": 0.125,
+        "dd_serializzato": 0.5470839146204876,
+        "dd_portafoglio": 0.5646658446142432,
+        "max_esposizione": 0.9893270610079045,
+        "max_posizioni": 7,
+        "eseguite": 97,
+        "saltate": 20,
+        "eur_anno": 134.64928309737783,
+        "t_giornaliero": 1.1163995053340525,
+        "capitale_finale": 1806.0511878569057
+      },
+      {
+        "esposizione": 0.1,
+        "dd_serializzato": 0.46833021370252126,
+        "dd_portafoglio": 0.5321617261294667,
+        "max_esposizione": 0.9827124240803894,
+        "max_posizioni": 9,
+        "eseguite": 109,
+        "saltate": 8,
+        "eur_anno": 175.16679300146183,
+        "t_giornaliero": 1.2713681739365343,
+        "capitale_finale": 2048.601212899162
+      },
+      {
+        "esposizione": 0.05,
+        "dd_serializzato": 0.26947074109078994,
+        "dd_portafoglio": 0.3459975182228767,
+        "max_esposizione": 0.7614322913522081,
+        "max_posizioni": 10,
+        "eseguite": 117,
+        "saltate": 0,
+        "eur_anno": 98.00435772279435,
+        "t_giornaliero": 1.1488970044862306,
+        "capitale_finale": 1586.6836208885086
+      },
+      {
+        "esposizione": 0.02,
+        "dd_serializzato": 0.11763505570577737,
+        "dd_portafoglio": 0.16030229831336795,
+        "max_esposizione": 0.399730596537089,
+        "max_posizioni": 10,
+        "eseguite": 117,
+        "saltate": 0,
+        "eur_anno": 42.03776291302423,
+        "t_giornaliero": 1.078381989247366,
+        "capitale_finale": 1251.6507177122137
+      }
+    ],
+    "verdetto_serializzato": "archiviato",
+    "verdetto_portafoglio_25": "archiviato",
+    "motivi_portafoglio_25": [
+      "[t_stat] t-statistic 1,644 <= 1,650 a una coda (5%)",
+      "[drawdown] drawdown massimo 65,30% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge"
+    ]
+  }
+}
