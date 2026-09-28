@@ -25,3 +25,17 @@ lookback in {60, 90} x vol_target in {0.50, 0.60}
 ## Note
 - La metrica che conta: maxDD del nodo vs quello di L sulla stessa finestra. Se non scende
   sotto il 25% la famiglia si archivia.
+
+## CONTESTO 2026-09-29 (dopo P3) — LEGGI PRIMA DI INIZIARE
+Il segnale della famiglia canale e' ora dimostrato forte su USDT lunghi (10 majors):
+P3 (filtro SMA200, 40g+canale20): expectancy +9,01%/op netta = 16,4x pedaggio, IC90
+[+0,10%, +19,12%] positivo, PF 2,01 — bocciata SOLO da t 1,58 e DD 45,5%.
+Gli attacchi al DD per USCITA (P1, chandelier) e per REGIME (P3, filtro SMA200) sono
+entrambi misurati e insufficienti. Conseguenza operativa per il tuo P2:
+- applica il vol targeting alle operazioni della famiglia canale (config riproducibile:
+  src/money/ricerca/p3_trend_filtro_200g.py, config 40g|canale20 — oppure Donchian
+  55g/20g; la scelta dichiarala);
+- NON modificare il segnale: cambia solo quanto si rischia per operazione;
+- criterio di successo: maxDD <= 25% mantenendo expectancy >= 3x pedaggio; riporta anche
+  l'effetto sul t-stat. Se il DD non scende sotto il 25%, il filone trend si archivia per
+  costruzione e si progettano spec nuove sui dati.

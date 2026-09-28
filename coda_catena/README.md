@@ -27,7 +27,7 @@ La conferma finale prima della promozione si rifa' SEMPRE sulle EUR (campione co
 STATO DELLA CODA
 ================
 - P1_trend_atr_stop.md ...... FATTA, ARCHIVIATA (ipotesi chandelier smentita; A/B: Donchian 6/8)
-- P2_momentum_vol_target.md . LIBERA -> ASSEGNATA a dsh (priorita' massima: fix DD)
-- P3_trend_filtro_200g.md ... PRESA_DA agent-zero 2026-09-27 (codice in site/projects/denaro-p3, integrazione Hermes dopo review)
+- P2_momentum_vol_target.md . ASSEGNATA a dsh — ULTIMA RIMASTA (sizing: l'unico attacco al DD non ancora misurato)
+- P3_trend_filtro_200g.md ... FATTA 29/09 — ARCHIVIATA (integrata da hermes: 6/8 come Donchian; t 1,58; DD 45,5%)
 - P4_funding_carry.md ....... PARCHEGGIATA (funding EEA = 96gg di storia, verificato da dsh: niente misura)
 - P5_donchian_esteso.md ..... FATTA 28/09 — ARCHIVIATA: l'allargamento non regge (61 coppie; t 1,44; prove/P5_donchian_esteso.*)

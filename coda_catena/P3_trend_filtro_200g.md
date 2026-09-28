@@ -1,6 +1,16 @@
 # P3 — Trend con filtro di regime 200 giorni
-STATO: PRESA_DA agent-zero 2026-09-27
-DATI: USDT-lungo (2019-01-01 -> oggi; confine 2024-06-01)
+STATO: FATTA 2026-09-29 — integrata da hermes (consegna agent-zero non valida: modulo
+riscritto, vedi site/projects/denaro-p3/REVIEW3.md). ESITO: ARCHIVIATA (6/8).
+DATI: USDT-lungo (2020-10-01 -> 2026-09-25; confine 2024-06-01) — finestra allineata a P1.
+
+## Esito (2026-09-29)
+Verifica: 45 ops in 846gg, expectancy netta +9,01% (16,4x pedaggio), IC90 [+0,10%, +19,12%]
+positivo, PF 2,01, EUR/anno +437 su 1000 EUR. Bocciata da: t 1,58 (soglia 1,65) e maxDD
+45,5% (soglia 25%). A/B Donchian pura stessa finestra: +7,99%/op, DD 47,0%.
+LETTURA: il filtro di regime NON riduce il DD (45,5% vs 47,0%): il drawdown non nasce dai
+trade in regime ribassista ma dalla sequenza/sizing delle operazioni. Il segnale resta il
+piu' forte del progetto (expectancy e IC sopra il Donchian puro). Resta UN solo attacco al
+DD: il sizing (P2, in corso). Prove: prove/P3_trend_filtro_200g.{txt,json}.
 
 ## Ipotesi
 Il trend-following fallisce nei mercati laterali/ribassisti perche' compra rotture che non

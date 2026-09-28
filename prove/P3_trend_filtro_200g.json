@@ -1,0 +1,114 @@
+{
+  "nodo": "P3_trend_filtro_200g",
+  "config_scelta": "breakout 40g | uscita canale20",
+  "griglia_n": 4,
+  "griglia": [
+    {
+      "config": "breakout 20g | uscita canale20",
+      "n": 87,
+      "expectancy_netta": 0.12007083410382921
+    },
+    {
+      "config": "breakout 20g | uscita sma200",
+      "n": 87,
+      "expectancy_netta": 0.08198990440439115
+    },
+    {
+      "config": "breakout 40g | uscita canale20",
+      "n": 73,
+      "expectancy_netta": 0.12447538183167337
+    },
+    {
+      "config": "breakout 40g | uscita sma200",
+      "n": 73,
+      "expectancy_netta": 0.09661371067697268
+    }
+  ],
+  "verifica": {
+    "verdetto": "archiviato",
+    "motivi": [
+      "[t_stat] t-statistic 1,577 <= 1,650 a una coda (5%)",
+      "[drawdown] drawdown massimo 45,46% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge"
+    ],
+    "operazioni": 45,
+    "giorni": 846.0,
+    "expectancy_netta": 0.09005708937211454,
+    "ic90": [
+      0.0010009069528219472,
+      0.19124368683332474
+    ],
+    "t_stat": 1.5771877393568245,
+    "profit_factor": 2.0052206479479593,
+    "max_drawdown": 0.45460099067933823,
+    "pedaggio": 0.0055,
+    "copertura_3x": 16.37401624947537,
+    "eur_anno": 437.11220240454537,
+    "criteri_falliti": [
+      "t_stat",
+      "drawdown"
+    ]
+  },
+  "scenari_tariffa": {
+    "okx_eea_con_perp": {
+      "verdetto": "archiviato",
+      "expectancy_netta": 0.09375708937211452,
+      "eur_anno": 455.0709790002899
+    },
+    "okx_eea_swap_lv1": {
+      "verdetto": "archiviato",
+      "expectancy_netta": 0.09485708937211454,
+      "eur_anno": 460.41007474497087
+    }
+  },
+  "ab_donchian": {
+    "config": "entrata 55g | uscita 20g",
+    "verdetto": "archiviato",
+    "motivi": [
+      "[t_stat] t-statistic 1,620 <= 1,650 a una coda (5%)",
+      "[drawdown] drawdown massimo 46,99% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge"
+    ],
+    "operazioni": 55,
+    "giorni": 846.0,
+    "expectancy_netta": 0.07991393628560962,
+    "ic90": [
+      0.0037929498424264046,
+      0.16436377467146326
+    ],
+    "t_stat": 1.6201609881566827,
+    "profit_factor": 1.967154265976492,
+    "max_drawdown": 0.4698544450653146,
+    "pedaggio": 0.0055,
+    "copertura_3x": 14.529806597383569,
+    "eur_anno": 474.07573018132774,
+    "criteri_falliti": [
+      "t_stat",
+      "drawdown"
+    ]
+  },
+  "meta": {
+    "periodo": [
+      "2020-10-01",
+      "2026-09-25"
+    ],
+    "confine": "2024-06-01",
+    "confine_reale_iso": "2024-06-01T00:00:00+00:00",
+    "universo": [
+      "ADA/USDT",
+      "AVAX/USDT",
+      "BTC/USDT",
+      "DOGE/USDT",
+      "DOT/USDT",
+      "ETH/USDT",
+      "LINK/USDT",
+      "LTC/USDT",
+      "SOL/USDT",
+      "UNI/USDT"
+    ],
+    "tariffa": "okx_eea_spot",
+    "tipo": "misto",
+    "slippage_per_lato": 0.0004,
+    "esposizione": 0.25,
+    "capitale_riferimento": 1000.0,
+    "soglia_eur_anno": 10.0
+  }
+}

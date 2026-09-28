@@ -1,0 +1,22 @@
+
+=== NODO P3_trend_filtro_200g — griglia completa in addestramento (4 configurazioni) ===
+  breakout 20g | uscita canale20                 n=  87  expectancy netta +12,0071%
+  breakout 20g | uscita sma200                   n=  87  expectancy netta +8,1990%
+  breakout 40g | uscita canale20                 n=  73  expectancy netta +12,4475%
+  breakout 40g | uscita sma200                   n=  73  expectancy netta +9,6614%
+  SCELTA: breakout 40g | uscita canale20
+
+  VERIFICA [confine -> 2026-09-25]:
+    operazioni 45 in 846.0 giorni | expectancy netta +9,0057% | pedaggio +0,550% (copertura 16,37x, servono 3x)
+    IC90 ['+0,1001%', '+19,1244%'] | t 1,58 | PF 2,01 | maxDD +45,5% | EUR/anno 437,11
+    VERDETTO: archiviato
+      - [t_stat] t-statistic 1,577 <= 1,650 a una coda (5%)
+      - [drawdown] drawdown massimo 45,46% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge
+    scenario okx_eea_con_perp: verdetto archiviato, expectancy +9,3757%, EUR/anno 455,07
+    scenario okx_eea_swap_lv1: verdetto archiviato, expectancy +9,4857%, EUR/anno 460,41
+
+=== A/B OBBLIGATORIO: Donchian puro (nodo I) stessa finestra ===
+  config scelta: entrata 55g | uscita 20g
+  operazioni 55 | expectancy netta +7,9914% | maxDD +47,0% | verdetto archiviato
+
+  CONFRONTO P3 vs Donchian: maxDD +45,5% vs +47,0% | expectancy +9,0057% vs +7,9914% | n 45 vs 55
