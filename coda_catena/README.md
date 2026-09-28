@@ -28,6 +28,6 @@ STATO DELLA CODA
 ================
 - P1_trend_atr_stop.md ...... FATTA, ARCHIVIATA (ipotesi chandelier smentita; A/B: Donchian 6/8)
 - P2_momentum_vol_target.md . LIBERA -> ASSEGNATA a dsh (priorita' massima: fix DD)
-- P3_trend_filtro_200g.md ... LIBERA
+- P3_trend_filtro_200g.md ... PRESA_DA agent-zero 2026-09-27 (codice in site/projects/denaro-p3, integrazione Hermes dopo review)
 - P4_funding_carry.md ....... PARCHEGGIATA (funding EEA = 96gg di storia, verificato da dsh: niente misura)
 - P5_donchian_esteso.md ..... LIBERA -> la prende hermes (robustezza t su universo esteso)

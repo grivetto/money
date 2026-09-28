@@ -1,5 +1,5 @@
 # P3 — Trend con filtro di regime 200 giorni
-STATO: LIBERA
+STATO: PRESA_DA agent-zero 2026-09-27
 DATI: USDT-lungo (2019-01-01 -> oggi; confine 2024-06-01)
 
 ## Ipotesi
