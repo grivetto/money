@@ -111,6 +111,11 @@ def check_a0win(st):
     st["a0win_last"] = code
 
 
+def check_a0mc2(st):
+    rc, out = sh("curl -s -m 6 -o /dev/null -w '%{http_code}' http://127.0.0.1:50080/api/health", timeout=12)
+    st["a0mc2"] = out.strip() if rc == 0 else "DOWN"
+
+
 def check_banco(st):
     cmd = ("ssh -o BatchMode=yes -o ConnectTimeout=6 MARCODG1 "
            "'A=$(systemctl is-active money-banco-secco.timer 2>/dev/null); "
@@ -158,6 +163,7 @@ def write_stato(st):
                                              st.get("p2_handoff_manifest", "-")),
         "- P2: %s" % st.get("p2"),
         "- A0-PC: HTTP %s" % st.get("a0win"),
+        "- A0-MC2: HTTP %s" % st.get("a0mc2"),
         "- banco MARCODG1: %s" % st.get("banco"),
         "- prossima spec da materializzare: %s %s" % (st.get("spec_next") or "(nessuna)",
                                                       "— " + st.get("spec_next_desc", "") if st.get("spec_next") else ""),
@@ -181,6 +187,7 @@ def main():
     check_handoff_p2(st)
     check_p2(st)
     check_a0win(st)
+    check_a0mc2(st)
     check_banco(st)
     check_specgen(st)
     check_inbox(st)
