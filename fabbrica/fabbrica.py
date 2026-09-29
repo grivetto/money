@@ -103,7 +103,7 @@ def check_p2(st):
 
 
 def check_a0win(st):
-    rc, out = sh("curl -s -m 8 -o /dev/null -w '%{http_code}' %s/api/health" % A0WIN, timeout=15)
+    rc, out = sh("curl -s -m 8 -o /dev/null -w '%{http_code}' " + A0WIN + "/api/health", timeout=15)
     code = out.strip() if rc == 0 else "DOWN"
     st["a0win"] = code
     if code != "200" and st.get("a0win_last") == "200":
