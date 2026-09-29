@@ -1,5 +1,5 @@
 # P2 — Momentum assoluto con position sizing a volatilita' (vol targeting)
-STATO: LIBERA
+STATO: PRESA_DA dsh (2026-09-29)
 DATI: USDT-lungo (2019-01-01 -> oggi; confine 2024-06-01)
 
 ## Ipotesi
@@ -17,8 +17,7 @@ ritorno per operazione si scala per il fattore di esposizione.
   paga sul nozionale IMPEGNATO (f * posizione): attenzione a scalare anche quello.
 - Una posizione alla volta per simbolo.
 
-## Griglia (dichiarata, 4 config)
-lookback in {60, 90} x vol_target in {0.50, 0.60}
+## Griglia (dichiarata) — SUPERSEDED 2026-09-29, vedi DECISIONE in fondo
 
 ## Universo: come P1.
 
@@ -39,3 +38,14 @@ entrambi misurati e insufficienti. Conseguenza operativa per il tuo P2:
 - criterio di successo: maxDD <= 25% mantenendo expectancy >= 3x pedaggio; riporta anche
   l'effetto sul t-stat. Se il DD non scende sotto il 25%, il filone trend si archivia per
   costruzione e si progettano spec nuove sui dati.
+
+## DECISIONE 2026-09-29 (contraddizione risolta, PRIMA del primo numero)
+Segnale: **Donchian 55/20 sui 10 majors** (config dell'A/B P1: +7,99%/op netto, DD serializzato
+47,0%, DD portafoglio 42,84% — la piu' riproducibile). Il segnale NON si tocca; si cambia solo
+il rischio per operazione.
+Griglia dichiarata: `vol_target in {0.50, 0.60, 0.75}` x `{sizing si, sizing no}` — il "sizing no"
+e' il controllo A/B interno contro il numero noto.
+Metrica primaria: **DD DI PORTAFOGLIO mark-to-market** (fix 2026-09-29: il serializzato
+sottostima); secondaria: DD serializzato, expectancy, t-stat.
+Criterio di successo: DD portafoglio <= 25% E expectancy >= 3x pedaggio. Se non scende sotto il
+25%, il filone trend si archivia per costruzione e si progettano spec nuove sui dati.
