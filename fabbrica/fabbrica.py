@@ -112,9 +112,12 @@ def check_a0win(st):
 
 
 def check_banco(st):
-    rc, out = sh("ssh -o BatchMode=yes -o ConnectTimeout=6 MARCODG1 "
-                 "'systemctl --user is-active money-banco-secco.timer 2>/dev/null || true; "
-                 "journalctl --user -u money-banco-secco.service -n 1 -o cat --no-pager 2>/dev/null | tail -1'", timeout=20)
+    cmd = ("ssh -o BatchMode=yes -o ConnectTimeout=6 MARCODG1 "
+           "'A=$(systemctl is-active money-banco-secco.timer 2>/dev/null); "
+           "B=$(systemctl show money-banco-secco.service -p ExecMainStatus --value 2>/dev/null); "
+           "C=$(systemctl show money-banco-secco.timer -p LastTriggerUSec --value 2>/dev/null); "
+           "echo timer=$A rc=$B ultimo=$C'")
+    rc, out = sh(cmd, timeout=20)
     st["banco"] = out.strip().replace(chr(10), " | ") or ("rc=%d" % rc)
 
 
