@@ -113,8 +113,9 @@ def check_a0win(st):
 
 def check_banco(st):
     rc, out = sh("ssh -o BatchMode=yes -o ConnectTimeout=6 MARCODG1 "
-                 "'systemctl --user is-active money-banco-secco.service 2>/dev/null || true'", timeout=15)
-    st["banco"] = out.strip() or ("rc=%d" % rc)
+                 "'systemctl --user is-active money-banco-secco.timer 2>/dev/null || true; "
+                 "journalctl --user -u money-banco-secco.service -n 1 -o cat --no-pager 2>/dev/null | tail -1'", timeout=20)
+    st["banco"] = out.strip().replace(chr(10), " | ") or ("rc=%d" % rc)
 
 
 def check_specgen(st):
@@ -133,6 +134,17 @@ def check_specgen(st):
             log("SPECGEN: prossima spec da materializzare: %s (%s)" % (nxt.get("id"), nxt.get("desc", "")))
 
 
+def check_inbox(st):
+    inbox = BASE / "inbox"
+    files = sorted([p.name for p in inbox.glob("*") if p.is_file() and p.name != ".gitkeep"]) if inbox.exists() else []
+    st["inbox"] = files
+    seen = set(st.get("inbox_notified") or [])
+    fresh = [f for f in files if f not in seen]
+    if fresh:
+        st["inbox_notified"] = sorted(seen | set(files))
+        log("INBOX: nuovi file da lavorare: %s" % ", ".join(fresh))
+
+
 def write_stato(st):
     lines = [
         "# Fabbrica — stato",
@@ -146,6 +158,7 @@ def write_stato(st):
         "- banco MARCODG1: %s" % st.get("banco"),
         "- prossima spec da materializzare: %s %s" % (st.get("spec_next") or "(nessuna)",
                                                       "— " + st.get("spec_next_desc", "") if st.get("spec_next") else ""),
+        "- inbox: %s" % (", ".join(st.get("inbox") or []) or "(vuoto)"),
         "",
         "## Azioni in attesa (per owner)",
         "- Hermes: review handoff P2 appena arriva; misure; commit",
@@ -167,6 +180,7 @@ def main():
     check_a0win(st)
     check_banco(st)
     check_specgen(st)
+    check_inbox(st)
     save(STATE, st)
     write_stato(st)
     log("tick completato (n. %d)" % st["ticks"])
