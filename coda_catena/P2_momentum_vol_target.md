@@ -49,3 +49,15 @@ Metrica primaria: **DD DI PORTAFOGLIO mark-to-market** (fix 2026-09-29: il seria
 sottostima); secondaria: DD serializzato, expectancy, t-stat.
 Criterio di successo: DD portafoglio <= 25% E expectancy >= 3x pedaggio. Se non scende sotto il
 25%, il filone trend si archivia per costruzione e si progettano spec nuove sui dati.
+
+## ADDENDUM 2026-09-30 (review esterna — PRIMA di ogni numero) — secondarie dichiarate
+Oltre al criterio di successo (DD portafoglio <= 25% E expectancy >= 3x pedaggio), si dichiarano
+ORA, prima della misura, queste secondarie da riportare (NON bloccanti):
+1. costi stressati: terzo scenario con spread+slippage raddoppiati rispetto alla tariffa assunta;
+   se in quello scenario l'expectancy scende sotto il pedaggio, va segnalato al direttore prima
+   di qualunque promozione;
+2. coerenza per regime: DD ed expectancy spezzate per regime di volatilita' (alta/bassa);
+3. attrattivita': rapporto expectancy/DD del ramo con sizing NON peggiore di quello del
+   controllo "sizing no";
+4. riferimento esterno (NON vincolante, non entra nel verdetto): una riduzione relativa del DD
+   del 15-35% e' la forbice tipica attesa; serve a contestualizzare, non a promuovere.
