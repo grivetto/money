@@ -142,6 +142,63 @@ def check_specgen(st):
             log("SPECGEN: prossima spec da materializzare: %s (%s)" % (nxt.get("id"), nxt.get("desc", "")))
 
 
+def check_jev_gate(st):
+    """Gate JEV sulle spec attive (advisory, fail-open): una valutazione per versione (hash).
+
+    Chiave: TYPESAFE_API_KEY dall'ambiente o da ~/.hermes/.env (mai stampata/committata).
+    Direzione futura: il verdetto orienta la sistemazione delle spec PRIMA del dispatch.
+    """
+    import hashlib
+
+    try:
+        if "TYPESAFE_API_KEY" not in os.environ:
+            envf = Path.home() / ".hermes" / ".env"
+            if envf.exists():
+                for ln in envf.read_text(errors="replace").splitlines():
+                    if ln.startswith("TYPESAFE_API_KEY="):
+                        os.environ["TYPESAFE_API_KEY"] = ln.split("=", 1)[1].strip().strip('"').strip("'")
+                        break
+        sys.path.insert(0, str(REPO / "src"))
+        from money.jev import spec_gate  # lazy: se non importabile -> fail-open
+    except Exception as e:  # noqa: BLE001
+        st["jev_gate"] = "non disponibile (%s)" % type(e).__name__
+        return
+
+    results = st.get("jev_gate_results") or {}
+    for sp in sorted((REPO / "coda_catena").glob("P*.md")):
+        try:
+            raw = sp.read_bytes()
+        except Exception:
+            continue
+        h = hashlib.sha256(raw).hexdigest()[:16]
+        if (results.get(sp.name) or {}).get("hash") == h:
+            continue
+        out = spec_gate(raw.decode("utf-8", "replace"))
+        if out is None:
+            continue  # fail-open: si ritenta al prossimo tick
+        flags = []
+        if out.get("self_contained") is not None and out["self_contained"] < 0.80:
+            flags.append("spec non autosufficiente")
+        if out.get("test_falsifiable") is not None and out["test_falsifiable"] < 0.80:
+            flags.append("accettazione debole")
+        if out.get("non_trading") is not None and out["non_trading"] < 0.50:
+            flags.append("possibile impatto trading")
+        if out.get("gap") and out.get("gap") != "none":
+            flags.append("gap:%s" % out["gap"])
+        results[sp.name] = {
+            "hash": h, "ts": now(),
+            "sc": out.get("self_contained"), "tf": out.get("test_falsifiable"), "flags": flags,
+        }
+        log("GATE JEV %s: sc=%s tf=%s -> %s" % (
+            sp.name, _fmt(out.get("self_contained")), _fmt(out.get("test_falsifiable")),
+            ("DA SISTEMARE: " + "; ".join(flags)) if flags else "ok"))
+    st["jev_gate_results"] = results
+
+
+def _fmt(x):
+    return "n/d" if x is None else ("%.2f" % float(x))
+
+
 def check_inbox(st):
     inbox = BASE / "inbox"
     files = sorted([p.name for p in inbox.glob("*") if p.is_file() and p.name != ".gitkeep"]) if inbox.exists() else []
@@ -167,6 +224,10 @@ def write_stato(st):
         "- banco MARCODG1: %s" % st.get("banco"),
         "- prossima spec da materializzare: %s %s" % (st.get("spec_next") or "(nessuna)",
                                                       "— " + st.get("spec_next_desc", "") if st.get("spec_next") else ""),
+        "- gate JEV: %s" % ("; ".join(
+            "%s %s/%s%s" % (k[:-3], _fmt(r.get("sc")), _fmt(r.get("tf")),
+                            "" if not r.get("flags") else " DA SISTEMARE (" + ", ".join(r["flags"]) + ")")
+            for k, r in sorted((st.get("jev_gate_results") or {}).items())) or "(in attesa)"),
         "- inbox: %s" % (", ".join(st.get("inbox") or []) or "(vuoto)"),
         "",
         "## Azioni in attesa (per owner)",
@@ -190,6 +251,7 @@ def main():
     check_a0mc2(st)
     check_banco(st)
     check_specgen(st)
+    check_jev_gate(st)
     check_inbox(st)
     save(STATE, st)
     write_stato(st)
