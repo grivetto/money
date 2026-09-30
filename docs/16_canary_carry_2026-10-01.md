@@ -37,7 +37,7 @@ Validare l'ESECUZIONE del carry/funding, **non fare profitto**:
 
 ## Monitoraggio (finestra 14 giorni — review il 15/10/2026)
 - **Cron ogni 10'** su MARCODG1: `canary_carry.py status --quiet` → log + state JSON (alimenta anche dashboard/Zabbix).
-- **Dati vivi**: dashboard `denaro.grivetto.eu` scheda «CANARY C1» (via `/api/infra.json`, staleness 40') · landing `web.grivetto.eu` riga canary · Zabbix: item `svc.canary`, `canary.age_s`, `canary.upl`, `canary.delta_qty` (MARCODG1) + `svc.raccolta`, `raccolta.rows`, `raccolta.age_s`, `svc.fabbrica`, `fabbrica.tick_age_s` (mc2), con trigger attivi.
+- **Dati vivi**: dashboard `denaro.grivetto.eu` v2 — mission control «CANARY C1 — CARRY DOGE» (day n/14, countdown funding 00/08/16 UTC, tessere posizione/pnl/copertura, sparkline mark) + flotta compatta (via `/api/infra.json`, staleness 40') · landing `web.grivetto.eu` (capital live + celle canary + barre per conto) · Grafana `grafana.grivetto.eu` riga «⚡ Canary C1 — Trading Live» (`denaro_canary_*` via exporter :9100, dashboard provisioned reload 10s) · Zabbix: item `svc.canary`, `canary.age_s`, `canary.upl`, `canary.delta_qty` (MARCODG1) + `svc.raccolta`, `raccolta.rows`, `raccolta.age_s`, `svc.fabbrica`, `fabbrica.tick_age_s` (mc2), con trigger attivi.
 - Riconciliazione: |spot_qty − |pos|×ctVal| ≤ **1 DOGE**; persistente > 15' → anomalia.
 - Funding cumulato < **−0,10%** dal giorno 0 con ultimi 3 eventi negativi → chiusura.
 - Mark > **+40%** sopra entry → azione (top-up margine o chiusura controllata).
