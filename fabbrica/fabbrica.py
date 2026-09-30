@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 """Fabbrica Denaro — il nastro: candidato -> test -> cancello -> (produzione su promozione).
 
-Un tick ogni 5 minuti (cron). Un tick esegue/avanza UNA azione utile e aggiorna lo stato.
+Un tick ogni minuto (cron; cadenza x5 dal 30/09 su direttiva del proprietario). Un tick
+esegue/avanza UNA azione utile e aggiorna lo stato.
 NON lancia ordini, NON tocca exchange, NON inventa numeri: le azioni che richiedono
 giudizio o dati nuovi vengono MARCATE come AZIONE in STATO.md.
 
@@ -269,7 +270,7 @@ def write_stato(st):
     lines = [
         "# Fabbrica — stato",
         "",
-        "- ultimo tiro: %s (tiro n. %s, cadenza 5 min via cron)" % (now(), st.get("ticks", 0)),
+        "- ultimo tiro: %s (tiro n. %s, cadenza 1 min via cron — x5 dal 30/09)" % (now(), st.get("ticks", 0)),
         "- kill-switch: %s" % ("ATTIVO — nuovi job bloccati (file STOP presente)" if st.get("kill_switch") else "off"),
         "- canale DSH: %s voci totali, nuove dall'ultimo tiro: %s" % (st.get("dsh_heads"), st.get("dsh_new")),
         "- handoff P2: %s | manifest: %s" % (", ".join(st.get("p2_handoff_files") or []) or "(vuoto)",
@@ -306,7 +307,9 @@ def main():
     check_p2(st)
     check_a0win(st)
     check_a0mc2(st)
-    check_banco(st)
+    # con la cadenza a 1': il banco (ssh MARCODG1) resta un controllo ogni ~5' -> ogni 5 tiri
+    if st["ticks"] % 5 == 0 or not (st.get("hb") or {}).get("banco"):
+        check_banco(st)
     if st["kill_switch"]:
         log("KILL-SWITCH attivo: nuovi job bloccati (specgen + gate JEV saltati, coda intatta)")
     else:

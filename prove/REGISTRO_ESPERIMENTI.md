@@ -16,7 +16,7 @@ posteriori** dagli artefatti in `prove/` e dalla coda. Dove un campo è ignoto: 
 una scusa per ometterlo nelle voci nuove.
 
 **Contatore varianti dichiarate (cumulativo):** storico `n/d` (ricostruzione parziale);
-dal 2026-09-30 in poi: **20** (P2: 6 misurate; P6: 6 misurate; P10: 8 — tutte dichiarate prima dei numeri).
+dal 2026-09-30 in poi: **26** (P2: 6 misurate; P6: 6 misurate; P10: 8; P11: 6 — tutte dichiarate prima dei numeri).
 
 ---
 
@@ -45,10 +45,11 @@ dal 2026-09-30 in poi: **20** (P2: 6 misurate; P6: 6 misurate; P10: 8 — tutte 
 - **P6 — Livello portafoglio (cap concorrenza/correlazione)** (misurata 2026-09-30, hermes) → **ARCHIVIATA per costruzione**: nessuna delle 6 configurazioni dichiarate porta il DDport ≤ 25% (migliore `mp=2 fifo` a 37,8%, con expectancy del campione eseguito NEGATIVA; `mincorr` riduce il DD serializzato fino a 19,6% ma non il DD di portafoglio: 38,4-42,3%). Controllo OK. Griglia: `{max_posizioni: 2,3,4} x {fifo, mincorr}` = **6 varianti**; segnale fisso Donchian 55/20; successo: DDport ≤ 25% E exp ≥ 3× pedaggio. Artefatti: `prove/P6_portafoglio.{txt,json}`; misura `scripts/misura_p6.py`; gancio motore `filtro_ingresso` (test `tests/ricerca/test_portafoglio_filtro_ingresso.py`).
 - **P7 — Economia della soglia** → **chiusa** (2026-09-30): superata da P6 (famiglia trend archiviata per costruzione); le domande economiche confluiscono in E1. Spec mai materializzata.
 - **P10 — Momentum cross-sectional long/flat** (registrata 2026-09-30) → assegnata a dsh (handoff). Griglia: `{k: 2,3} x {L: 60,120} x {R: 7,14}` = **8 varianti** dichiarate (selezione solo su addestramento; verifica unica). Artefatti attesi: `prove/P10_*`.
+- **P11 — Volatility breakout ATR** (registrata 2026-09-30) → in coda (A0-PC: modulo+test; hermes: misura). Griglia: `{k: 1.0,1.5,2.0} x {M: 10,20}` = **6 varianti** dichiarate; ingresso se `chiusura/chiusura_prec-1 > k*ATR%(14)` (confronto stretto, solo passato); uscita su rottura del minimo delle ultime M barre; universo/window/costi come P6; successo: DDport <= 25% E exp >= 3x pedaggio; selezione solo su addestramento (n >= 30). Artefatti attesi: `prove/P11_vol_breakout.*`.
 
 ## Infrastruttura (non strategie — non consumano gradi di libertà di ricerca)
 
-- **P8 — Raccoglitore funding/basis** → integrato 2026-09-29 (`src/money/raccoglitore_funding.py`, 9 test nella suite). Append-only idempotente, guardia anti-ordini.
+- **P8 — Raccoglitore funding/basis** → integrato 2026-09-29 (`src/money/raccoglitore_funding.py`, 9 test nella suite). Append-only idempotente, guardia anti-ordini. Tabella giornaliera (P8B) consegnata da A0-MC2 e integrata 30/09: `src/money/report_funding.py` + 9 test (review Hermes).
 - **P9 — Verificatore di provenienza `prove/*`** → integrato 2026-09-30 (`src/money/verifica_provenienza.py`, 10 test). Primo uso previsto: pin dell'hash della cache dichiarata (la cache di `trend_lungo` è su Windows: il manifest va generato lì o la misura rifatta sui dati mc2).
 - **E1 — Economia unitaria (scheda costi + cost-to-edge + benchmark)** → **integrato 2026-09-30** (`src/money/economia.py`, 7 test; consegna A0-PC, review Hermes). Non consuma gradi di libertà di ricerca. Prossima applicazione: misure P6/P10 (scheda economica accanto al verdetto).
 
@@ -59,3 +60,5 @@ dal 2026-09-30 in poi: **20** (P2: 6 misurate; P6: 6 misurate; P10: 8 — tutte 
 - 2026-09-30 — P2 misurata e archiviata per costruzione (sizing: DD serializzato giù, DD portafoglio invariato/peggiore).
 - 2026-09-30 — P6 misurata (6 varianti) e archiviata per costruzione: cap di concorrenza e filtro di correlazione riducono il DD *serializzato* ma non il DD di portafoglio sotto il 25% (migliore 37,8%, expectancy eseguita negativa). Controllo riproduce il riferimento P2.
 - 2026-09-30 — P7 chiusa prima della materializzazione (superata da P6); lane attive: E1 (economia unitaria), P10 (dsh), P8/funding (raccolta).
+- 2026-09-30 — P8B consegnato (A0-MC2) e integrato: `src/money/report_funding.py` + 9 test (review Hermes). Tabella giornaliera funding pronta per il controllo della raccolta.
+- 2026-09-30 — P11 pre-registrata (volatility breakout ATR, 6 varianti): implementazione ad A0-PC, misura hermes. Direttiva proprietario: portare la produzione a x5 (fabbrica a 1', piu' lane parallele).
