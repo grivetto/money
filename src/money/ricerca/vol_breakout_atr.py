@@ -4,6 +4,7 @@ Ingresso: chiusura[i]/chiusura[i-1]-1 > k*ATR%(i-1) (stretto); esecuzione all'ap
 di i+1; uscita alla rottura del minimo delle ultime M barre (o fine serie). Solo stdlib.
 Provenienza: implementato da Agent Zero (A0-PC, contesto yse7QWqm); verificato da Hermes
 (7/7) dopo la rimozione di un frammento di log dal file di test consegnato.
+Integrazione 30/09: attributi allineati al Barra reale del repo (massimo/minimo).
 """
 from dataclasses import dataclass
 from typing import Optional, List, Any
@@ -38,18 +39,18 @@ def atr_percentuale(barre: List[Any], i: int, n: int = 14) -> Optional[float]:
     
     tr_sum = 0.0
     for k in range(i - n + 1, i + 1):
-        alta = barre[k].alta
-        bassa = barre[k].bassa
-        
+        massimo = barre[k].massimo
+        minimo = barre[k].minimo
+
         if k == 0:
             # Prima barra: nessun close precedente, TR = high - low
-            tr = alta - bassa
+            tr = massimo - minimo
         else:
             chiusura_prev = barre[k - 1].chiusura
             tr = max(
-                alta - bassa,
-                abs(alta - chiusura_prev),
-                abs(bassa - chiusura_prev)
+                massimo - minimo,
+                abs(massimo - chiusura_prev),
+                abs(minimo - chiusura_prev)
             )
         tr_sum += tr
     
@@ -67,8 +68,8 @@ def operazioni_simbolo(barre: List[Any], config: Config, i_da: int = 0, i_a: Opt
         motivo 'rottura canale'. Se nessuno: uscita all'apertura di a, motivo 'fine serie'.
       Dopo un'uscita la scansione riparte da j_out+1.
     ritorno_lordo = prezzo_uscita/prezzo_ingresso - 1.
-    Le barre sono oggetti con attributi: ts, apertura, alta, bassa, chiusura, volume
-    (nel test definisci tu una classe Barra finta con questi campi)."""
+    Le barre sono oggetti con attributi: ts, apertura, massimo, minimo, chiusura, volume
+    (money.dati.Barra; nei test una classe Barra finta con gli stessi campi)."""
     if i_a is None:
         a = len(barre) - 1
     else:
@@ -102,7 +103,7 @@ def operazioni_simbolo(barre: List[Any], config: Config, i_da: int = 0, i_a: Opt
             for j in range(ingresso_idx + 1, a + 1):
                 if j - 1 - config.m >= 0:
                     # minimo dei minimi delle m barre j-1-m .. j-2
-                    minimi_slice = [barre[k].bassa for k in range(j - 1 - config.m, j - 1)]
+                    minimi_slice = [barre[k].minimo for k in range(j - 1 - config.m, j - 1)]
                     min_bassa = min(minimi_slice)
                     
                     if barre[j - 1].chiusura < min_bassa:

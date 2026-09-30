@@ -1,0 +1,35 @@
+P11 — VOLATILITY BREAKOUT ATR — misura e giudizio (portafoglio)
+(voce pre-registrata in prove/REGISTRO_ESPERIMENTI.md prima di questi numeri;
+ griglia dichiarata: {k: 1.0, 1.5, 2.0} x {m: 10, 20} = 6 varianti)
+pedaggio assunto: +0,550% per operazione (okx_eea_spot, misto); slippage +0,080% per giro
+stress costi: stack fee+spread+slippage applicato due volte (+0,630% extra per operazione)
+
+=== ADDESTRAMENTO [2020-10-01 -> 2024-06-01) ===
+  (configurazioni provate: 6; vincolo n >= 30)
+  k=1,0 m=10 | n= 252 | lordo medio +24,1871% | exp netta +23,5377%
+  k=1,0 m=20 | n= 180 | lordo medio +82,4434% | exp netta +81,7474%
+  k=1,5 m=10 | n= 145 | lordo medio +33,9294% | exp netta +33,2723%
+  k=1,5 m=20 | n= 108 | lordo medio +110,2585% | exp netta +109,5404%
+  k=2,0 m=10 | n=  83 | lordo medio +39,8481% | exp netta +39,1862%
+  k=2,0 m=20 | n=  68 | lordo medio +148,7249% | exp netta +147,9760%
+  SCELTA (solo addestramento): k=2,0 m=20 (n=68, exp netta +147,9760%)
+
+=== VERIFICA [2024-06-01 -> 2026-09-25] ===
+  [VERIFICA [2024-06-01 -> 2026-09-25]] n_ops(campione) 61 | eseguite 36 | saltate 25 | rifiutate 0
+    dd_ser +67,943% | dd_port +77,185% | exp -4,5953% | cop -8,4x | t -0,68 | t_nw -0,58 | stress -5,2253%
+    max_esp +100,0% | max_pos 4 | eur/anno -28,9 | giudica archiviato | fallisce: expectancy_ic90, t_stat, profit_factor, drawdown, pedaggio_coperto, rilevanza_economica, indipendenza_dai_blocchi
+    E1 scheda: cost_to_edge n/d | cte_stress n/d | netto/stress medi -4,595%/-5,225%
+    benchmark equal-weight finestra: -30,565% | successo NO | fallisce: DDport>25%, exp<3x
+
+=== FINESTRA PIENA [2020-10-01 -> 2026-09-25] ===
+  [FINESTRA PIENA [2020-10-01 -> 2026-09-25]] n_ops(campione) 128 | eseguite 69 | saltate 59 | rifiutate 0
+    dd_ser +67,943% | dd_port +77,185% | exp +25,2404% | cop 45,9x | t 1,47 | t_nw 1,20 | stress +24,6104%
+    max_esp +100,0% | max_pos 4 | eur/anno 63,3 | giudica archiviato | fallisce: t_stat, drawdown
+    E1 scheda: cost_to_edge 0,03 | cte_stress 0,05 | netto/stress medi +25,240%/+24,610%
+    benchmark equal-weight finestra: +968,118% | successo NO | fallisce: DDport>25%
+
+=== VERDETTO P11 (finestra del verdetto: VERIFICA) ===
+  La configurazione scelta NON soddisfa il criterio:
+  fallisce: DDport>25%, exp<3x
+  -> per la regola dichiarata, la famiglia si archivia per costruzione;
+  si prosegue con P12 o il filone funding (quando i dati maturano).

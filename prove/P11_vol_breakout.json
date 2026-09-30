@@ -1,0 +1,221 @@
+{
+  "protocollo": {
+    "segnale": "vol-breakout ATR (ingresso stretto su k*ATR%, uscita canale m)",
+    "simboli": [
+      "BTC/USDT",
+      "ETH/USDT",
+      "ADA/USDT",
+      "DOGE/USDT",
+      "LTC/USDT",
+      "LINK/USDT",
+      "DOT/USDT",
+      "UNI/USDT",
+      "AVAX/USDT",
+      "SOL/USDT"
+    ],
+    "inizio": "2020-10-01",
+    "fine": "2026-09-25",
+    "confine": "2024-06-01",
+    "esposizione_base": 0.25,
+    "capitale": 1000.0,
+    "griglia": [
+      {
+        "k": 1.0,
+        "m": 10
+      },
+      {
+        "k": 1.0,
+        "m": 20
+      },
+      {
+        "k": 1.5,
+        "m": 10
+      },
+      {
+        "k": 1.5,
+        "m": 20
+      },
+      {
+        "k": 2.0,
+        "m": 10
+      },
+      {
+        "k": 2.0,
+        "m": 20
+      }
+    ],
+    "n_varianti": 6,
+    "min_op_training": 30,
+    "metrica_primaria": "DD di portafoglio mark-to-market",
+    "successo": "DDport <= 25% E expectancy (eseguito) >= 3x pedaggio"
+  },
+  "addestramento": {
+    "tabella": [
+      {
+        "k": 1.0,
+        "m": 10,
+        "n": 252,
+        "expectancy_netta": 0.2353773317465127,
+        "lordo_medio": 0.24187062955085256
+      },
+      {
+        "k": 1.0,
+        "m": 20,
+        "n": 180,
+        "expectancy_netta": 0.8174744057543831,
+        "lordo_medio": 0.8244336607736162
+      },
+      {
+        "k": 1.5,
+        "m": 10,
+        "n": 145,
+        "expectancy_netta": 0.3327228578219102,
+        "lordo_medio": 0.3392940787978958
+      },
+      {
+        "k": 1.5,
+        "m": 20,
+        "n": 108,
+        "expectancy_netta": 1.0954037300411146,
+        "lordo_medio": 1.1025854619970379
+      },
+      {
+        "k": 2.0,
+        "m": 10,
+        "n": 83,
+        "expectancy_netta": 0.3918623771659619,
+        "lordo_medio": 0.3984809381595393
+      },
+      {
+        "k": 2.0,
+        "m": 20,
+        "n": 68,
+        "expectancy_netta": 1.4797596616304862,
+        "lordo_medio": 1.4872490629209725
+      }
+    ],
+    "scelta": {
+      "k": 2.0,
+      "m": 20,
+      "n": 68,
+      "expectancy_netta": 1.4797596616304862,
+      "lordo_medio": 1.4872490629209725
+    }
+  },
+  "finestre": {
+    "VERIFICA [2024-06-01 -> 2026-09-25]": {
+      "etichetta": "VERIFICA [2024-06-01 -> 2026-09-25]",
+      "config": {
+        "k": 2.0,
+        "m": 20,
+        "atr_n": 14
+      },
+      "n_operazioni_campione": 61,
+      "eseguite": 36,
+      "saltate": 25,
+      "rifiutate": 0,
+      "dd_serializzato": 0.679432809344086,
+      "dd_portafoglio": 0.7718456001439529,
+      "expectancy": -0.045953120196916705,
+      "copertura_pedaggio": -8.355112763075764,
+      "expectancy_stress": -0.05225312019691671,
+      "t_stat": -0.6800181653635576,
+      "t_stat_newey_west": -0.5773698615775976,
+      "max_esposizione": 0.9999352175505083,
+      "max_posizioni": 4,
+      "eur_anno": -28.884792757490985,
+      "giudica_esito": "archiviato",
+      "giudica_criteri_falliti": [
+        "expectancy_ic90",
+        "t_stat",
+        "profit_factor",
+        "drawdown",
+        "pedaggio_coperto",
+        "rilevanza_economica",
+        "indipendenza_dai_blocchi"
+      ],
+      "scheda_e1": {
+        "n": 36,
+        "edge_lordo_medio": -0.039685021864805124,
+        "edge_lordo_mediano": -0.1138868231923782,
+        "netto_medio": -0.045953120196916705,
+        "costo_medio": 0.00626809833211158,
+        "costo_p95": 0.006613405676005157,
+        "cost_to_edge": null,
+        "copertura_pedaggio": -8.355112763075764,
+        "netto_stress_medio": -0.05225312019691671,
+        "cost_to_edge_stress": null
+      },
+      "benchmark_equal_weight": -0.3056452165531815,
+      "successo_dd25_exp3x": false,
+      "dd_ok": false,
+      "pedaggio_ok": false,
+      "fallimenti": [
+        "DDport>25%",
+        "exp<3x"
+      ],
+      "giorni": 846.0
+    },
+    "FINESTRA PIENA [2020-10-01 -> 2026-09-25]": {
+      "etichetta": "FINESTRA PIENA [2020-10-01 -> 2026-09-25]",
+      "config": {
+        "k": 2.0,
+        "m": 20,
+        "atr_n": 14
+      },
+      "n_operazioni_campione": 128,
+      "eseguite": 69,
+      "saltate": 59,
+      "rifiutate": 0,
+      "dd_serializzato": 0.6794328093440862,
+      "dd_portafoglio": 0.771845600143953,
+      "expectancy": 0.2524044274542644,
+      "copertura_pedaggio": 45.89171408259353,
+      "expectancy_stress": 0.24610442745426442,
+      "t_stat": 1.4652161641005161,
+      "t_stat_newey_west": 1.2010774510771827,
+      "max_esposizione": 0.9999352175505082,
+      "max_posizioni": 4,
+      "eur_anno": 63.30336712725394,
+      "giudica_esito": "archiviato",
+      "giudica_criteri_falliti": [
+        "t_stat",
+        "drawdown"
+      ],
+      "scheda_e1": {
+        "n": 69,
+        "edge_lordo_medio": 0.25891135511253754,
+        "edge_lordo_mediano": -0.09625893232450611,
+        "netto_medio": 0.2524044274542644,
+        "costo_medio": 0.006506927658273093,
+        "costo_p95": 0.008106837800209463,
+        "cost_to_edge": 0.025131874403286847,
+        "copertura_pedaggio": 45.89171408259353,
+        "netto_stress_medio": 0.24610442745426442,
+        "cost_to_edge_stress": 0.04946452677869797
+      },
+      "benchmark_equal_weight": 9.681176197627076,
+      "successo_dd25_exp3x": false,
+      "dd_ok": false,
+      "pedaggio_ok": true,
+      "fallimenti": [
+        "DDport>25%"
+      ],
+      "giorni": 2185.0
+    }
+  },
+  "verdetto_p11": {
+    "config": {
+      "k": 2.0,
+      "m": 20
+    },
+    "successo": false,
+    "fallimenti": [
+      "DDport>25%",
+      "exp<3x"
+    ],
+    "dd_port": 0.7718456001439529,
+    "expectancy": -0.045953120196916705,
+    "copertura_pedaggio": -8.355112763075764
+  }
+}

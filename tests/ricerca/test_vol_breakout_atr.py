@@ -7,12 +7,12 @@ from money.ricerca.vol_breakout_atr import Config, atr_percentuale, operazioni_s
 
 
 class Barra:
-    """Classe Barra finta per i test."""
-    def __init__(self, ts, apertura, alta, bassa, chiusura, volume):
+    """Classe Barra finta per i test (stessi attributi di `money.dati.Barra`)."""
+    def __init__(self, ts, apertura, massimo, minimo, chiusura, volume):
         self.ts = ts
         self.apertura = apertura
-        self.alta = alta
-        self.bassa = bassa
+        self.massimo = massimo
+        self.minimo = minimo
         self.chiusura = chiusura
         self.volume = volume
 
@@ -244,6 +244,25 @@ def test_niente_look_ahead():
         assert oa.prezzo_uscita == ob.prezzo_uscita
         assert abs(oa.ritorno_lordo - ob.ritorno_lordo) < 1e-10
         assert oa.motivo == ob.motivo
+
+
+def test_compatibilita_con_barra_reale():
+    """Regressione (integrazione 30/09): il modulo deve girare sull'oggetto Barra del repo.
+
+    La prima versione consegnata leggeva `.alta/.bassa`, che `money.dati.Barra` non ha
+    (ha `massimo`/`minimo`): questo test blocca il ritorno di quel bug.
+    """
+    from money.dati import Barra as BarraReale
+
+    barre = [
+        BarraReale(ts=1000, apertura=100.0, massimo=106.25, minimo=93.75, chiusura=100.0, volume=1.0),
+        BarraReale(ts=1001, apertura=100.0, massimo=106.25, minimo=93.75, chiusura=100.0, volume=1.0),
+        BarraReale(ts=1002, apertura=100.0, massimo=106.25, minimo=93.75, chiusura=100.0, volume=1.0),
+        BarraReale(ts=1003, apertura=113.0, massimo=113.5, minimo=112.5, chiusura=113.0, volume=1.0),
+        BarraReale(ts=1004, apertura=113.5, massimo=114.0, minimo=113.0, chiusura=113.5, volume=1.0),
+    ]
+    ops = operazioni_simbolo(barre, Config(k=1.0, m=2, atr_n=2), i_da=0, i_a=4)
+    assert len(ops) == 1
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 # P11 — Volatility breakout ATR (famiglia nuova, coda parallela — direttiva "x5" 30/09)
-STATO: PRESA_DA A0-PC (modulo+test, brief dispacciato) + hermes (misura) — 2026-09-30
+STATO: COMPLETATA — modulo integrato (2 fix in review + allineamento Barra reale) e misura fatta: **ARCHIVIATA per costruzione** (2026-09-30 sera).
 REPO: money @ commit `e110e545` (al momento della materializzazione della spec)
 DATI: USDT-lungo (10 majors; 2020-10-01 -> 2026-09-25; confine addestramento 2024-06-01)
 
@@ -35,3 +35,14 @@ Selezione: SOLO addestramento (n >= 30, max expectancy netta); verifica: una sol
 ## Nota dichiarata
 Regola standard: se fallisce, si archivia per costruzione. La coda successiva e' P12
 (4h + filtro di regime, coda DSH) oppure il filone funding quando i dati maturano.
+
+## Esito (30/09/2026 sera) — ARCHIVIATA per costruzione
+- Selezione (solo addestramento, n>=30): **k=2,0 / m=20** — exp netta training +147,98%/op (n=68).
+- VERIFICA [2024-06-01 -> 2026-09-25]: DDport **77,2%** · exp eseguita **-4,60%** (cop -8,4x)
+  · t -0,68 · eseguite 36 / saltate 25 · giudica: archiviato → fallisce DDport≤25% E exp≥3x pedaggio.
+- Finestra piena: DDport 77,2% · exp +25,24% (cop 45,9x) — fallisce comunque il DD.
+- Nota di pipeline: i dd identici fra le due finestre sono stati verificati genuini (l'episodio
+  peggiore sta nella coda comune; pesi 0,25 → decisioni scala-invarianti; debug trade-by-trade).
+- Integrazione: 2 fix in review (frammento di log nel file consegnato; caso float del test soglia)
+  + allineamento a `money.dati.Barra` (massimo/minimo) con test di regressione. Artefatti:
+  `prove/P11_vol_breakout.{txt,json}`; misura `scripts/misura_p11.py`.

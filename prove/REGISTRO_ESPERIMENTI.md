@@ -16,7 +16,7 @@ posteriori** dagli artefatti in `prove/` e dalla coda. Dove un campo è ignoto: 
 una scusa per ometterlo nelle voci nuove.
 
 **Contatore varianti dichiarate (cumulativo):** storico `n/d` (ricostruzione parziale);
-dal 2026-09-30 in poi: **26** (P2: 6 misurate; P6: 6 misurate; P10: 8; P11: 6 — tutte dichiarate prima dei numeri).
+dal 2026-09-30 in poi: **26** (P2: 6 misurate; P6: 6 misurate; P10: 8 dichiarate; P11: 6 misurate — tutte dichiarate prima dei numeri).
 
 ---
 
@@ -45,7 +45,7 @@ dal 2026-09-30 in poi: **26** (P2: 6 misurate; P6: 6 misurate; P10: 8; P11: 6 �
 - **P6 — Livello portafoglio (cap concorrenza/correlazione)** (misurata 2026-09-30, hermes) → **ARCHIVIATA per costruzione**: nessuna delle 6 configurazioni dichiarate porta il DDport ≤ 25% (migliore `mp=2 fifo` a 37,8%, con expectancy del campione eseguito NEGATIVA; `mincorr` riduce il DD serializzato fino a 19,6% ma non il DD di portafoglio: 38,4-42,3%). Controllo OK. Griglia: `{max_posizioni: 2,3,4} x {fifo, mincorr}` = **6 varianti**; segnale fisso Donchian 55/20; successo: DDport ≤ 25% E exp ≥ 3× pedaggio. Artefatti: `prove/P6_portafoglio.{txt,json}`; misura `scripts/misura_p6.py`; gancio motore `filtro_ingresso` (test `tests/ricerca/test_portafoglio_filtro_ingresso.py`).
 - **P7 — Economia della soglia** → **chiusa** (2026-09-30): superata da P6 (famiglia trend archiviata per costruzione); le domande economiche confluiscono in E1. Spec mai materializzata.
 - **P10 — Momentum cross-sectional long/flat** (registrata 2026-09-30) → assegnata a dsh (handoff). Griglia: `{k: 2,3} x {L: 60,120} x {R: 7,14}` = **8 varianti** dichiarate (selezione solo su addestramento; verifica unica). Artefatti attesi: `prove/P10_*`.
-- **P11 — Volatility breakout ATR** (registrata 2026-09-30) → in coda (A0-PC: modulo+test; hermes: misura). Griglia: `{k: 1.0,1.5,2.0} x {M: 10,20}` = **6 varianti** dichiarate; ingresso se `chiusura/chiusura_prec-1 > k*ATR%(14)` (confronto stretto, solo passato); uscita su rottura del minimo delle ultime M barre; universo/window/costi come P6; successo: DDport <= 25% E exp >= 3x pedaggio; selezione solo su addestramento (n >= 30). Artefatti attesi: `prove/P11_vol_breakout.*`.
+- **P11 — Volatility breakout ATR** (misurata 2026-09-30, hermes) → **ARCHIVIATA per costruzione**: la configurazione scelta in addestramento (k=2,0 / m=20; exp netta training +147,98%/op, n=68) in VERIFICA dà DDport **77,2%** ed expectancy (eseguita) **-4,60%** (copertura -8,4x; t -0,68; giudica: archiviato) → fallisce DDport ≤ 25% E exp ≥ 3x pedaggio. Finestra piena: DDport 77,2%, exp +25,24% (cop 45,9x) — fallisce comunque il DD. Griglia: `{k: 1.0,1.5,2.0} x {M: 10,20}` = **6 varianti** dichiarate prima dei numeri; selezione solo su addestramento (n ≥ 30). Nota di pipeline: dd_ser/dd_port identici fra le due finestre = spiegato e verificato (l'episodio peggiore è nella coda comune; pesi 0,25 → decisioni scala-invarianti; debug trade-by-trade OK). Artefatti: `prove/P11_vol_breakout.{txt,json}`; misura `scripts/misura_p11.py`. Integrazione: 2 fix in review + allineamento a `money.dati.Barra` (massimo/minimo) con test di regressione.
 
 ## Infrastruttura (non strategie — non consumano gradi di libertà di ricerca)
 
@@ -67,3 +67,5 @@ dal 2026-09-30 in poi: **26** (P2: 6 misurate; P6: 6 misurate; P10: 8; P11: 6 �
 - 2026-09-30 — Incidente A0-MC2 risolto: contesti nuovi nascevano col preset Default su google/gemini con chiave vuota; chiave Gemini di `money/.env` VALIDA ma con credito prepagato ESAURITO (402) → Default riportato a OpenRouter; chiave installata per il futuro.
 - 2026-09-30 — J1 job-store integrato: `fabbrica/jobs.py` (lease/dedup/retry, WAL) + `tests/test_fabbrica_jobs.py` (10/10, verificati da Hermes); wire nel tick prossimo.
 - 2026-09-30 — P11 modulo integrato: `src/money/ricerca/vol_breakout_atr.py` + test 7/7 dopo 2 fix in review (frammento di log nel file consegnato; caso float del test soglia riscritto con valori binari esatti); misura hermes in corso.
+- 2026-09-30 — P11 MISURATA e **ARCHIVIATA per costruzione** (verifica: DDport 77,2% > 25%; exp eseguita -4,60% < 3x pedaggio; selezione k=2,0 m=20). Numeri identici fra finestre = verificati genuini (episodio peggiore nella coda comune, decisioni scala-invarianti — debug dedicato). Integrazione chiusa: allineamento a `money.dati.Barra` (massimo/minimo) + test di regressione (8/8). Artefatti `prove/P11_vol_breakout.*`.
+- 2026-09-30 — Lane aggiornate: P11 archiviata; hermes → dossier X-Perps (decisione owner) + sorveglianza P10; A0-MC2/A0-PC liberi (J1 e P11 integrati); prossimo della coda: P12 (4h + regime, coda dsh) o filone funding quando i dati maturano.
