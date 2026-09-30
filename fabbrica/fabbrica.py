@@ -287,9 +287,9 @@ def write_stato(st):
         "- inbox: %s" % (", ".join(st.get("inbox") or []) or "(vuoto)"),
         "",
         "## Azioni in attesa (per owner)",
-        "- Lane 30/09: hermes=P6 misura | dsh=P10 | A0-MC2=P8B | A0-PC=libero (BB1 consegnato)",
+        "- Lane 30/09: hermes=E1 economia unitaria | dsh=P10 | A0-MC2=P8B | A0-PC=libero (BB1 consegnato)",
         "- DSH: risposta inviata (P6 taglio diverso + ponte) — v. requests.md",
-        "- P2: archiviata | P9: integrato | gate JEV + lint spec attivi in fabbrica",
+        "- P2: archiviata | P6: ARCHIVIATA per costruzione | P9: integrato | gate JEV + lint attivi",
         "",
         "_Regole: test prima dei numeri; il cancello decide; produzione solo su promozione. Kill-switch: file fabbrica/STOP._",
     ]

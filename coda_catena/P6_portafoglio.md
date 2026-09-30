@@ -33,3 +33,15 @@ Controllo interno: la configurazione P2 "sizing no" (nessun cap) = DDport 42,84%
 Se anche P6 fallisce, il filone trend-cash-solo non è investibile a questo capitale e si
 archivia **per costruzione** (regola P2). Si prosegue con le famiglie nuove (P10 in misura,
 poi quelle su funding/basis quando i dati ci saranno).
+
+---
+
+## Esito (30/09/2026, POST-numeri — sola registrazione, niente sopra è stato toccato)
+**ARCHIVIATA per costruzione.** Nessuna delle 6 configurazioni dichiarate soddisfa
+DDport ≤ 25% E exp ≥ 3× pedaggio (finestra VERIFICA):
+- migliore per DD: `mp=2 fifo` → dd_port 37,8% (controllo 42,8%), ma expectancy del
+  campione eseguito **negativa** (-4,6%, t -1,03);
+- `mincorr` riduce il DD *serializzato* (fino a 19,6%) ma il DD di portafoglio resta
+  38,4-42,3%; con mp≥3 il cap non viene nemmeno raggiunto (il filtro rifiuta prima);
+- controllo interno: OK (riproduce il riferimento P2).
+Numeri completi: `prove/P6_portafoglio.{txt,json}`; registro: `prove/REGISTRO_ESPERIMENTI.md`.

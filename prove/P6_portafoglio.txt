@@ -1,0 +1,28 @@
+P6 — LIVELLO PORTAFOGLIO: cap di concorrenza e correlazione — misura e giudizio
+(voce pre-registrata in prove/REGISTRO_ESPERIMENTI.md prima di questi numeri;
+ griglia dichiarata: {max_posizioni: 2,3,4} x {fifo, mincorr} = 6 varianti)
+pedaggio assunta: +0,550% per operazione (okx_eea_spot, misto); slippage +0,080% per giro; tau=0,75 su 60 rendimenti
+stress costi: stack fee+spread+slippage applicato due volte (+0,630% extra per operazione)
+
+=== VERIFICA [2024-06-01 -> 2026-09-25] ===
+  [controllo (sizing no) VERIFICA : dd_ser +46,985%, dd_port +42,836%, esegui+salt 28+27 | check vs P2: OK]
+     mp=2 fifo | dd_ser  +30,699% | dd_port  +37,845% | exp  -4,599% | cop  -8,4x | t -1,03 | t_nw -1,00 | eseg/salt/rif 21/34/0 | rid_dd   +11,7% | stress  -5,229% | max_esp +62,6% | eur/anno n/d | successo NO | fallisce: DDport>25%, exp<3x
+  mp=2 mincorr | dd_ser  +26,806% | dd_port  +42,341% | exp  -4,306% | cop  -7,8x | t -0,83 | t_nw -0,70 | eseg/salt/rif 17/11/27 | rid_dd    +1,2% | stress  -4,936% | max_esp +67,2% | eur/anno n/d | successo NO | fallisce: DDport>25%, exp<3x
+     mp=3 fifo | dd_ser  +25,984% | dd_port  +43,479% | exp  -0,053% | cop  -0,1x | t -0,01 | t_nw -0,01 | eseg/salt/rif 27/28/0 | rid_dd    -1,5% | stress  -0,683% | max_esp +87,6% | eur/anno n/d | successo NO | fallisce: DDport>25%, exp<3x
+  mp=3 mincorr | dd_ser  +19,555% | dd_port  +38,369% | exp  +1,607% | cop   2,9x | t  0,31 | t_nw  0,24 | eseg/salt/rif 19/5/31 | rid_dd   +10,4% | stress  +0,977% | max_esp +86,2% | eur/anno n/d | successo NO | fallisce: DDport>25%, exp<3x
+     mp=4 fifo | dd_ser  +29,161% | dd_port  +42,836% | exp  -2,734% | cop  -5,0x | t -0,72 | t_nw -0,61 | eseg/salt/rif 28/27/0 | rid_dd    +0,0% | stress  -3,364% | max_esp +99,8% | eur/anno n/d | successo NO | fallisce: DDport>25%, exp<3x
+  mp=4 mincorr | dd_ser  +19,555% | dd_port  +38,369% | exp  +1,607% | cop   2,9x | t  0,31 | t_nw  0,24 | eseg/salt/rif 19/5/31 | rid_dd   +10,4% | stress  +0,977% | max_esp +86,2% | eur/anno n/d | successo NO | fallisce: DDport>25%, exp<3x
+
+=== FINESTRA PIENA [2020-10-01 -> 2026-09-25] ===
+  [controllo (sizing no) FINESTRA : dd_ser +73,828%, dd_port +67,991%, esegui+salt 63+72 | check vs P2: OK]
+     mp=2 fifo | dd_ser  +35,681% | dd_port  +50,658% | exp +16,356% | cop  29,7x | t  1,29 | t_nw  1,21 | eseg/salt/rif 45/90/0 | rid_dd   +25,5% | stress +15,726% | max_esp +82,9% | eur/anno 25,6 | successo NO | fallisce: DDport>25%
+  mp=2 mincorr | dd_ser  +32,068% | dd_port  +53,390% | exp +17,468% | cop  31,8x | t  1,25 | t_nw  1,17 | eseg/salt/rif 41/41/53 | rid_dd   +21,5% | stress +16,838% | max_esp +82,9% | eur/anno 26,3 | successo NO | fallisce: DDport>25%
+     mp=3 fifo | dd_ser  +40,615% | dd_port  +65,525% | exp +14,552% | cop  26,5x | t  1,50 | t_nw  1,23 | eseg/salt/rif 61/74/0 | rid_dd    +3,6% | stress +13,922% | max_esp +93,5% | eur/anno 31,8 | successo NO | fallisce: DDport>25%
+  mp=3 mincorr | dd_ser  +37,482% | dd_port  +80,799% | exp +93,110% | cop 169,3x | t  1,23 | t_nw  1,19 | eseg/salt/rif 50/23/62 | rid_dd   -18,8% | stress +92,480% | max_esp +99,6% | eur/anno 192,6 | successo NO | fallisce: DDport>25%
+     mp=4 fifo | dd_ser  +44,220% | dd_port  +67,991% | exp +12,513% | cop  22,8x | t  1,34 | t_nw  1,09 | eseg/salt/rif 63/72/0 | rid_dd    +0,0% | stress +11,883% | max_esp +99,9% | eur/anno 28,6 | successo NO | fallisce: DDport>25%
+  mp=4 mincorr | dd_ser  +37,482% | dd_port  +80,799% | exp +93,110% | cop 169,3x | t  1,23 | t_nw  1,19 | eseg/salt/rif 50/23/62 | rid_dd   -18,8% | stress +92,480% | max_esp +99,6% | eur/anno 192,6 | successo NO | fallisce: DDport>25%
+
+=== VERDETTO P6 (finestra del verdetto: VERIFICA) ===
+  NESSUNA configurazione della griglia dichiarata soddisfa DDport <= 25% E exp >= 3x pedaggio.
+  -> per la regola dichiarata (P2), il filone trend si archivia per costruzione; si prosegue con le famiglie nuove.
+  (migliore per DD: mp=2 fifo con dd_port +37,845%; controllo P2: +42,836%; riferimento esterno non vincolante: 15-35%)

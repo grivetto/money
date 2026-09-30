@@ -25,6 +25,9 @@ CONTRATTO
   semantica del modello serializzato: 0.25 = un quarto del capitale per trade).
 - I costi sono quelli del nodo chiamante (`netto_fn`): il modulo non stima costi, li
   applica alla chiusura di ogni posizione — una sola verita' sui costi.
+- Un ingresso puo' essere RIFIUTATO da un filtro del nodo (`filtro_ingresso`): i rifiuti
+  sono contati a parte (`operazioni_rifiutate`). Ordine di valutazione di ogni segnale:
+  filtro PRIMA del tetto `max_posizioni` (semantica dichiarata della spec P6/mincorr).
 - Mark-to-market GIORNALIERO: l'equity e' cassa + valore di mercato delle posizioni
   aperte, marcata alla chiusura di ogni barra. Il drawdown include il dentro-trade.
 - Determinismo: nessun caso, nessun seme, nessuna rete. Stessi input, stessi numeri.
@@ -56,8 +59,11 @@ class EsitoPortafoglio:
     dentro-trade). `max_esposizione` e' il massimo di (valore posizioni / equity):
     sopra 1.0 significa che il conto era piu' investito del suo capitale — impossibile
     senza leva, quindi il valore dice anche se il sizing dichiarato e' sostenibile.
-    `operazioni_saltate` conta i segnali che non hanno trovato cassa: sono rendimento
-    mancato, e vanno letti, non nascosti.
+    `operazioni_saltate` conta i segnali che non hanno trovato cassa o slot: sono
+    rendimento mancato, e vanno letti, non nascosti. `operazioni_rifiutate` conta i
+    segnali respinti dal filtro d'ingresso (quando fornito). `esecuzioni` elenca le
+    coppie (simbolo, operazione) realmente eseguite — serve alle metriche sul campione
+    eseguito (spec P6: expectancy delle sole operazioni davvero prese).
     """
 
     capitale_iniziale: float
@@ -73,6 +79,8 @@ class EsitoPortafoglio:
     giorni: float
     esposizione: float
     curva: Tuple[Tuple[int, float], ...]
+    operazioni_rifiutate: int = 0
+    esecuzioni: Tuple[Tuple[str, Any], ...] = ()
 
     def riassunto(self) -> dict:
         return {
@@ -86,6 +94,7 @@ class EsitoPortafoglio:
             "max_posizioni": self.max_posizioni,
             "operazioni_eseguite": self.operazioni_eseguite,
             "operazioni_saltate": self.operazioni_saltate,
+            "operazioni_rifiutate": self.operazioni_rifiutate,
             "giorni": self.giorni,
             "esposizione": self.esposizione,
         }
@@ -100,6 +109,7 @@ def backtest_portafoglio(
     capitale: float = 1000.0,
     max_posizioni: Optional[int] = None,
     esposizione_per_op: Optional[Callable[[str, Any], float]] = None,
+    filtro_ingresso: Optional[Callable[[str, Any, int, Dict[str, Posizione]], bool]] = None,
 ) -> EsitoPortafoglio:
     """Simula il conto reale: posizioni concorrenti, cassa vincolata, MTM giornaliero.
 
@@ -113,6 +123,10 @@ def backtest_portafoglio(
     del vol targeting (P2): con allocazione = f * base * equity e costi del nodo
     invariati, il P&L per unita' di equity vale `base * f * netto` — la formula della
     spec P2, senza un secondo modello di costo.
+    `filtro_ingresso`: gancio per RIFIUTARE un segnale prima che occupi cassa o slot,
+    `(simbolo, op, ts, posizioni_aperte) -> bool` (True = ingresso consentito). I rifiuti
+    sono contati in `operazioni_rifiutate`. Ordine dichiarato: filtro PRIMA del cap
+    `max_posizioni` (semantica della spec P6/mincorr).
 
     Ordine di lavorazione di ogni giorno: prima le USCITE (liberano cassa), poi gli
     INGRESSI (consumano cassa), poi il MARK-TO-MARKET alla chiusura. E' l'ordine che
@@ -142,6 +156,8 @@ def backtest_portafoglio(
     max_pos = 0
     eseguite = 0
     saltate = 0
+    rifiutate = 0
+    esecuzioni: List[Tuple[str, Any]] = []
 
     for ts in giorni:
         # Le uscite si processano PRIMA degli ingressi: la cassa liberata oggi e'
@@ -153,6 +169,10 @@ def backtest_portafoglio(
             lordo = o.prezzo_uscita / pos.prezzo_ingresso - 1.0
             cassa += pos.allocazione * (1.0 + netto_fn(lordo))
         for simbolo, o in ingressi.get(ts, ()):
+            if filtro_ingresso is not None and not filtro_ingresso(
+                    simbolo, o, ts, dict(posizioni)):
+                rifiutate += 1
+                continue
             if max_posizioni is not None and len(posizioni) >= max_posizioni:
                 saltate += 1
                 continue
@@ -171,6 +191,7 @@ def backtest_portafoglio(
                 prezzo_ingresso=o.prezzo_ingresso,
                 ts_ingresso=ts, ts_uscita=o.ts_uscita)
             eseguite += 1
+            esecuzioni.append((simbolo, o))
         for simbolo, mappa in chiusure.items():
             prezzo = mappa.get(ts)
             if prezzo is not None:
@@ -198,7 +219,8 @@ def backtest_portafoglio(
         rendimento_totale=rendimento, cagr=cagr, eur_anno=eur_anno,
         max_drawdown=max_dd, max_esposizione=max_esp, max_posizioni=max_pos,
         operazioni_eseguite=eseguite, operazioni_saltate=saltate,
-        giorni=giorni_osservati, esposizione=esposizione, curva=tuple(curva))
+        giorni=giorni_osservati, esposizione=esposizione, curva=tuple(curva),
+        operazioni_rifiutate=rifiutate, esecuzioni=tuple(esecuzioni))
 
 
 def _vuoto(capitale: float, esposizione: float) -> EsitoPortafoglio:
