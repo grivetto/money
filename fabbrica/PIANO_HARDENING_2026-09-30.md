@@ -20,8 +20,8 @@ NON si adotta adesso Kubernetes/Redis/orchestratori: percorso a 3 livelli:
 ## Incremento 1 (hardening) — backlog con stato
 - [x] JEV gate advisory automatico sulle spec + verdetto in STATO.md (commit f75d432e, 30/09)
 - [x] Lint strutturale deterministico delle spec: src/money/spec_lint.py + CLI + 5 test (30/09)
-- [ ] Job primitives: job_id + idempotency_key + lease_until + attempt + retry/backoff (jobs.db WAL)
-- [ ] Dedup consegne: stesso idempotency_key => mai doppia integrazione
+- [x] Job primitives: job_id + idempotency_key + lease_until + attempt + retry/backoff (jobs.db WAL) — modulo `fabbrica/jobs.py` integrato 30/09 (J1 via A0-MC2, 10/10 test; wire nel tick prossimo)
+- [ ] Dedup consegne: stesso idempotency_key => mai doppia integrazione — primitive pronte (`fabbrica/jobs.py`); wire nel tick prossimo
 - [ ] Wire del lint nel tick (accanto al gate JEV; serve prima il job-store per non gonfiare il tick)
 - [ ] Metriche minime: last_successful_tick, queue_oldest_age, job_duration, heartbeat_age, stale_gate_age
 - [ ] STATO.md derivato: generated_at + control_plane_revision (git rev); non fonte di verita'

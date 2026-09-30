@@ -4,3 +4,4 @@ log/
 .lock
 metrics.prom
 STOP
+jobs.db*
