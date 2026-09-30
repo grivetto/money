@@ -6,12 +6,17 @@ Un tick ogni 5 minuti (cron). Un tick esegue/avanza UNA azione utile e aggiorna 
 NON lancia ordini, NON tocca exchange, NON inventa numeri: le azioni che richiedono
 giudizio o dati nuovi vengono MARCATE come AZIONE in STATO.md.
 
+Kill-switch: creare il file `STOP` in questa cartella per bloccare i nuovi job
+(specgen e gate JEV vengono saltati, la coda resta intatta). Rimuovere `STOP` per ripartire.
+Metriche: `metrics.prom` (formato Prometheus) riscritto ad ogni tick.
+
 Vedi README.md per le regole (test prima dei numeri; cancello decide; produzione solo su promozione).
 """
 import json
 import os
 import subprocess
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -24,6 +29,8 @@ PY = "/home/sergio/alpha-omega-trading/venv/bin/python"
 DSH = Path("/home/sergio/hermes_bridge/dsh")
 HANDOFF = DSH / "handoff"
 A0WIN = "http://100.76.22.119:50080"
+STOP = BASE / "STOP"
+METRICS = BASE / "metrics.prom"
 
 
 def now():
@@ -106,6 +113,8 @@ def check_a0win(st):
     rc, out = sh("curl -s -m 8 -o /dev/null -w '%{http_code}' " + A0WIN + "/api/health", timeout=15)
     code = out.strip() if rc == 0 else "DOWN"
     st["a0win"] = code
+    if code == "200":
+        (st.setdefault("hb", {}))["a0win"] = time.time()
     if code != "200" and st.get("a0win_last") == "200":
         log("A0-PC: NON raggiungibile (%s) -> AZIONE: verificare" % code)
     st["a0win_last"] = code
@@ -113,7 +122,10 @@ def check_a0win(st):
 
 def check_a0mc2(st):
     rc, out = sh("curl -s -m 6 -o /dev/null -w '%{http_code}' http://127.0.0.1:50080/api/health", timeout=12)
-    st["a0mc2"] = out.strip() if rc == 0 else "DOWN"
+    code = out.strip() if rc == 0 else "DOWN"
+    st["a0mc2"] = code
+    if code == "200":
+        (st.setdefault("hb", {}))["a0mc2"] = time.time()
 
 
 def check_banco(st):
@@ -124,6 +136,8 @@ def check_banco(st):
            "echo timer=$A rc=$B ultimo=$C'")
     rc, out = sh(cmd, timeout=20)
     st["banco"] = out.strip().replace(chr(10), " | ") or ("rc=%d" % rc)
+    if "rc=0" in (st.get("banco") or ""):
+        (st.setdefault("hb", {}))["banco"] = time.time()
 
 
 def check_specgen(st):
@@ -135,6 +149,13 @@ def check_specgen(st):
             nxt = c
             break
     st["spec_next"] = (nxt or {}).get("id")
+    sid = st["spec_next"]
+    if sid != st.get("spec_next_id"):
+        st["spec_next_id"] = sid
+        if sid:
+            st["spec_next_since"] = time.time()
+        else:
+            st.pop("spec_next_since", None)
     if nxt:
         st["spec_next_desc"] = nxt.get("desc", "")
         if not st.get("spec_notified_%s" % nxt.get("id")):
@@ -195,6 +216,40 @@ def check_jev_gate(st):
     st["jev_gate_results"] = results
 
 
+def kill_switch_active():
+    """True se il freno d'emergenza della fabbrica e' inserito (file STOP presente)."""
+    return STOP.exists()
+
+
+def write_metrics(st):
+    """Scrive metrics.prom (formato Prometheus) con le metriche minime del nastro.
+
+    Consumo previsto (prossimo cantiere): scrape da Prometheus/Zabbix su MARCODG1.
+    """
+    now_ts = time.time()
+    lines = [
+        "# Fabbrica Denaro — metriche del nastro (riscritte ad ogni tick)",
+        "factory_last_successful_tick_timestamp %d" % int(now_ts),
+        "factory_kill_switch %d" % (1 if kill_switch_active() else 0),
+    ]
+    hb = st.get("hb") or {}
+    for comp in ("a0win", "a0mc2", "banco"):
+        ts = hb.get(comp)
+        if ts:
+            lines.append('factory_heartbeat_age_seconds{component="%s"} %d' % (comp, int(now_ts - float(ts))))
+    for k, r in sorted((st.get("jev_gate_results") or {}).items()):
+        ts = r.get("ts") or ""
+        try:
+            t = datetime.strptime(ts, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc).timestamp()
+            lines.append('factory_gate_age_seconds{spec="%s"} %d' % (k.replace(".md", ""), int(now_ts - t)))
+        except Exception:
+            continue
+    q = st.get("spec_next_since")
+    if q:
+        lines.append('factory_queue_oldest_age_seconds{kind="spec"} %d' % int(now_ts - float(q)))
+    METRICS.write_text("\n".join(lines) + "\n")
+
+
 def _fmt(x):
     return "n/d" if x is None else ("%.2f" % float(x))
 
@@ -215,6 +270,7 @@ def write_stato(st):
         "# Fabbrica — stato",
         "",
         "- ultimo tiro: %s (tiro n. %s, cadenza 5 min via cron)" % (now(), st.get("ticks", 0)),
+        "- kill-switch: %s" % ("ATTIVO — nuovi job bloccati (file STOP presente)" if st.get("kill_switch") else "off"),
         "- canale DSH: %s voci totali, nuove dall'ultimo tiro: %s" % (st.get("dsh_heads"), st.get("dsh_new")),
         "- handoff P2: %s | manifest: %s" % (", ".join(st.get("p2_handoff_files") or []) or "(vuoto)",
                                              st.get("p2_handoff_manifest", "-")),
@@ -235,7 +291,7 @@ def write_stato(st):
         "- DSH: risposta inviata (P6 taglio diverso + ponte) — v. requests.md",
         "- P2: archiviata | P9: integrato | gate JEV + lint spec attivi in fabbrica",
         "",
-        "_Regole: test prima dei numeri; il cancello decide; produzione solo su promozione._",
+        "_Regole: test prima dei numeri; il cancello decide; produzione solo su promozione. Kill-switch: file fabbrica/STOP._",
     ]
     STATEDOC.write_text("\n".join(lines) + "\n")
 
@@ -244,16 +300,21 @@ def main():
     st = load(STATE, {})
     st["ticks"] = int(st.get("ticks", 0)) + 1
     st["last_ts"] = now()
+    st["kill_switch"] = kill_switch_active()
     check_dsh(st)
     check_handoff_p2(st)
     check_p2(st)
     check_a0win(st)
     check_a0mc2(st)
     check_banco(st)
-    check_specgen(st)
-    check_jev_gate(st)
+    if st["kill_switch"]:
+        log("KILL-SWITCH attivo: nuovi job bloccati (specgen + gate JEV saltati, coda intatta)")
+    else:
+        check_specgen(st)
+        check_jev_gate(st)
     check_inbox(st)
     save(STATE, st)
+    write_metrics(st)
     write_stato(st)
     log("tick completato (n. %d)" % st["ticks"])
 

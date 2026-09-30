@@ -2,3 +2,5 @@ state.json
 STATO.md
 log/
 .lock
+metrics.prom
+STOP
