@@ -1,6 +1,6 @@
 [
   {"id": "P6", "spec": "coda_catena/P6_portafoglio.md", "desc": "misurata 30/09 -> ARCHIVIATA per costruzione (nessuna config <=25% DDport: miglior 37,8% con exp eseguita negativa)"},
-  {"id": "P8", "spec": "coda_catena/P8_funding_harvest.md", "desc": "raccoglitore + tabella integrati; RACCOLTA ATTIVA 01/10 (cron 4h mc2, backfill 2692 righe) -> prossimi: canary carry; triage in prove/P4_triage_carry_2026-09-30"},
+  {"id": "P8", "spec": "coda_catena/P8_funding_harvest.md", "desc": "raccolta ATTIVA (cron 4h, backfill 2692 righe); CANARY C1 APERTO 01/10 (DOGE spot+perp 1x, fee=schedule) -> review 15/10; triage in prove/P4_triage_carry_2026-09-30"},
   {"id": "P10", "spec": "coda_catena/P10_momentum_cross.md", "desc": "momentum cross-sectional long/flat top-k — assegnata a dsh (handoff)"},
   {"id": "P11", "spec": "coda_catena/P11_vol_breakout_atr.md", "desc": "misurata 30/09 -> ARCHIVIATA per costruzione (verifica: DDport 77,2%, exp eseguita -4,60%; selezione k=2,0 m=20 da addestramento); artefatti prove/P11_vol_breakout.*"},
   {"id": "E1", "spec": "coda_catena/E1_economia_unitaria.md", "desc": "integrata 30/09 (src/money/economia.py, 7 test; consegna A0-PC + review Hermes) — pronta per applicazione alle misure"}

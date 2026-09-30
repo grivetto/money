@@ -1,0 +1,25 @@
+C1 — CANARY CARRY DOGE — APERTURA (ricevuta) — 2026-10-01 00:43 CEST
+=====================================================================
+Spec pre-dichiarata: docs/16_canary_carry_2026-10-01.md (autorizzazione owner 01/10).
+Strategia: spot long DOGE + X-Perp short DOGE (cash&carry funding), leva 1x isolated.
+
+ESECUZIONE (ordini LIMITE, mai market; dal nodo MARCODG1):
+- GAMBA SPOT: buy 110 DOGE/USDC -> filled 109.89 @ 0.09473 (mid pre 0.09468, slippage +5.3 bps)
+  ordine 3969683983848607744 | fee 0.11 DOGE (= 0.10% taker, addebitata in BASE ccy)
+- GAMBA PERP: short sell 11 ct DOGE-USD_UM_XPERP-310404 @ 0.09466 (mid pre 0.09466, slippage ~0)
+  ordine 3969684051058135040 | fee 0.0052063 USDC (= 0.05% taker) | isolated 1x, margin 10.4126
+- DELTA GAMBE: 0.11 DOGE (<= 1 tollerato dalla spec)
+- CONVERSIONE: 13 USDC/EUR @ 0.88517, fee 0 (verificato nei bills)
+
+Riconciliazione saldi (post-apertura):
+- trading: EUR 11.7014 | USDC 12.5824 (avail 2.1643 + margin 10.4126) | DOGE 109.89
+- funding: EUR 68.0030 (dopo transfer 12 EUR, transId 2037971113)
+- ordini pendenti: 0 | posizioni: solo il canary
+
+Verifiche fee: TUTTE aderenti allo schedule (spot USDC taker 0.10%, perp taker 0.05%,
+conversione 0%). Primo funding da incassare: evento 08:00 UTC.
+
+Monitor: cron MARCODG1 ogni 30' (canary.log, status --quiet). Finestra canary: 14 giorni
+(review 15/10/2026). Kill-switch: canary_carry.py close --execute.
+
+Artefatti: C1_canary_carry_open.jsonl (eventi), C1_canary_carry_open.json (stato).
