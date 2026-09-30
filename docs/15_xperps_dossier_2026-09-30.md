@@ -47,5 +47,14 @@ vince quello che vedi tu.
 - Copertura indipendente dell'epoca X-Perps (lancio apr 2026): futures a 5 anni, funding,
   cap 10x, assessment obbligatorio.
 
+## Verifiche live (30/09/2026 sera — dalla main key su MARCODG1)
+- **acctLv = 2** confermato live; key perm `read_only,withdraw,trade`; posMode `net_mode`.
+- **Spot via API operativo**: comprato 10 USDC a 0,88258 EUR (ordine eseguito e riconciliato; fee riportata 0,0 — da riverificare nei bills al prossimo fill).
+- **USDT oscurato per compliance EEA**: USDT/EUR respinto (`51155 local compliance restrictions`) → collaterale utilizzabile = **USDC** (X-Perps USD-margined: USD/USDC/USDG).
+- **Strumento X-Perp abilitato al conto**: `DOT-USD_UM_XPERP-310808` — set-leverage 1× cross ACCETTATO (min 1 contratto = 1 DOT ≈ 1,2 USD nozionale).
+- **Ordini X-Perp via API respinti: `50124 This API Key does not have trading permission for the market`** (batch E singolo, cross E isolated → non è ordType/margin mode: è abilitazione account/key). Causa documentata OKX: *"API users must accept the X-Perp risk disclosure via the OKX web or app interface before API trading is enabled. Sub-accounts must each accept the disclosure separately."* → **Azione proprietario**: OKX web/app → sezione X-Perps → accettare il risk disclosure (compare al primo ordine/sezione); poi retest immediato via API.
+- **Fondi per il test**: 20 EUR spostati funding→trading (transId 2037966931); residuo: trading 11,1742 EUR + 10 USDC, funding 80,0030 EUR. Nessun ordine aperto, nessuna posizione (verificato).
+- Strumenti operativi: `scripts/okx_probe_acct.py` (diagnostica), `scripts/okx_ops.py` (transfer / acquisto / ordine-test con annullo). Ordine mai a mercato: sempre limite lontano + cancel.
+
 ---
-*Preparato da Hermes — richiesta azione: SOLO proprietario (questionario + modalità conto).*
+*Preparato da Hermes — verifiche live del 30/09. Prossima azione: SOLO proprietario (risk disclosure X-Perps).*
