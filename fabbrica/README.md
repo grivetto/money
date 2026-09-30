@@ -1,6 +1,6 @@
 # Fabbrica Denaro — il nastro
 
-Ogni 5 minuti (cron) un **tick** esegue/avanza UNA azione del percorso:
+Ogni 15 secondi (timer systemd; x20 dal 30/09) un **tick** esegue/avanza UNA azione del percorso:
 
     candidato -> test (misure sui dati reali) -> cancello -> produzione SOLO su promozione
 
@@ -10,7 +10,7 @@ Ogni 5 minuti (cron) un **tick** esegue/avanza UNA azione del percorso:
 3. controllo dell'handoff P2 (`hermes_bridge/dsh/handoff/P2/`): se arrivano artefatti,
    verifica il `MANIFEST.sha256`;
 4. stato P2: se il runner di misura è nel repo -> marca AZIONE "misurare";
-5. watchdog **A0-PC** (`http://100.76.22.119:50080/api/health`) e **banco MARCODG1**;
+5. watchdog **A0-MC2** (API locale), **A0-PC** (API `:50080`) e **banco MARCODG1** (quest'ultimo ogni 20 tiri);
 6. specgen: se la coda delle spec è vuota, marca la prossima spec da materializzare
    (da `candidati.json`).
 

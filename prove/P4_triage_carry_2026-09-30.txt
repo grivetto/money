@@ -1,0 +1,20 @@
+TRIAGE CARRY/FUNDING — 30/09/2026 (NON è una misura da cancello: regime singolo, ~96 giorni)
+===============================================================================================
+Dati: OKX EEA, 5 major perp, storia funding massima disponibile (281 campioni/8h per simbolo,
+1405 righe totali). Raccolta: src/money/raccoglitore_funding.py. Script: triage_funding.py (scratch).
+
+BTC/USDT:USDT   n=281 | media/8h=+0.0053% | positive=92.2% | annualizz.~ +5.78% | rientro costi 39g | netto 96g ~+0.90%
+DOGE/USDT:USDT  n=281 | media/8h=+0.0065% | positive=91.5% | annualizz.~ +7.15% | rientro costi 32g | netto 96g ~+1.26%
+ETH/USDT:USDT   n=281 | media/8h=+0.0040% | positive=83.6% | annualizz.~ +4.39% | rientro costi 52g | netto 96g ~+0.53%
+SOL/USDT:USDT   n=281 | media/8h=+0.0030% | positive=71.2% | annualizz.~ +3.32% | rientro costi 68g | netto 96g ~+0.25%
+XRP/USDT:USDT   n=281 | media/8h=+0.0044% | positive=81.9% | annualizz.~ +4.80% | rientro costi 47g | netto 96g ~+0.64%
+
+MEDIA portafoglio (5 major): +0.0046%/8h -> ~ +5.09% annualizzato (prima dei costi di ingresso)
+
+Costi assunti (dichiarati): 0.62% per ciclo completo = spot 0.55% (giro) + swap 0.07% (giro misto).
+Vincoli reali per operare il carry: serve il lato PERP (acctLv 2 / X-Perps: assessment richiesto
+dal proprietario) e capitale >= 1000 EUR per significatività economica.
+Nota: distribuzione NON simmetrica (maggioranza di periodi positivi, code negative possibili);
+il regime osservato è UNO SOLO — la misura formale (P4) attende più storia (raccolta attiva).
+Lettura: prima tesi economica con segno giusto che non muore sulle fee; modesta, da valutare con
+capitale e derivati. NON promuove nulla.

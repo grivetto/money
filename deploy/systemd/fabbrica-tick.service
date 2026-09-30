@@ -1,0 +1,9 @@
+[Unit]
+Description=Fabbrica Denaro - tick (un'azione per giro; cadenza x20 dal 30/09/2026)
+Documentation=file:///home/sergio/money/fabbrica/README.md
+
+[Service]
+Type=oneshot
+# flock = cintura oltre alle bretelle: anche se un trigger arrivasse a unit attiva,
+# due tick non possono mai sovrapporsi. Il tick NON tocca exchange: stato/log/health.
+ExecStart=/usr/bin/flock -n /home/sergio/money/fabbrica/.lock /home/sergio/alpha-omega-trading/venv/bin/python /home/sergio/money/fabbrica/fabbrica.py

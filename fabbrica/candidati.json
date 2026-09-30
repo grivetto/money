@@ -1,6 +1,6 @@
 [
   {"id": "P6", "spec": "coda_catena/P6_portafoglio.md", "desc": "misurata 30/09 -> ARCHIVIATA per costruzione (nessuna config <=25% DDport: miglior 37,8% con exp eseguita negativa)"},
-  {"id": "P8", "spec": "coda_catena/P8_funding_harvest.md", "desc": "raccoglitore integrato; tabella giornaliera in corso (A0-MC2); poi scheduling"},
+  {"id": "P8", "spec": "coda_catena/P8_funding_harvest.md", "desc": "raccoglitore + tabella integrati 30/09; prossimi: scheduling della raccolta + dossier X-Perps (carry); triage in prove/P4_triage_carry_2026-09-30"},
   {"id": "P10", "spec": "coda_catena/P10_momentum_cross.md", "desc": "momentum cross-sectional long/flat top-k — assegnata a dsh (handoff)"},
   {"id": "P11", "spec": "coda_catena/P11_vol_breakout_atr.md", "desc": "vol breakout ATR (6 varianti) — A0-PC implementa modulo+test; misura hermes"},
   {"id": "E1", "spec": "coda_catena/E1_economia_unitaria.md", "desc": "integrata 30/09 (src/money/economia.py, 7 test; consegna A0-PC + review Hermes) — pronta per applicazione alle misure"}

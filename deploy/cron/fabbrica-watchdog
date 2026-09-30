@@ -1,0 +1,3 @@
+# Cron (utente sergio, mc2) — watchdog anti-silenzio della Fabbrica.
+# Riga da installare con `crontab -e` (NON si installa da sola):
+* * * * * /home/sergio/alpha-omega-trading/venv/bin/python /home/sergio/money/fabbrica/watchdog.py >> /home/sergio/money/fabbrica/log/watchdog.log 2>&1
