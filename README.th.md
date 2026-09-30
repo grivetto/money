@@ -62,6 +62,12 @@ money/cancello.py              8 criteria, 3 verdicts, every reason carries its 
 promosso / archiviato / insufficiente          the verdict is binding
 ```
 
+### ระบบงานโดยรอบ — 30/09/2026
+
+![สถาปัตยกรรมระบบ Denaro — 30/09/2026](ARCHITETTURA_2026-09-30.png)
+
+*ภาพรวมการทำงานรอบประตู (gate): สามโหนด, ผู้ปฏิบัติงาน Agent Zero สองตัว, DSH, ผู้ตัดสิน advisory (JEV) และโรงงาน (fabbrica) รอบ 5 นาที — ฉบับข้อความ: [`ARCHITETTURA_2026-09-30.md`](ARCHITETTURA_2026-09-30.md).*
+
 ### เทคโนโลยีหลัก
 
 | ชั้น | เทคโนโลยี | ทำไมต้องตัวนี้ |

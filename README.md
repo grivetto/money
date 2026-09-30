@@ -62,6 +62,12 @@ money/cancello.py              8 criteria, 3 verdicts, every reason carries its 
 promosso / archiviato / insufficiente          the verdict is binding
 ```
 
+### The system around the pipeline — 2026-09-30
+
+![Denaro system architecture — 2026-09-30](ARCHITETTURA_2026-09-30.png)
+
+*How the work is organised around the gate: the three nodes, the two Agent Zero workers, the DSH peer, the advisory judge (JEV) and the 5-minute fabric that carries work from spec to verdict. Text version: [`ARCHITETTURA_2026-09-30.md`](ARCHITETTURA_2026-09-30.md).*
+
 ### Core technologies
 
 | Layer | Technology | Why this one |

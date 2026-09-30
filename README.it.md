@@ -61,6 +61,12 @@ money/cancello.py              8 criteri, 3 verdetti, ogni motivo porta il suo n
 promosso / archiviato / insufficiente          il verdetto e' vincolante
 ```
 
+### Il sistema attorno alla pipeline — 30/09/2026
+
+![Architettura di sistema Denaro — 30/09/2026](ARCHITETTURA_2026-09-30.png)
+
+*Come è organizzato il lavoro attorno al cancello: i tre nodi, i due operai Agent Zero, il peer DSH, il giudice advisory (JEV) e la fabbrica a 5 minuti che porta il lavoro dalla spec al verdetto. Versione testuale: [`ARCHITETTURA_2026-09-30.md`](ARCHITETTURA_2026-09-30.md).*
+
 ### Le tecnologie usate
 
 | Livello | Tecnologia | Perché questa |

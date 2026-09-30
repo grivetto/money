@@ -62,6 +62,12 @@ money/cancello.py              8 criteria, 3 verdicts, every reason carries its 
 promosso / archiviato / insufficiente          the verdict is binding
 ```
 
+### El sistema alrededor de la pipeline — 30/09/2026
+
+![Arquitectura del sistema Denaro — 30/09/2026](ARCHITETTURA_2026-09-30.png)
+
+*Cómo se organiza el trabajo alrededor de la puerta: los tres nodos, los dos operarios Agent Zero, el par DSH, el juez advisory (JEV) y la fábrica de 5 minutos que lleva el trabajo de la especificación al veredicto. Versión de texto: [`ARCHITETTURA_2026-09-30.md`](ARCHITETTURA_2026-09-30.md).*
+
 ### Tecnologías centrales
 
 | Capa | Tecnología | Por qué esta |
