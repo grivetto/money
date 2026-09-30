@@ -288,7 +288,7 @@ def write_stato(st):
         "- inbox: %s" % (", ".join(st.get("inbox") or []) or "(vuoto)"),
         "",
         "## Azioni in attesa (per owner)",
-        "- Lane 30/09: hermes=E1 INTEGRATA (applicare scheda alle misure) | dsh=P10 | A0-MC2=P8B | A0-PC=libero",
+        "- Lane 30/09: hermes=P11 misura + dossier X-Perps (decisione owner) | dsh=P10 | A0-MC2=J1 | A0-PC=P11 modulo",
         "- DSH: risposta inviata (P6 taglio diverso + ponte) — v. requests.md",
         "- P2: archiviata | P6: ARCHIVIATA per costruzione | P9: integrato | gate JEV + lint attivi",
         "",
