@@ -67,6 +67,7 @@ vince quello che vedi tu.
 - `ORDER CREATO: 3969650118501240832` → cancel, `filled=0`.
 - Replica con script ufficiale `hermes_okx_ops.py order-probe`: `ORDER CREATO: 3969650868207915008`, `ordini aperti visti: 1`, `cancel inviato`, `stato_finale=canceled filled=0.0`.
 - Stato post-test: 0 ordini pendenti; posizione test del proprietario (2 DOT X-Perp, isolated 3x, TP 1,2693) intatta.
+- 01/10 00:36 — **posizione di prova CHIUSA su richiesta del proprietario** (`close-position`, code 0; TP cancellato in automatico): exit 1.2373, 2 ct, **pnl +0.0098**, fee chiusura 0.0012373. Fee account FUTURES Lv1 verificata dall'endpoint: **maker 0.02% / taker 0.05%** (confermata anche sui fill: taker esatto). Anomalia registrata: la fee di APERTURA via app risultava 0.006162 (~0.25% del nozionale ≈ 5×) — da riosservare al canary; il percorso API (il nostro) è confermato a tariffa piena standard. Netto complessivo del test app: ≈ +0.0024 USDC.
 - Chiave installata: `~/denaro/secrets/main_okx.env` su MARCODG1 (backup vecchia: `main_okx.env.bak-20260930`).
 
 **Conseguenza**: il **carry/funding (P8) è ora operabile via API**; prossimo passo = esecuzione minima (canary) con le regole di sempre (leva 1×, promozione + autorizzazione esplicita, un bot per conto).
