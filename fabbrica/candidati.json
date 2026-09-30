@@ -2,5 +2,6 @@
   {"id": "P6", "spec": "coda_catena/P6_portafoglio.md", "desc": "cap concorrenza {2,3,4} x {fifo,mincorr} sul canale — in misura (hermes)"},
   {"id": "P7", "spec": "coda_catena/P7_economia_soglia.md", "desc": "economia della soglia: a che capitale/leva il DD scende sotto il 25%"},
   {"id": "P8", "spec": "coda_catena/P8_funding_harvest.md", "desc": "raccoglitore integrato; tabella giornaliera in corso (A0-MC2); poi scheduling"},
-  {"id": "P10", "spec": "coda_catena/P10_momentum_cross.md", "desc": "momentum cross-sectional long/flat top-k — assegnata a dsh (handoff)"}
+  {"id": "P10", "spec": "coda_catena/P10_momentum_cross.md", "desc": "momentum cross-sectional long/flat top-k — assegnata a dsh (handoff)"},
+  {"id": "E1", "spec": "coda_catena/E1_economia_unitaria.md", "desc": "economia unitaria (Manus 30/09): scheda costi per trade + cost-to-edge + benchmark/incrementalita' — spec da materializzare (hermes)"}
 ]
