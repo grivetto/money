@@ -1,6 +1,6 @@
 [
-  {"id": "P2", "spec": "coda_catena/P2_momentum_vol_target.md", "desc": "vol targeting su Donchian 55/20 (implementazione dsh, handoff in corso)"},
-  {"id": "P6", "spec": "coda_catena/P6_portafoglio.md", "desc": "livello portafoglio: segnali trend + vol target + cap correlazione"},
+  {"id": "P6", "spec": "coda_catena/P6_portafoglio.md", "desc": "cap concorrenza {2,3,4} x {fifo,mincorr} sul canale — in misura (hermes)"},
   {"id": "P7", "spec": "coda_catena/P7_economia_soglia.md", "desc": "economia della soglia: a che capitale/leva il DD scende sotto il 25%"},
-  {"id": "P8", "spec": "coda_catena/P8_funding_harvest.md", "desc": "raccoglitore funding/basis append-only — INTEGRATO 29/09 (agent-zero v2.13, review hermes); prossimo: runner schedulato"}
+  {"id": "P8", "spec": "coda_catena/P8_funding_harvest.md", "desc": "raccoglitore integrato; tabella giornaliera in corso (A0-MC2); poi scheduling"},
+  {"id": "P10", "spec": "coda_catena/P10_momentum_cross.md", "desc": "momentum cross-sectional long/flat top-k — assegnata a dsh (handoff)"}
 ]

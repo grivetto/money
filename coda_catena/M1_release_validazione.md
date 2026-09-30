@@ -5,8 +5,11 @@ protocollo di validazione più forte del "cancello v1" **prima di qualunque live
 prossima milestone è una release di validazione statistico-economica, non una nuova strategia.
 
 **Regole di M1 (governance):**
-- nessuna nuova famiglia di strategia oltre la coda attuale (P2, P6, P7) finché M1 non è chiusa;
-- budget esperimenti: **max 1 famiglia nuova a settimana**, registrata in
+- coda ammessa: P6 (in misura), P7, P10 (assegnata a dsh) + nuove famiglie SOLO pre-registrate;
+- budget esperimenti: **max 2 famiglie nuove a settimana**, fino a 3 lane di lavoro in
+  parallelo (direttiva proprietario 30/09: accelerare il ciclo crea→testa). Ogni famiglia
+  registrata in `prove/REGISTRO_ESPERIMENTI.md` **prima** del primo numero; il maggiore
+  throughput si compensa col DSR/PBO (item 4) sui criteri di promozione;
   `prove/REGISTRO_ESPERIMENTI.md` **prima** del primo numero (anti-overfitting da throughput);
 - il miglior risultato non si mostra prima dell'aggregato completo dell'esperimento;
 - ogni artefatto deve essere riproducibile: hash di dati+codice (abilitati da P9);

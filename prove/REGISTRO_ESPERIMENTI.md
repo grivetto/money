@@ -16,7 +16,7 @@ posteriori** dagli artefatti in `prove/` e dalla coda. Dove un campo è ignoto: 
 una scusa per ometterlo nelle voci nuove.
 
 **Contatore varianti dichiarate (cumulativo):** storico `n/d` (ricostruzione parziale);
-dal 2026-09-30 in poi: **6** (P2: dichiarate, misurate, archiviate).
+dal 2026-09-30 in poi: **20** (P2: 6 misurate; P6: 6; P10: 8 — tutte dichiarate prima dei numeri).
 
 ---
 
@@ -42,8 +42,9 @@ dal 2026-09-30 in poi: **6** (P2: dichiarate, misurate, archiviate).
 - **P3 — Filtro SMA200** (2026-09-29) → archiviata: t 1,58 · DD 45,5% · exp +9,01%/op = 16,4× pedaggio · IC90 [+0,10%, +19,12%]; bocciata SOLO da t e DD. Varianti: A/B 6/8 dichiarate. Artefatti: `prove/P3_trend_filtro_200g.*`.
 - **P4 — Funding carry** → parcheggiata: storia funding EEA ≈ 96 giorni, non misurabile; si accumula con P8. Spec: `coda_catena/P4_funding_carry.md`.
 - **P5 — Donchian universo esteso** (2026-09-28) → archiviata: 407 coppie scansionate → 61 misurate; l'allargamento diluisce (t 1,44; DD 98,9%; IC90 [−0,28%, +8,93%]). Varianti: 61 misurate (su 407 scan). Artefatti: `prove/P5_universo.json`, `prove/P5_donchian_esteso.*`.
-- **P6 — Livello portafoglio** → in coda (spec da materializzare). *Non ancora registrato come misura.*
+- **P6 — Livello portafoglio (cap concorrenza/correlazione)** (registrata 2026-09-30) → in misura (hermes). Griglia: `{max_posizioni: 2,3,4} x {fifo, mincorr}` = **6 varianti**; segnale fisso Donchian 55/20; successo: DDport ≤ 25% E exp ≥ 3× pedaggio. Artefatti attesi: `prove/P6_portafoglio.*`.
 - **P7 — Economia della soglia** → in coda (spec da materializzare).
+- **P10 — Momentum cross-sectional long/flat** (registrata 2026-09-30) → assegnata a dsh (handoff). Griglia: `{k: 2,3} x {L: 60,120} x {R: 7,14}` = **8 varianti** dichiarate (selezione solo su addestramento; verifica unica). Artefatti attesi: `prove/P10_*`.
 
 ## Infrastruttura (non strategie — non consumano gradi di libertà di ricerca)
 
