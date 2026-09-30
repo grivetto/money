@@ -139,14 +139,14 @@ def main():
         last = float(t["last"])
         target = last * (1.0 + off)
         try:
-            lim = ex.privateGetPublicPriceLimit({"instId": inst})["data"][0]
+            lim = ex.request("public/price-limit", "public", "GET", {"instId": inst})["data"][0]
             buy_lmt = float(lim.get("buyLmt") or "0")
             sell_lmt = float(lim.get("sellLmt") or "0")
             print(f"price-limit: buyLmt={buy_lmt} sellLmt={sell_lmt}")
-            if buy_lmt:
-                target = min(target, buy_lmt * 0.999)
             if sell_lmt and target < sell_lmt:
                 target = sell_lmt * 1.0001
+            if buy_lmt:
+                target = min(target, buy_lmt * 0.999)
         except Exception as e:
             print("price-limit n/d:", type(e).__name__, str(e)[:80])
         px = ex.price_to_precision(sym, target)

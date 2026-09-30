@@ -56,5 +56,20 @@ vince quello che vedi tu.
 - **Fondi per il test**: 20 EUR spostati funding→trading (transId 2037966931); residuo: trading 11,1742 EUR + 10 USDC, funding 80,0030 EUR. Nessun ordine aperto, nessuna posizione (verificato).
 - Strumenti operativi: `scripts/okx_probe_acct.py` (diagnostica), `scripts/okx_ops.py` (transfer / acquisto / ordine-test con annullo). Ordine mai a mercato: sempre limite lontano + cancel.
 
+## ESITO 01/10/2026 — SBLOCCO X-PERP API ✅
+
+**La "risk disclosure" non è mai comparsa** in web né app (cercata invano dal proprietario): non era quello il blocco. Root cause reale del `50124`, in due strati:
+1. **Chiave vecchia (30/09)**: creata PRIMA dell'abilitazione X-Perps → il permesso di mercato non si aggiorna sulle chiavi esistenti: serve una **chiave NUOVA** (confermato anche da caso identico in community OKX).
+2. **Primo tentativo di chiave nuova**: creata **dentro il sub-account `marcosub1`** (il selettore-account del sito era su quel contesto) → uid ≠ main, saldo sub ~0: sembrava "nuova ma bloccata", in realtà era la chiave di un ALTRO conto (ordini respinti a margine `51008`, non più per permessi).
+3. **Chiave nuova sul contesto MAIN** (Read+Trade, niente withdraw; IP whitelist `87.106.222.123`): **`50124` SUPERATO AL PRIMO COLPO**.
+
+**Ricevute (live, da MARCODG1)**:
+- `ORDER CREATO: 3969650118501240832` → cancel, `filled=0`.
+- Replica con script ufficiale `hermes_okx_ops.py order-probe`: `ORDER CREATO: 3969650868207915008`, `ordini aperti visti: 1`, `cancel inviato`, `stato_finale=canceled filled=0.0`.
+- Stato post-test: 0 ordini pendenti; posizione test del proprietario (2 DOT X-Perp, isolated 3x, TP 1,2693) intatta.
+- Chiave installata: `~/denaro/secrets/main_okx.env` su MARCODG1 (backup vecchia: `main_okx.env.bak-20260930`).
+
+**Conseguenza**: il **carry/funding (P8) è ora operabile via API**; prossimo passo = esecuzione minima (canary) con le regole di sempre (leva 1×, promozione + autorizzazione esplicita, un bot per conto).
+
 ---
-*Preparato da Hermes — verifiche live del 30/09. Prossima azione: SOLO proprietario (risk disclosure X-Perps).*
+*Preparato da Hermes — verifiche live del 30/09. Aggiornato 01/10/2026: X-Perp API operativi (vedi ESITO sopra).*

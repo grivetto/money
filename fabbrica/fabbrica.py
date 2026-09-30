@@ -288,7 +288,7 @@ def write_stato(st):
         "- inbox: %s" % (", ".join(st.get("inbox") or []) or "(vuoto)"),
         "",
         "## Azioni in attesa (per owner)",
-        "- Lane 30/09: P11 ARCHIVIATA | X-Perps: acctLv2 OK, spot API OK (USDC), ordine futures 50124 -> manca risk disclosure X-Perps (azione owner); retest pronto | dsh=P10 | A0-MC2=libero | A0-PC=libero",
+        "- Lane 01/10: P11 ARCHIVIATA | X-Perps API OPERATIVI (chiave nuova su contesto main: ordine-test 3969650868207915008 + cancel OK) -> carry P8 operabile | dsh=P10 | A0-MC2=libero | A0-PC=libero",
         "- DSH: risposta inviata (P6 taglio diverso + ponte) — v. requests.md",
         "- P2: archiviata | P6: ARCHIVIATA per costruzione | P9: integrato | gate JEV + lint attivi",
         "",
