@@ -1,6 +1,6 @@
 # P8 — Raccoglitore funding/basis (INFRASTRUTTURA, non strategia)
 
-STATO: INTEGRATO (2026-09-29) — in raccolta dati; scheduling da fare.
+STATO: INTEGRATO (29/09) + P8B tabella giornaliera consegnata da A0-MC2 e integrata (30/09, certificato in `prove/agent-zero/P8B/`); raccolta NON ancora schedulata — prossimo passo operativo: runner + timer.
 
 ## Cos'e'
 Raccoglitore append-only idempotente dei tassi funding su OKX EEA, per la fase di accumulo
