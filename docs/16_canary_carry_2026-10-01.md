@@ -36,7 +36,8 @@ Validare l'ESECUZIONE del carry/funding, **non fare profitto**:
   il valore del canary è la VALIDAZIONE, non il P&L.
 
 ## Monitoraggio (finestra 14 giorni — review il 15/10/2026)
-- **Cron ogni 30'** su MARCODG1: `canary_carry.py status --quiet` → log + state JSON.
+- **Cron ogni 10'** su MARCODG1: `canary_carry.py status --quiet` → log + state JSON (alimenta anche dashboard/Zabbix).
+- **Dati vivi**: dashboard `denaro.grivetto.eu` scheda «CANARY C1» (via `/api/infra.json`, staleness 40') · landing `web.grivetto.eu` riga canary · Zabbix: item `svc.canary`, `canary.age_s`, `canary.upl`, `canary.delta_qty` (MARCODG1) + `svc.raccolta`, `raccolta.rows`, `raccolta.age_s`, `svc.fabbrica`, `fabbrica.tick_age_s` (mc2), con trigger attivi.
 - Riconciliazione: |spot_qty − |pos|×ctVal| ≤ **1 DOGE**; persistente > 15' → anomalia.
 - Funding cumulato < **−0,10%** dal giorno 0 con ultimi 3 eventi negativi → chiusura.
 - Mark > **+40%** sopra entry → azione (top-up margine o chiusura controllata).
