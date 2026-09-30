@@ -99,6 +99,7 @@ def backtest_portafoglio(
     netto_fn: Callable[[float], float],
     capitale: float = 1000.0,
     max_posizioni: Optional[int] = None,
+    esposizione_per_op: Optional[Callable[[str, Any], float]] = None,
 ) -> EsitoPortafoglio:
     """Simula il conto reale: posizioni concorrenti, cassa vincolata, MTM giornaliero.
 
@@ -107,6 +108,11 @@ def backtest_portafoglio(
     `ts_ingresso`, `ts_uscita`, `prezzo_ingresso`, `prezzo_uscita`).
     `netto_fn`: lordo -> netto (fee + slippage), la funzione di costo del nodo.
     `max_posizioni`: tetto opzionale alle posizioni concorrenti (None = solo la cassa).
+    `esposizione_per_op`: gancio per la frazione (0..1] della SINGOLA operazione,
+    `(simbolo, op) -> frazione`; se assente si usa `esposizione` fissa. E' il gancio
+    del vol targeting (P2): con allocazione = f * base * equity e costi del nodo
+    invariati, il P&L per unita' di equity vale `base * f * netto` — la formula della
+    spec P2, senza un secondo modello di costo.
 
     Ordine di lavorazione di ogni giorno: prima le USCITE (liberano cassa), poi gli
     INGRESSI (consumano cassa), poi il MARK-TO-MARKET alla chiusura. E' l'ordine che
@@ -152,7 +158,9 @@ def backtest_portafoglio(
                 continue
             equity_ora = cassa + math.fsum(
                 p.qty * ultimi.get(s, p.prezzo_ingresso) for s, p in posizioni.items())
-            allocazione = esposizione * equity_ora
+            frazione = (esposizione_per_op(simbolo, o)
+                        if esposizione_per_op is not None else esposizione)
+            allocazione = frazione * equity_ora
             if allocazione <= 0.0 or cassa < allocazione:
                 saltate += 1
                 continue

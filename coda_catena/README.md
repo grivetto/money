@@ -27,7 +27,8 @@ La conferma finale prima della promozione si rifa' SEMPRE sulle EUR (campione co
 STATO DELLA CODA
 ================
 - P1_trend_atr_stop.md ...... FATTA, ARCHIVIATA (ipotesi chandelier smentita; A/B: Donchian 6/8)
-- P2_momentum_vol_target.md . ASSEGNATA a dsh — ULTIMA RIMASTA (sizing: l'unico attacco al DD non ancora misurato)
+- P2_momentum_vol_target.md . FATTA 30/09 — ARCHIVIATA (sizing: DD serializzato 47,0→37,6% ma DD portafoglio ↛ 42,8→41,7-47,5%: il DD è proprietà di PORTAFOGLIO — prove/P2_vol_target.*)
 - P3_trend_filtro_200g.md ... FATTA 29/09 — ARCHIVIATA (integrata da hermes: 6/8 come Donchian; t 1,58; DD 45,5%)
 - P4_funding_carry.md ....... PARCHEGGIATA (funding EEA = 96gg di storia, verificato da dsh: niente misura)
 - P5_donchian_esteso.md ..... FATTA 28/09 — ARCHIVIATA: l'allargamento non regge (61 coppie; t 1,44; prove/P5_donchian_esteso.*)
+- P6_portafoglio.md ......... DA MATERIALIZZARE — prossimo attacco: concorrenza+correlazione (evidenza P2)

@@ -170,9 +170,9 @@ def write_stato(st):
         "- inbox: %s" % (", ".join(st.get("inbox") or []) or "(vuoto)"),
         "",
         "## Azioni in attesa (per owner)",
-        "- Hermes: review handoff P2 appena arriva; misure; commit",
-        "- DSH: handoff P2 (implementazione) + risposta al ponte-dsh sul PC",
-        "- P9: integrato nel repo (10 test, suite 245) | A0-MC2: disponibile | A0-PC: disponibile",
+        "- Hermes: P2 misurata — prossimo: materializzare la spec P6 (portafoglio)",
+        "- DSH: risposta al ponte-dsh sul PC (punto aperto)",
+        "- P2: misurata/archiviata (prove/P2_vol_target.*) | P9: integrato | A0-MC2: disponibile | A0-PC: disponibile",
         "",
         "_Regole: test prima dei numeri; il cancello decide; produzione solo su promozione._",
     ]

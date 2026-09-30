@@ -1,0 +1,24 @@
+P2 — VOL TARGETING su Donchian 55/20 (10 majors USDT) — misura e giudizio
+(voce pre-registrata in prove/REGISTRO_ESPERIMENTI.md prima di questi numeri;
+ griglia dichiarata: vol_target {0.50,0.60,0.75} x {sizing si,no} = 6)
+pedaggio assunta: +0,550% per operazione (okx_eea_spot, misto); slippage +0,080% per giro
+stress costi: stack fee+spread+slippage applicato due volte (+0,630% extra per operazione)
+
+=== VERIFICA [2024-06-01 -> 2026-09-25] ===
+   sizing no (controllo) | f medio 1,00 | dd_ser  +46,985% | dd_port  +42,836% | exp  +7,991% | cop  14,5x | t  1,61 | t_nw  1,30 | eseg/salt 28/27 | rid_dd    +0,0% | stress  +7,361% | successo NO | fallisce: DDport>25% | giudica: archiviato
+                 vt=0.50 | f medio 0,77 | dd_ser  +37,566% | dd_port  +46,804% | exp  +5,823% | cop  10,6x | t  1,60 | t_nw  1,30 | eseg/salt 37/18 | rid_dd    -9,3% | stress  +5,341% | successo NO | fallisce: DDport>25% | giudica: archiviato
+                 vt=0.60 | f medio 0,85 | dd_ser  +40,163% | dd_port  +47,474% | exp  +6,894% | cop  12,5x | t  1,62 | t_nw  1,35 | eseg/salt 34/21 | rid_dd   -10,8% | stress  +6,360% | successo NO | fallisce: DDport>25% | giudica: archiviato
+                 vt=0.75 | f medio 0,92 | dd_ser  +43,470% | dd_port  +41,666% | exp  +7,570% | cop  13,8x | t  1,64 | t_nw  1,35 | eseg/salt 31/24 | rid_dd    +2,7% | stress  +6,990% | successo NO | fallisce: DDport>25% | giudica: archiviato
+  [check controllo vs riferimento A/B: OK]
+
+=== FINESTRA PIENA [2020-10-01 -> 2026-09-25] ===
+   sizing no (controllo) | f medio 1,00 | dd_ser  +73,828% | dd_port  +67,991% | exp +67,658% | cop 123,0x | t  2,22 | t_nw  1,67 | eseg/salt 63/72 | rid_dd    +0,0% | stress +67,028% | successo NO | fallisce: DDport>25% | giudica: archiviato
+                 vt=0.50 | f medio 0,71 | dd_ser  +59,179% | dd_port  +66,782% | exp +31,820% | cop  57,9x | t  2,23 | t_nw  1,78 | eseg/salt 93/42 | rid_dd    +1,8% | stress +31,370% | successo NO | fallisce: DDport>25% | giudica: archiviato
+                 vt=0.60 | f medio 0,80 | dd_ser  +64,498% | dd_port  +67,864% | exp +38,030% | cop  69,1x | t  2,23 | t_nw  1,77 | eseg/salt 82/53 | rid_dd    +0,2% | stress +37,524% | successo NO | fallisce: DDport>25% | giudica: archiviato
+                 vt=0.75 | f medio 0,89 | dd_ser  +69,473% | dd_port  +69,898% | exp +46,456% | cop  84,5x | t  2,18 | t_nw  1,74 | eseg/salt 73/62 | rid_dd    -2,8% | stress +45,895% | successo NO | fallisce: DDport>25% | giudica: archiviato
+  [check controllo vs riferimento A/B: OK]
+
+=== VERDETTO P2 (finestra del verdetto: VERIFICA) ===
+  NESSUNA configurazione della griglia dichiarata soddisfa DDport <= 25% E exp >= 3x pedaggio.
+  -> per la regola dichiarata, il filone trend si archivia per costruzione; si progettano spec nuove sui dati.
+  (migliore per DD: vt=0.75 con dd_port +41,666%, riduzione relativa +2,7% vs controllo; riferimento esterno non vincolante: 15-35%)
