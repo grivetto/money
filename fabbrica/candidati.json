@@ -2,5 +2,5 @@
   {"id": "P6", "spec": "coda_catena/P6_portafoglio.md", "desc": "misurata 30/09 -> ARCHIVIATA per costruzione (nessuna config <=25% DDport: miglior 37,8% con exp eseguita negativa)"},
   {"id": "P8", "spec": "coda_catena/P8_funding_harvest.md", "desc": "raccoglitore integrato; tabella giornaliera in corso (A0-MC2); poi scheduling"},
   {"id": "P10", "spec": "coda_catena/P10_momentum_cross.md", "desc": "momentum cross-sectional long/flat top-k — assegnata a dsh (handoff)"},
-  {"id": "E1", "spec": "coda_catena/E1_economia_unitaria.md", "desc": "economia unitaria (Manus 30/09): scheda costi per trade + cost-to-edge + benchmark/incrementalita' — spec da materializzare (hermes)"}
+  {"id": "E1", "spec": "coda_catena/E1_economia_unitaria.md", "desc": "integrata 30/09 (src/money/economia.py, 7 test; consegna A0-PC + review Hermes) — pronta per applicazione alle misure"}
 ]

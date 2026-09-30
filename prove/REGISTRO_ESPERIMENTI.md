@@ -50,6 +50,7 @@ dal 2026-09-30 in poi: **20** (P2: 6 misurate; P6: 6 misurate; P10: 8 — tutte 
 
 - **P8 — Raccoglitore funding/basis** → integrato 2026-09-29 (`src/money/raccoglitore_funding.py`, 9 test nella suite). Append-only idempotente, guardia anti-ordini.
 - **P9 — Verificatore di provenienza `prove/*`** → integrato 2026-09-30 (`src/money/verifica_provenienza.py`, 10 test). Primo uso previsto: pin dell'hash della cache dichiarata (la cache di `trend_lungo` è su Windows: il manifest va generato lì o la misura rifatta sui dati mc2).
+- **E1 — Economia unitaria (scheda costi + cost-to-edge + benchmark)** → **integrato 2026-09-30** (`src/money/economia.py`, 7 test; consegna A0-PC, review Hermes). Non consuma gradi di libertà di ricerca. Prossima applicazione: misure P6/P10 (scheda economica accanto al verdetto).
 
 ## Registro variazioni
 

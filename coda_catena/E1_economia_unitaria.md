@@ -1,6 +1,6 @@
 # E1 — Economia unitaria: scheda costi + cost-to-edge + benchmark (INFRASTRUTTURA di misura)
 
-STATO: LIBERA (materializzata 30/09/2026 — pronta per assegnazione; NON consuma gradi di
+STATO: CONSEGNATA e INTEGRATA (30/09/2026 — v. "Esito" in fondo; NON consuma gradi di
 libertà di ricerca: non è una famiglia di strategia)
 
 ## 1. Obiettivo verificabile
@@ -83,3 +83,11 @@ cd /home/sergio/money
 python -m pytest tests/test_economia.py -q
 python -m pytest -q
 ```
+
+---
+
+## Esito (30/09/2026, POST-numeri — sola registrazione)
+**CONSEGNATA e INTEGRATA.** Esecutore: A0-PC (Agent Zero v2.13) su brief autosufficiente
+(lint 7/7); consegna recuperata via endpoint file-browser, rieseguita in scratch (7/7) e
+integrata da Hermes: `src/money/economia.py` + `tests/test_economia.py` (suite completa
+verde). La spec resta la fonte del contratto: ogni estensione passa da qui.
