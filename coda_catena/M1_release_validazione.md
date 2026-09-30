@@ -51,7 +51,9 @@ prossima milestone è una release di validazione statistico-economica, non una n
 11. **P2 addendum pre-numero** — secondarie dichiarate prima della misura (costi stressati,
     coerenza regimi, attrattività vs controllo). ✅ fatto (spec aggiornata).
 12. **P9 verificatore di provenienza** — chiude il difetto di riproducibilità dell'audit dsh.
-    ✅ dispacciato (Agent Zero MC2; acceptance da audit).
+    ✅ integrato 30/09: `src/money/verifica_provenienza.py` + 10 test in suite. Prossimo uso: pin
+    dell'hash della cache dichiarata — nota: la cache di `trend_lungo` vive su Windows (C:\dev\...) →
+    il manifest va generato lì, o la misura rifatta sui dati mc2.
 
 ## Criteri di chiusura M1 (per dichiararla fatta)
 

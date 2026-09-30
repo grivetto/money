@@ -172,7 +172,7 @@ def write_stato(st):
         "## Azioni in attesa (per owner)",
         "- Hermes: review handoff P2 appena arriva; misure; commit",
         "- DSH: handoff P2 (implementazione) + risposta al ponte-dsh sul PC",
-        "- P8: integrato nel repo (9 test verdi, suite 235) | A0-MC2: disponibile | A0-PC: disponibile",
+        "- P9: integrato nel repo (10 test, suite 245) | A0-MC2: disponibile | A0-PC: disponibile",
         "",
         "_Regole: test prima dei numeri; il cancello decide; produzione solo su promozione._",
     ]

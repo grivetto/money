@@ -48,8 +48,9 @@ dal 2026-09-30 in poi: **6** (P2, dichiarate).
 ## Infrastruttura (non strategie — non consumano gradi di libertà di ricerca)
 
 - **P8 — Raccoglitore funding/basis** → integrato 2026-09-29 (`src/money/raccoglitore_funding.py`, 9 test nella suite). Append-only idempotente, guardia anti-ordini.
-- **P9 — Verificatore di provenienza `prove/*`** → in corso (task Agent Zero MC2; acceptance da audit dsh: rigenera da clone pulito e fallisce su cache diversa da quella dichiarata).
+- **P9 — Verificatore di provenienza `prove/*`** → integrato 2026-09-30 (`src/money/verifica_provenienza.py`, 10 test). Primo uso previsto: pin dell'hash della cache dichiarata (la cache di `trend_lungo` è su Windows: il manifest va generato lì o la misura rifatta sui dati mc2).
 
 ## Registro variazioni
 
 - 2026-09-30 — creato: ricostruzione storica + regola append-only + contatore varianti.
+- 2026-09-30 — P9 integrato; verificatore di provenienza disponibile in `src/money/`.
