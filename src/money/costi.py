@@ -36,9 +36,9 @@ nessuna configurazione globale. Cosi' si testa in millisecondi e non puo' mentir
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 
 class Venue(str, Enum):
@@ -68,6 +68,12 @@ class Tariffa:
     taker: float                 # frazione, per lato
     condizione: str
     note: str = ""
+    #: Data ISO dell'ultima **verifica** del numero. Vuota = mai verificata: e' uno stato
+    #: legittimo, e va trattato come tale (fail-closed), non come "vale per sempre".
+    verificato_il: str = ""
+    #: Da dove viene il numero. Una tariffa senza fonte e' un numero di cui nessuno puo'
+    #: risalire la provenienza.
+    fonte: str = ""
 
     @property
     def giro_taker(self) -> float:
@@ -127,6 +133,80 @@ TARIFFE: Dict[str, Tariffa] = {
         note="di fatto inutilizzabile per il trading frequente",
     ),
 }
+
+#: Dopo quanti giorni una tariffa verificata si considera **scaduta**.
+#:
+#: Perche' esiste, e perche' e' un numero e non una buona intenzione. Il 2026-09-28 OKX EEA
+#: ha in pagina **due** avvisi di variazione delle tariffe ("Upcoming Spot Fee Adjustment EEA"
+#: per i conti **solo spot** — cioe' esattamente la tabella che questo modulo usa come default —
+#: e "Updates to OKX EEA Trading Fees"). La costante piu' importante di un progetto che si
+#: chiama "il pedaggio prima della strategia" era un numero scritto a mano **senza data di
+#: validita'**: se la sede cambia le fee, ogni misura a valle diventa silenziosamente falsa.
+TARIFFA_MAX_ETA_GIORNI: int = 90
+
+
+class TariffaScaduta(RuntimeError):
+    """Una tariffa non verificata, o verificata troppo tempo fa. Non si usa: si riverifica."""
+
+
+#: Data e fonte dell'ultima verifica, per nome di tariffa. **Solo le verificate sono qui.**
+#: Le altre restano senza data e `verifica_freschezza` le rifiuta: e' il comportamento
+#: corretto, perche' per Bybit e Kraken il progetto non ha mai registrato *quando* ha letto
+#: la tabella, e inventare una data sarebbe peggio che dichiarare di non saperla.
+_VERIFICHE: Dict[str, Tuple[str, str]] = {
+    "okx_eea_spot": (
+        "2026-09-27",
+        "privateGetAccountTradeFee sul conto main: maker 0,200% / taker 0,350% per lato "
+        "(scripts/verifica_conto.py; docs/01 §2, docs/06 §13.6)"),
+    "okx_eea_swap_lv1": (
+        "2026-09-25",
+        "privateGetAccountTradeFee, conto main acctLv 2: maker 0,020% / taker 0,050% "
+        "(docs/01 §2, docs/05)"),
+    "okx_eea_con_perp": (
+        "2026-09-25",
+        "pagine ufficiali OKX EEA: assunzione **conservativa**, valida finche' acctLv non e' 2 "
+        "(docs/01 §6)"),
+}
+
+TARIFFE: Dict[str, Tariffa] = {
+    nome: (replace(t, verificato_il=_VERIFICHE[nome][0], fonte=_VERIFICHE[nome][1])
+           if nome in _VERIFICHE else t)
+    for nome, t in TARIFFE.items()
+}
+
+
+def verifica_freschezza(tariffa: Tariffa, oggi: Optional[Any] = None,
+                        max_eta_giorni: int = TARIFFA_MAX_ETA_GIORNI) -> str:
+    """Solleva `TariffaScaduta` se la tariffa non e' verificata o e' troppo vecchia.
+
+    Ritorna la data di verifica (per il verbale) quando passa. **Fail-closed**: una tariffa
+    senza `verificato_il` non e' "probabilmente ancora valida", e' **non verificata**.
+    """
+    from datetime import date as _date
+
+    if max_eta_giorni <= 0:
+        raise ValueError(f"max_eta_giorni dev'essere > 0, ricevuto {max_eta_giorni}")
+    if not tariffa.verificato_il:
+        raise TariffaScaduta(
+            f"tariffa {tariffa.venue.value} ({tariffa.condizione}) non verificata: manca "
+            f"`verificato_il`. Un pedaggio senza data e' un pedaggio che qualcuno usera' "
+            f"quando non e' piu' vero")
+    try:
+        giorno = _date.fromisoformat(tariffa.verificato_il)
+    except ValueError:
+        raise TariffaScaduta(
+            f"`verificato_il` non e' una data ISO: {tariffa.verificato_il!r}") from None
+    riferimento = oggi if oggi is not None else _date.today()
+    if hasattr(riferimento, "date"):
+        riferimento = riferimento.date()
+    eta = (riferimento - giorno).days
+    if eta > max_eta_giorni:
+        raise TariffaScaduta(
+            f"tariffa {tariffa.venue.value} verificata il {tariffa.verificato_il} "
+            f"({eta} giorni fa, massimo {max_eta_giorni}). Fonte: {tariffa.fonte or 'non dichiarata'}. "
+            f"Riverificare prima di usarla: una fee cambiata rende falsa ogni misura a valle")
+    return tariffa.verificato_il
+
 
 #: La tariffa che il progetto assume quando nessuno dice diversamente: la verita' di oggi.
 TARIFFA_DEFAULT = "okx_eea_spot"
