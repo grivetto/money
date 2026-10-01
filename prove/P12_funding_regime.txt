@@ -1,0 +1,26 @@
+P12 — FUNDING: REGIME E TIMING (decision-support, NON promozione)
+==============================================================================
+Dati: archivio P8 X-Perp OKX EEA | righe malformate: 0 | campione: UN regime (~95g)
+
+simbolo                    n     ann.%    %pos     p1b     ac1 streakNeg payback
+ADA/USD:USD-310404       283    +9.40%   95.4%   0.973  +0.435        3    16g
+AVAX/USD:USD-310530      283    +6.35%   81.6%   0.869  +0.433        8    23g
+BTC/USD:USD-310404       283    -3.63%   58.0%   0.867  +0.796       21    n/d
+DOGE/USD:USD-310404      283    +9.64%   96.1%   0.971  +0.505        4    15g
+DOT/USD:USD-310808       165   +19.44%   95.2%   0.955  +0.083        2     8g
+ETH/USD:USD-310404       283    -0.72%   63.6%   0.867  +0.732       28    n/d
+LINK/USD:USD-310523      283    +9.66%   90.8%   0.953  +0.639       11    15g
+LTC/USD:USD-310404       283    +6.77%   83.7%   0.921  +0.683       15    22g
+SOL/USD:USD-310404       283    +2.75%   67.8%   0.808  +0.601       15    53g
+XRP/USD:USD-310404       283    +7.86%   87.6%   0.930  +0.676       13    19g
+
+Netto@30g (C=XPerp 0,40%): 7/10 simboli positivi
+Netto@30g (C=stress 0,62%): 5/10 simboli positivi
+
+H1 persistenza : p1b pooled 91.7% vs base 81.4% | autocorr mediana 0.639 | p1b_IC90_low>base: 6/10 -> OK
+H2 netto costi : 7/10 simboli net@30g>0 e payback<=45g -> OK
+H3 stabilita'  : rho=0.733 inversioni=1 -> OK
+RULE vs AO     : quota 121.6% | riduzione DD 87.5% -> VINCE LA REGOLA
+
+ESITO: DESCRITTIVA SOLIDA
+(nessuna promozione possibile con un solo regime — spec P12)
