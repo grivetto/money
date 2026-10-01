@@ -27,7 +27,7 @@ cimiento sobre el que construir.
 
 | | |
 | :--- | :--- |
-| **Tests** | **408 passed**, `ruff` limpio, en **dos entornos independientes** |
+| **Tests** | **437 passed**, `ruff` limpio, en **dos entornos independientes** |
 | **Estrategias medidas** | **3** familias (una por nodo), todas juzgadas a costes reales |
 | **Veredictos** | **3 archivadas** (familias) — el carry en vivo **C1** está en su ventana de validación canary (review 15/10) |
 | **Órdenes reales enviadas** | **0** por las estrategias de este repo — el primer bot en vivo del proyecto (carry **C1**, DOGE) opera en OKX EEA y se sigue en `alpha-omega-trading` (`docs/16`) |
@@ -151,7 +151,7 @@ orden mínima de 1 EUR y un cuarto por posición, **no existe ninguna orden sens
 ## 🧪 Testing — y la reproducción independiente
 
 ```
-408 passed
+437 passed
 ruff check . → All checks passed
 ```
 
@@ -250,7 +250,7 @@ cd money
 python src/money/costi.py
 
 # the whole suite (offline, no keys, no network)
-python -m pytest tests -q          # 408 passed
+python -m pytest tests -q          # 437 passed
 ruff check .
 
 # re-measure a hypothesis on real OKX EEA bars (no keys needed: public data)

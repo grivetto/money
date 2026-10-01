@@ -26,7 +26,7 @@ sua storia, come memoria di cosa è stato provato — non come base su cui costr
 
 | | |
 | :--- | :--- |
-| **Test** | **408 passati**, `ruff` pulito, in **due ambienti indipendenti** |
+| **Test** | **437 passati**, `ruff` pulito, in **due ambienti indipendenti** |
 | **Strategie misurate** | **3** famiglie (una per nodo), tutte giudicate ai costi reali |
 | **Verdetti** | **3 archiviate** (famiglie) — il carry live **C1** è nella finestra di validazione canary (review 15/10) |
 | **Ordini reali inviati** | **0** dalle strategie di questo repo — il primo bot live del progetto (carry **C1**, DOGE) opera su OKX EEA ed è tracciato in `alpha-omega-trading` (`docs/16`) |
@@ -175,7 +175,7 @@ minimo d'ordine di 1 EUR e un quarto per posizione, **non esiste nessun ordine s
 ## 🧪 Testing — e la riproduzione indipendente
 
 ```
-408 passed
+437 passed
 ruff check . → All checks passed
 ```
 
@@ -274,7 +274,7 @@ cd money
 python src/money/costi.py
 
 # tutta la suite (offline, nessuna chiave, nessuna rete)
-python -m pytest tests -q          # 408 passed
+python -m pytest tests -q          # 437 passed
 ruff check .
 
 # rimisura una ipotesi su barre reali OKX EEA (nessuna chiave: dati pubblici)

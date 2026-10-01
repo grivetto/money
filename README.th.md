@@ -27,7 +27,7 @@
 
 | | |
 | :--- | :--- |
-| **การทดสอบ** | **408 passed**, `ruff` สะอาด, ใน **สองสภาพแวดล้อมที่เป็นอิสระต่อกัน** |
+| **การทดสอบ** | **437 passed**, `ruff` สะอาด, ใน **สองสภาพแวดล้อมที่เป็นอิสระต่อกัน** |
 | **กลยุทธ์ที่วัดแล้ว** | **3** ตระกูล (หนึ่งต่อ node) ทั้งหมดถูกตัดสินที่ต้นทุนจริง |
 | **คำตัดสิน** | **เก็บเข้าคลัง 3** — ไม่มีอะไรถูกเลื่อนขึ้น ดังนั้นไม่มีอะไรอยู่ใน production |
 | **คำสั่งจริงที่ส่งไป** | **0** โดยกลยุทธ์ของ repo นี้ — ที่นี่ไม่มีอะไรเทรดจนกว่าประตูจะเลื่อนขึ้นและเจ้าของจะเติมทุน (canary ตัวจริงติดตามใน `alpha-omega-trading`) |
@@ -148,7 +148,7 @@ promosso / archiviato / insufficiente          the verdict is binding
 ## 🧪 การทดสอบ — และการทำซ้ำที่เป็นอิสระ
 
 ```
-408 passed
+437 passed
 ruff check . → All checks passed
 ```
 
@@ -247,7 +247,7 @@ cd money
 python src/money/costi.py
 
 # the whole suite (offline, no keys, no network)
-python -m pytest tests -q          # 408 passed
+python -m pytest tests -q          # 437 passed
 ruff check .
 
 # re-measure a hypothesis on real OKX EEA bars (no keys needed: public data)
