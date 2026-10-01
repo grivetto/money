@@ -1,5 +1,5 @@
 # P12 — Funding: regime e timing (decision-support per il carry)
-STATO: MISURATA 2026-10-01 (hermes) — esito DESCRITTIVA SOLIDA; artefatti `prove/P12_funding_regime.{txt,json}`; misura `scripts/misura_p12.py`; test 15/15. Nessuna promozione (un solo regime).
+STATO: MISURATA 2026-10-01 (hermes) — esito DESCRITTIVA SOLIDA; artefatti `prove/P12_funding_regime.{txt,json}`; misura `scripts/misura_p12.py`; test 17/17. **Addendum contabile 01/10: «uscita al primo negativo» NON adottata (netta 0/10 sui costi di ciclo); baseline carry = always-on.** Nessuna promozione (un solo regime).
 DATI: archivio P8 `data/funding_xperp.jsonl` (10 X-Perp OKX EEA, dal 2026-06-29; raccolta
 attiva ogni 4h). Candele perp pubbliche disponibili (`market/candles` EEA), NON usate in
 questa misura (vedi M5).
@@ -79,3 +79,14 @@ prodotto: su OKX EEA gli X-Perp sono classificati `instType=FUTURES` (227 strume
 ## Riferimenti
 P4 (funding carry, parcheggiata) · P8 (raccolta) · C1 (docs/16) · triage 30/09
 (`prove/P4_triage_carry_2026-09-30.*`) · protocollo referee: `docs/18_programma_ricerca_quant.md`.
+
+## Addendum 2026-10-01 (dopo la misura — correzione di contabilità)
+Il risultato LORDO di M4 è nei numeri, ma era contabilmente incompleto: la regola impone un
+giro di entrata/uscita per OGNI episodio (8–39 per simbolo in 95 giorni) e il confronto
+funding-only non pagava quei costi. Ricalcolo netto (C = 0,40% × episodi; always-on paga
+1 ciclo): la regola batte always-on su **0/10** simboli (esempi: ADA −0,80% vs +2,03%;
+SOL −14,60% vs +0,31%). → Verdetto operativo: **«uscita al primo negativo» NON si adotta**;
+per i simboli carryabili la baseline è always-on; una regola di uscita ha senso solo su
+segnali rari (es. regime negativo persistente) = NUOVA variante, nuova voce di registro.
+Il modulo ora riporta SEMPRE entrambe le letture (lorda e netta); test dedicati in
+`tests/ricerca/test_funding_regime.py`.

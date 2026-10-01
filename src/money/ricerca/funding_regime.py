@@ -336,6 +336,27 @@ def stabilita(serie: Dict[str, SerieSimbolo]) -> Dict[str, Any]:
     }
 
 
+def regola_netta(s: SerieSimbolo, costo_ciclo: float = COSTI[0]) -> Dict[str, float]:
+    """ADDENDUM (correzione di contabilita', 01/10): confronto NETTO dei costi di ciclo.
+
+    Ogni EPISODIO della regola = un giro completo di entrata+uscita = `costo_ciclo`.
+    Always-on paga UN solo ciclo. Il confronto lordo di M4 non includeva questi costi:
+    qui si contabilizzano. Delta > 0 => la regola batte always-on AL NETTO.
+    """
+    ao = flusso_always_on(s)
+    ru = flusso_regola(s)
+    ao_net = ao.flusso - costo_ciclo
+    ru_net = ru.flusso - ru.episodi * costo_ciclo
+    return {
+        "ao_lordo": ao.flusso,
+        "rule_lordo": ru.flusso,
+        "episodi": float(ru.episodi),
+        "ao_netto": ao_net,
+        "rule_netto": ru_net,
+        "delta_netto": ru_net - ao_net,
+    }
+
+
 def valuta(serie: Dict[str, SerieSimbolo]) -> Dict[str, Any]:
     """Applica i criteri dichiarati (H1, H2, H3, RULE) e produce l'esito.
 
@@ -417,6 +438,9 @@ def valuta(serie: Dict[str, SerieSimbolo]) -> Dict[str, Any]:
         and dd_riduzione is not None
         and dd_riduzione >= 0.50
     )
+    # ADDENDUM (correzione di contabilita'): la regola paga un ciclo per EPISODIO.
+    netto_cicli = {nome: regola_netta(s) for nome, s in sorted(serie.items())}
+    batte_netto = sum(1 for v in netto_cicli.values() if v["delta_netto"] > 0)
 
     # Esito dichiarato (spec P12).
     if n_simboli == 0 or sum(st.n for st in stats.values()) < 30 * max(1, n_simboli):
@@ -447,6 +471,8 @@ def valuta(serie: Dict[str, SerieSimbolo]) -> Dict[str, Any]:
             "quota_vs_always_on": quota_ru,
             "dd_riduzione_relativa": dd_riduzione,
             "vince": rule_vince,
+            "netto_cicli": netto_cicli,
+            "batte_netto_su": batte_netto,
         },
         "esito": esito,
         "statistiche": stats,
@@ -506,6 +532,14 @@ def report_testo(risultato: Dict[str, Any], malformate: int) -> str:
     righe.append("RULE vs AO     : quota %s | riduzione DD %s -> %s" % (
         _fmt_pct(r["quota_vs_always_on"]), _fmt_pct(r["dd_riduzione_relativa"]),
         "VINCE LA REGOLA" if r["vince"] else "sempre-on"))
+    netti = r.get("netto_cicli", {})
+    righe.append("RULE netto cicli (ADDENDUM: C x episodio): batte always-on su %d/%d simboli" % (
+        r.get("batte_netto_su", 0), len(netti)))
+    for nome in sorted(netti):
+        q = netti[nome]
+        righe.append("  %-6s AO_netto %+7.3f%%  RULE_netto %+7.3f%%  ep %2.0f  delta %+7.3f%%" % (
+            nome.split("/")[0], q["ao_netto"] * 100.0, q["rule_netto"] * 100.0,
+            q["episodi"], q["delta_netto"] * 100.0))
     righe.append("")
     righe.append("ESITO: %s" % risultato["esito"].upper())
     righe.append("(nessuna promozione possibile con un solo regime — spec P12)")

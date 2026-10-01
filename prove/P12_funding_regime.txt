@@ -21,6 +21,17 @@ H1 persistenza : p1b pooled 91.7% vs base 81.4% | autocorr mediana 0.639 | p1b_I
 H2 netto costi : 7/10 simboli net@30g>0 e payback<=45g -> OK
 H3 stabilita'  : rho=0.733 inversioni=1 -> OK
 RULE vs AO     : quota 121.6% | riduzione DD 87.5% -> VINCE LA REGOLA
+RULE netto cicli (ADDENDUM: C x episodio): batte always-on su 0/10 simboli
+  ADA    AO_netto  +2.029%  RULE_netto  -0.795%  ep  8  delta  -2.824%
+  AVAX   AO_netto  +1.241%  RULE_netto -11.585%  ep 33  delta -12.826%
+  BTC    AO_netto  -1.337%  RULE_netto  -7.924%  ep 22  delta  -6.587%
+  DOGE   AO_netto  +2.092%  RULE_netto  -1.133%  ep  9  delta  -3.225%
+  DOT    AO_netto  +2.529%  RULE_netto  -0.339%  ep  8  delta  -2.868%
+  ETH    AO_netto  -0.587%  RULE_netto  -9.118%  ep 25  delta  -8.532%
+  LINK   AO_netto  +2.095%  RULE_netto  -2.555%  ep 13  delta  -4.651%
+  LTC    AO_netto  +1.350%  RULE_netto  -6.946%  ep 22  delta  -8.296%
+  SOL    AO_netto  +0.310%  RULE_netto -14.604%  ep 39  delta -14.914%
+  XRP    AO_netto  +1.630%  RULE_netto  -5.524%  ep 19  delta  -7.154%
 
 ESITO: DESCRITTIVA SOLIDA
 (nessuna promozione possibile con un solo regime — spec P12)

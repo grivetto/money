@@ -110,6 +110,27 @@ def test_dd_flusso():
     assert ao.dd_flusso == pytest.approx(0.003)
 
 
+# ---------- addendum: regola NETTA dei costi di ciclo ----------
+
+def test_regola_netta_churn_peggiore():
+    # Serie che oscilla +,-,+,-...: la regola fa un episodio ogni 2 eventi e cattura i
+    # negativi -> al netto dei cicli (1 per episodio) deve essere PEGGIORE di always-on.
+    v = tuple(0.001 if i % 2 == 0 else -0.001 for i in range(20))
+    s = fr.SerieSimbolo("T", tuple(range(20)), v)
+    q = fr.regola_netta(s)
+    assert q["episodi"] == 9.0
+    assert q["delta_netto"] < 0
+
+
+def test_regola_netta_tutto_positivo_quasi_pari():
+    v = (0.0001,) * 30
+    s = fr.SerieSimbolo("T", tuple(range(30)), v)
+    q = fr.regola_netta(s)
+    # l'unica differenza e' il warmup (3 eventi saltati): delta = -3 x 1e-4
+    assert q["episodi"] == 1.0
+    assert abs(q["delta_netto"] - (-0.0003)) < 1e-12
+
+
 # ---------- economia ----------
 
 def test_netto_esatto():
