@@ -20,7 +20,12 @@
   `denaro-node-marcodg1-xrp`) ma ExecStart → `config/node_*_paper.yaml` (capital 25 simulato).
   Backup unit: `/tmp/*.bak-20261001` (mc2/marcodg1) e `~/backup-unit-nuvola-trade-20261001.service`.
 - **Health**: `<sym>_<nodo>_live_paper.json` in `denaro/health/` (scrittura a ogni tick).
-  Wiring dashboard flotta → file `_paper`: prossimo passo (oggi le chip flotta mostrano ancora lo stato live).
+- **Dashboard flotta (wired 01/10)**: le chip della card «OFFICINA PAPER» leggono le chiavi
+  `<nodo>:paper:<SYM>` del payload (17/17 attivi); `node_totals` separa live/paper (equity e
+  pnl contano SOLO il live). Aggregator: `PAPER_SOURCES` / `LOCAL_PAPER`. Screenshot: `dash_flotta.png`.
+- **Zabbix heartbeat (01/10)**: item `flotta.paper_n` (bot freschi <5m) + `flotta.paper_age_s`
+  (età del file più vecchio) su MARCODG1/mc2/nuvola, trigger «bot muti» e «flotta ferma»;
+  push dal cron `push_metrics.py` (ogni minuto). Unit: `Restart=always` + `StartLimitIntervalSec=0`.
 - **Verifica**: `journalctl -u <unit> | grep precaricate` → "299 barre 1d" per bot; health freschi;
   tick con equity simulata 25.
 - **Ritorno al live**: ripuntare ExecStart alla config live (backup) — solo con capitale dedicato
