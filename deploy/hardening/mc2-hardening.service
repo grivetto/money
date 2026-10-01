@@ -1,0 +1,12 @@
+[Unit]
+Description=MC2 hardening porte (post-incidente Zabbix 2026-10-01)
+After=network-online.target docker.service tailscaled.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/mc2-hardening-ports.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

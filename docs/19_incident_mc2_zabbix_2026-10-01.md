@@ -36,16 +36,29 @@ Stato: CONTENUTO e RIPULITO il 01/10/2026 (~17:30-17:45 CEST). Evidenza: `~/inci
    file sospetto residuo, nessuna chiave ssh estranea evidente.
 8. **fleet/monitor check**: push_metrics OK (42 valori), fabbrica attiva, canary OK.
 
-## Cosa resta da fare (hardening, follow-up)
-- [ ] **agent-zero su :50080** è esposto su 0.0.0.0/:: → bind a 127.0.0.1 o tailscale.
-- [ ] **smbd 139/445** pubblici → restringere (serve al PC Windows? solo LAN/tailscale).
-- [ ] **denaro2.exporter :9100** e **mc2_feeder :5557/:5558** → bind interfaccia interna
-      (verificare prima chi li scrape: Prometheus su MARCODG1 via tailscale).
-- [ ] nginx :80/:443/:8901 su mc2: rivedere i vhost serviti.
-- [ ] Credenziali DB zabbix (`zabbix_db_pass`/`zabbix_root_pass` in compose): ruotare.
-- [ ] Aggiornare l'immagine zabbix 7.0 e disabilitare guest/auth deboli; audit periodico
-      di script/token/media zabbix.
-- [ ] Conservare l'evidenza per ~30 giorni, poi decidere se cancellare.
+## Hardening completato (01/10/2026, sera) — punti 1-2
+- **Firewall mc2** (`deploy/hardening/mc2-hardening-ports.sh` + unit `mc2-hardening.service`,
+  persistente): catena `MC2HARD` su iptables E ip6tables — DROP dall'esterno su
+  {80,443,445,139,9100,5557,5558,5201,50080,1080,10051,8901}; consentiti lo, tailscale0,
+  192.168/16. Verificato: Prometheus mc2 `up=1` (via tailscale), push_metrics OK, fabbrica OK.
+- **Rotte Cloudflare chiuse**: rimosse `zabbix.grivetto.eu` e `agent-zero.grivetto.eu` dal
+  tunnel "home" (mc2; backup `config.yml.bak-20261001`). Entrambe ora → 404 da fuori.
+- **nginx MARCODG1**: disabilitati i vhost legacy `zabbix-marcodg1` e `agent-zero-marcodg1`
+  (backup `~/backup-hardening-20261001/` + copie `.disabled-20261001` in sites-available):
+  `mgrivett.ddns.net` e `:50080` non servono più niente di sensibile (prima: Zabbix alla
+  root + aggregatore + A0 senza auth, pubblici). `zab.grivetto.eu` RESTA (unico accesso
+  web allo Zabbix): **in attesa di Cloudflare Access — richiede un click del proprietario**
+  (Zero Trust → Access → Applications → Add self-hosted → `zab.grivetto.eu` → policy email).
+- **Credenziali DB Zabbix ruotate** (utenti `zabbix` e `root` in mariadb; compose
+  aggiornato e chmod 600). **Immagini Zabbix 7.0 aggiornate** (digest nuovi) e container
+  `zabbix-server`/`zabbix-web` ricreati. Verifiche: login+push OK, web 200, nessun errore
+  DB nei log, dati intatti (volume).
+- **Da fare ancora (proprietario)**: click Cloudflare Access su `zab.grivetto.eu` (opz. anche
+  `grafana.grivetto.eu` e `ssh.grivetto.eu`, stessa logica).
+- **Da fare ancora (hermes, prossimi giorni)**: `dashboard.grivetto.eu` = pagina statica mc2
+  (innocua, valutare rimozione); sshd mc2 ha ancora password auth attiva (valutare
+  `PasswordAuthentication no` dopo verifica client); audit periodico script/token/media
+  Zabbix; conservare l'evidenza ~30 giorni, poi decidere se cancellare.
 
 ## Lezione incisa
 Gli strumenti di monitoraggio SONO superficie d'attacco: un frontend di monitoring esposto
