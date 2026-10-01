@@ -1,0 +1,25 @@
+{"event": "order_intent", "symbol": "ETH/EUR", "ts": 1790810721.6687078, "client_order_id": "gb1paperetheur", "side": "buy", "amount": 0.0021283, "price": 2325.7948, "kind": "grid", "level": 0}
+{"event": "buy_placed", "symbol": "ETH/EUR", "ts": 1790810721.6788106, "order_id": "paper-99f0805e25", "amount": 0.0021283, "price": 2325.7948, "level": 0, "client_order_id": "gb1paperetheur"}
+{"event": "order_intent", "symbol": "ETH/EUR", "ts": 1790810721.6844032, "client_order_id": "gb2paperetheur1", "side": "buy", "amount": 0.00213922, "price": 2313.9285, "kind": "grid", "level": 1}
+{"event": "buy_placed", "symbol": "ETH/EUR", "ts": 1790810721.6922462, "order_id": "paper-30c2503df9", "amount": 0.00213922, "price": 2313.9285, "level": 1, "client_order_id": "gb2paperetheur1"}
+{"event": "order_intent", "symbol": "ETH/EUR", "ts": 1790810721.6961117, "client_order_id": "gb3paperetheur2", "side": "buy", "amount": 0.00215025, "price": 2302.0622, "kind": "grid", "level": 2}
+{"event": "buy_placed", "symbol": "ETH/EUR", "ts": 1790810721.699072, "order_id": "paper-4e9a725fdd", "amount": 0.00215025, "price": 2302.0622, "level": 2, "client_order_id": "gb3paperetheur2"}
+{"event": "order_intent", "symbol": "ETH/EUR", "ts": 1790810721.7046485, "client_order_id": "gb4paperetheur3", "side": "buy", "amount": 0.00216139, "price": 2290.1959, "kind": "grid", "level": 3}
+{"event": "buy_placed", "symbol": "ETH/EUR", "ts": 1790810721.7092583, "order_id": "paper-5132968a0a", "amount": 0.00216139, "price": 2290.1959, "level": 3, "client_order_id": "gb4paperetheur3"}
+{"event": "order_intent", "symbol": "ETH/EUR", "ts": 1790810721.7139816, "client_order_id": "gb5paperetheur4", "side": "buy", "amount": 0.00217264, "price": 2278.3296, "kind": "grid", "level": 4}
+{"event": "buy_placed", "symbol": "ETH/EUR", "ts": 1790810721.7203324, "order_id": "paper-77cffd25fa", "amount": 0.00217264, "price": 2278.3296, "level": 4, "client_order_id": "gb5paperetheur4"}
+{"event": "buy_filled", "symbol": "ETH/EUR", "ts": 1790810836.6072435, "order_id": "paper-99f0805e25", "entry": 2325.7948, "amount": 0.0021283, "sell_target": null, "protezione": "stop_monitorato"}
+{"event": "buy_filled", "symbol": "ETH/EUR", "ts": 1790810836.6117678, "order_id": "paper-30c2503df9", "entry": 2313.9285, "amount": 0.00213922, "sell_target": null, "protezione": "stop_monitorato"}
+{"event": "buy_filled", "symbol": "ETH/EUR", "ts": 1790810836.616607, "order_id": "paper-4e9a725fdd", "entry": 2302.0622, "amount": 0.00215025, "sell_target": null, "protezione": "stop_monitorato"}
+{"event": "buy_filled", "symbol": "ETH/EUR", "ts": 1790810836.619843, "order_id": "paper-5132968a0a", "entry": 2290.1959, "amount": 0.00216139, "sell_target": null, "protezione": "stop_monitorato"}
+{"event": "buy_filled", "symbol": "ETH/EUR", "ts": 1790810836.6258364, "order_id": "paper-77cffd25fa", "entry": 2278.3296, "amount": 0.00217264, "sell_target": null, "protezione": "stop_monitorato"}
+{"event": "capitale_non_finanziato", "symbol": "ETH/EUR", "ts": 1790811362.5855699, "capitale_reale": 0.16337802795588097, "capitale_configurato": 25.0, "soglia_operativa": 1.0, "origine_soglia": "exchange"}
+{"event": "capitale_ripristinato", "symbol": "ETH/EUR", "ts": 1790811392.6701598, "capitale_reale": 25.669765649955878, "capitale_configurato": 25.0, "soglia_operativa": 1.0, "origine_soglia": "exchange"}
+{"event": "capitale_non_finanziato", "symbol": "ETH/EUR", "ts": 1790852290.1935198, "capitale_reale": 0.16337802795588097, "capitale_configurato": 25.0, "soglia_operativa": 1.0, "origine_soglia": "exchange"}
+{"event": "capitale_ripristinato", "symbol": "ETH/EUR", "ts": 1790852356.443184, "capitale_reale": 25.850503407955877, "capitale_configurato": 25.0, "soglia_operativa": 1.0, "origine_soglia": "exchange"}
+{"event": "capitale_non_finanziato", "symbol": "ETH/EUR", "ts": 1790855170.0301735, "capitale_reale": 0.16337802795588097, "capitale_configurato": 25.0, "soglia_operativa": 1.0, "origine_soglia": "exchange"}
+{"event": "capitale_ripristinato", "symbol": "ETH/EUR", "ts": 1790855200.703758, "capitale_reale": 25.88931740595588, "capitale_configurato": 25.0, "soglia_operativa": 1.0, "origine_soglia": "exchange"}
+{"event": "capitale_non_finanziato", "symbol": "ETH/EUR", "ts": 1790857089.3241093, "capitale_reale": 0.16337802795588097, "capitale_configurato": 25.0, "soglia_operativa": 1.0, "origine_soglia": "exchange"}
+{"event": "capitale_ripristinato", "symbol": "ETH/EUR", "ts": 1790857119.3850217, "capitale_reale": 25.911466113955875, "capitale_configurato": 25.0, "soglia_operativa": 1.0, "origine_soglia": "exchange"}
+{"event": "capitale_non_finanziato", "symbol": "ETH/EUR", "ts": 1790859458.0644796, "capitale_reale": 0.16337802795588097, "capitale_configurato": 25.0, "soglia_operativa": 1.0, "origine_soglia": "exchange"}
+{"event": "capitale_ripristinato", "symbol": "ETH/EUR", "ts": 1790859488.1019125, "capitale_reale": 25.802657897955882, "capitale_configurato": 25.0, "soglia_operativa": 1.0, "origine_soglia": "exchange"}
