@@ -27,11 +27,11 @@ cimiento sobre el que construir.
 
 | | |
 | :--- | :--- |
-| **Tests** | **136 passed**, `ruff` limpio, en **dos entornos independientes** |
+| **Tests** | **408 passed**, `ruff` limpio, en **dos entornos independientes** |
 | **Estrategias medidas** | **3** familias (una por nodo), todas juzgadas a costes reales |
 | **Veredictos** | **3 archivadas** — nada promocionado, por tanto nada en producción |
-| **Órdenes reales enviadas** | **0** (y así seguirá hasta que la puerta promocione y el propietario financie) |
-| **Capital** | **26,0030 EUR** en la cuenta principal de OKX, verificado en solo lectura; la flota en vivo contiene ~0,15 EUR de polvo |
+| **Órdenes reales enviadas** | **0** por las estrategias de este repo — nada aquí opera hasta que la puerta promocione y el propietario financie (el canary en vivo se sigue en `alpha-omega-trading`) |
+| **Capital** | **~100 EUR** en las cuentas de OKX (principal + sub), verificado en solo lectura; un canary en vivo autorizado por el propietario (carry de DOGE) opera una pequeña parte de la subcuenta |
 | **Último commit** | `main` — ver `git log` para el head actual |
 
 Repositorio: `C:\dev\money` en local, `github.com/grivetto/money` en remoto. Paquete Python bajo
@@ -79,7 +79,7 @@ promosso / archiviato / insufficiente          the verdict is binding
 | Modelado del dominio | **`dataclasses`** (`frozen=True`), `enum`, type hints completos, funciones puras | el módulo de costes no tiene I/O: no puede mentir, y se testea en milisegundos |
 | Modelo de costes | **`money/costi.py`** — fracciones, nunca porcentajes (`0.0035`, no `0.35`) | para que ningún error de factor 100 pueda esconderse en una multiplicación |
 | Puerta | **`money/cancello.py`** — intervalo de confianza bootstrap al 90% con semilla fija, t-stat, profit factor, drawdown, cobertura del peaje, relevancia económica, independencia de bloques | un criterio que no puedes ver no se puede discutir |
-| Tests | **pytest >= 8** (136 tests), **ruff >= 0.5** (`line-length = 120`, reglas `E9`+`F`) | solo reglas que atrapan errores reales: un CI que grita siempre no protege nada |
+| Tests | **pytest >= 8** (408 tests), **ruff >= 0.5** (`line-length = 120`, reglas `E9`+`F`) | solo reglas que atrapan errores reales: un CI que grita siempre no protege nada |
 | Config / empaquetado | **PyYAML >= 6**, **setuptools** (layout `src/`) | `pytest` importa el paquete desde `src/` sin instalación, así que la suite corre en un checkout fresco |
 | Evidencia | **artefactos JSON + texto plano** en `prove/`, decisiones en Markdown en `docs/` | una medición que no se puede releer es una opinión |
 | Control de versiones | **git**, un escritor por ruta, systemd/cron a versionar en `deploy/` | el `systemd` y el `crontab` del proyecto anterior no estaban versionados, y eso causó 10 de 12 caídas |
@@ -149,7 +149,7 @@ orden mínima de 1 EUR y un cuarto por posición, **no existe ninguna orden sens
 ## 🧪 Testing — y la reproducción independiente
 
 ```
-136 passed
+408 passed
 ruff check . → All checks passed
 ```
 
@@ -228,7 +228,7 @@ money/
 │       ├── griglia_adattiva.py   node B — adaptive grid
 │       └── momento_4h.py         node C — 4-hour momentum
 ├── scripts/                  measurement runners, one per hypothesis, plus independent checks
-├── tests/                    136 offline tests
+├── tests/                    408 offline tests
 ├── docs/                     01 decision · 02 dry-run bench spec · 03 verdicts · 04 reproduction
 ├── prove/                    raw evidence: verdicts, JSON, comparison with prior evidence
 ├── assets/                   banner and architecture diagram
@@ -248,7 +248,7 @@ cd money
 python src/money/costi.py
 
 # the whole suite (offline, no keys, no network)
-python -m pytest tests -q          # 136 passed
+python -m pytest tests -q          # 408 passed
 ruff check .
 
 # re-measure a hypothesis on real OKX EEA bars (no keys needed: public data)
@@ -298,6 +298,5 @@ cada vez.
 
 ## 📄 Licencia
 
-**No existe ningún archivo `LICENSE` en este repositorio.** El proyecto padre
-(`alpha-omega-trading`) está liberado al **dominio público**. Una licencia para `money` no ha
-sido declarada ni ha sido inventada aquí: es decisión del propietario.
+Publicado bajo la **European Union Public Licence v. 1.1 (EUPL-1.1)**. Véase [LICENSE](LICENSE).
+El proyecto padre (`alpha-omega-trading`) se publica bajo la misma licencia.

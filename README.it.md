@@ -26,11 +26,11 @@ sua storia, come memoria di cosa è stato provato — non come base su cui costr
 
 | | |
 | :--- | :--- |
-| **Test** | **136 passati**, `ruff` pulito, in **due ambienti indipendenti** |
+| **Test** | **408 passati**, `ruff` pulito, in **due ambienti indipendenti** |
 | **Strategie misurate** | **3** famiglie (una per nodo), tutte giudicate ai costi reali |
 | **Verdetti** | **3 archiviate** — niente promosso, quindi niente in produzione |
-| **Ordini reali inviati** | **0** (e resta così finché il cancello non promuove e il proprietario non finanzia) |
-| **Capitale** | **26,0030 EUR** sul conto OKX main, verificati in sola lettura; la flotta live contiene ~0,15 EUR di dust |
+| **Ordini reali inviati** | **0** dalle strategie di questo repo — qui nulla trada finché il cancello non promuove e il proprietario non finanzia (il canary live è tracciato in `alpha-omega-trading`) |
+| **Capitale** | **~100 EUR** sui conti OKX (main + sub), verificati in sola lettura; un canary live autorizzato dall'owner (carry DOGE) opera su una piccola porzione del sub-account |
 | **Ultimo commit** | `main` — vedi `git log` per la testa corrente |
 
 Repository: `C:\dev\money` in locale, `github.com/grivetto/money` in remoto. Pacchetto Python sotto
@@ -78,7 +78,7 @@ promosso / archiviato / insufficiente          il verdetto e' vincolante
 | Modellazione del dominio | **`dataclasses`** (`frozen=True`), `enum`, type hints completi, funzioni pure | il modulo dei costi non fa I/O: non può mentire, e si testa in millisecondi |
 | Modello dei costi | **`money/costi.py`** — frazioni, mai percentuali (`0.0035`, non `0.35`) | così nessun errore di fattore 100 può nascondersi in una moltiplicazione |
 | Cancello | **`money/cancello.py`** — IC bootstrap al 90% con seme fisso, t-stat, profit factor, drawdown, copertura del pedaggio, rilevanza economica, indipendenza dai blocchi | un criterio che non vedi non può essere discusso |
-| Test | **pytest >= 8** (136 test), **ruff >= 0.5** (`line-length = 120`, regole `E9`+`F`) | solo regole che intercettano errori reali: una CI che grida sempre non protegge niente |
+| Test | **pytest >= 8** (408 test), **ruff >= 0.5** (`line-length = 120`, regole `E9`+`F`) | solo regole che intercettano errori reali: una CI che grida sempre non protegge niente |
 | Config e pacchetto | **PyYAML >= 6**, **setuptools** (layout `src/`) | `pytest` importa il pacchetto da `src/` senza installazione, così la suite gira su un checkout appena fatto |
 | Prove | **artefatti JSON e testo** in `prove/`, decisioni in Markdown in `docs/` | una misura che non si può rileggere è un'opinione |
 | Controllo di versione | **git**, un solo scrittore per percorso, systemd e cron da versionare in `deploy/` | nel progetto precedente `systemd` e `crontab` non erano versionati, ed è stata la causa di 10 guasti su 12 |
@@ -149,7 +149,7 @@ minimo d'ordine di 1 EUR e un quarto per posizione, **non esiste nessun ordine s
 ## 🧪 Testing — e la riproduzione indipendente
 
 ```
-136 passed
+408 passed
 ruff check . → All checks passed
 ```
 
@@ -228,7 +228,7 @@ money/
 │       ├── griglia_adattiva.py   nodo B — griglia adattiva
 │       └── momento_4h.py         nodo C — momento a 4 ore
 ├── scripts/                  runner di misura, uno per ipotesi, piu' le verifiche indipendenti
-├── tests/                    136 test offline
+├── tests/                    408 test offline
 ├── docs/                     01 decisione · 02 specifica del banco a secco · 03 verdetti · 04 riproduzione
 ├── prove/                    prove grezze: verdetti, JSON, confronto con l'evidenza precedente
 ├── assets/                   banner e diagramma di architettura
@@ -248,7 +248,7 @@ cd money
 python src/money/costi.py
 
 # tutta la suite (offline, nessuna chiave, nessuna rete)
-python -m pytest tests -q          # 136 passed
+python -m pytest tests -q          # 408 passed
 ruff check .
 
 # rimisura una ipotesi su barre reali OKX EEA (nessuna chiave: dati pubblici)
@@ -299,6 +299,5 @@ quanto spesso succede in silenzio, un pedaggio alla volta.
 
 ## 📄 Licenza
 
-**In questo repository non esiste alcun file `LICENSE`.** Il progetto padre
-(`alpha-omega-trading`) è rilasciato nel **pubblico dominio**. Una licenza per `money` non è stata
-dichiarata e non è stata inventata qui: è una decisione del proprietario.
+Rilasciato sotto la **European Union Public Licence v. 1.1 (EUPL-1.1)**. Vedi [LICENSE](LICENSE).
+Il progetto padre (`alpha-omega-trading`) è rilasciato sotto la stessa licenza.

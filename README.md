@@ -27,11 +27,11 @@ foundation to build on.
 
 | | |
 | :--- | :--- |
-| **Tests** | **136 passed**, `ruff` clean, in **two independent environments** |
+| **Tests** | **408 passed**, `ruff` clean, in **two independent environments** |
 | **Strategies measured** | **3** families (one per node), all judged at real costs |
 | **Verdicts** | **3 archived** — nothing promoted, therefore nothing in production |
-| **Real orders sent** | **0** (and it stays that way until the gate promotes and the owner funds) |
-| **Capital** | **26.0030 EUR** on the OKX main account, verified read-only; the live fleet holds ~0.15 EUR of dust |
+| **Real orders sent** | **0** by this repo's strategies — nothing here trades until the gate promotes and the owner funds (the live canary is tracked in `alpha-omega-trading`) |
+| **Capital** | **~100 EUR** across the OKX accounts (main + subs), verified read-only; one owner-authorized live canary (DOGE carry) runs a small slice of the trading sub-account |
 | **Last commit** | `main` — see `git log` for the current head |
 
 Repository: `C:\dev\money` locally, `github.com/grivetto/money` remotely. Python package under
@@ -79,7 +79,7 @@ promosso / archiviato / insufficiente          the verdict is binding
 | Domain modelling | **`dataclasses`** (`frozen=True`), `enum`, full type hints, pure functions | the cost module has no I/O: it cannot lie, and it tests in milliseconds |
 | Cost model | **`money/costi.py`** — fractions, never percentages (`0.0035`, not `0.35`) | so that no factor-of-100 error can hide in a multiplication |
 | Gate | **`money/cancello.py`** — bootstrap CI at 90% with a fixed seed, t-stat, profit factor, drawdown, toll coverage, economic relevance, block independence | a criterion you cannot see cannot be discussed |
-| Tests | **pytest >= 8** (136 tests), **ruff >= 0.5** (`line-length = 120`, rules `E9`+`F`) | only rules that catch real errors: a CI that always shouts protects nothing |
+| Tests | **pytest >= 8** (408 tests), **ruff >= 0.5** (`line-length = 120`, rules `E9`+`F`) | only rules that catch real errors: a CI that always shouts protects nothing |
 | Config / packaging | **PyYAML >= 6**, **setuptools** (`src/` layout) | `pytest` imports the package from `src/` with no installation, so the suite runs on a fresh checkout |
 | Evidence | **JSON + plain-text artifacts** in `prove/`, Markdown decisions in `docs/` | a measurement that cannot be re-read is an opinion |
 | Version control | **git**, one writer per path, systemd/cron to be versioned in `deploy/` | the previous project's `systemd` and `crontab` were unversioned, and that caused 10 of 12 outages |
@@ -149,7 +149,7 @@ minimum order and a quarter per position, **no sensible order exists**.
 ## 🧪 Testing — and the independent reproduction
 
 ```
-136 passed
+408 passed
 ruff check . → All checks passed
 ```
 
@@ -228,7 +228,7 @@ money/
 │       ├── griglia_adattiva.py   node B — adaptive grid
 │       └── momento_4h.py         node C — 4-hour momentum
 ├── scripts/                  measurement runners, one per hypothesis, plus independent checks
-├── tests/                    136 offline tests
+├── tests/                    408 offline tests
 ├── docs/                     01 decision · 02 dry-run bench spec · 03 verdicts · 04 reproduction
 ├── prove/                    raw evidence: verdicts, JSON, comparison with prior evidence
 ├── assets/                   banner and architecture diagram
@@ -248,7 +248,7 @@ cd money
 python src/money/costi.py
 
 # the whole suite (offline, no keys, no network)
-python -m pytest tests -q          # 136 passed
+python -m pytest tests -q          # 408 passed
 ruff check .
 
 # re-measure a hypothesis on real OKX EEA bars (no keys needed: public data)
@@ -298,6 +298,5 @@ at a time.
 
 ## 📄 License
 
-**No `LICENSE` file exists in this repository.** The parent project
-(`alpha-omega-trading`) is released into the **public domain**. A licence for `money` has not
-been declared and has not been invented here: it is the owner's decision.
+Released under the **European Union Public Licence v. 1.1 (EUPL-1.1)**. See [LICENSE](LICENSE).
+The parent project (`alpha-omega-trading`) is released under the same licence.

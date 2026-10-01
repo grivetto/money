@@ -27,11 +27,11 @@
 
 | | |
 | :--- | :--- |
-| **การทดสอบ** | **136 passed**, `ruff` สะอาด, ใน **สองสภาพแวดล้อมที่เป็นอิสระต่อกัน** |
+| **การทดสอบ** | **408 passed**, `ruff` สะอาด, ใน **สองสภาพแวดล้อมที่เป็นอิสระต่อกัน** |
 | **กลยุทธ์ที่วัดแล้ว** | **3** ตระกูล (หนึ่งต่อ node) ทั้งหมดถูกตัดสินที่ต้นทุนจริง |
 | **คำตัดสิน** | **เก็บเข้าคลัง 3** — ไม่มีอะไรถูกเลื่อนขึ้น ดังนั้นไม่มีอะไรอยู่ใน production |
-| **คำสั่งจริงที่ส่งไป** | **0** (และจะยังเป็นเช่นนี้จนกว่าประตูจะเลื่อนขึ้นและเจ้าของจะเติมทุน) |
-| **ทุน** | **26.0030 EUR** ในบัญชีหลักของ OKX, ตรวจสอบแบบ read-only; ฝูงบอตที่รันอยู่ถือ dust ราว ~0.15 EUR |
+| **คำสั่งจริงที่ส่งไป** | **0** โดยกลยุทธ์ของ repo นี้ — ที่นี่ไม่มีอะไรเทรดจนกว่าประตูจะเลื่อนขึ้นและเจ้าของจะเติมทุน (canary ตัวจริงติดตามใน `alpha-omega-trading`) |
+| **ทุน** | **~100 EUR** ในบัญชี OKX (main + subs), ตรวจสอบแบบ read-only; canary ตัวจริงที่ได้รับอนุญาตจากเจ้าของ (DOGE carry) เทรดในส่วนเล็ก ๆ ของบัญชีย่อย |
 | **คอมมิตล่าสุด** | `main` — ดู `git log` สำหรับ head ปัจจุบัน |
 
 Repository: `C:\dev\money` ในเครื่อง, `github.com/grivetto/money` บนรีโมต แพ็กเกจ Python อยู่ใต้
@@ -79,7 +79,7 @@ promosso / archiviato / insufficiente          the verdict is binding
 | การจำลองโดเมน | **`dataclasses`** (`frozen=True`), `enum`, type hints ครบ, ฟังก์ชันบริสุทธิ์ | โมดูลต้นทุนไม่มี I/O: มันโกหกไม่ได้ และทดสอบได้ในระดับมิลลิวินาที |
 | โมเดลต้นทุน | **`money/costi.py`** — เศษส่วน ไม่ใช่เปอร์เซ็นต์ (`0.0035` ไม่ใช่ `0.35`) | เพื่อไม่ให้ความผิดพลาดระดับ 100 เท่าซ่อนอยู่ในการคูณได้ |
 | ประตู | **`money/cancello.py`** — bootstrap CI ที่ 90% ด้วย seed คงที่, t-stat, profit factor, drawdown, toll coverage, economic relevance, block independence | เกณฑ์ที่คุณมองไม่เห็น ย่อมเถียงกันไม่ได้ |
-| การทดสอบ | **pytest >= 8** (136 tests), **ruff >= 0.5** (`line-length = 120`, กฎ `E9`+`F`) | เฉพาะกฎที่จับข้อผิดพลาดจริง: CI ที่ตะโกนตลอดเวลาไม่ได้ปกป้องอะไรเลย |
+| การทดสอบ | **pytest >= 8** (408 tests), **ruff >= 0.5** (`line-length = 120`, กฎ `E9`+`F`) | เฉพาะกฎที่จับข้อผิดพลาดจริง: CI ที่ตะโกนตลอดเวลาไม่ได้ปกป้องอะไรเลย |
 | คอนฟิก / การแพ็กเกจ | **PyYAML >= 6**, **setuptools** (โครงแบบ `src/`) | `pytest` import แพ็กเกจจาก `src/` โดยไม่ต้องติดตั้ง ดังนั้นชุดทดสอบจึงรันได้บน checkout สด |
 | หลักฐาน | **JSON + artifact ข้อความล้วน** ใน `prove/`, การตัดสินใจแบบ Markdown ใน `docs/` | การวัดที่อ่านซ้ำไม่ได้คือความเห็น |
 | การควบคุมเวอร์ชัน | **git**, นักเขียนคนเดียวต่อหนึ่ง path, systemd/cron ที่จะถูกใส่เวอร์ชันใน `deploy/` | `systemd` และ `crontab` ของโปรเจกต์ก่อนหน้าไม่ได้ใส่เวอร์ชัน และนั่นทำให้เกิด outage 10 จาก 12 ครั้ง |
@@ -148,7 +148,7 @@ promosso / archiviato / insufficiente          the verdict is binding
 ## 🧪 การทดสอบ — และการทำซ้ำที่เป็นอิสระ
 
 ```
-136 passed
+408 passed
 ruff check . → All checks passed
 ```
 
@@ -227,7 +227,7 @@ money/
 │       ├── griglia_adattiva.py   node B — adaptive grid
 │       └── momento_4h.py         node C — 4-hour momentum
 ├── scripts/                  measurement runners, one per hypothesis, plus independent checks
-├── tests/                    136 offline tests
+├── tests/                    408 offline tests
 ├── docs/                     01 decision · 02 dry-run bench spec · 03 verdicts · 04 reproduction
 ├── prove/                    raw evidence: verdicts, JSON, comparison with prior evidence
 ├── assets/                   banner and architecture diagram
@@ -247,7 +247,7 @@ cd money
 python src/money/costi.py
 
 # the whole suite (offline, no keys, no network)
-python -m pytest tests -q          # 136 passed
+python -m pytest tests -q          # 408 passed
 ruff check .
 
 # re-measure a hypothesis on real OKX EEA bars (no keys needed: public data)
@@ -297,6 +297,5 @@ gate (done) → first promoted edge (missing) → capital (26 EUR now, 1000 EUR 
 
 ## 📄 สัญญาอนุญาต
 
-**ไม่มีไฟล์ `LICENSE` ใน repository นี้** โปรเจกต์แม่
-(`alpha-omega-trading`) ถูกปล่อยสู่ **public domain** สัญญาอนุญาตสำหรับ `money` ยังไม่
-ถูกประกาศและไม่ได้ถูกคิดขึ้นที่นี่: มันคือการตัดสินใจของเจ้าของ
+เผยแพร่ภายใต้ **European Union Public Licence v. 1.1 (EUPL-1.1)** ดู [LICENSE](LICENSE)
+โปรเจกต์แม่ (`alpha-omega-trading`) เผยแพร่ภายใต้สัญญาอนุญาตเดียวกัน
