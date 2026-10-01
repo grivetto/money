@@ -61,6 +61,10 @@ def main() -> int:
     )
     for err in stats["errori"][:5]:
         print("  ERR:", err)
+    # [01/10] marker per Zabbix: tra un evento funding e l'altro il data-file non
+    # cresce (righe duplicate), ma il collector gira — il marker lo testimonia.
+    if not stats["errori"]:
+        (ROOT / "data" / "raccolta_last_run").touch()
     return 1 if stats["errori"] else 0
 
 

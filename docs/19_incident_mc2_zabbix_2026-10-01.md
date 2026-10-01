@@ -53,6 +53,11 @@ Stato: CONTENUTO e RIPULITO il 01/10/2026 (~17:30-17:45 CEST). Evidenza: `~/inci
   aggiornato e chmod 600). **Immagini Zabbix 7.0 aggiornate** (digest nuovi) e container
   `zabbix-server`/`zabbix-web` ricreati. Verifiche: login+push OK, web 200, nessun errore
   DB nei log, dati intatti (volume).
+- **Segreti rimossi dal repo pubblico** (sera): 13 file tracked di alpha-omega-trading
+  contenevano credenziali Zabbix in chiaro (push_metrics, healer, brain, setup…).
+  Sostituite con lettura da `~/.zbx_cred` (600) / env; healer senza default debole.
+  Le credenziali esposte erano quelle storiche (Admin/zabbix + una vecchia ruotata),
+  già invalide dopo le rotazioni di oggi. Verificato: `git grep` pulito, `Thund3rbyt3` 0 match.
 - **Da fare ancora (proprietario)**: click Cloudflare Access su `zab.grivetto.eu` (opz. anche
   `grafana.grivetto.eu` e `ssh.grivetto.eu`, stessa logica).
 - **Da fare ancora (hermes, prossimi giorni)**: `dashboard.grivetto.eu` = pagina statica mc2
