@@ -1,0 +1,11 @@
+[Unit]
+Description=Fabbrica Denaro - timer worker di nodo (ogni 10 secondi)
+
+[Timer]
+OnBootSec=30
+OnUnitActiveSec=10
+AccuracySec=100ms
+Unit=fabbrica-worker.service
+
+[Install]
+WantedBy=timers.target

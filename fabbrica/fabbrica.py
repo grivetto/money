@@ -2,8 +2,10 @@
 # -*- coding: utf-8 -*-
 """Fabbrica Denaro — il nastro: candidato -> test -> cancello -> (produzione su promozione).
 
-Un tick ogni 6 secondi (timer systemd; cadenza x50 dal 01/10 su direttiva del proprietario). Un tick
-esegue/avanza UNA azione utile e aggiorna lo stato.
+Un tick ogni 4 secondi (timer systemd; cadenza x75 dal 01/10 su direttiva del proprietario).
+Fabbrica DISTRIBUITA (direttiva "3 macchine, suddividi i bot"): il master gira qui (mc2);
+i worker di nodo (MARCODG1, nuvola) eseguono i controlli LOCALI ogni 10s e li pubblicano in
+`shards/<nodo>.json` — il master li legge, quindi nessun controllo remoto blocca il tick.
 NON lancia ordini, NON tocca exchange, NON inventa numeri: le azioni che richiedono
 giudizio o dati nuovi vengono MARCATE come AZIONE in STATO.md.
 
@@ -32,6 +34,7 @@ HANDOFF = DSH / "handoff"
 A0WIN = "http://100.76.22.119:50080"
 STOP = BASE / "STOP"
 METRICS = BASE / "metrics.prom"
+SHARDS = BASE / "shards"
 
 
 def now():
@@ -54,6 +57,22 @@ def load(p, default):
 
 def save(p, obj):
     Path(p).write_text(json.dumps(obj, indent=2, ensure_ascii=False) + "\n")
+
+
+def read_shard(name):
+    """Shard del worker di nodo (fabbrica distribuita). Ritorna (dict|None, eta_s|None)."""
+    try:
+        d = json.loads((SHARDS / ("%s.json" % name)).read_text())
+        return d, time.time() - float(d.get("ts") or 0)
+    except Exception:
+        return None, None
+
+
+def shard_summary(name, soglia=180):
+    d, age = read_shard(name)
+    if age is None:
+        return "assente"
+    return ("ok %ds" % int(age)) if age <= soglia else ("STALE %ds" % int(age))
 
 
 def sh(cmd, timeout=20):
@@ -111,8 +130,15 @@ def check_p2(st):
 
 
 def check_a0win(st):
-    rc, out = sh("curl -s -m 8 -o /dev/null -w '%{http_code}' " + A0WIN + "/api/health", timeout=15)
-    code = out.strip() if rc == 0 else "DOWN"
+    """A0-PC: dallo shard del worker nuvola; fallback diretto raro (la rete non blocca il tick)."""
+    d, age = read_shard("nuvola")
+    code = d.get("a0win") if (d is not None and age is not None and age <= 180) else None
+    if code is None:
+        if st["ticks"] % 15 == 1:
+            rc, out = sh("curl -s -m 3 -o /dev/null -w '%{http_code}' " + A0WIN + "/api/health", timeout=8)
+            code = out if rc == 0 else "DOWN"
+        else:
+            code = "shard-nuvola-stale"
     st["a0win"] = code
     if code == "200":
         (st.setdefault("hb", {}))["a0win"] = time.time()
@@ -122,7 +148,7 @@ def check_a0win(st):
 
 
 def check_a0mc2(st):
-    rc, out = sh("curl -s -m 6 -o /dev/null -w '%{http_code}' http://127.0.0.1:50080/api/health", timeout=12)
+    rc, out = sh("curl -s -m 2 -o /dev/null -w '%{http_code}' http://127.0.0.1:50080/api/health", timeout=5)
     code = out.strip() if rc == 0 else "DOWN"
     st["a0mc2"] = code
     if code == "200":
@@ -130,15 +156,16 @@ def check_a0mc2(st):
 
 
 def check_banco(st):
-    cmd = ("ssh -o BatchMode=yes -o ConnectTimeout=6 MARCODG1 "
-           "'A=$(systemctl is-active money-banco-secco.timer 2>/dev/null); "
-           "B=$(systemctl show money-banco-secco.service -p ExecMainStatus --value 2>/dev/null); "
-           "C=$(systemctl show money-banco-secco.timer -p LastTriggerUSec --value 2>/dev/null); "
-           "echo timer=$A rc=$B ultimo=$C'")
-    rc, out = sh(cmd, timeout=20)
-    st["banco"] = out.strip().replace(chr(10), " | ") or ("rc=%d" % rc)
-    if "rc=0" in (st.get("banco") or ""):
-        (st.setdefault("hb", {}))["banco"] = time.time()
+    """Banco a secco (MARCODG1): letto dallo shard del worker locale — niente ssh nel tick."""
+    d, age = read_shard("marcodg1")
+    if d is not None and age is not None and age <= 180:
+        st["banco"] = "timer=%s rc=%s ultimo=%s (worker %ds)" % (
+            d.get("banco_timer"), d.get("banco_rc"), d.get("banco_last"), int(age))
+        if str(d.get("banco_rc")) == "0":
+            (st.setdefault("hb", {}))["banco"] = time.time()
+    else:
+        st["banco"] = "shard worker non aggiornato (%s) — verificare fabbrica-worker su MARCODG1" % (
+            "assente" if age is None else "%ds" % int(age))
 
 
 def check_specgen(st):
@@ -238,6 +265,10 @@ def write_metrics(st):
         ts = hb.get(comp)
         if ts:
             lines.append('factory_heartbeat_age_seconds{component="%s"} %d' % (comp, int(now_ts - float(ts))))
+    for nodo in ("marcodg1", "nuvola"):
+        _d, _age = read_shard(nodo)
+        if _age is not None:
+            lines.append('factory_shard_age_seconds{node="%s"} %d' % (nodo, int(_age)))
     for k, r in sorted((st.get("jev_gate_results") or {}).items()):
         ts = r.get("ts") or ""
         try:
@@ -270,7 +301,7 @@ def write_stato(st):
     lines = [
         "# Fabbrica — stato",
         "",
-        "- ultimo tiro: %s (tiro n. %s, cadenza 6s via timer — x50 dal 01/10)" % (now(), st.get("ticks", 0)),
+        "- ultimo tiro: %s (tiro n. %s, cadenza 4s via timer — x75 dal 01/10; master + worker nodi @10s)" % (now(), st.get("ticks", 0)),
         "- kill-switch: %s" % ("ATTIVO — nuovi job bloccati (file STOP presente)" if st.get("kill_switch") else "off"),
         "- canale DSH: %s voci totali, nuove dall'ultimo tiro: %s" % (st.get("dsh_heads"), st.get("dsh_new")),
         "- handoff P2: %s | manifest: %s" % (", ".join(st.get("p2_handoff_files") or []) or "(vuoto)",
@@ -279,6 +310,7 @@ def write_stato(st):
         "- A0-PC: HTTP %s" % st.get("a0win"),
         "- A0-MC2: HTTP %s" % st.get("a0mc2"),
         "- banco MARCODG1: %s" % st.get("banco"),
+        "- worker nodi (shard @10s): MARCODG1 %s | nuvola %s" % (shard_summary("marcodg1"), shard_summary("nuvola")),
         "- prossima spec da materializzare: %s %s" % (st.get("spec_next") or "(nessuna)",
                                                       "— " + st.get("spec_next_desc", "") if st.get("spec_next") else ""),
         "- gate JEV: %s" % ("; ".join(
@@ -307,9 +339,8 @@ def main():
     check_p2(st)
     check_a0win(st)
     check_a0mc2(st)
-    # con la cadenza a 6s: il banco (ssh MARCODG1) resta un controllo ogni ~5' -> ogni 50 tiri
-    if st["ticks"] % 50 == 0 or not (st.get("hb") or {}).get("banco"):
-        check_banco(st)
+    # [01/10 sera] banco: continuo dallo shard del worker MARCODG1 (niente ssh nel tick).
+    check_banco(st)
     if st["kill_switch"]:
         log("KILL-SWITCH attivo: nuovi job bloccati (specgen + gate JEV saltati, coda intatta)")
     else:

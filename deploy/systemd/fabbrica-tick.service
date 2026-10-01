@@ -1,5 +1,5 @@
 [Unit]
-Description=Fabbrica Denaro - tick (un'azione per giro; cadenza x50 dal 01/10/2026)
+Description=Fabbrica Denaro - tick master (un'azione per giro; x75 dal 01/10/2026; worker sui nodi @10s)
 Documentation=file:///home/sergio/money/fabbrica/README.md
 
 [Service]

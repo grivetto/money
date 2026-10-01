@@ -5,3 +5,4 @@ log/
 metrics.prom
 STOP
 jobs.db*
+shards/

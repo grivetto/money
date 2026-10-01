@@ -1,0 +1,12 @@
+[Unit]
+Description=Fabbrica Denaro - worker di nodo (shard: controlli locali -> master mc2)
+Documentation=file:///home/sergio/money/fabbrica/README.md
+
+[Service]
+Type=oneshot
+# Template: all'installazione sostituire __USER__ / __HOME__ / __NODE__
+# (es. MARCODG1: marco /home/marco marcodg1 ; nuvola: sergio /home/sergio nuvola)
+User=__USER__
+Nice=10
+MemoryMax=256M
+ExecStart=/usr/bin/python3 __HOME__/fabbrica/worker.py __NODE__
