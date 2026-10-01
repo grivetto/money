@@ -1,10 +1,10 @@
 [Unit]
-Description=Fabbrica Denaro - timer del tick (ogni 15 secondi; x20)
+Description=Fabbrica Denaro - timer del tick (ogni 6 secondi; x50)
 
 [Timer]
 OnBootSec=45
-OnUnitActiveSec=15
-AccuracySec=1s
+OnUnitActiveSec=6
+AccuracySec=100ms
 Unit=fabbrica-tick.service
 
 [Install]

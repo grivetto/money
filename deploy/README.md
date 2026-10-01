@@ -11,7 +11,7 @@ systemctl --user enable --now fabbrica-tick.timer
 ```
 Verifica: `systemctl --user list-timers fabbrica-tick.timer` e
 `journalctl --user -u fabbrica-tick.service -n 20 --no-pager`.
-Cadenza: 15s (x20 dal 30/09/2026; il check del banco resta ogni ~5' nel codice).
+Cadenza: 6s (x50 dal 01/10/2026; il check del banco resta ogni ~5' nel codice = ogni 50 tiri).
 
 ## Watchdog anti-silenzio (cron, ogni minuto)
 Aggiungere la riga di `deploy/cron/fabbrica-watchdog` a `crontab -e`.

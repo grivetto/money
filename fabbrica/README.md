@@ -1,6 +1,6 @@
 # Fabbrica Denaro — il nastro
 
-Ogni 15 secondi (timer systemd; x20 dal 30/09) un **tick** esegue/avanza UNA azione del percorso:
+Ogni 6 secondi (timer systemd; x50 dal 01/10) un **tick** esegue/avanza UNA azione del percorso:
 
     candidato -> test (misure sui dati reali) -> cancello -> produzione SOLO su promozione
 
