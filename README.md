@@ -29,8 +29,8 @@ foundation to build on.
 | :--- | :--- |
 | **Tests** | **408 passed**, `ruff` clean, in **two independent environments** |
 | **Strategies measured** | **3** families (one per node), all judged at real costs |
-| **Verdicts** | **3 archived** — nothing promoted, therefore nothing in production |
-| **Real orders sent** | **0** by this repo's strategies — nothing here trades until the gate promotes and the owner funds (the live canary is tracked in `alpha-omega-trading`) |
+| **Verdicts** | **3 archived** (strategy families) — the live carry **C1** is in its canary validation window (review 15/10) |
+| **Real orders sent** | **0** by this repo's strategies — the project's first live bot (carry **C1**, DOGE) runs on OKX EEA and is tracked in `alpha-omega-trading` (`docs/16`) |
 | **Capital** | **~100 EUR** across the OKX accounts (main + subs), verified read-only; one owner-authorized live canary (DOGE carry) runs a small slice of the trading sub-account |
 | **Last commit** | `main` — see `git log` for the current head |
 
@@ -62,11 +62,37 @@ money/cancello.py              8 criteria, 3 verdicts, every reason carries its 
 promosso / archiviato / insufficiente          the verdict is binding
 ```
 
-### The system around the pipeline — 2026-09-30
+### The system around the pipeline — updated 2026-10-02
 
-![Denaro system architecture — 2026-09-30](ARCHITETTURA_2026-09-30.png)
+![Denaro — foto del sistema, 02/10/2026](FOTO_SISTEMA_2026-10-02.png)
 
-*How the work is organised around the gate: the three nodes, the two Agent Zero workers, the DSH peer, the advisory judge (JEV) and the 5-minute fabric that carries work from spec to verdict. Text version: [`ARCHITETTURA_2026-09-30.md`](ARCHITETTURA_2026-09-30.md).*
+```
+                     ┌──────────────────────── mc2 — the hub ────────────────────────┐
+                     │ Hermes — direction, measurements, reviews, single git writer  │
+                     │ fabric master — one action every 3 s (×100 since 02/10)       │
+                     │ Zabbix 7.0 «Money» (38 hosts) · A0-MC2 coder (Gemini 2.5)     │
+                     │ fabric worker (5 s) · funding collector (4 h) · DSH channel   │
+                     └───────────┬─────────────────────────────────────┬─────────────┘
+                                 │ tailscale / ssh                     │ briefs & deliveries
+                ┌────────────────▼───────────────────┐   ┌────────────▼───────────────────┐
+                │ MARCODG1 — trading & web           │   │ A0-PC (Windows) · DSH (Windows)│
+                │ · live canary — DOGE carry, 1×     │   │ coders / peer, file protocol   │
+                │ · dry bench — read-only, rc=2      │   └────────────────────────────────┘
+                │ · aggregator :8912 → 34 bots       │
+                │ · dashboard :8913 · landing :8914  │
+                │ · Grafana :3000 · health :8911     │
+                └────────────────────────────────────┘
+     nuvola — monitoring post: health · exporter · Zabbix agent + tunnel · fabric worker (5 s)
+
+     helpers — OpenCode (mc2): free executor · JEV (TypeSafe): advisory gate
+```
+
+*One loop: idea → pre-registered spec (`coda_catena/` + `REGISTRO`) → executor → review (tests
+re-run in-repo) → measure (artifacts frozen in `prove/`) → 8-criteria gate → promote/archive →
+dry bench → canary → minimum-size live. Executors — A0-MC2, A0-PC, DSH, OpenCode — deliver to
+Hermes; nothing lands without review. Visual: [`FOTO_SISTEMA_2026-10-02.html`](FOTO_SISTEMA_2026-10-02.html) · [`.png`](FOTO_SISTEMA_2026-10-02.png). Previous snapshots:
+[`ARCHITETTURA_2026-09-30.md`](ARCHITETTURA_2026-09-30.md) ·
+[`ARCHITETTURA_2026-10-01.md`](ARCHITETTURA_2026-10-01.md).*
 
 ### Core technologies
 

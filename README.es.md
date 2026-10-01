@@ -29,8 +29,8 @@ cimiento sobre el que construir.
 | :--- | :--- |
 | **Tests** | **408 passed**, `ruff` limpio, en **dos entornos independientes** |
 | **Estrategias medidas** | **3** familias (una por nodo), todas juzgadas a costes reales |
-| **Veredictos** | **3 archivadas** — nada promocionado, por tanto nada en producción |
-| **Órdenes reales enviadas** | **0** por las estrategias de este repo — nada aquí opera hasta que la puerta promocione y el propietario financie (el canary en vivo se sigue en `alpha-omega-trading`) |
+| **Veredictos** | **3 archivadas** (familias) — el carry en vivo **C1** está en su ventana de validación canary (review 15/10) |
+| **Órdenes reales enviadas** | **0** por las estrategias de este repo — el primer bot en vivo del proyecto (carry **C1**, DOGE) opera en OKX EEA y se sigue en `alpha-omega-trading` (`docs/16`) |
 | **Capital** | **~100 EUR** en las cuentas de OKX (principal + sub), verificado en solo lectura; un canary en vivo autorizado por el propietario (carry de DOGE) opera una pequeña parte de la subcuenta |
 | **Último commit** | `main` — ver `git log` para el head actual |
 
@@ -62,11 +62,13 @@ money/cancello.py              8 criteria, 3 verdicts, every reason carries its 
 promosso / archiviato / insufficiente          the verdict is binding
 ```
 
-### El sistema alrededor de la pipeline — 30/09/2026
+### El sistema alrededor de la pipeline — actualizado 02/10/2026
 
-![Arquitectura del sistema Denaro — 30/09/2026](ARCHITETTURA_2026-09-30.png)
+![Denaro — foto del sistema, 02/10/2026](FOTO_SISTEMA_2026-10-02.png)
 
-*Cómo se organiza el trabajo alrededor de la puerta: los tres nodos, los dos operarios Agent Zero, el par DSH, el juez advisory (JEV) y la fábrica de 5 minutos que lleva el trabajo de la especificación al veredicto. Versión de texto: [`ARCHITETTURA_2026-09-30.md`](ARCHITETTURA_2026-09-30.md).*
+**Primer bot en vivo del proyecto**: carry C1 (DOGE) en OKX EEA desde el 01/10 — tamaño mínimo, totalmente reconciliado, review el 15/10. Alrededor: los tres nodos (mc2 hub · MARCODG1 ops + live · nuvola monitorización), la fábrica ×100 (tick 3 s, worker 5 s), los operarios A0-MC2/A0-PC (Gemini 2.5), DSH, el ejecutor free OpenCode y el juez advisory JEV.
+
+*Visual: [`FOTO_SISTEMA_2026-10-02.html`](FOTO_SISTEMA_2026-10-02.html) · [`.png`](FOTO_SISTEMA_2026-10-02.png). Fotos anteriores: [`ARCHITETTURA_2026-09-30.md`](ARCHITETTURA_2026-09-30.md) · [`ARCHITETTURA_2026-10-01.md`](ARCHITETTURA_2026-10-01.md).*
 
 ### Tecnologías centrales
 

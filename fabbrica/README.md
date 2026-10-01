@@ -6,6 +6,8 @@ unità `fabbrica-worker.timer`) che pubblicano i controlli locali in `fabbrica/s
 
     candidato -> test (misure sui dati reali) -> cancello -> produzione SOLO su promozione
 
+**Stato 02/10**: primo bot live attivo — carry C1 (DOGE) su OKX EEA, in validazione (review 15/10).
+
 ## Cosa fa un tick
 1. heartbeat: aggiorna `STATO.md` (leggibile) e `log/fabbrica.log`;
 2. scansione del canale DSH (`hermes_bridge/dsh/results.md`): voci nuove;
@@ -30,8 +32,12 @@ con l'owner (Hermes / DSH / A0). Il nastro non inventa numeri e non forza promoz
 
 ## Collaboratori
 - **Hermes** (mc2): review, commit/push, misure, dispatch, gate.
+- **A0-MC2** (container su mc2, API `:50080`) e **A0-PC** (Windows, API `:50080`): operai di
+  coding — entrambi su `google/gemini-2.5-flash` dal 02/10; task con criterio = un test che
+  fallisce sul codice vecchio.
+- **OpenCode** (mc2): esecutore headless gratuito
+  (`opencode run -m opencode/nemotron-3-ultra-free --auto ...`).
 - **DSH** (Windows): implementazioni + misure in handoff su file (hash nel MANIFEST).
-- **A0-PC** (Windows, API `:50080`): task con criterio = un test che fallisce sul codice vecchio.
 
 Deposito job/prove: `fabbrica/inbox/` (append-only, chiunque).
 

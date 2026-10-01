@@ -62,11 +62,11 @@ money/cancello.py              8 criteria, 3 verdicts, every reason carries its 
 promosso / archiviato / insufficiente          the verdict is binding
 ```
 
-### ระบบงานโดยรอบ — 30/09/2026
+### ระบบงานโดยรอบ — อัปเดต 02/10/2026
 
-![สถาปัตยกรรมระบบ Denaro — 30/09/2026](ARCHITETTURA_2026-09-30.png)
+![Denaro — ภาพระบบ, 02/10/2026](FOTO_SISTEMA_2026-10-02.png)
 
-*ภาพรวมการทำงานรอบประตู (gate): สามโหนด, ผู้ปฏิบัติงาน Agent Zero สองตัว, DSH, ผู้ตัดสิน advisory (JEV) และโรงงาน (fabbrica) รอบ 5 นาที — ฉบับข้อความ: [`ARCHITETTURA_2026-09-30.md`](ARCHITETTURA_2026-09-30.md).*
+*อัปเดต: 02/10/2026 · บอทจริงตัวแรก (carry C1 / DOGE) ทำงานบน OKX EEA · [`FOTO_SISTEMA_2026-10-02.html`](FOTO_SISTEMA_2026-10-02.html) · ก่อนหน้า: [`ARCHITETTURA_2026-10-01.md`](ARCHITETTURA_2026-10-01.md)*
 
 ### เทคโนโลยีหลัก
 

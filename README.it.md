@@ -28,8 +28,8 @@ sua storia, come memoria di cosa è stato provato — non come base su cui costr
 | :--- | :--- |
 | **Test** | **408 passati**, `ruff` pulito, in **due ambienti indipendenti** |
 | **Strategie misurate** | **3** famiglie (una per nodo), tutte giudicate ai costi reali |
-| **Verdetti** | **3 archiviate** — niente promosso, quindi niente in produzione |
-| **Ordini reali inviati** | **0** dalle strategie di questo repo — qui nulla trada finché il cancello non promuove e il proprietario non finanzia (il canary live è tracciato in `alpha-omega-trading`) |
+| **Verdetti** | **3 archiviate** (famiglie) — il carry live **C1** è nella finestra di validazione canary (review 15/10) |
+| **Ordini reali inviati** | **0** dalle strategie di questo repo — il primo bot live del progetto (carry **C1**, DOGE) opera su OKX EEA ed è tracciato in `alpha-omega-trading` (`docs/16`) |
 | **Capitale** | **~100 EUR** sui conti OKX (main + sub), verificati in sola lettura; un canary live autorizzato dall'owner (carry DOGE) opera su una piccola porzione del sub-account |
 | **Ultimo commit** | `main` — vedi `git log` per la testa corrente |
 
@@ -61,11 +61,37 @@ money/cancello.py              8 criteri, 3 verdetti, ogni motivo porta il suo n
 promosso / archiviato / insufficiente          il verdetto e' vincolante
 ```
 
-### Il sistema attorno alla pipeline — 30/09/2026
+### Il sistema attorno alla pipeline — aggiornato 02/10/2026
 
-![Architettura di sistema Denaro — 30/09/2026](ARCHITETTURA_2026-09-30.png)
+![Denaro — foto del sistema, 02/10/2026](FOTO_SISTEMA_2026-10-02.png)
 
-*Come è organizzato il lavoro attorno al cancello: i tre nodi, i due operai Agent Zero, il peer DSH, il giudice advisory (JEV) e la fabbrica a 5 minuti che porta il lavoro dalla spec al verdetto. Versione testuale: [`ARCHITETTURA_2026-09-30.md`](ARCHITETTURA_2026-09-30.md).*
+```
+                     ┌──────────────────────── mc2 — l'hub ──────────────────────────┐
+                     │ Hermes — direzione, misure, review, unico scrittore git       │
+                     │ fabbrica master — un'azione ogni 3 s (×100 dal 02/10)         │
+                     │ Zabbix 7.0 «Money» (38 host) · A0-MC2 operaio (Gemini 2.5)    │
+                     │ fabbrica worker (5 s) · raccolta funding (4 h) · canale DSH   │
+                     └───────────┬─────────────────────────────────────┬─────────────┘
+                                 │ tailscale / ssh                     │ brief e consegne
+                ┌────────────────▼───────────────────┐   ┌────────────▼───────────────────┐
+                │ MARCODG1 — trading e web           │   │ A0-PC (Windows) · DSH (Windows)│
+                │ · canary live — carry DOGE, 1×     │   │ operai / peer, protocollo file │
+                │ · banco a secco — read-only, rc=2  │   └────────────────────────────────┘
+                │ · aggregator :8912 → 34 bot        │
+                │ · dashboard :8913 · landing :8914  │
+                │ · Grafana :3000 · health :8911     │
+                └────────────────────────────────────┘
+     nuvola — posto di monitoraggio: health · exporter · Zabbix agent + tunnel · fabbrica worker (5 s)
+
+     aiutanti — OpenCode (mc2): esecutore free · JEV (TypeSafe): giudice advisory
+```
+
+*Un solo anello: idea → spec pre-registrata (`coda_catena/` + `REGISTRO`) → operaio → review
+(test rieseguiti nel repo) → misura (artefatti congelati in `prove/`) → cancello a 8 criteri →
+promozione/archivio → banco a secco → canary → live a taglia minima. Gli operai — A0-MC2, A0-PC,
+DSH, OpenCode — consegnano a Hermes; niente entra senza review. Visual: [`FOTO_SISTEMA_2026-10-02.html`](FOTO_SISTEMA_2026-10-02.html) · [`.png`](FOTO_SISTEMA_2026-10-02.png). Foto precedenti:
+[`ARCHITETTURA_2026-09-30.md`](ARCHITETTURA_2026-09-30.md) ·
+[`ARCHITETTURA_2026-10-01.md`](ARCHITETTURA_2026-10-01.md).*
 
 ### Le tecnologie usate
 
