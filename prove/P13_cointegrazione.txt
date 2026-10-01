@@ -1,0 +1,22 @@
+P13 — COINTEGRAZIONE: PAIRS/BASKET SUI MAJOR
+==============================================================
+Addestramento: 2020-10-01 → 2024-06-01 | Verifica: 2024-06-01 → oggi (una volta sola)
+
+SCREENER (45 coppie, soglia |t_rho|>=3.8, half-life [3,30]g, |dbeta|/beta<=30%)
+--------------------------------------------------------------
+  [    ] DOGE/LINK    t_rho=  -3.77  hl= 88.1g  beta= 0.635  dbeta=136.0%
+  [    ] ETH/LINK     t_rho=  -3.72  hl= 95.2g  beta= 0.453  dbeta= 17.8%
+  [    ] ADA/XRP      t_rho=  -3.64  hl= 44.0g  beta= 1.463  dbeta= 76.1%
+  [    ] ETH/XRP      t_rho=  -3.39  hl= 49.7g  beta= 0.952  dbeta= 15.7%
+  [    ] ETH/SOL      t_rho=  -3.28  hl= 46.1g  beta= 0.387  dbeta= 19.4%
+  [    ] BTC/LINK     t_rho=  -3.17  hl= 79.6g  beta= 0.566  dbeta= 45.3%
+  [    ] DOGE/XRP     t_rho=  -3.09  hl= 55.2g  beta= 1.833  dbeta=100.7%
+  [    ] DOGE/DOT     t_rho=  -3.02  hl=100.0g  beta= 0.766  dbeta=107.0%
+  [    ] ADA/LINK     t_rho=  -3.00  hl=104.4g  beta= 0.963  dbeta= 63.2%
+  [    ] DOGE/LTC     t_rho=  -2.97  hl=108.6g  beta= 1.073  dbeta= 94.7%
+  ... (45 coppie totali, mostrate le top 10 per |t_rho|)
+
+VERDETTO: NESSUNA COPIA PASSA LO SCREENER → lane archiviata (kill rapido).
+E' un esito previsto e accettato dalla spec, non un fallimento.
+
+ESITO: ARCHIVIATA (screening vuoto)

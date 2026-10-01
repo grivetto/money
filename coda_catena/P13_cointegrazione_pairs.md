@@ -1,5 +1,5 @@
 # P13 — Cointegrazione: pairs/basket sui major (lane nuova)
-STATO: PRESA_DA hermes 2026-10-01
+STATO: ARCHIVIATA 2026-10-01 (kill rapido, esito previsto: nessuna coppia passa lo screener)
 DATI: USDT-lungo (`dati.py`, 2020-10-01 → oggi; confine addestramento 2024-06-01) per il test
 statistico e la verifica. La conferma finale pre-promozione si rifà sui simboli TRADABILI
 (X-Perp EEA + spot), dove però la storia è corta (~3 mesi: dichiarato, attenzione).
@@ -63,3 +63,27 @@ per questo lo screening è severo e il kill rapido è un esito previsto e accett
 ## Riferimenti
 `docs/18_programma_ricerca_quant.md` (protocollo) · P12 (le gambe perp pagano/ricevono
 funding) · `src/money/dati.py` (USDT-lungo) · cancello (`src/money/cancello.py`).
+
+## ESITO (2026-10-01 — misurata, kill rapido)
+**ARCHIVIATA.** Screening su addestramento [2020-10-01, 2024-06-01), 45 coppie, soglia
+|t_rho|>=3.8, half-life [3,30]g, |dbeta|/beta<=30%: **nessuna coppia passa**.
+
+Top 3 per |t_rho| (tutte escluse):
+- DOGE/LINK  t_rho=-3.77 (sotto 3.8)  hl=88.1g (sopra 30)  dbeta=136% (instabile)
+- ETH/LINK   t_rho=-3.72 (sotto 3.8)  hl=95.2g (sopra 30)  dbeta=17.8%
+- ADA/XRP    t_rho=-3.64 (sotto 3.8)  hl=44.0g (sopra 30)  dbeta=76.1%
+
+Lettura: le relazioni tra major, quando esistono, sono (a) sotto la soglia EG corretta per
+45 test e (b) troppo LENTE (half-life 44-108g) per una finestra di z a 60g e una rotazione
+di 0.25x equity — e instabili tra le sotto-finestre. Il razionale di reversione dello spread
+non regge su queste coppie in questa griglia: la spec lo dichiarava come rischio principe
+("in crypto la cointegrazione su finestre corte e' fragile e puo' sparire"); i dati lo
+confermano senza forzature. Verifica OOS non eseguita (niente da verificare: 0 coppie).
+
+Implementazione: `src/money/ricerca/p13_cointegrazione.py` + test 29/29 (anti-lookahead,
+aritmetica due gambe, ADF, screening, rotture, cancello) + runner `scripts/misura_p13.py`.
+Artefatti: `prove/P13_cointegrazione.{txt,json}`.
+Nota: il modulo e i test restano nel repo come base riutilizzabile: se si volesse tornare
+su questa lane, le varianti ammesse (una per voce di registro) sono: universo piu' largo
+(non solo 10 major), finestra z piu' lunga (120-180g) coerente con le half-life osservate,
+o beta/mean-reversion stimati su finestre rolling invece che su addestramento unico.
