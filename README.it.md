@@ -104,7 +104,7 @@ DSH, OpenCode — consegnano a Hermes; niente entra senza review. Visual: [`FOTO
 | Modellazione del dominio | **`dataclasses`** (`frozen=True`), `enum`, type hints completi, funzioni pure | il modulo dei costi non fa I/O: non può mentire, e si testa in millisecondi |
 | Modello dei costi | **`money/costi.py`** — frazioni, mai percentuali (`0.0035`, non `0.35`) | così nessun errore di fattore 100 può nascondersi in una moltiplicazione |
 | Cancello | **`money/cancello.py`** — IC bootstrap al 90% con seme fisso, t-stat, profit factor, drawdown, copertura del pedaggio, rilevanza economica, indipendenza dai blocchi | un criterio che non vedi non può essere discusso |
-| Test | **pytest >= 8** (408 test), **ruff >= 0.5** (`line-length = 120`, regole `E9`+`F`) | solo regole che intercettano errori reali: una CI che grida sempre non protegge niente |
+| Test | **pytest >= 8** (437 test), **ruff >= 0.5** (`line-length = 120`, regole `E9`+`F`) | solo regole che intercettano errori reali: una CI che grida sempre non protegge niente |
 | Config e pacchetto | **PyYAML >= 6**, **setuptools** (layout `src/`) | `pytest` importa il pacchetto da `src/` senza installazione, così la suite gira su un checkout appena fatto |
 | Prove | **artefatti JSON e testo** in `prove/`, decisioni in Markdown in `docs/` | una misura che non si può rileggere è un'opinione |
 | Controllo di versione | **git**, un solo scrittore per percorso, systemd e cron da versionare in `deploy/` | nel progetto precedente `systemd` e `crontab` non erano versionati, ed è stata la causa di 10 guasti su 12 |
@@ -254,7 +254,7 @@ money/
 │       ├── griglia_adattiva.py   nodo B — griglia adattiva
 │       └── momento_4h.py         nodo C — momento a 4 ore
 ├── scripts/                  runner di misura, uno per ipotesi, piu' le verifiche indipendenti
-├── tests/                    408 test offline
+├── tests/                    437 test offline
 ├── docs/                     01 decisione · 02 specifica del banco a secco · 03 verdetti · 04 riproduzione
 ├── prove/                    prove grezze: verdetti, JSON, confronto con l'evidenza precedente
 ├── assets/                   banner e diagramma di architettura

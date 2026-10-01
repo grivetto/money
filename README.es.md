@@ -81,7 +81,7 @@ promosso / archiviato / insufficiente          the verdict is binding
 | Modelado del dominio | **`dataclasses`** (`frozen=True`), `enum`, type hints completos, funciones puras | el módulo de costes no tiene I/O: no puede mentir, y se testea en milisegundos |
 | Modelo de costes | **`money/costi.py`** — fracciones, nunca porcentajes (`0.0035`, no `0.35`) | para que ningún error de factor 100 pueda esconderse en una multiplicación |
 | Puerta | **`money/cancello.py`** — intervalo de confianza bootstrap al 90% con semilla fija, t-stat, profit factor, drawdown, cobertura del peaje, relevancia económica, independencia de bloques | un criterio que no puedes ver no se puede discutir |
-| Tests | **pytest >= 8** (408 tests), **ruff >= 0.5** (`line-length = 120`, reglas `E9`+`F`) | solo reglas que atrapan errores reales: un CI que grita siempre no protege nada |
+| Tests | **pytest >= 8** (437 tests), **ruff >= 0.5** (`line-length = 120`, reglas `E9`+`F`) | solo reglas que atrapan errores reales: un CI que grita siempre no protege nada |
 | Config / empaquetado | **PyYAML >= 6**, **setuptools** (layout `src/`) | `pytest` importa el paquete desde `src/` sin instalación, así que la suite corre en un checkout fresco |
 | Evidencia | **artefactos JSON + texto plano** en `prove/`, decisiones en Markdown en `docs/` | una medición que no se puede releer es una opinión |
 | Control de versiones | **git**, un escritor por ruta, systemd/cron a versionar en `deploy/` | el `systemd` y el `crontab` del proyecto anterior no estaban versionados, y eso causó 10 de 12 caídas |
@@ -230,7 +230,7 @@ money/
 │       ├── griglia_adattiva.py   node B — adaptive grid
 │       └── momento_4h.py         node C — 4-hour momentum
 ├── scripts/                  measurement runners, one per hypothesis, plus independent checks
-├── tests/                    408 offline tests
+├── tests/                    437 offline tests
 ├── docs/                     01 decision · 02 dry-run bench spec · 03 verdicts · 04 reproduction
 ├── prove/                    raw evidence: verdicts, JSON, comparison with prior evidence
 ├── assets/                   banner and architecture diagram

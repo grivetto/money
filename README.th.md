@@ -79,7 +79,7 @@ promosso / archiviato / insufficiente          the verdict is binding
 | การจำลองโดเมน | **`dataclasses`** (`frozen=True`), `enum`, type hints ครบ, ฟังก์ชันบริสุทธิ์ | โมดูลต้นทุนไม่มี I/O: มันโกหกไม่ได้ และทดสอบได้ในระดับมิลลิวินาที |
 | โมเดลต้นทุน | **`money/costi.py`** — เศษส่วน ไม่ใช่เปอร์เซ็นต์ (`0.0035` ไม่ใช่ `0.35`) | เพื่อไม่ให้ความผิดพลาดระดับ 100 เท่าซ่อนอยู่ในการคูณได้ |
 | ประตู | **`money/cancello.py`** — bootstrap CI ที่ 90% ด้วย seed คงที่, t-stat, profit factor, drawdown, toll coverage, economic relevance, block independence | เกณฑ์ที่คุณมองไม่เห็น ย่อมเถียงกันไม่ได้ |
-| การทดสอบ | **pytest >= 8** (408 tests), **ruff >= 0.5** (`line-length = 120`, กฎ `E9`+`F`) | เฉพาะกฎที่จับข้อผิดพลาดจริง: CI ที่ตะโกนตลอดเวลาไม่ได้ปกป้องอะไรเลย |
+| การทดสอบ | **pytest >= 8** (437 tests), **ruff >= 0.5** (`line-length = 120`, กฎ `E9`+`F`) | เฉพาะกฎที่จับข้อผิดพลาดจริง: CI ที่ตะโกนตลอดเวลาไม่ได้ปกป้องอะไรเลย |
 | คอนฟิก / การแพ็กเกจ | **PyYAML >= 6**, **setuptools** (โครงแบบ `src/`) | `pytest` import แพ็กเกจจาก `src/` โดยไม่ต้องติดตั้ง ดังนั้นชุดทดสอบจึงรันได้บน checkout สด |
 | หลักฐาน | **JSON + artifact ข้อความล้วน** ใน `prove/`, การตัดสินใจแบบ Markdown ใน `docs/` | การวัดที่อ่านซ้ำไม่ได้คือความเห็น |
 | การควบคุมเวอร์ชัน | **git**, นักเขียนคนเดียวต่อหนึ่ง path, systemd/cron ที่จะถูกใส่เวอร์ชันใน `deploy/` | `systemd` และ `crontab` ของโปรเจกต์ก่อนหน้าไม่ได้ใส่เวอร์ชัน และนั่นทำให้เกิด outage 10 จาก 12 ครั้ง |
@@ -227,7 +227,7 @@ money/
 │       ├── griglia_adattiva.py   node B — adaptive grid
 │       └── momento_4h.py         node C — 4-hour momentum
 ├── scripts/                  measurement runners, one per hypothesis, plus independent checks
-├── tests/                    408 offline tests
+├── tests/                    437 offline tests
 ├── docs/                     01 decision · 02 dry-run bench spec · 03 verdicts · 04 reproduction
 ├── prove/                    raw evidence: verdicts, JSON, comparison with prior evidence
 ├── assets/                   banner and architecture diagram
