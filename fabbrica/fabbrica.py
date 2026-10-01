@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """Fabbrica Denaro — il nastro: candidato -> test -> cancello -> (produzione su promozione).
 
-Un tick ogni 4 secondi (timer systemd; cadenza x75 dal 01/10 su direttiva del proprietario).
+Un tick ogni 3 secondi (timer systemd; cadenza x100 dal 02/10 su direttiva del proprietario).
 Fabbrica DISTRIBUITA (direttiva "3 macchine, suddividi i bot"): il master gira qui (mc2);
 i worker di nodo (MARCODG1, nuvola) eseguono i controlli LOCALI ogni 10s e li pubblicano in
 `shards/<nodo>.json` — il master li legge, quindi nessun controllo remoto blocca il tick.
@@ -301,7 +301,7 @@ def write_stato(st):
     lines = [
         "# Fabbrica — stato",
         "",
-        "- ultimo tiro: %s (tiro n. %s, cadenza 4s via timer — x75 dal 01/10; master + worker nodi @10s)" % (now(), st.get("ticks", 0)),
+        "- ultimo tiro: %s (tiro n. %s, cadenza 3s via timer — x100 dal 02/10; master + worker nodi @5s)" % (now(), st.get("ticks", 0)),
         "- kill-switch: %s" % ("ATTIVO — nuovi job bloccati (file STOP presente)" if st.get("kill_switch") else "off"),
         "- canale DSH: %s voci totali, nuove dall'ultimo tiro: %s" % (st.get("dsh_heads"), st.get("dsh_new")),
         "- handoff P2: %s | manifest: %s" % (", ".join(st.get("p2_handoff_files") or []) or "(vuoto)",

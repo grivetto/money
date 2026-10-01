@@ -6,7 +6,7 @@ Ogni minuto (cron): legge `state.json`; se l'ultimo tick e' piu' vecchio di
 SOGLIA_S secondi scrive l'allarme su stdout (che cron appende a `log/watchdog.log`)
 e in syslog via `logger -t fabbrica-watchdog`. Altrimenti: silenzio.
 
-Perche' esiste: la fabbrica x75 fa un tick ogni 4s (master) + un worker di nodo ogni 10s —
+Perche' esiste: la fabbrica x100 fa un tick ogni 3s (master) + un worker di nodo ogni 5s —
 un'assenza oltre SOGLIA_S e' inequivocabile e va dichiarata, non aspettata. Controlla anche
 la freschezza degli shard dei worker (fabbrica distribuita su 3 macchine).
 (Lezione "MC2 Offline": un componente giu' senza alert E' un incidente.)

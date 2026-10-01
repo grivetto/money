@@ -1,7 +1,7 @@
 # Fabbrica Denaro — il nastro
 
-Ogni 4 secondi (timer systemd; x75 dal 01/10) un **tick** esegue/avanza UNA azione del percorso.
-La fabbrica è **distribuita**: master su mc2 + un **worker di nodo** su MARCODG1 e nuvola (ogni 10s,
+Ogni 3 secondi (timer systemd; x100 dal 02/10) un **tick** esegue/avanza UNA azione del percorso.
+La fabbrica è **distribuita**: master su mc2 + un **worker di nodo** su MARCODG1 e nuvola (ogni 5s,
 unità `fabbrica-worker.timer`) che pubblicano i controlli locali in `fabbrica/shards/`;
 
     candidato -> test (misure sui dati reali) -> cancello -> produzione SOLO su promozione
