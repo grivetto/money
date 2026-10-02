@@ -63,7 +63,7 @@ promosso / archiviato / insufficiente          il verdetto e' vincolante
 
 ### Il sistema attorno alla pipeline — aggiornato 02/10/2026
 
-![Denaro — foto del sistema, 02/10/2026](FOTO_SISTEMA_2026-10-02.png)
+![Denaro — foto del sistema, 03/10/2026](FOTO_SISTEMA_2026-10-03.png)
 
 ```
                      ┌──────────────────────── mc2 — l'hub ──────────────────────────┐
@@ -89,7 +89,7 @@ promosso / archiviato / insufficiente          il verdetto e' vincolante
 *Un solo anello: idea → spec pre-registrata (`coda_catena/` + `REGISTRO`) → operaio → review
 (test rieseguiti nel repo) → misura (artefatti congelati in `prove/`) → cancello a 8 criteri →
 promozione/archivio → banco a secco → canary → live a taglia minima. Gli operai — A0-MC2, A0-PC,
-DSH, OpenCode — consegnano a Hermes; niente entra senza review. Visual: [`FOTO_SISTEMA_2026-10-02.html`](FOTO_SISTEMA_2026-10-02.html) · [`.png`](FOTO_SISTEMA_2026-10-02.png). Foto precedenti:
+DSH, OpenCode — consegnano a Hermes; il **nodo agenti** (Omarchy) ospita DSH + un secondo OpenCode; niente entra senza review. Visual: [`FOTO_SISTEMA_2026-10-03.html`](FOTO_SISTEMA_2026-10-03.html) · [`.png`](FOTO_SISTEMA_2026-10-03.png). Foto precedenti:
 [`ARCHITETTURA_2026-09-30.md`](ARCHITETTURA_2026-09-30.md) ·
 [`ARCHITETTURA_2026-10-01.md`](ARCHITETTURA_2026-10-01.md).*
 

@@ -64,7 +64,7 @@ promosso / archiviato / insufficiente          the verdict is binding
 
 ### The system around the pipeline — updated 2026-10-02
 
-![Denaro — foto del sistema, 02/10/2026](FOTO_SISTEMA_2026-10-02.png)
+![Denaro — foto del sistema, 03/10/2026](FOTO_SISTEMA_2026-10-03.png)
 
 ```
                      ┌──────────────────────── mc2 — the hub ────────────────────────┐
@@ -90,7 +90,7 @@ promosso / archiviato / insufficiente          the verdict is binding
 *One loop: idea → pre-registered spec (`coda_catena/` + `REGISTRO`) → executor → review (tests
 re-run in-repo) → measure (artifacts frozen in `prove/`) → 8-criteria gate → promote/archive →
 dry bench → canary → minimum-size live. Executors — A0-MC2, A0-PC, DSH, OpenCode — deliver to
-Hermes; nothing lands without review. Visual: [`FOTO_SISTEMA_2026-10-02.html`](FOTO_SISTEMA_2026-10-02.html) · [`.png`](FOTO_SISTEMA_2026-10-02.png). Previous snapshots:
+Hermes; the **agents node** (Omarchy) hosts DSH + a second OpenCode; nothing lands without review. Visual: [`FOTO_SISTEMA_2026-10-03.html`](FOTO_SISTEMA_2026-10-03.html) · [`.png`](FOTO_SISTEMA_2026-10-03.png). Previous snapshots:
 [`ARCHITETTURA_2026-09-30.md`](ARCHITETTURA_2026-09-30.md) ·
 [`ARCHITETTURA_2026-10-01.md`](ARCHITETTURA_2026-10-01.md).*
 

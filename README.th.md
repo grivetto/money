@@ -64,9 +64,9 @@ promosso / archiviato / insufficiente          the verdict is binding
 
 ### ระบบงานโดยรอบ — อัปเดต 02/10/2026
 
-![Denaro — ภาพระบบ, 02/10/2026](FOTO_SISTEMA_2026-10-02.png)
+![Denaro — ภาพระบบ, 03/10/2026](FOTO_SISTEMA_2026-10-03.png)
 
-*อัปเดต: 02/10/2026 · บอทจริงตัวแรก (carry C1 / DOGE) ทำงานบน OKX EEA · [`FOTO_SISTEMA_2026-10-02.html`](FOTO_SISTEMA_2026-10-02.html) · ก่อนหน้า: [`ARCHITETTURA_2026-10-01.md`](ARCHITETTURA_2026-10-01.md)*
+*อัปเดต: 03/10/2026 · บอทจริงตัวแรก (carry C1 / DOGE) ทำงานบน OKX EEA · โหนดเอเจนต์ใหม่ (omarchy): DSH + OpenCode · [`FOTO_SISTEMA_2026-10-03.html`](FOTO_SISTEMA_2026-10-03.html) · ก่อนหน้า: [`ARCHITETTURA_2026-10-01.md`](ARCHITETTURA_2026-10-01.md)*
 
 ### เทคโนโลยีหลัก
 
