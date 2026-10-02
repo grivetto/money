@@ -23,6 +23,38 @@ STATE = BASE / "state.json"
 SHARDS = BASE / "shards"
 SOGLIA_S = 300  # 5 minuti di silenzio del master: allarme franco, niente falsi positivi
 
+# --- Notifica Telegram (zero silenzi): max 1 allarme/ora per guasto, + un messaggio di rientro ---
+TG_STATO = BASE / "log" / "watchdog_tg_stato.json"
+NOTIFICA_TG = Path("/home/sergio/alpha-omega-trading/tools/notifica_tg.py")  # il watchdog gira su mc2
+INTERVALLO_TG_S = 3600
+
+
+def _notifica_tg(testo: str) -> bool:
+    """Invia su Telegram via il notifier di progetto; mai solleva (il watchdog non si blocca)."""
+    try:
+        if not NOTIFICA_TG.exists():
+            return False
+        r = subprocess.run([sys.executable, str(NOTIFICA_TG), testo],
+                           timeout=20, capture_output=True)
+        return r.returncode == 0
+    except Exception:  # noqa: BLE001
+        return False
+
+
+def _leggi_stato_tg() -> dict:
+    try:
+        return json.loads(TG_STATO.read_text())
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+def _scrivi_stato_tg(d: dict) -> None:
+    try:
+        TG_STATO.parent.mkdir(parents=True, exist_ok=True)
+        TG_STATO.write_text(json.dumps(d))
+    except Exception:  # noqa: BLE001
+        pass
+
 
 def main() -> int:
     msg = None
@@ -48,6 +80,10 @@ def main() -> int:
                     nodo, "assente" if age is None else "fermo da %ds" % int(age)))
                 break
     if msg is None:
+        stato = _leggi_stato_tg()
+        if stato.get("ultimo_tg"):
+            if _notifica_tg("\u2705 FABBRICA (mc2): watchdog rientrato — nastro di nuovo in movimento."):
+                _scrivi_stato_tg({})
         return 0
     linea = f"[{datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')}] FABBRICA WATCHDOG: {msg}"
     print(linea)
@@ -55,6 +91,13 @@ def main() -> int:
         subprocess.run(["logger", "-t", "fabbrica-watchdog", msg], timeout=5)
     except Exception:
         pass
+    # Telegram: max 1 allarme/ora per guasto persistente; stato per il messaggio di rientro.
+    stato = _leggi_stato_tg()
+    ora = time.time()
+    if ora - float(stato.get("ultimo_tg", 0)) > INTERVALLO_TG_S:
+        if _notifica_tg("\u26a0\ufe0f FABBRICA (mc2): " + msg):
+            stato["ultimo_tg"] = ora
+            _scrivi_stato_tg(stato)
     return 1
 
 
