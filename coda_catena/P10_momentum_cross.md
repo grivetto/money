@@ -1,5 +1,5 @@
 # P10 — Momentum cross-sectional long/flat (rotazione top-k)
-STATO: IN CORSO — turno 2 consegnato e integrato (motore `momentum_cross.py` + 12 test; suite 437→449) il 03/10; prossimo: `scripts/misura_p10.py` (turno 3), misura ufficiale a cura di Hermes
+STATO: **MISURATA (03/10/2026) — verdetto "insufficiente"** (23 op eseguite < 30 minime: non promuove, non archivia). OOS debole (exp netta +3,56%, DD portafoglio 71,1%, t 0,45); eventuale seguito = esperimento nuovo con universo più ampio. Runner `scripts/misura_p10.py`; artefatti `prove/P10_momentum_cross.*`.
 DATI: USDT-lungo (2020-10-01 -> 2026-09-25; confine addestramento 2024-06-01)
 
 ## Ipotesi

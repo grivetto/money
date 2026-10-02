@@ -1,0 +1,33 @@
+P10 — MOMENTUM CROSS-SECTIONAL long/flat (rotazione top-k) — misura e giudizio
+(voce pre-registrata; griglia {k:2,3} x {L:60,120} x {R:7,14} = 8 varianti)
+universo: 10 simboli | periodo 2020-10-01 -> 2026-09-25 | confine addestramento 2024-06-01
+costi: okx_eea_spot misto + +0,04%/lato (secondario okx_eea_con_perp); capitale 1000 EUR; allocazione equity/k; mai leva, mai short
+cache dati: /home/sergio/money/data/cache
+allineamento: 10 simboli x 2186 barre comuni (2020-10-01 -> 2026-09-25); confine reale indice 1339 @ 2024-06-01
+
+=== ADDESTRAMENTO [2020-10-01 -> 2024-06-01) — tutte le 8 varianti ===
+  top 2 | momentum 60g | ribilancio ogni 7g    | campione  112 | ese   69 salt  43 | exp netta  +0,1199% | dd_port  +90,522% | exp/dd   0,001 | max_esp  +100,0% | n>=30 si
+  top 2 | momentum 60g | ribilancio ogni 14g   | campione   74 | ese   52 salt  22 | exp netta +11,6285% | dd_port  +90,207% | exp/dd   0,129 | max_esp  +100,0% | n>=30 si
+  top 2 | momentum 120g | ribilancio ogni 7g   | campione   52 | ese   41 salt  11 | exp netta +32,4102% | dd_port  +73,553% | exp/dd   0,441 | max_esp  +100,0% | n>=30 si
+  top 2 | momentum 120g | ribilancio ogni 14g  | campione   35 | ese   21 salt  14 | exp netta +53,3173% | dd_port  +70,111% | exp/dd   0,760 | max_esp  +100,0% | n>=30 no
+  top 3 | momentum 60g | ribilancio ogni 7g    | campione  126 | ese   91 salt  35 | exp netta +10,4270% | dd_port  +81,594% | exp/dd   0,128 | max_esp  +100,0% | n>=30 si
+  top 3 | momentum 60g | ribilancio ogni 14g   | campione   95 | ese   65 salt  30 | exp netta +13,1717% | dd_port  +78,572% | exp/dd   0,168 | max_esp  +100,0% | n>=30 si
+  top 3 | momentum 120g | ribilancio ogni 7g   | campione   78 | ese   44 salt  34 | exp netta +45,0567% | dd_port  +72,530% | exp/dd   0,621 | max_esp  +100,0% | n>=30 si
+  top 3 | momentum 120g | ribilancio ogni 14g  | campione   59 | ese   39 salt  20 | exp netta +28,3582% | dd_port  +77,568% | exp/dd   0,366 | max_esp  +100,0% | n>=30 si
+  SCELTA (solo addestramento, max exp/dd): top 2 | momentum 120g | ribilancio ogni 14g (exp netta +53,3173%, dd_port +70,111%, n 21)
+  ATTENZIONE: la scelta ha 21 operazioni < 30: il cancello dira' 'insufficiente', non un verdetto.
+
+=== VERIFICA (UNA sola) [2024-06-01 -> 2026-09-25] ===
+  configurazione CONGELATA: top 2 | momentum 120g | ribilancio ogni 14g
+  operazioni: campione 30 | eseguite 23 | saltate 7 (cassa)
+  expectancy netta +3,5645% | DD portafoglio MTM +71,087% | esposizione max +100,0% | max posizioni 2
+  t-stat 0,45 | t-stat Newey-West 0,43 | capitale finale 1023,44 EUR | giorni 846,0
+  CRITERI (8): non valutati — il verdetto si e' fermato prima (serie vuota, degenere o numerosita' < 30)
+  VERDETTO: insufficiente
+    - numerosita' 23 operazioni < 30 minime: con cosi' pochi campioni la stima dell'expectancy (+3,56%) e' dominata dal rumore — l'errore standard della media e' +7,80% contro un'expectancy di +3,56%. Promuovere sarebbe un azzardo, archiviare sarebbe buttare via la strategia: in entrambi i casi sarebbe una finzione
+  scenario tariffe: da okx_eea_spot a okx_eea_con_perp non cambia nessun criterio: il verdetto resta 'insufficiente'. Il pedaggio piu' basso non sposta la decisione
+    okx_eea_con_perp: verdetto insufficiente, expectancy +3,9345%, EUR/anno n/d
+
+=== VERDETTO P10 (finestra di verifica) ===
+  INSUFFICIENTE: campione sotto la soglia minima — misura NON conclusiva.
+  -> non promuove e non archivia (regola dichiarata): un eventuale seguito con piu' campioni e' un esperimento NUOVO, non un ritocco di questo.

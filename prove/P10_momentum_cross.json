@@ -1,0 +1,356 @@
+{
+  "protocollo": {
+    "universo": [
+      "BTC/USDT",
+      "ETH/USDT",
+      "ADA/USDT",
+      "DOGE/USDT",
+      "LTC/USDT",
+      "LINK/USDT",
+      "DOT/USDT",
+      "UNI/USDT",
+      "AVAX/USDT",
+      "SOL/USDT"
+    ],
+    "inizio": "2020-10-01",
+    "fine": "2026-09-25",
+    "confine": "2024-06-01",
+    "tariffa_primaria": "okx_eea_spot",
+    "tariffa_secondaria": "okx_eea_con_perp",
+    "tipo_ordine": "misto",
+    "slippage_per_lato": 0.0004,
+    "capitale": 1000.0,
+    "soglia_eur_anno": 10.0,
+    "griglia": [
+      {
+        "k": 2,
+        "lookback": 60,
+        "ribilancio": 7
+      },
+      {
+        "k": 2,
+        "lookback": 60,
+        "ribilancio": 14
+      },
+      {
+        "k": 2,
+        "lookback": 120,
+        "ribilancio": 7
+      },
+      {
+        "k": 2,
+        "lookback": 120,
+        "ribilancio": 14
+      },
+      {
+        "k": 3,
+        "lookback": 60,
+        "ribilancio": 7
+      },
+      {
+        "k": 3,
+        "lookback": 60,
+        "ribilancio": 14
+      },
+      {
+        "k": 3,
+        "lookback": 120,
+        "ribilancio": 7
+      },
+      {
+        "k": 3,
+        "lookback": 120,
+        "ribilancio": 14
+      }
+    ],
+    "n_varianti": 8,
+    "selezione": "max expectancy_netta / dd_portafoglio SOLO in addestramento",
+    "verifica": "UNA sola, [2024-06-01, 2026-09-25]",
+    "criteri_cancello": 8,
+    "metriche_secondarie": [
+      "DD portafoglio mark-to-market",
+      "eseguiti/saltati",
+      "esposizione aggregata massima"
+    ]
+  },
+  "addestramento": {
+    "tabella": [
+      {
+        "config": {
+          "k": 2,
+          "lookback": 60,
+          "ribilancio": 7
+        },
+        "chiave": "k2_l60_r7",
+        "descrizione": "top 2 | momentum 60g | ribilancio ogni 7g",
+        "n_operazioni_campione": 112,
+        "eseguite": 69,
+        "saltate": 43,
+        "expectancy_netta": 0.0011988718333676223,
+        "expectancy_lorda": 0.007504714404136555,
+        "dd_portafoglio": 0.9052174254912244,
+        "rapporto_exp_dd": 0.0013244020713775407,
+        "max_esposizione": 1.0,
+        "max_posizioni": 2,
+        "capitale_finale": 495.24519205439645,
+        "rendimento_totale": -0.5047548079456036,
+        "giorni": 1338.0,
+        "esposizione_media_dichiarata": 0.5,
+        "t_stat": 0.035627144999738215,
+        "t_stat_newey_west": 0.02963334887380776,
+        "tariffa": "okx_eea_spot"
+      },
+      {
+        "config": {
+          "k": 2,
+          "lookback": 60,
+          "ribilancio": 14
+        },
+        "chiave": "k2_l60_r14",
+        "descrizione": "top 2 | momentum 60g | ribilancio ogni 14g",
+        "n_operazioni_campione": 74,
+        "eseguite": 52,
+        "saltate": 22,
+        "expectancy_netta": 0.1162849020671463,
+        "expectancy_lorda": 0.12268286873287351,
+        "dd_portafoglio": 0.9020670551273232,
+        "rapporto_exp_dd": 0.12890937697611973,
+        "max_esposizione": 1.0,
+        "max_posizioni": 2,
+        "capitale_finale": 2852.151852338086,
+        "rendimento_totale": 1.852151852338086,
+        "giorni": 1338.0,
+        "esposizione_media_dichiarata": 0.5,
+        "t_stat": 1.3051734974013813,
+        "t_stat_newey_west": 1.1252750264244495,
+        "tariffa": "okx_eea_spot"
+      },
+      {
+        "config": {
+          "k": 2,
+          "lookback": 120,
+          "ribilancio": 7
+        },
+        "chiave": "k2_l120_r7",
+        "descrizione": "top 2 | momentum 120g | ribilancio ogni 7g",
+        "n_operazioni_campione": 52,
+        "eseguite": 41,
+        "saltate": 11,
+        "expectancy_netta": 0.3241020779278097,
+        "expectancy_lorda": 0.33066639813969767,
+        "dd_portafoglio": 0.7355289018986721,
+        "rapporto_exp_dd": 0.4406381273273999,
+        "max_esposizione": 0.9997727766807094,
+        "max_posizioni": 2,
+        "capitale_finale": 7730.7372021866395,
+        "rendimento_totale": 6.730737202186639,
+        "giorni": 1338.0,
+        "esposizione_media_dichiarata": 0.5,
+        "t_stat": 1.539195064835052,
+        "t_stat_newey_west": 1.6383175328984516,
+        "tariffa": "okx_eea_spot"
+      },
+      {
+        "config": {
+          "k": 2,
+          "lookback": 120,
+          "ribilancio": 14
+        },
+        "chiave": "k2_l120_r14",
+        "descrizione": "top 2 | momentum 120g | ribilancio ogni 14g",
+        "n_operazioni_campione": 35,
+        "eseguite": 21,
+        "saltate": 14,
+        "expectancy_netta": 0.5331728068347589,
+        "expectancy_lorda": 0.5399044840372711,
+        "dd_portafoglio": 0.7011102923419577,
+        "rapporto_exp_dd": 0.760469233811662,
+        "max_esposizione": 0.999825568380027,
+        "max_posizioni": 2,
+        "capitale_finale": 12699.62220772371,
+        "rendimento_totale": 11.69962220772371,
+        "giorni": 1338.0,
+        "esposizione_media_dichiarata": 0.5,
+        "t_stat": 1.615380850198991,
+        "t_stat_newey_west": 1.9278409591214252,
+        "tariffa": "okx_eea_spot"
+      },
+      {
+        "config": {
+          "k": 3,
+          "lookback": 60,
+          "ribilancio": 7
+        },
+        "chiave": "k3_l60_r7",
+        "descrizione": "top 3 | momentum 60g | ribilancio ogni 7g",
+        "n_operazioni_campione": 126,
+        "eseguite": 91,
+        "saltate": 35,
+        "expectancy_netta": 0.10427044356557547,
+        "expectancy_lorda": 0.1106587928944841,
+        "dd_portafoglio": 0.815943728702049,
+        "rapporto_exp_dd": 0.12779121880309344,
+        "max_esposizione": 0.9998557552642868,
+        "max_posizioni": 3,
+        "capitale_finale": 4377.554782411495,
+        "rendimento_totale": 3.3775547824114946,
+        "giorni": 1338.0,
+        "esposizione_media_dichiarata": 0.3333333333333333,
+        "t_stat": 1.7117383685000502,
+        "t_stat_newey_west": 1.475111512162269,
+        "tariffa": "okx_eea_spot"
+      },
+      {
+        "config": {
+          "k": 3,
+          "lookback": 60,
+          "ribilancio": 14
+        },
+        "chiave": "k3_l60_r14",
+        "descrizione": "top 3 | momentum 60g | ribilancio ogni 14g",
+        "n_operazioni_campione": 95,
+        "eseguite": 65,
+        "saltate": 30,
+        "expectancy_netta": 0.13171658599052077,
+        "expectancy_lorda": 0.13812690541454745,
+        "dd_portafoglio": 0.7857184009306727,
+        "rapporto_exp_dd": 0.1676384132464052,
+        "max_esposizione": 0.9999991243563195,
+        "max_posizioni": 3,
+        "capitale_finale": 4131.619850351155,
+        "rendimento_totale": 3.1316198503511554,
+        "giorni": 1338.0,
+        "esposizione_media_dichiarata": 0.3333333333333333,
+        "t_stat": 1.7197222654104933,
+        "t_stat_newey_west": 1.4769557757873153,
+        "tariffa": "okx_eea_spot"
+      },
+      {
+        "config": {
+          "k": 3,
+          "lookback": 120,
+          "ribilancio": 7
+        },
+        "chiave": "k3_l120_r7",
+        "descrizione": "top 3 | momentum 120g | ribilancio ogni 7g",
+        "n_operazioni_campione": 78,
+        "eseguite": 44,
+        "saltate": 34,
+        "expectancy_netta": 0.45056666274445073,
+        "expectancy_lorda": 0.45723221535958386,
+        "dd_portafoglio": 0.7253014006953513,
+        "rapporto_exp_dd": 0.621213005121029,
+        "max_esposizione": 0.9998775395908904,
+        "max_posizioni": 3,
+        "capitale_finale": 15385.222500546068,
+        "rendimento_totale": 14.385222500546067,
+        "giorni": 1338.0,
+        "esposizione_media_dichiarata": 0.3333333333333333,
+        "t_stat": 1.9967890906939099,
+        "t_stat_newey_west": 1.8529892840749156,
+        "tariffa": "okx_eea_spot"
+      },
+      {
+        "config": {
+          "k": 3,
+          "lookback": 120,
+          "ribilancio": 14
+        },
+        "chiave": "k3_l120_r14",
+        "descrizione": "top 3 | momentum 120g | ribilancio ogni 14g",
+        "n_operazioni_campione": 59,
+        "eseguite": 39,
+        "saltate": 20,
+        "expectancy_netta": 0.2835817607661736,
+        "expectancy_lorda": 0.2901136452642016,
+        "dd_portafoglio": 0.7756793006911692,
+        "rapporto_exp_dd": 0.36559150220134534,
+        "max_esposizione": 0.9999058699521175,
+        "max_posizioni": 3,
+        "capitale_finale": 5315.173490302624,
+        "rendimento_totale": 4.315173490302624,
+        "giorni": 1338.0,
+        "esposizione_media_dichiarata": 0.3333333333333333,
+        "t_stat": 1.4309068386314991,
+        "t_stat_newey_west": 1.5610838895302557,
+        "tariffa": "okx_eea_spot"
+      }
+    ],
+    "scelta": {
+      "config": {
+        "k": 2,
+        "lookback": 120,
+        "ribilancio": 14
+      },
+      "chiave": "k2_l120_r14",
+      "descrizione": "top 2 | momentum 120g | ribilancio ogni 14g",
+      "n_operazioni_campione": 35,
+      "eseguite": 21,
+      "saltate": 14,
+      "expectancy_netta": 0.5331728068347589,
+      "expectancy_lorda": 0.5399044840372711,
+      "dd_portafoglio": 0.7011102923419577,
+      "rapporto_exp_dd": 0.760469233811662,
+      "max_esposizione": 0.999825568380027,
+      "max_posizioni": 2,
+      "capitale_finale": 12699.62220772371,
+      "rendimento_totale": 11.69962220772371,
+      "giorni": 1338.0,
+      "esposizione_media_dichiarata": 0.5,
+      "t_stat": 1.615380850198991,
+      "t_stat_newey_west": 1.9278409591214252,
+      "tariffa": "okx_eea_spot"
+    }
+  },
+  "verifica": {
+    "misura": {
+      "config": {
+        "k": 2,
+        "lookback": 120,
+        "ribilancio": 14
+      },
+      "chiave": "k2_l120_r14",
+      "descrizione": "top 2 | momentum 120g | ribilancio ogni 14g",
+      "n_operazioni_campione": 30,
+      "eseguite": 23,
+      "saltate": 7,
+      "expectancy_netta": 0.03564477551770172,
+      "expectancy_lorda": 0.04197819135427445,
+      "dd_portafoglio": 0.7108674596114849,
+      "rapporto_exp_dd": 0.050142646193402765,
+      "max_esposizione": 1.0,
+      "max_posizioni": 2,
+      "capitale_finale": 1023.4444650425648,
+      "rendimento_totale": 0.02344446504256492,
+      "giorni": 846.0,
+      "esposizione_media_dichiarata": 0.5,
+      "t_stat": 0.4467405200117982,
+      "t_stat_newey_west": 0.42525713509628077,
+      "tariffa": "okx_eea_spot"
+    },
+    "verdetto": "insufficiente",
+    "motivi": [
+      "numerosita' 23 operazioni < 30 minime: con cosi' pochi campioni la stima dell'expectancy (+3,56%) e' dominata dal rumore — l'errore standard della media e' +7,80% contro un'expectancy di +3,56%. Promuovere sarebbe un azzardo, archiviare sarebbe buttare via la strategia: in entrambi i casi sarebbe una finzione"
+    ],
+    "criteri": {},
+    "criteri_falliti": [],
+    "statistiche_cancello": {
+      "expectancy": 0.03564477551770172,
+      "ic90": [],
+      "t_stat": 0.4567808864547975,
+      "profit_factor": 1.3638238085112846,
+      "max_drawdown": null,
+      "esposizione_media": null,
+      "eur_anno": null,
+      "pedaggio_per_operazione": null
+    },
+    "scenario_secondario": {
+      "tariffa": "okx_eea_con_perp",
+      "verdetto": "insufficiente",
+      "criteri_cambiati": [],
+      "sintesi": "da okx_eea_spot a okx_eea_con_perp non cambia nessun criterio: il verdetto resta 'insufficiente'. Il pedaggio piu' basso non sposta la decisione",
+      "expectancy": 0.03934477551770171,
+      "eur_anno": null
+    }
+  }
+}
