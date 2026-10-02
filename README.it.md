@@ -30,7 +30,7 @@ sua storia, come memoria di cosa è stato provato — non come base su cui costr
 | **Strategie misurate** | **3** famiglie (una per nodo), tutte giudicate ai costi reali |
 | **Verdetti** | **3 archiviate** (famiglie) — il carry live **C1** è nella finestra di validazione canary (review 15/10) |
 | **Ordini reali inviati** | **0** dalle strategie di questo repo — il primo bot live del progetto (carry **C1**, DOGE) opera su OKX EEA ed è tracciato in `alpha-omega-trading` (`docs/16`) |
-| **Capitale** | **~100 EUR** sui conti OKX (main + sub), verificati in sola lettura; un canary live autorizzato dall'owner (carry DOGE) opera su una piccola porzione del sub-account |
+| **Capitale** | **~1.100 EUR** sui conti OKX (verificati in sola lettura) — l'owner ha depositato **+1.000 EUR il 03/10** per la scala del carry (deploy subordinato alla review del 15/10); il canary live (carry DOGE, autorizzato) gira sul conto main |
 | **Ultimo commit** | `main` — vedi `git log` per la testa corrente |
 
 Repository: `C:\dev\money` in locale, `github.com/grivetto/money` in remoto. Pacchetto Python sotto

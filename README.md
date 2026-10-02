@@ -31,7 +31,7 @@ foundation to build on.
 | **Strategies measured** | **3** families (one per node), all judged at real costs |
 | **Verdicts** | **3 archived** (strategy families) — the live carry **C1** is in its canary validation window (review 15/10) |
 | **Real orders sent** | **0** by this repo's strategies — the project's first live bot (carry **C1**, DOGE) runs on OKX EEA and is tracked in `alpha-omega-trading` (`docs/16`) |
-| **Capital** | **~100 EUR** across the OKX accounts (main + subs), verified read-only; one owner-authorized live canary (DOGE carry) runs a small slice of the trading sub-account |
+| **Capital** | **~1,100 EUR** across the OKX accounts (verified read-only) — owner deposited **+1,000 EUR on 03/10** for the carry scale-up (deployment gated on the 15/10 review); the live canary (DOGE carry, owner-authorized) runs on the main account |
 | **Last commit** | `main` — see `git log` for the current head |
 
 Repository: `C:\dev\money` locally, `github.com/grivetto/money` remotely. Python package under

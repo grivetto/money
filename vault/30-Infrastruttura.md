@@ -14,6 +14,7 @@
 
 ## Soldi e chiavi (stato al 29/09)
 - OKX main: ~100,00 € in **funding** — la chiave main risponde solo dall'IP di MARCODG1
+- **03/10: deposito owner +1.000 EUR** → equity main ≈1.100 EUR (accredito nel funding wallet, verificato read-only: +1.000,00 esatti). Deploy carry subordinato alla review del 15/10.
 - Sub-account (mc2sub1 / marcosub1 / nuvolasub1): dust
 - **Banco a secco**: attivo su MARCODG1 — ciclo automatico ogni 5 min, solo DRY-RUN, tripwire a 100,00 €
 
