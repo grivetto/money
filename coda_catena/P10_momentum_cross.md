@@ -1,5 +1,5 @@
 # P10 — Momentum cross-sectional long/flat (rotazione top-k)
-STATO: DA PRENDERE — assegnata a dsh via canale (2026-09-30)
+STATO: DA PRENDERE — assegnata a **DSH-MC2** via canale `dsh-mc2/` (02/10/2026; prima a dsh/Stella dal 30/09, lane sbloccata col nuovo peer locale)
 DATI: USDT-lungo (2020-10-01 -> 2026-09-25; confine addestramento 2024-06-01)
 
 ## Ipotesi
@@ -45,5 +45,5 @@ scelta (la verifica NON si usa per scegliere).
 - `MANIFEST` sha256 dei file + nota metodologica nel file di canale.
 
 ## Nota
-L'handoff va in `hermes_bridge/dsh/handoff/P10/`; Hermes verifica (manifest), integra e
+L'handoff va in `hermes_bridge/dsh-mc2/handoff/P10/`; Hermes verifica (manifest), integra e
 misura — stesso flusso di P2, che ha funzionato.
