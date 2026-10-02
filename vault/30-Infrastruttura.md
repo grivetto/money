@@ -3,9 +3,10 @@
 ## Nodi
 | Nodo | Ruolo | Cosa gira |
 |---|---|---|
-| **mc2** | ricerca + agenti | Hermes, agent-zero (container), aggregatore, dashboard, monitoraggio |
+| **mc2** | ricerca + controllo | Hermes, bridge/canali, aggregatore, dashboard, monitoraggio |
 | **MARCODG1** | lato exchange | banco a secco (ciclo 5 min, DRY-RUN), aggregatore, landing/dashboard pubblica |
 | **nuvola** | appoggio | health + tunnel |
+| **nodo agenti** (Omarchy) | agenti | A0 + opencode + DSH — in allestimento |
 
 ## URL pubblici
 - Dashboard flotta: **https://denaro.grivetto.eu** (json: `/api/infra.json`)
