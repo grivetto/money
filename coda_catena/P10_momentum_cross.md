@@ -1,5 +1,5 @@
 # P10 — Momentum cross-sectional long/flat (rotazione top-k)
-STATO: DA PRENDERE — assegnata a **DSH-MC2** via canale `dsh-mc2/` (02/10/2026; prima a dsh/Stella dal 30/09, lane sbloccata col nuovo peer locale)
+STATO: IN CORSO — turno 2 consegnato e integrato (motore `momentum_cross.py` + 12 test; suite 437→449) il 03/10; prossimo: `scripts/misura_p10.py` (turno 3), misura ufficiale a cura di Hermes
 DATI: USDT-lungo (2020-10-01 -> 2026-09-25; confine addestramento 2024-06-01)
 
 ## Ipotesi
