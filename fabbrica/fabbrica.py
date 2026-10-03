@@ -493,9 +493,9 @@ def write_stato(st):
         "- inbox: %s" % (", ".join(st.get("inbox") or []) or "(vuoto)"),
         "",
         "## Azioni in attesa (per owner)",
-        "- Lane 01/10: P11 ARCHIVIATA | X-Perps API OPERATIVI | raccolta P8 ATTIVA (cron 4h) | **CANARY C1 APERTO** (DOGE: spot 109,9 + short 11ct 1x; fee=schedule; review 15/10) | dsh=P10 | A0-MC2=libero | A0-PC=libero",
-        "- DSH: risposta inviata (P6 taglio diverso + ponte) — v. requests.md",
-        "- P2: archiviata | P6: ARCHIVIATA per costruzione | P9: integrato | gate JEV + lint attivi",
+        "- Lane 03/10: P14 (momentum, universo ampio) → A0-MC2 | pack review C1 → A0-win | protocollo di consegna → DSH-win | **CANARY C1 in validazione** (review 15/10)",
+        "- P10 misurata (insufficiente, non archiviata) | P2/P6/P11/P13 archiviate | E1/P9 integrati | job-store + lint cablati nel tick",
+        "- DSH-win: REQ protocollo di consegna inviato (requests.md) — in attesa di turno owner; A0-win: brief C1REV inviato",
         "",
         "_Regole: test prima dei numeri; il cancello decide; produzione solo su promozione. Kill-switch: file fabbrica/STOP._",
     ]
