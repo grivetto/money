@@ -493,9 +493,9 @@ def write_stato(st):
         "- inbox: %s" % (", ".join(st.get("inbox") or []) or "(vuoto)"),
         "",
         "## Azioni in attesa (per owner)",
-        "- Lane 03/10: P14 (momentum, universo ampio) → A0-MC2 | pack review C1 → A0-win | protocollo di consegna → DSH-win | **CANARY C1 in validazione** (review 15/10)",
-        "- P10 misurata (insufficiente, non archiviata) | P2/P6/P11/P13 archiviate | E1/P9 integrati | job-store + lint cablati nel tick",
-        "- DSH-win: REQ protocollo di consegna inviato (requests.md) — in attesa di turno owner; A0-win: brief C1REV inviato",
+        "- Lane 03/10: P14 misurata e **archiviata** (universo ampio, 7/8 KO) | C1REV consegnato e integrato (`scripts/canary_review.py`, 5 test; deploy MARCODG1) | protocollo di consegna → DSH-win (attesa turno owner) | **CANARY C1 in validazione** (review 15/10)",
+        "- P10 insufficiente | P14 archiviata | P2/P6/P11/P13 archiviate | E1/P9 integrati | job-store + lint cablati nel tick",
+        "- DSH-win: REQ protocollo di consegna inviato (requests.md) — in attesa di turno owner; A0-win e A0-mc2: consegne 03/10 integrate (review Hermes)",
         "",
         "_Regole: test prima dei numeri; il cancello decide; produzione solo su promozione. Kill-switch: file fabbrica/STOP._",
     ]

@@ -1,0 +1,70 @@
+P14 — MOMENTUM CROSS-SECTIONAL long/flat su UNIVERSO AMPIO — misura e giudizio
+(voce pre-registrata; griglia {k:3,5} x {L:60,120} x {R:7,14} = 8 varianti; riferimento P10 k=2 L=120 R=14 NON selezionabile)
+periodo 2020-10-01 -> 2026-09-25 | confine addestramento 2024-06-01
+costi: okx_eea_spot misto + +0,04%/lato (secondario okx_eea_con_perp; stress slippage x2 = +0,08%/lato); capitale 1000 EUR; allocazione equity/k; mai leva, mai short
+cache dati: /home/sergio/money/data/cache
+candidati: 403 coppie USDT spot attive su OKX EEA
+universo: 58 simboli x 2186 barre comuni (2020-10-01 -> 2026-09-25); confine reale indice 1339 @ 2024-06-01
+
+=== ADDESTRAMENTO [2020-10-01 -> 2024-06-01) — griglia P14 (8) + riferimento non eleggibile ===
+  top 2 | momentum 120g | ribilancio ogni 14g  | campione   66 | ese   46 salt  20 | exp netta  +6,5701% | dd_port  +86,558% | exp/dd   0,076 | max_esp  +100,0% | n>=30 si | RIFERIMENTO P10 (non eleggibile)
+  top 3 | momentum 60g | ribilancio ogni 7g    | campione  169 | ese  120 salt  49 | exp netta  +7,0135% | dd_port  +89,227% | exp/dd   0,079 | max_esp  +100,0% | n>=30 si
+  top 3 | momentum 60g | ribilancio ogni 14g   | campione  120 | ese   89 salt  31 | exp netta  +4,3103% | dd_port  +91,770% | exp/dd   0,047 | max_esp  +100,0% | n>=30 si
+  top 3 | momentum 120g | ribilancio ogni 7g   | campione  126 | ese   84 salt  42 | exp netta  +7,3852% | dd_port  +84,787% | exp/dd   0,087 | max_esp  +100,0% | n>=30 si
+  top 3 | momentum 120g | ribilancio ogni 14g  | campione   82 | ese   57 salt  25 | exp netta +11,6088% | dd_port  +89,857% | exp/dd   0,129 | max_esp  +100,0% | n>=30 si
+  top 5 | momentum 60g | ribilancio ogni 7g    | campione  280 | ese  224 salt  56 | exp netta  +1,6407% | dd_port  +91,421% | exp/dd   0,018 | max_esp  +100,0% | n>=30 si
+  top 5 | momentum 60g | ribilancio ogni 14g   | campione  200 | ese  157 salt  43 | exp netta  +3,8018% | dd_port  +88,008% | exp/dd   0,043 | max_esp  +100,0% | n>=30 si
+  top 5 | momentum 120g | ribilancio ogni 7g   | campione  174 | ese  123 salt  51 | exp netta  +9,6510% | dd_port  +86,075% | exp/dd   0,112 | max_esp  +100,0% | n>=30 si
+  top 5 | momentum 120g | ribilancio ogni 14g  | campione  119 | ese   85 salt  34 | exp netta +21,3882% | dd_port  +82,211% | exp/dd   0,260 | max_esp  +100,0% | n>=30 si
+  SCELTA (solo addestramento, max exp/dd): top 5 | momentum 120g | ribilancio ogni 14g (exp netta +21,3882%, dd_port +82,211%, n 85)
+
+=== VERIFICA (UNA sola) [2024-06-01 -> 2026-09-25] ===
+  [primario] configurazione CONGELATA: top 5 | momentum 120g | ribilancio ogni 14g
+  [primario] operazioni: campione 85 | eseguite 65 | saltate 20 (cassa)
+  [primario] expectancy netta -1,9323% | DD portafoglio MTM +73,267% | esposizione max +97,8% | max posizioni 5
+  [primario] t-stat -0,47 | t-stat Newey-West -0,35 | capitale finale 510,52 EUR | giorni 846,0
+  CRITERI (8): numerosita'=ok | expectancy_ic90=KO | t_stat=KO | profit_factor=KO | drawdown=KO | pedaggio_coperto=KO | rilevanza_economica=KO | indipendenza_dai_blocchi=KO
+  VERDETTO (primario): archiviato
+    - [expectancy_ic90] expectancy netta -1,93% con IC bootstrap al 90% [-8,37%, +4,98%] (seme 20260101, 10000 ricampionamenti): estremo inferiore <= 0
+    - [t_stat] t-statistic -0,475 <= 1,650 a una coda (5%)
+    - [profit_factor] profit factor 0,840 <= 1,200 (positivi +657,05% / negativi -782,65%)
+    - [drawdown] drawdown massimo 73,27% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge
+    - [pedaggio_coperto] pedaggio NON coperto con margine: expectancy netta -1,93% < 3,000x pedaggio +0,55% = +1,65% (manca +3,58% per operazione; tariffa okx_eea, tipo misto)
+    - [rilevanza_economica] rilevanza economica insufficiente: -108,38 EUR/anno attesi < 10,00 EUR di soglia (28 operazioni/anno su capitale 1000,00 EUR x esposizione 20,00%): un edge di questa dimensione non giustifica un sistema H24, estrapolazione: 65 operazioni in 846,0 giorni proiettate a 28/anno con expectancy costante — e' un limite superiore, non una previsione
+    - [indipendenza_dai_blocchi] expectancy concentrata in un solo blocco: blocco 3/3 vale +1,16% lordo (+0,61% netto) su 21 operazioni, ma tolto quello l'expectancy netta e' -3,96% <= 0: l'edge e' un evento con una data, non una proprieta' della strategia
+  confronto tariffe okx_eea_spot / okx_eea_con_perp: da okx_eea_spot a okx_eea_con_perp non cambia nessun criterio: il verdetto resta 'archiviato'. Il pedaggio piu' basso non sposta la decisione
+
+=== SCENARIO SECONDARIO (okx_eea_con_perp) ===
+  [secondario] configurazione CONGELATA: top 5 | momentum 120g | ribilancio ogni 14g
+  [secondario] operazioni: campione 85 | eseguite 66 | saltate 19 (cassa)
+  [secondario] expectancy netta -1,6835% | DD portafoglio MTM +73,009% | esposizione max +99,9% | max posizioni 5
+  [secondario] t-stat -0,42 | t-stat Newey-West -0,31 | capitale finale 525,81 EUR | giorni 846,0
+  CRITERI (8): numerosita'=ok | expectancy_ic90=KO | t_stat=KO | profit_factor=KO | drawdown=KO | pedaggio_coperto=KO | rilevanza_economica=KO | indipendenza_dai_blocchi=KO
+  VERDETTO (secondario): archiviato
+    - [expectancy_ic90] expectancy netta -1,68% con IC bootstrap al 90% [-8,03%, +5,16%] (seme 20260101, 10000 ricampionamenti): estremo inferiore <= 0
+    - [t_stat] t-statistic -0,420 <= 1,650 a una coda (5%)
+    - [profit_factor] profit factor 0,857 <= 1,200 (positivi +667,01% / negativi -778,12%)
+    - [drawdown] drawdown massimo 73,01% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge
+    - [pedaggio_coperto] pedaggio NON coperto con margine: expectancy netta -1,68% < 3,000x pedaggio +0,18% = +0,54% (manca +2,22% per operazione; tariffa okx_eea, tipo misto)
+    - [rilevanza_economica] rilevanza economica insufficiente: -95,88 EUR/anno attesi < 10,00 EUR di soglia (28 operazioni/anno su capitale 1000,00 EUR x esposizione 20,00%): un edge di questa dimensione non giustifica un sistema H24, estrapolazione: 66 operazioni in 846,0 giorni proiettate a 28/anno con expectancy costante — e' un limite superiore, non una previsione
+    - [indipendenza_dai_blocchi] expectancy concentrata in un solo blocco: blocco 1/3 vale -0,27% lordo (-0,45% netto) su 22 operazioni, ma tolto quello l'expectancy netta e' -2,57% <= 0: l'edge e' un evento con una data, non una proprieta' della strategia
+
+=== STRESS (slippage x2) ===
+  [stress] configurazione CONGELATA: top 5 | momentum 120g | ribilancio ogni 14g
+  [stress] operazioni: campione 85 | eseguite 65 | saltate 20 (cassa)
+  [stress] expectancy netta -2,0112% | DD portafoglio MTM +73,435% | esposizione max +97,8% | max posizioni 5
+  [stress] t-stat -0,49 | t-stat Newey-West -0,37 | capitale finale 505,13 EUR | giorni 846,0
+  CRITERI (8): numerosita'=ok | expectancy_ic90=KO | t_stat=KO | profit_factor=KO | drawdown=KO | pedaggio_coperto=KO | rilevanza_economica=KO | indipendenza_dai_blocchi=KO
+  VERDETTO (stress): archiviato
+    - [expectancy_ic90] expectancy netta -2,01% con IC bootstrap al 90% [-8,44%, +4,90%] (seme 20260101, 10000 ricampionamenti): estremo inferiore <= 0
+    - [t_stat] t-statistic -0,494 <= 1,650 a una coda (5%)
+    - [profit_factor] profit factor 0,834 <= 1,200 (positivi +654,52% / negativi -785,24%)
+    - [drawdown] drawdown massimo 73,44% > 25%: una strategia che guadagna con questo drawdown su capitale piccolo non e' investibile, e' una scommessa che il conto non regge
+    - [pedaggio_coperto] pedaggio NON coperto con margine: expectancy netta -2,01% < 3,000x pedaggio +0,55% = +1,65% (manca +3,66% per operazione; tariffa okx_eea, tipo misto)
+    - [rilevanza_economica] rilevanza economica insufficiente: -112,80 EUR/anno attesi < 10,00 EUR di soglia (28 operazioni/anno su capitale 1000,00 EUR x esposizione 20,00%): un edge di questa dimensione non giustifica un sistema H24, estrapolazione: 65 operazioni in 846,0 giorni proiettate a 28/anno con expectancy costante — e' un limite superiore, non una previsione
+    - [indipendenza_dai_blocchi] expectancy concentrata in un solo blocco: blocco 3/3 vale +1,08% lordo (+0,53% netto) su 21 operazioni, ma tolto quello l'expectancy netta e' -4,04% <= 0: l'edge e' un evento con una data, non una proprieta' della strategia
+  confronto stress (slippage x2): expectancy -1,9323% -> -2,0112%; verdetto archiviato -> archiviato
+
+=== VERDETTO P14 (finestra di verifica, scenario primario) ===
+  ARCHIVIATO: la configurazione scelta NON supera il cancello sulla verifica (criteri falliti: expectancy_ic90, t_stat, profit_factor, drawdown, pedaggio_coperto, rilevanza_economica, indipendenza_dai_blocchi).
+  -> si archivia per costruzione, niente 'quasi'.
