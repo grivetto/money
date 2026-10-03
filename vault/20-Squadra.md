@@ -12,6 +12,7 @@ Aggiornata: **03/10/2026** — la squadra ora ha **8 esecutori + 1 regia, su 3 m
 | **A0-mc2** | mc2 (container) | operaio — Agent Zero v2.13, Gemini 2.5-flash (:50080) |
 | **opencode-mc2** | mc2 | operaio coding — nemotron-3-ultra free (headless --auto) |
 | **opencode-omarchy** | nodo agenti (omarchy) | operaio coding — nemotron-3-ultra free (collaudato 03/10) |
+| **opencode-nuvola / opencode-marcodg1** | nuvola / MARCODG1 | operaio coding free (default `ling-3.1-flash-free`) — dal 04/10, smoke PONG ok |
 | **agy-omarchy** | nodo agenti (omarchy) | operaio headless — Antigravity CLI (Gemini 3.8 / Claude), allowlist |
 | **DSH-mc2** | mc2 | peer — harness DeepSeek: servizio `dsh-web` :4080 + headless (collaudato 03/10) |
 | **DSH-omarchy** | nodo agenti (omarchy) | peer ricerca via ssh; canale `hermes_bridge/dsh-mc2/` (P10, F2 carry) |

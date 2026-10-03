@@ -3,10 +3,10 @@
 ## Nodi
 | Nodo | Ruolo | Cosa gira |
 |---|---|---|
-| **mc2** | regia + ricerca | Hermes, fabbrica ×100 (master 3 s), bridge/canali, Zabbix «Money», A0-mc2, **DSH-mc2 (dsh-web :4080 + headless)** |
-| **MARCODG1** | lato exchange + web | banco a secco (5 min, DRY-RUN), aggregatore :8912, dashboard/landing, Grafana, **canary C1 live**, worker fabbrica |
-| **nuvola** | appoggio | health, exporter, zabbix-agent + tunnel, worker fabbrica |
-| **nodo agenti** (Omarchy) | agenti | **DSH-omarchy** (headless, canale `dsh-mc2` + web UI `dsh-web` :5080 servizio) + **opencode-omarchy** (nemotron-3-ultra-free) + **agy-omarchy** (Antigravity): operativi e collaudati il 03/10; A0 non installato (non richiesto) |
+| **mc2** | regia + ricerca | Hermes, fabbrica ×100 (master 3 s), bridge/canali, Zabbix «Money», A0-mc2, **DSH-mc2 (dsh-web :4080 + headless)**, opencode, agy |
+| **MARCODG1** | lato exchange + web | banco a secco (5 min, DRY-RUN), aggregatore :8912, dashboard/landing, Grafana, **canary C1 live**, worker fabbrica, opencode (v2.0.22) |
+| **nuvola** | appoggio | health, exporter, zabbix-agent + tunnel, worker fabbrica, opencode (v2.0.22) |
+| **nodo agenti** (Omarchy) | agenti | **DSH-omarchy** (headless, canale `dsh-mc2` + web UI `dsh-web` :5080 servizio) + **opencode-omarchy** (ling-3.1-flash-free) + **agy** (Antigravity — attivo su tutti e 4 i nodi dal 04/10): operativi e collaudati il 03/10; A0 non installato (non richiesto) |
 
 ## URL pubblici
 - Dashboard flotta: **https://denaro.grivetto.eu** (json: `/api/infra.json`)

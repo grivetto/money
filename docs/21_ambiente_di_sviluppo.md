@@ -8,7 +8,7 @@ Data: 2026-10-04 (notte). Stato: operativo.
 |---|---|---|---|
 | **Hermes** (regia) | mc2 | — | spec, review, integrazione, misure ufficiali, commit: mai delegati |
 | **A0** (Agent Zero v2.13) | mc2, win | `tools/a0_dispatch.py` | esecutori storici, brief inline |
-| **opencode** | mc2, omarchy (+nuvola, MARCODG1 in arrivo) | `opencode run -m <modello> --auto` | operaio coding free; modello consigliato `opencode/ling-3.1-flash-free` (alt: `nemotron-3.5-lightning-free`) |
+| **opencode** | **4 nodi** (mc2, omarchy, nuvola, MARCODG1) | `opencode run -m <modello> --auto` | operaio coding free; default **`opencode/ling-3.1-flash-free`** (small: `nemotron-3.5-lightning-free`); smoke PONG su tutti il 04/10; v2.0.22 su nuvola/MARCODG1, v1.18.34 su mc2/omarchy (upgrade opzionale) |
 | **agy** (Antigravity CLI) | mc2 (1.2.11 snap), omarchy/nuvola/MARCODG1 (1.2.16) | `agy -p "<task>" --output-format json` | operaio coding/analisi; allowlist command+read/write; deny segreti/git push; **MARCODG1: write solo in `~/agy-scratch`** |
 | **DSH** (DeepSeek Harness) | mc2 (`dsh-web` :4080 + headless), omarchy (web :5080, canale `dsh-mc2/`), win (web :3080, canale `dsh/`) | headless locale / canali file | peer ricerca; porte standardizzate 03/10 |
 
@@ -28,5 +28,5 @@ Data: 2026-10-04 (notte). Stato: operativo.
 
 ## Prossimi passi
 - Adozione PROTCON nel tick: `verify(dir)` + `idempotency_key "handoff:"+key` (`fabbrica/handoff_atomico.py`).
-- opencode su nuvola + MARCODG1 (install a cura dell'owner) + config default (`~/.config/opencode/opencode.json`).
+- Allineare versioni opencode su mc2/omarchy (1.18.34 → 2.0.22; richiede OK owner, sui nodi il comando di upgrade è gated).
 - `job_duration` (dai claim automatizzati).
