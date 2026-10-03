@@ -20,3 +20,9 @@
 - Foto della squadra: `money/FOTO_SQUADRA_2026-10-03.png` (8 esecutori + regia, su 3 macchine).
 - Contorno: canary C1 in validazione (review 15/10) · capitale ≈1.100 € · P10 "insufficiente" (23<30 op).
 - Pomeriggio: **sistemati i nomi host** (il desktop si annunciava come `mc2` — collisione col server → ora **omarchy**) e **DSH su omarchy riconfigurato**: servizio stabile `dsh-web` (:3080, avvio automatico, accesso via tunnel ssh) al posto delle istanze manuali.
+
+## 2026-10-03 sera — P14 chiude il filone momentum; la squadra consegna
+- **P14 (momentum cross su universo ampio) MISURATA → archiviata**: 58 simboli, verifica exp −1,93%, DD 73,3%, t −0,47 → 7/8 criteri KO. Con P10 "insufficiente", il filone momentum cross si chiude **con potenza adeguata** (l'allargamento d'universo non salva l'edge — P5 docet).
+- **C1REV** (pack review canary) consegnato da A0-win, integrato (`scripts/canary_review.py`, 5/5) e deployato su MARCODG1 — pronto per il checkpoint del **15/10**.
+- **Incidente provider risolto**: credito Google degli A0 a secco (402) → preset spostati su `openrouter/deepseek-v4-flash`; un file troncato recuperato via snapshot `_time_travel`.
+- Sistemato l'**A0 Launcher di omarchy** (crash all'avvio: sandbox su FUSE senza SUID → wrapper `~/.local/bin/a0-launcher` con `--no-sandbox` + voce di menu; docker abilitato al boot).
