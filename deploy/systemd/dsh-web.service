@@ -1,0 +1,21 @@
+[Unit]
+Description=DSH (DeepSeek Harness) — Web UI · squadra Denaro
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=sergio
+Group=sergio
+WorkingDirectory=/home/sergio/deepseek-harness
+Environment=HOME=/home/sergio
+Environment=PATH=/home/sergio/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ExecStart=/usr/bin/node --import tsx/esm apps/cli/src/bin.ts web --no-open --port 3080
+Restart=always
+RestartSec=5
+TimeoutStopSec=15
+KillMode=mixed
+SyslogIdentifier=dsh-web
+
+[Install]
+WantedBy=multi-user.target

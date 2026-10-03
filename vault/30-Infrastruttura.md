@@ -3,10 +3,10 @@
 ## Nodi
 | Nodo | Ruolo | Cosa gira |
 |---|---|---|
-| **mc2** | regia + ricerca | Hermes, fabbrica ×100 (master 3 s), bridge/canali, Zabbix «Money», A0-MC2 |
+| **mc2** | regia + ricerca | Hermes, fabbrica ×100 (master 3 s), bridge/canali, Zabbix «Money», A0-MC2, **DSH (dsh-web :3080 + headless)** |
 | **MARCODG1** | lato exchange + web | banco a secco (5 min, DRY-RUN), aggregatore :8912, dashboard/landing, Grafana, **canary C1 live**, worker fabbrica |
 | **nuvola** | appoggio | health, exporter, zabbix-agent + tunnel, worker fabbrica |
-| **nodo agenti** (Omarchy) | agenti | **DSH** (headless, canale `dsh-mc2`) + **opencode** (nemotron-3-ultra-free) — operativi e collaudati il 03/10; A0 non installato (non richiesto) |
+| **nodo agenti** (Omarchy) | agenti | **DSH** (headless, canale `dsh-mc2`) + **opencode** (nemotron-3-ultra-free) + **agy** (Antigravity): operativi e collaudati il 03/10; A0 non installato (non richiesto) |
 
 ## URL pubblici
 - Dashboard flotta: **https://denaro.grivetto.eu** (json: `/api/infra.json`)
