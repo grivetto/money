@@ -20,12 +20,12 @@ NON si adotta adesso Kubernetes/Redis/orchestratori: percorso a 3 livelli:
 ## Incremento 1 (hardening) — backlog con stato
 - [x] JEV gate advisory automatico sulle spec + verdetto in STATO.md (commit f75d432e, 30/09)
 - [x] Lint strutturale deterministico delle spec: src/money/spec_lint.py + CLI + 5 test (30/09)
-- [x] Job primitives: job_id + idempotency_key + lease_until + attempt + retry/backoff (jobs.db WAL) — modulo `fabbrica/jobs.py` integrato 30/09 (J1 via A0-MC2, 10/10 test; wire nel tick prossimo)
-- [ ] Dedup consegne: stesso idempotency_key => mai doppia integrazione — primitive pronte (`fabbrica/jobs.py`); wire nel tick prossimo
-- [ ] Wire del lint nel tick (accanto al gate JEV; serve prima il job-store per non gonfiare il tick)
-- [ ] Metriche minime: last_successful_tick, queue_oldest_age, job_duration, heartbeat_age, stale_gate_age
-- [ ] STATO.md derivato: generated_at + control_plane_revision (git rev); non fonte di verita'
-- [ ] Kill-switch di fabbrica (file STOP: blocca nuovi job, non cancella la coda; visibile in STATO)
+- [x] Job primitives: job_id + idempotency_key + lease_until + attempt + retry/backoff (jobs.db WAL) — modulo `fabbrica/jobs.py` integrato 30/09 (J1 via A0-MC2, 10/10 test); **cablato nel tick il 03/10** (`check_jobs`: accoda azioni con dedup, auto-chiude i job verificabili, metriche `factory_jobs_*`)
+- [x] Dedup consegne: stesso idempotency_key => mai doppia integrazione — attiva per le azioni del nastro (spec/inbox, 03/10); per gli handoff si integra col protocollo di consegna (lane DSH-win, in corso)
+- [x] Wire del lint nel tick (accanto al gate JEV) — 03/10: `check_lint`, un esito per hash in `STATO.md` e fix-job automatici
+- [ ] Metriche minime: last_successful_tick ✓, queue_oldest_age ✓, heartbeat_age ✓, stale_gate_age ✓, job metrics ✓ (03/10); resta `job_duration` (in attesa dei claim automatizzati)
+- [x] STATO.md derivato: generated_at + control_plane_revision (git rev); non fonte di verita' — dal 03/10
+- [x] Kill-switch di fabbrica (file STOP: blocca nuovi job, non cancella la coda; visibile in STATO) — attivo dal 30/09; esteso a job-store/lint il 03/10
 - [ ] Handoff atomico: scrittura tmp + fsync + rename, marker READY per ultimo, claim atomica
 - [ ] Heartbeat di progresso per worker (A0: ultimo poll ok; banco: ultimo giro; con timestamps)
 
@@ -45,3 +45,6 @@ NON produce doppie integrazioni ne' perdite.
 - Fail-closed per integrazione/test/manifest/policy; fail-open SOLO per il parere JEV advisory.
 - Promozione mai automatica verso capitale/live: gate + azione umana restano separati.
 - Un bot per conto; segreti mai in git, mai nei log, mai nei canali di consegna.
+
+## Aggiornamenti
+- **2026-10-03**: job-store e lint cablati nel tick (`check_jobs`/`check_lint`); dedup azioni + auto-chiusura verificabile (spec materializzate/aggiornate, inbox rimosso); metriche `factory_jobs_*` e `factory_specs_lint_bad`; `STATO.md` con control-plane rev. Restano: handoff atomico (lane DSH-win), claim atomica, `job_duration`.

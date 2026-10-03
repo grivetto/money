@@ -16,7 +16,13 @@ unità `fabbrica-worker.timer`) che pubblicano i controlli locali in `fabbrica/s
 4. stato P2: se il runner di misura è nel repo -> marca AZIONE "misurare";
 5. watchdog **A0-MC2** (API locale); **A0-PC** e **banco MARCODG1** arrivano dagli shard dei worker (nuvola / MARCODG1 — niente ssh nel tick);
 6. specgen: se la coda delle spec è vuota, marca la prossima spec da materializzare
-   (da `candidati.json`).
+   (da `candidati.json`);
+7. **lint strutturale** delle spec (7 blocchi del formato-contratto, deterministico —
+   `src/money/spec_lint.py`): un esito per versione/hash, visibile in `STATO.md`;
+8. **job-store** (`jobs.db`, SQLite WAL): accoda le azioni rilevate dal nastro (spec da
+   materializzare, fix spec flaggate da JEV/lint, file in inbox) con dedup stabile;
+   chiude da solo i job verificabili; statistiche in `STATO.md` e `metrics.prom`. Con
+   kill-switch attivo NON accoda nuovi job (la coda resta).
 
 Le azioni che richiedono giudizio o dati nuovi vengono **marcate come AZIONE** in `STATO.md`
 con l'owner (Hermes / DSH / A0). Il nastro non inventa numeri e non forza promozioni.
@@ -53,5 +59,6 @@ Installazione su MARCODG1/nuvola: copiare `worker.py` in `~/fabbrica/`, poi
 - `shards/` — shard dei worker (runtime, ignorato da git).
 - `candidati.json` — la coda **dichiarata** dei candidati/spec (stato per ciascuno).
 - `state.json` — stato macchina (runtime, ignorato da git).
+- `jobs.db` — job-store SQLite WAL: azioni dedup + statistiche (runtime, ignorato da git).
 - `STATO.md` — stato leggibile (runtime, ignorato da git).
 - `log/` — log dei tick (runtime, ignorato da git).
