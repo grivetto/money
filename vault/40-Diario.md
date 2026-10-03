@@ -26,3 +26,4 @@
 - **C1REV** (pack review canary) consegnato da A0-win, integrato (`scripts/canary_review.py`, 5/5) e deployato su MARCODG1 — pronto per il checkpoint del **15/10**.
 - **Incidente provider risolto**: credito Google degli A0 a secco (402) → preset spostati su `openrouter/deepseek-v4-flash`; un file troncato recuperato via snapshot `_time_travel`.
 - Sistemato l'**A0 Launcher di omarchy** (crash all'avvio: sandbox su FUSE senza SUID → wrapper `~/.local/bin/a0-launcher` con `--no-sandbox` + voce di menu; docker abilitato al boot).
+- **Porte DSH standardizzate** (direttiva proprietario): win `3080` · mc2 `dsh-web` **4080** · omarchy **5080** — unit aggiornati e riavviati con backup `.bak-20261003`; 3080 non più occupata da mc2/omarchy.
