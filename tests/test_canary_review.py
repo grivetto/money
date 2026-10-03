@@ -72,12 +72,12 @@ class TestCanaryReview(unittest.TestCase):
         )
 
         log_fixture = (
-            '2026-10-01T08:00:00 C1 DOGE: perp 11ct@ 0.09466 mark 0.09282 upl +0.2024 funding +0.0076 |    spot 109.89 DOGE (avg 0.09466) mid 0.09282 delta-qty 0.11 liq 0 |    net stimato (spotΔ+upl+funding) +0.0090 USDC\n'
-            '2026-10-01T08:01:00 C1 DOGE: perp 12ct@ 0.09460 mark 0.09280 upl +0.2100 funding +0.0080 |    spot 110.00 DOGE (avg 0.09460) mid 0.09280 delta-qty 0.10 liq 0 |    net stimato (spotΔ+upl+funding) +0.0100 USDC\n'
-            '2026-10-01T08:02:00 C1 DOGE: perp 11ct@ 0.09470 mark 0.09290 upl +0.2050 funding +0.0078 |    spot 109.95 DOGE (avg 0.09470) mid 0.09290 delta-qty 0.05 liq 0 |    net stimato (spotΔ+upl+funding) +0.0095 USDC\n'
-            '2026-10-01T08:03:00 C1 DOGE: ANOMALIE: something went wrong here | perp 10ct@ 0.09465 mark 0.09285 upl +0.1900 funding +0.0075 |    spot 109.80 DOGE (avg 0.09465) mid 0.09285 delta-qty 0.15 liq 0 |    net stimato (spotΔ+upl+funding) +0.0085 USDC\n'
+            '2026-10-01T08:00:00 C1 DOGE: perp 11ct@ 0.09466 mark 0.09282 upl +0.2024 funding +0.0010 |    spot 109.89 DOGE (avg 0.09466) mid 0.09282 delta-qty 0.11 liq 0 |    net stimato (spotΔ+upl+funding) +0.0090 USDC\n'
+            '2026-10-01T08:01:00 C1 DOGE: perp 12ct@ 0.09460 mark 0.09280 upl +0.2100 funding +0.0010 |    spot 110.00 DOGE (avg 0.09460) mid 0.09280 delta-qty 0.10 liq 0 |    net stimato (spotΔ+upl+funding) +0.0100 USDC\n'
+            '2026-10-01T08:02:00 C1 DOGE: perp 11ct@ 0.09470 mark 0.09290 upl +0.2050 funding +0.0200 |    spot 109.95 DOGE (avg 0.09470) mid 0.09290 delta-qty 0.05 liq 0 |    net stimato (spotΔ+upl+funding) +0.0095 USDC\n'
+            '2026-10-01T08:03:00 C1 DOGE: ANOMALIE: something went wrong here | perp 10ct@ 0.09465 mark 0.09285 upl +0.1900 funding +0.0315 |    spot 109.80 DOGE (avg 0.09465) mid 0.09285 delta-qty 0.15 liq 0 |    net stimato (spotΔ+upl+funding) +0.0085 USDC\n'
             '2026-10-01T08:04:00 C1 DOGE: nessuna posizione perp | DOGE spot N |    net stimato (spotΔ+upl+funding) +0.0000 USDC\n'
-            '2026-10-01T08:05:00 C1 DOGE: perp 10ct@ 0.09475 mark 0.09295 upl +0.2150 funding +0.0082 |    spot 110.10 DOGE (avg 0.09475) mid 0.09295 delta-qty 0.08 liq 0 |    net stimato (spotΔ+upl+funding) +0.0110 USDC\n'
+            '2026-10-01T08:05:00 C1 DOGE: perp 10ct@ 0.09475 mark 0.09295 upl +0.2150 funding +0.0315 |    spot 110.10 DOGE (avg 0.09475) mid 0.09295 delta-qty 0.08 liq 0 |    net stimato (spotΔ+upl+funding) +0.0110 USDC\n'
         )
         self._write_fixtures(json.dumps(state_fixture), events_fixture, log_fixture)
 
@@ -104,10 +104,11 @@ class TestCanaryReview(unittest.TestCase):
         with open(json_report_path, 'r', encoding='utf-8') as f:
             report_data = json.load(f)
 
-        # Funding checks: cumulative funding from log should be 0.0076 + 0.0080 + 0.0078 + 0.0075 + 0.0082 = 0.0391
-        self.assertAlmostEqual(report_data['funding']['cumulative'], 0.0391, places=4)
+        # Funding: il campo del log è il CUMULATIVO (OKX fundingFee) — si usa l'ULTIMO valore
+        # osservato (0.0315), NON la somma delle righe (=0.0550 col vecchio metodo).
+        self.assertAlmostEqual(report_data['funding']['cumulative'], 0.0315, places=4)
         self.assertAlmostEqual(report_data['funding']['expected_low'], self.notional_usdc * 0.00008 * 3 * self.days, places=7)
-        self.assertAlmostEqual(report_data['funding']['ratio_percent'], (0.0391 / (self.notional_usdc * 0.00008 * 3 * self.days)) * 100, places=2)
+        self.assertAlmostEqual(report_data['funding']['ratio_percent'], (0.0315 / (self.notional_usdc * 0.00008 * 3 * self.days)) * 100, places=2)
         self.assertEqual(report_data['funding']['criterion_pass'], 'PASS')
 
         # Slippage checks
@@ -349,6 +350,46 @@ class TestCanaryReview(unittest.TestCase):
         self.assertEqual(report_data['events_summary']['counts_by_type']['unwind_spot'], 1)
         self.assertEqual(len(report_data['events_summary']['abort_unwind_perdita_hedge']), 2)
         self.assertEqual(report_data['checklist']['interventions'], 'FAIL')
+
+    def test_funding_ultimo_valore_non_somma(self):
+        """Il campo funding del log è cumulativo: il totale è l'ULTIMO valore, non la somma."""
+        riga = ('C1 DOGE: perp 11ct@ 0.09466 mark 0.0946 upl +0.0066 funding +{v} | '
+                'spot 109.89 DOGE delta-qty 0.11 liq 0 | net stimato +0.0000 USDC\n')
+        with open(self.log_path, 'w', encoding='utf-8') as f:
+            f.write(riga.format(v="0.0010"))
+            f.write(riga.format(v="0.0010"))
+            f.write(riga.format(v="0.0021"))
+        data = canary_review.parse_canary_log(
+            self.log_path, self.start_datetime, self.start_datetime + timedelta(days=self.days))
+        self.assertAlmostEqual(data['funding_last_log'], 0.0021, places=6)
+        self.assertAlmostEqual(data['funding_first_log'], 0.0010, places=6)
+
+    def test_fee_base_ccy_convertita_in_quote(self):
+        """Fee spot senza fee_ccy (reale OKX = valuta base): convertita via avg e dichiarata."""
+        state_fixture = {"status": "open", "ts_open": "2026-10-01T00:00:00",
+                         "perp": {"ct": 11.0, "avg_px": 0.09466, "order": "o2", "esito": "filled"}}
+        events_fixture = (
+            '{"ts": "2026-10-01T00:01:00", "event": "convert", "esito": "closed", "ordine": "o1"}\n'
+            '{"ts": "2026-10-01T00:02:00", "event": "spot_fill", "qty": 109.89, "avg": 0.09473, "fee": 0.11, "esito": "closed", "mid_pre": 0.09468}\n'
+        )
+        log_fixture = ('C1 DOGE: perp 11ct@ 0.09466 funding +0.0000 | spot 109.89 DOGE delta-qty 0.11 '
+                       '| net stimato +0.0000 USDC\n')
+        self._write_fixtures(json.dumps(state_fixture), events_fixture, log_fixture)
+        with patch('sys.argv', [
+            'canary_review.py',
+            '--state', self.state_path,
+            '--events', self.events_path,
+            '--log', self.log_path,
+            '--start', self.start_date_iso,
+            '--out', self.output_dir
+        ]):
+            canary_review.main()
+        with open(os.path.join(self.output_dir, "C1_review.json"), 'r', encoding='utf-8') as f:
+            d = json.load(f)
+        # 0.11 DOGE × 0.09473 ≈ 0.010420 USDC — NON 0.11 come se fosse già USDC.
+        self.assertAlmostEqual(d['fee']['observed_total'], 0.11 * 0.09473, places=5)
+        self.assertEqual(d['fee']['fee_ccy_assunta'][0]['assunta'], 'BASE->quote (inferita)')
+        self.assertEqual(d['fee']['criterion_pass'], 'PASS')
 
 
 if __name__ == '__main__':

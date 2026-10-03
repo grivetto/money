@@ -30,7 +30,8 @@ def parse_canary_log(log_file_path, start_datetime, end_datetime):
     log_entries = []
     anomalies_count = 0
     recognized_lines = 0
-    funding_cum = 0.0
+    funding_first = None
+    funding_last = None
     max_delta_qty = 0.0
 
     try:
@@ -44,9 +45,13 @@ def parse_canary_log(log_file_path, start_datetime, end_datetime):
                     if "ANOMALIE:" in line:
                         anomalies_count += 1
 
-                    # Extract funding: look for 'funding +X.XXXX' or 'funding -X.XXXX' (tolerate variable spaces)
+                    # Extract funding: 'funding +X.XXXX' (tolerate variable spaces).
+                    # NOTA SEMANTICA (03/10, dai dati reali): il campo `funding` del log è il
+                    # fundingFee CUMULATIVO della posizione (cresce a scalini, resta costante tra
+                    # i payout) — NON un incremento per ciclo: il cumulato in finestra è
+                    # l'ULTIMO valore osservato, non la somma delle righe.
                     funding_match = re.search(r'funding\s+([+-]?[\d.]+)', line)
-                    funding = float(funding_match.group(1)) if funding_match else 0.0
+                    funding = float(funding_match.group(1)) if funding_match else None
 
                     # Extract delta-qty: look for 'delta-qty X.XX' (tolerate variable spaces)
                     delta_qty_match = re.search(r'delta-qty\s+([\d.]+)', line)
@@ -56,7 +61,10 @@ def parse_canary_log(log_file_path, start_datetime, end_datetime):
                     net_estimated_match = re.search(r'net stimato \(spot\u0394\+upl\+funding\) ([+-]?[\d.]+) USDC', line)
                     net_estimated = float(net_estimated_match.group(1)) if net_estimated_match else 0.0
 
-                    funding_cum += funding
+                    if funding is not None:
+                        if funding_first is None:
+                            funding_first = funding
+                        funding_last = funding
                     max_delta_qty = max(max_delta_qty, delta_qty)
 
                     log_entries.append({
@@ -72,7 +80,8 @@ def parse_canary_log(log_file_path, start_datetime, end_datetime):
         "entries": log_entries,
         "anomalies_count": anomalies_count,
         "recognized_lines": recognized_lines,
-        "funding_cum_log": funding_cum,
+        "funding_last_log": funding_last,
+        "funding_first_log": funding_first,
         "max_delta_qty": max_delta_qty
     }
 
@@ -82,12 +91,14 @@ def calculate_metrics(state_data, event_data, log_data, start_datetime, days, no
             "days": days,
             "first_check": None,
             "last_check": None,
+            "elapsed_days": None,
             "recognized_log_cycles": log_data["recognized_lines"]
         },
         "funding": {
             "cumulative": 0.0,
             "expected_low": 0.0,
             "ratio_percent": "n/d",
+            "source": "n/d",
             "criterion_pass": "N/D"
         },
         "slippage": {
@@ -118,17 +129,28 @@ def calculate_metrics(state_data, event_data, log_data, start_datetime, days, no
         }
     }
 
-    # Window - first/last check from log_entries (if available) or state.last_check
+    # Window - first/last check from state (ts_open / last_check)
     if log_data["entries"]:
         metrics["window"]["first_check"] = state_data.get('ts_open') if state_data else 'N/A'
         metrics["window"]["last_check"] = state_data.get('last_check') if state_data else 'N/A'
+        try:
+            _primo = datetime.fromisoformat(str(metrics["window"]["first_check"]))
+            _ultimo = datetime.fromisoformat(str(metrics["window"]["last_check"]))
+            metrics["window"]["elapsed_days"] = round((_ultimo - _primo).total_seconds() / 86400.0, 2)
+        except (ValueError, TypeError):
+            metrics["window"]["elapsed_days"] = None
 
-    # Funding: Prioritize log funding, then fallback to state
-    if log_data["funding_cum_log"] != 0.0 or log_data["recognized_lines"] > 0: # If there were recognized log lines with funding data
-        metrics["funding"]["cumulative"] = log_data["funding_cum_log"]
-    elif state_data and "last_funding" in state_data: # Fallback to state funding if no meaningful log funding
-        metrics["funding"]["cumulative"] = state_data["last_funding"]
-    # else it remains 0.0 as initialized
+    # Funding: il campo del log (OKX fundingFee) è il CUMULATIVO della posizione:
+    # si usa l'ULTIMO valore osservato (mai la somma) oppure il fallback di stato.
+    funding_cum = None
+    if log_data.get("funding_last_log") is not None:
+        funding_cum = float(log_data["funding_last_log"])
+        metrics["funding"]["source"] = "log_ultimo_valore"
+    elif state_data and state_data.get("last_funding") is not None:
+        funding_cum = float(state_data["last_funding"])
+        metrics["funding"]["source"] = "state.last_funding"
+    if funding_cum is not None:
+        metrics["funding"]["cumulative"] = funding_cum
 
     if notional_usdc is not None and days > 0:
         metrics["funding"]["expected_low"] = notional_usdc * 0.00008 * 3 * days # 0.008% * 3
@@ -210,15 +232,35 @@ def calculate_metrics(state_data, event_data, log_data, start_datetime, days, no
     else:
         metrics["checklist"]["slippage"] = "N-D"
 
-    # Fee
+    # Fee — OKX addebita la fee spot in VALUTA BASE e quella perp in quote (USDC).
+    # Gli eventi reali NON portano `fee_ccy`: se manca si inferisce dalla grandezza
+    # (confronto con l'atteso di schedule) e l'assunzione fatta viene ESPOSTA in output.
     observed_fees = 0.0
     notional_traded_spot = 0.0
     notional_traded_perp = 0.0
+    fee_assunzioni = []
     for event in event_data:
         if event.get("event") == "spot_fill" and "fee" in event and "avg" in event and "qty" in event:
             try:
-                observed_fees += float(event["fee"])
-                notional_traded_spot += abs(float(event["avg"]) * float(event["qty"]))
+                fee = float(event["fee"])
+                avg = float(event["avg"])
+                qty = float(event["qty"])
+                notional = abs(avg * qty)
+                ccy = str(event.get("fee_ccy") or "").upper()
+                if ccy in ("USDT", "USDC", "USD"):
+                    fee_usdc, assunta = fee, ccy
+                elif ccy:
+                    fee_usdc, assunta = fee * avg, f"{ccy}->quote"
+                else:
+                    atteso_fill = notional * 0.0010  # schedule spot taker
+                    if abs(fee - atteso_fill) <= abs(fee * avg - atteso_fill):
+                        fee_usdc, assunta = fee, "QUOTE (inferita)"
+                    else:
+                        fee_usdc, assunta = fee * avg, "BASE->quote (inferita)"
+                observed_fees += fee_usdc
+                notional_traded_spot += notional
+                fee_assunzioni.append({"ts": event.get("ts"), "fee": fee,
+                                       "assunta": assunta, "fee_usdc": round(fee_usdc, 6)})
             except (ValueError, TypeError) as e:
                 print(f"Warning: Could not parse spot_fill fee/notional data from event: {event} ({e})")
 
@@ -238,6 +280,8 @@ def calculate_metrics(state_data, event_data, log_data, start_datetime, days, no
 
     metrics["fee"]["observed_total"] = round(observed_fees, 6)
     metrics["fee"]["expected_total"] = round(expected_total_fees, 6)
+    metrics["fee"]["observed_scope"] = "spot-only (la fee perp non è presente negli eventi)"
+    metrics["fee"]["fee_ccy_assunta"] = fee_assunzioni
 
     if metrics["fee"]["expected_total"] > 0:
         metrics["fee"]["ratio_percent"] = round((metrics["fee"]["observed_total"] / metrics["fee"]["expected_total"]) * 100, 2)
@@ -288,7 +332,11 @@ def generate_markdown_report(metrics):
     report += f"- **Cumulative Funding (USDC):** {metrics['funding']['cumulative']:.4f}\n"
     report += f"- **Expected Low Funding (USDC):** {metrics['funding']['expected_low']:.4f}\n"
     report += f"- **Ratio to Expected (%):** {metrics['funding']['ratio_percent']}\n"
-    report += f"- **Criterion:** {metrics['funding']['criterion_pass']}\n\n"
+    report += f"- **Criterion:** {metrics['funding']['criterion_pass']}\n"
+    if metrics['window'].get('elapsed_days') is not None and metrics['window']['elapsed_days'] < metrics['window']['days']:
+        report += (f"- **Nota:** finestra parziale ({metrics['window']['elapsed_days']}/{metrics['window']['days']} "
+                   "giorni) — i criteri a soglia piena (funding) si leggono a fine finestra.\n")
+    report += "\n"
 
     report += "## Slippage (BPS)\n"
     report += f"- **Buy Side Avg BPS:** {metrics['slippage']['buy']['avg_bps']} (Count: {metrics['slippage']['buy']['count']})\n"

@@ -25,3 +25,16 @@ Consegna A0-win del 2026-10-03 (contesto `e1CzhyyV`). File originali conservati:
 - Review indipendente di Hermes: 5/5 rieseguito su mc2 sui file puliti (pre-integrazione).
 
 Prossimo passo: deploy read-only su MARCODG1 (`/home/marco/canary/`) in vista del 15/10.
+
+## Collaudo anticipato sui dati reali (03/10 sera, prima del 15/10)
+Smoke read-only su MARCODG1 (`/tmp/c1rev_smoke2`): trovati e corretti DUE difetti reali:
+1. **semantica funding**: nel log reale il campo `funding` è il fundingFee CUMULATIVO (OKX) —
+   il tool lo sommava riga-per-riga sovrastimando (1,80 vs 0,0076 reali). Ora usa l'ULTIMO
+   valore osservato (test di regressione dedicato: `test_funding_ultimo_valore_non_somma`).
+2. **unità della fee**: la fee spot reale è in VALUTA BASE (0,11 DOGE), il tool la trattava
+   come quote (ratio 1057% → FAIL falso). Ora converte (fee×avg) con assunzione dichiarata
+   in output (`fee_ccy_assunta`); su dati reali: 0,01042 USDC vs 0,01041 attesi → PASS
+   (`test_fee_base_ccy_convertita_in_quote`).
+Aggiunta anche la `Nota: finestra parziale (X/Y giorni)` nel report MD.
+Esiti post-fix sui dati reali: reconciliation PASS · slippage PASS · fee PASS ·
+funding FAIL (atteso: finestra al 20%, si legge a fine finestra) · interventions PASS.
