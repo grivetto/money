@@ -19,3 +19,4 @@
 - **Nodo agenti a 3 esecutori**: opencode ricollaudato (PONG-OC) + **agy/Antigravity** in squadra.
 - Foto della squadra: `money/FOTO_SQUADRA_2026-10-03.png` (8 esecutori + regia, su 3 macchine).
 - Contorno: canary C1 in validazione (review 15/10) · capitale ≈1.100 € · P10 "insufficiente" (23<30 op).
+- Pomeriggio: **sistemati i nomi host** (il desktop si annunciava come `mc2` — collisione col server → ora **omarchy**) e **DSH su omarchy riconfigurato**: servizio stabile `dsh-web` (:3080, avvio automatico, accesso via tunnel ssh) al posto delle istanze manuali.
