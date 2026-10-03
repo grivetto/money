@@ -22,19 +22,47 @@ sua storia, come memoria di cosa è stato provato — non come base su cui costr
 
 ---
 
-## 📊 Stato in sintesi — 2026-09-25
+## 📊 Stato in sintesi — 2026-10-03
+
+> **TL;DR** — un rig di ricerca onesto su denaro vero: il cancello ha archiviato tutte le famiglie
+> misurate finora; un canary live (carry DOGE) è dentro la finestra di validazione; capitale
+> ~1.100 EUR, e la scala del carry parte solo dopo la review del 15/10.
 
 | | |
 | :--- | :--- |
-| **Test** | **437 passati**, `ruff` pulito, in **due ambienti indipendenti** |
-| **Strategie misurate** | **3** famiglie (una per nodo), tutte giudicate ai costi reali |
-| **Verdetti** | **3 archiviate** (famiglie) — il carry live **C1** è nella finestra di validazione canary (review 15/10) |
+| **Test** | **449 passati**, `ruff` pulito, in **due ambienti indipendenti** |
+| **Strategie misurate** | **3** famiglie (una per nodo), tutte giudicate ai costi reali — più gli esperimenti pre-registrati della serie P (P1–P13), ogni verdetto congelato in `prove/` |
+| **Verdetti** | **3 archiviate** (famiglie) — il carry live **C1** è nella finestra di validazione canary (review 15/10); **P10** (momentum cross-timeframe): *insufficiente* (23 operazioni < 30 — conservata, non archiviata) |
+| **Canary C1 live** | carry di funding DOGE su OKX EEA, completamente riconciliato: funding **+0,0076 USDC**, hedge marcato **+0,20 USDC**, netto ≈ **+0,009 USDC** al giorno 3/14 — taglia volutamente minima |
 | **Ordini reali inviati** | **0** dalle strategie di questo repo — il primo bot live del progetto (carry **C1**, DOGE) opera su OKX EEA ed è tracciato in `alpha-omega-trading` (`docs/16`) |
-| **Capitale** | **~1.100 EUR** sui conti OKX (verificati in sola lettura) — l'owner ha depositato **+1.000 EUR il 03/10** per la scala del carry (deploy subordinato alla review del 15/10); il canary live (carry DOGE, autorizzato) gira sul conto main |
+| **Capitale** | **~1.100 EUR** sui conti OKX (verificati in sola lettura) — l'owner ha depositato **+1.000 EUR il 03/10** per la scala del carry (deploy subordinato alla review del 15/10) |
+| **Squadra & ops** | **8 esecutori + 1 regia su 3 macchine** (`A0-win` · `A0-mc2` · `DSH-mc2/omarchy/win` · `opencode-mc2/omarchy` · `agy-omarchy`; consegne riviste da Hermes), alerting attivo (`@DenaroAlertBot`), check post-riavvio 34/34 |
 | **Ultimo commit** | `main` — vedi `git log` per la testa corrente |
 
 Repository: `C:\dev\money` in locale, `github.com/grivetto/money` in remoto. Pacchetto Python sotto
 `src/money/`, test sotto `tests/`, prove sotto `prove/`, decisioni sotto `docs/`.
+
+---
+
+## 📜 La storia — da «La Baracca» al rig misurato
+
+*«La Baracca»* è l'italiano per un aggeggio improvvisato che ha sempre bisogno di un'altra toppa —
+e per un anno, tra tentativi e strumenti AI diversi (OpenClaw, Hermes, Agent Zero, DeepSeek TUI),
+il progetto è stato esattamente questo: bot che giravano, numeri che non si riconciliavano, zero
+euro guadagnati. Il punto di svolta non è stata una feature. È stata una decisione: smettere di
+costruire, cominciare a misurare — e fare del misurare un cancello.
+
+| Quando | Cosa è successo | La lezione |
+| :--- | :--- | :--- |
+| **2026, primavera → estate** | La serie `denaro`: quattro codebase una dopo l'altra — Binance su un telefono, il primo `money` (grid, DCA, scalper, hedge, futures, sentiment), `alpha-omega-trading` (49.162 righe, 17 bot, tre macchine), `denaro2` sulle VPS | costruire *prima* il sistema e cercare *dopo* qualcosa da catturare non funziona |
+| **2026-09** | L'audit di `alpha-omega-trading` (`docs/01`): «il sistema funziona, su una baracca non supervisionata» — servizi non versionati, capitali che i conti non avevano, 1.486 tick persi in silenzio, 10 guasti su 12 da un solo path obsoleto | fermarsi; rifondare |
+| **2026-09-23 → 30** | La rifondazione: questo repository trasforma la regola in codice — il **cancello a 8 criteri**; gli esperimenti della serie P sono pre-registrati, misurati e giudicati uno a uno; ogni famiglia misurata finora è archiviata | il cancello non è una linea guida: è codice, e il suo rifiuto è vincolante |
+| **2026-10-01** | Il **primo ordine reale** del progetto viene eseguito su OKX EEA; nasce il **canary C1** (carry di funding DOGE, spot + hedge perp) — taglia minima, completamente riconciliato | un esperimento, non un raccolto |
+| **2026-10-03** | L'owner deposita **+1.000 EUR**; la flotta guadagna i suoi agenti (`DSH`, `A0`, `opencode`, `agy`), l'alerting live e il check post-riavvio (34/34) | il capitale non crea l'edge — rende *visibile* il guadagno |
+
+Oggi il codice vecchio vive in `legacy/` come memoria, non come fondamenta, e solo il rig di
+ricerca può avvicinarsi alla produzione: **prima cosa catturare, poi il sistema.** Questo
+repository è il "poi".
 
 ---
 
@@ -61,7 +89,7 @@ money/cancello.py              8 criteri, 3 verdetti, ogni motivo porta il suo n
 promosso / archiviato / insufficiente          il verdetto e' vincolante
 ```
 
-### Il sistema attorno alla pipeline — aggiornato 02/10/2026
+### Il sistema attorno alla pipeline — aggiornato 03/10/2026 (sera)
 
 ![Denaro — foto del sistema, 03/10/2026](FOTO_SISTEMA_2026-10-03.png)
 
@@ -69,29 +97,36 @@ promosso / archiviato / insufficiente          il verdetto e' vincolante
                      ┌──────────────────────── mc2 — l'hub ──────────────────────────┐
                      │ Hermes — direzione, misure, review, unico scrittore git       │
                      │ fabbrica master — un'azione ogni 3 s (×100 dal 02/10)         │
-                     │ Zabbix 7.0 «Money» (38 host) · A0-MC2 operaio (Gemini 2.5)    │
+                     │ Zabbix 7.0 «Money» (38 host) · A0-mc2 + DSH-mc2 (:3080)       │
                      │ fabbrica worker (5 s) · raccolta funding (4 h) · canale DSH   │
                      └───────────┬─────────────────────────────────────┬─────────────┘
                                  │ tailscale / ssh                     │ brief e consegne
-                ┌────────────────▼───────────────────┐   ┌────────────▼───────────────────┐
-                │ MARCODG1 — trading e web           │   │ A0-PC (Windows) · DSH (Windows)│
-                │ · canary live — carry DOGE, 1×     │   │ operai / peer, protocollo file │
-                │ · banco a secco — read-only, rc=2  │   └────────────────────────────────┘
+                ┌────────────────▼───────────────────┐   ┌────────────▼────────────────────┐
+                │ MARCODG1 — trading e web           │   │ A0-win + DSH-win (PC, Windows)  │
+                │ · canary live — carry DOGE, 1×     │   │ operai / peer, protocollo file  │
+                │ · banco a secco — read-only, rc=2  │   └─────────────────────────────────┘
                 │ · aggregator :8912 → 34 bot        │
                 │ · dashboard :8913 · landing :8914  │
                 │ · Grafana :3000 · health :8911     │
                 └────────────────────────────────────┘
      nuvola — posto di monitoraggio: health · exporter · Zabbix agent + tunnel · fabbrica worker (5 s)
 
-     aiutanti — OpenCode (mc2): esecutore free · JEV (TypeSafe): giudice advisory
+     aiutanti — opencode-mc2 · opencode-omarchy · agy-omarchy: esecutori free
+     JEV (TypeSafe): giudice advisory
 ```
 
-*Un solo anello: idea → spec pre-registrata (`coda_catena/` + `REGISTRO`) → operaio → review
+*Un solo anello: idea → spec pre-registrata (`coda_catena/` + `REGISTRO`) → esecutore → review
 (test rieseguiti nel repo) → misura (artefatti congelati in `prove/`) → cancello a 8 criteri →
-promozione/archivio → banco a secco → canary → live a taglia minima. Gli operai — A0-MC2, A0-PC,
-DSH, OpenCode — consegnano a Hermes; il **nodo agenti** (Omarchy) ospita DSH + un secondo OpenCode; niente entra senza review. Visual: [`FOTO_SISTEMA_2026-10-03.html`](FOTO_SISTEMA_2026-10-03.html) · [`.png`](FOTO_SISTEMA_2026-10-03.png). Foto precedenti:
-[`ARCHITETTURA_2026-09-30.md`](ARCHITETTURA_2026-09-30.md) ·
+promozione/archivio → banco a secco → canary → live a taglia minima. Gli esecutori — `A0-mc2`,
+`A0-win`, `DSH-mc2/omarchy/win`, `opencode-mc2/omarchy`, `agy-omarchy` — consegnano a Hermes; il
+**nodo agenti** (Omarchy) ospita `DSH-omarchy` e `opencode-omarchy` come servizi systemd
+(loopback-only, raggiunti via tunnel ssh); niente entra senza review. Visual:
+[`FOTO_SISTEMA_2026-10-03.html`](FOTO_SISTEMA_2026-10-03.html) · [`.png`](FOTO_SISTEMA_2026-10-03.png) ·
+[`FOTO_SQUADRA_2026-10-03.html`](FOTO_SQUADRA_2026-10-03.html) · [`.png`](FOTO_SQUADRA_2026-10-03.png).
+Foto precedenti: [`ARCHITETTURA_2026-09-30.md`](ARCHITETTURA_2026-09-30.md) ·
 [`ARCHITETTURA_2026-10-01.md`](ARCHITETTURA_2026-10-01.md).*
+
+![La squadra — 03/10/2026](FOTO_SQUADRA_2026-10-03.png)
 
 ### Le tecnologie usate
 
@@ -104,7 +139,7 @@ DSH, OpenCode — consegnano a Hermes; il **nodo agenti** (Omarchy) ospita DSH +
 | Modellazione del dominio | **`dataclasses`** (`frozen=True`), `enum`, type hints completi, funzioni pure | il modulo dei costi non fa I/O: non può mentire, e si testa in millisecondi |
 | Modello dei costi | **`money/costi.py`** — frazioni, mai percentuali (`0.0035`, non `0.35`) | così nessun errore di fattore 100 può nascondersi in una moltiplicazione |
 | Cancello | **`money/cancello.py`** — IC bootstrap al 90% con seme fisso, t-stat, profit factor, drawdown, copertura del pedaggio, rilevanza economica, indipendenza dai blocchi | un criterio che non vedi non può essere discusso |
-| Test | **pytest >= 8** (437 test), **ruff >= 0.5** (`line-length = 120`, regole `E9`+`F`) | solo regole che intercettano errori reali: una CI che grida sempre non protegge niente |
+| Test | **pytest >= 8** (449 test), **ruff >= 0.5** (`line-length = 120`, regole `E9`+`F`) | solo regole che intercettano errori reali: una CI che grida sempre non protegge niente |
 | Config e pacchetto | **PyYAML >= 6**, **setuptools** (layout `src/`) | `pytest` importa il pacchetto da `src/` senza installazione, così la suite gira su un checkout appena fatto |
 | Prove | **artefatti JSON e testo** in `prove/`, decisioni in Markdown in `docs/` | una misura che non si può rileggere è un'opinione |
 | Controllo di versione | **git**, un solo scrittore per percorso, systemd e cron da versionare in `deploy/` | nel progetto precedente `systemd` e `crontab` non erano versionati, ed è stata la causa di 10 guasti su 12 |
@@ -175,7 +210,7 @@ minimo d'ordine di 1 EUR e un quarto per posizione, **non esiste nessun ordine s
 ## 🧪 Testing — e la riproduzione indipendente
 
 ```
-437 passed
+449 passed
 ruff check . → All checks passed
 ```
 
@@ -254,7 +289,7 @@ money/
 │       ├── griglia_adattiva.py   nodo B — griglia adattiva
 │       └── momento_4h.py         nodo C — momento a 4 ore
 ├── scripts/                  runner di misura, uno per ipotesi, piu' le verifiche indipendenti
-├── tests/                    437 test offline
+├── tests/                    449 test offline
 ├── docs/                     01 decisione · 02 specifica del banco a secco · 03 verdetti · 04 riproduzione
 ├── prove/                    prove grezze: verdetti, JSON, confronto con l'evidenza precedente
 ├── assets/                   banner e diagramma di architettura
@@ -274,7 +309,7 @@ cd money
 python src/money/costi.py
 
 # tutta la suite (offline, nessuna chiave, nessuna rete)
-python -m pytest tests -q          # 437 passed
+python -m pytest tests -q          # 449 passed
 ruff check .
 
 # rimisura una ipotesi su barre reali OKX EEA (nessuna chiave: dati pubblici)
@@ -289,17 +324,18 @@ python demo_cancello.py
 
 ## 🚧 Lavoro aperto, in ordine di valore
 
-1. **Decisione del proprietario — assessment X-Perps.** `acctLv` 1 → 2. È la leva più grande che il
-   progetto abbia, vale 7,86x sul pedaggio, e non è codice. Su EEA può dipendere da MiCA: da
-   verificare con OKX.
-2. **Decisione del proprietario — dove vanno i 26 EUR.** Il conto main non è un nodo:
-   l'architettura è un nodo = una famiglia = un subaccount dedicato.
-3. **Decisione del proprietario — i 1000 EUR.** A 26 EUR la soglia di rilevanza del cancello
-   chiede il 38,5% netto all'anno; a 1000 EUR ne chiede l'1,0%. Il capitale non crea l'edge: rende
-   il guadagno visibile.
-4. **Banco di prova a secco** (specifica in `docs/02`): legge il saldo reale, applica la guardia
-   `NON FINANZIATO`, calcola l'ordine e **non invia niente**. L'implementazione appartiene a
-   `deploy/`.
+1. **Il primo edge promosso manca ancora — è il titolo onesto.** Il cancello ha archiviato ogni
+   famiglia misurata finora; la tesi viva (carry di funding) è in validazione, non ancora promossa.
+   Finché un edge non passa, nulla scala: è la regola uno del percorso, non un umore.
+2. **Review del canary C1 — 15/10.** La finestra di 14 giorni chiude con criteri pre-registrati
+   (`alpha-omega-trading`, `docs/16`); con esito positivo parte la scala multi-coppia del carry —
+   piano scritto e pronto (`docs/20`), subordinato all'OK dell'owner.
+3. **Release di validazione M1** (regole dal 30/09): block bootstrap, DSR/PBO, scenari di costo
+   ×3 — `coda_catena/M1_release_validazione.md`; propone anche l'allineamento cancello↔mandato
+   (DD 10% al sizing di deploy) — in attesa dell'OK dell'owner.
+4. **Coda di ricerca:** P10 chiusa *insufficiente* (23 < 30 operazioni, non archiviata) — la
+   prossima corsia la rimisura con più campioni. Il registro della serie P
+   (`prove/REGISTRO_ESPERIMENTI.md`) è l'unica entrata per nuove ipotesi.
 5. **Una quarta domanda, non una quarta strategia.** Con tre famiglie archiviate, la domanda non è
    più "quale strategia adesso" ma **cosa rende un edge trovabile** con questo pedaggio, su questi
    mercati, con questo capitale.
@@ -309,7 +345,7 @@ python demo_cancello.py
 ## 🗺 Percorso di scalabilità
 
 ```
-cancello (fatto) → primo edge promosso (manca) → capitale (26 EUR ora, 1000 EUR dopo) → frequenza
+cancello (fatto) → primo edge promosso (manca ancora) → capitale (arrivato: ~1,1k EUR, deploy subordinato alla review del 15/10) → frequenza
 ```
 
 L'ordine non è negoziabile, ed è l'esatto inverso di quello che ha fatto il progetto precedente.
@@ -318,7 +354,9 @@ L'ordine non è negoziabile, ed è l'esatto inverso di quello che ha fatto il pr
 
 ## ⚖️ Disclaimer
 
-Questo è codice di ricerca su un conto reale da 26 EUR. Non invia ordini, e non ha un modulo di
+Questo è codice di ricerca su un conto reale da **~1.100 EUR** — di cui un canary (carry di
+funding DOGE) opera a taglia volutamente minima, autorizzato dall'owner e completamente
+riconciliato. Le strategie di questo repo non inviano ordini, e il repo non ha un modulo di
 esecuzione per scelta. Niente di quanto scritto è consulenza finanziaria. Le cripto-attività
 possono perdere tutto il loro valore; la matematica in `costi.py` esiste esattamente per mostrare
 quanto spesso succede in silenzio, un pedaggio alla volta.

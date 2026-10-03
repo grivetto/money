@@ -23,11 +23,11 @@
 
 ---
 
-## 📊 สถานะโดยสรุป — 2026-09-25
+## 📊 สถานะโดยสรุป — 2026-10-03
 
 | | |
 | :--- | :--- |
-| **การทดสอบ** | **437 passed**, `ruff` สะอาด, ใน **สองสภาพแวดล้อมที่เป็นอิสระต่อกัน** |
+| **การทดสอบ** | **449 passed**, `ruff` สะอาด, ใน **สองสภาพแวดล้อมที่เป็นอิสระต่อกัน** |
 | **กลยุทธ์ที่วัดแล้ว** | **3** ตระกูล (หนึ่งต่อ node) ทั้งหมดถูกตัดสินที่ต้นทุนจริง |
 | **คำตัดสิน** | **เก็บเข้าคลัง 3** — ไม่มีอะไรถูกเลื่อนขึ้น ดังนั้นไม่มีอะไรอยู่ใน production |
 | **คำสั่งจริงที่ส่งไป** | **0** โดยกลยุทธ์ของ repo นี้ — ที่นี่ไม่มีอะไรเทรดจนกว่าประตูจะเลื่อนขึ้นและเจ้าของจะเติมทุน (canary ตัวจริงติดตามใน `alpha-omega-trading`) |
@@ -36,6 +36,15 @@
 
 Repository: `C:\dev\money` ในเครื่อง, `github.com/grivetto/money` บนรีโมต แพ็กเกจ Python อยู่ใต้
 `src/money/`, การทดสอบใต้ `tests/`, หลักฐานใต้ `prove/`, การตัดสินใจใต้ `docs/`
+
+---
+
+## 📜 เรื่องราว — จาก «La Baracca» สู่ rig ที่วัดผลได้จริง
+
+*«La Baracca»* — เจ้ากล่องปะชั่วคราวที่ต้องซ่อมอยู่เรื่อย ๆ: ตลอดหนึ่งปี โปรเจกต์นี้เป็นแบบนั้น
+จริง ๆ — บอทวิ่ง แต่ตัวเลขไม่ตรง และไม่ได้เงินสักยูโร จุดเปลี่ยนคือการตัดสินใจ: หยุดสร้าง แล้ว
+เริ่มวัด จนการวัดกลายเป็น **ประตู 8 เกณฑ์** ตั้งแต่ 01/10 มี canary carry (DOGE) รันด้วยเงินจริง
+(รีวิว 15/10) ทุน ~1,100 EUR เรื่องราวฉบับเต็ม: `README.md` / `README.it.md`
 
 ---
 
@@ -79,7 +88,7 @@ promosso / archiviato / insufficiente          the verdict is binding
 | การจำลองโดเมน | **`dataclasses`** (`frozen=True`), `enum`, type hints ครบ, ฟังก์ชันบริสุทธิ์ | โมดูลต้นทุนไม่มี I/O: มันโกหกไม่ได้ และทดสอบได้ในระดับมิลลิวินาที |
 | โมเดลต้นทุน | **`money/costi.py`** — เศษส่วน ไม่ใช่เปอร์เซ็นต์ (`0.0035` ไม่ใช่ `0.35`) | เพื่อไม่ให้ความผิดพลาดระดับ 100 เท่าซ่อนอยู่ในการคูณได้ |
 | ประตู | **`money/cancello.py`** — bootstrap CI ที่ 90% ด้วย seed คงที่, t-stat, profit factor, drawdown, toll coverage, economic relevance, block independence | เกณฑ์ที่คุณมองไม่เห็น ย่อมเถียงกันไม่ได้ |
-| การทดสอบ | **pytest >= 8** (437 tests), **ruff >= 0.5** (`line-length = 120`, กฎ `E9`+`F`) | เฉพาะกฎที่จับข้อผิดพลาดจริง: CI ที่ตะโกนตลอดเวลาไม่ได้ปกป้องอะไรเลย |
+| การทดสอบ | **pytest >= 8** (449 tests), **ruff >= 0.5** (`line-length = 120`, กฎ `E9`+`F`) | เฉพาะกฎที่จับข้อผิดพลาดจริง: CI ที่ตะโกนตลอดเวลาไม่ได้ปกป้องอะไรเลย |
 | คอนฟิก / การแพ็กเกจ | **PyYAML >= 6**, **setuptools** (โครงแบบ `src/`) | `pytest` import แพ็กเกจจาก `src/` โดยไม่ต้องติดตั้ง ดังนั้นชุดทดสอบจึงรันได้บน checkout สด |
 | หลักฐาน | **JSON + artifact ข้อความล้วน** ใน `prove/`, การตัดสินใจแบบ Markdown ใน `docs/` | การวัดที่อ่านซ้ำไม่ได้คือความเห็น |
 | การควบคุมเวอร์ชัน | **git**, นักเขียนคนเดียวต่อหนึ่ง path, systemd/cron ที่จะถูกใส่เวอร์ชันใน `deploy/` | `systemd` และ `crontab` ของโปรเจกต์ก่อนหน้าไม่ได้ใส่เวอร์ชัน และนั่นทำให้เกิด outage 10 จาก 12 ครั้ง |
@@ -148,7 +157,7 @@ promosso / archiviato / insufficiente          the verdict is binding
 ## 🧪 การทดสอบ — และการทำซ้ำที่เป็นอิสระ
 
 ```
-437 passed
+449 passed
 ruff check . → All checks passed
 ```
 
@@ -227,7 +236,7 @@ money/
 │       ├── griglia_adattiva.py   node B — adaptive grid
 │       └── momento_4h.py         node C — 4-hour momentum
 ├── scripts/                  measurement runners, one per hypothesis, plus independent checks
-├── tests/                    437 offline tests
+├── tests/                    449 offline tests
 ├── docs/                     01 decision · 02 dry-run bench spec · 03 verdicts · 04 reproduction
 ├── prove/                    raw evidence: verdicts, JSON, comparison with prior evidence
 ├── assets/                   banner and architecture diagram
@@ -247,7 +256,7 @@ cd money
 python src/money/costi.py
 
 # the whole suite (offline, no keys, no network)
-python -m pytest tests -q          # 437 passed
+python -m pytest tests -q          # 449 passed
 ruff check .
 
 # re-measure a hypothesis on real OKX EEA bars (no keys needed: public data)
@@ -265,10 +274,10 @@ python demo_cancello.py
 1. **การตัดสินใจของเจ้าของ — การประเมิน X-Perps** `acctLv` 1 → 2 มันคือคันโยกที่ใหญ่ที่สุดที่โปรเจกต์
    มี, มันมีค่า 7.86x บนค่าธรรมเนียม, และมันไม่ใช่โค้ด บน EEA มันอาจขึ้นกับ MiCA: ต้อง
    ตรวจสอบกับ OKX
-2. **การตัดสินใจของเจ้าของ — 26 EUR ไปไหน** บัญชีหลักไม่ใช่ node: สถาปัตยกรรมคือ
-   หนึ่ง node = หนึ่งตระกูล = หนึ่ง subaccount เฉพาะ
-3. **การตัดสินใจของเจ้าของ — 1000 EUR** ที่ 26 EUR เกณฑ์ความมีนัยสำคัญของประตูเรียกหา 38.5% สุทธิ
-   ต่อปี; ที่ 1000 EUR มันเรียกหา 1.0% ทุนไม่ได้สร้าง edge: มันทำให้กำไร
+2. **การตัดสินใจของเจ้าของ — มติเมื่อ 03/10** เงินทุนเข้าแล้ว (~1,100 EUR) สำหรับขยาย carry; การ deploy รอ
+   รีวิว 15/10 ตามเกณฑ์ที่ลงทะเบียนไว้ล่วงหน้า
+3. **รีลีสตรวจสอบ M1** (กติกาตั้งแต่ 30/09): block bootstrap, DSR/PBO, สถานการณ์ต้นทุน ×3 —
+   `coda_catena/M1_release_validacion.md`; รอไฟเขียวเจ้าของ ทุนไม่ได้สร้าง edge: มันทำให้กำไร
    มองเห็นได้
 4. **แท่นทดสอบแบบไม่ส่งคำสั่งจริง** (สเปกใน `docs/02`): อ่านยอดคงเหลือจริง, ใช้การ์ดกัน
    `NON FINANZIATO`, คำนวณคำสั่ง และ **ไม่ส่งอะไรเลย** การ implement อยู่ใน `deploy/`
@@ -281,7 +290,7 @@ python demo_cancello.py
 ## 🗺 เส้นทางการขยาย
 
 ```
-gate (done) → first promoted edge (missing) → capital (26 EUR now, 1000 EUR next) → frequency
+gate (done) → first promoted edge (still missing) → capital (arrived: ~1.1k EUR, deploy gated on the 15/10 review) → frequency
 ```
 
 ลำดับนี้ต่อรองไม่ได้ และมันคือสิ่งที่ตรงข้ามกับที่โปรเจกต์ก่อนหน้าทำเป๊ะ
@@ -290,7 +299,7 @@ gate (done) → first promoted edge (missing) → capital (26 EUR now, 1000 EUR 
 
 ## ⚖️ ข้อจำกัดความรับผิด
 
-นี่คือโค้ดวิจัยบนบัญชีจริง 26 EUR มันไม่ส่งคำสั่งใด ๆ และมันไม่มี
+นี่คือโค้ดวิจัยบนบัญชีจริง ~1,100 EUR — มี canary carry ขนาดต่ำสุด ได้รับอนุญาตและกระทบยอดแล้ว กลยุทธ์ใน repo นี้ไม่ส่งคำสั่งใด ๆ และมันไม่มี
 โมดูล execution โดยการออกแบบ ไม่มีอะไรที่นี่เป็นคำแนะนำการลงทุน สินทรัพย์คริปโตสามารถสูญเสียมูลค่า
 ทั้งหมดได้; คณิตศาสตร์ใน `costi.py` มีอยู่เพื่อแสดงให้เห็นชัด ๆ ว่ามันเกิดขึ้นเงียบ ๆ บ่อยแค่ไหน ทีละ
 ค่าธรรมเนียม

@@ -23,15 +23,21 @@ foundation to build on.
 
 ---
 
-## 📊 Status at a glance — 2026-09-25
+## 📊 Status at a glance — 2026-10-03
+
+> **TL;DR** — an honest research rig on real money: the gate has archived every strategy family
+> measured so far; one live canary (DOGE funding carry) is inside its validation window; capital
+> ~1,100 EUR, and the carry scale-up deploys only after the 15/10 review.
 
 | | |
 | :--- | :--- |
-| **Tests** | **437 passed**, `ruff` clean, in **two independent environments** |
-| **Strategies measured** | **3** families (one per node), all judged at real costs |
-| **Verdicts** | **3 archived** (strategy families) — the live carry **C1** is in its canary validation window (review 15/10) |
+| **Tests** | **449 passed**, `ruff` clean, in **two independent environments** |
+| **Strategies measured** | **3** families (one per node), all judged at real costs — plus the pre-registered P-series experiments (P1–P13), every verdict frozen in `prove/` |
+| **Verdicts** | **3 archived** (strategy families) — the live carry **C1** is in its canary validation window (review 15/10); **P10** (cross-timeframe momentum): *insufficient* (23 trades < 30 — kept, not archived) |
+| **Live canary C1** | DOGE funding carry on OKX EEA, fully reconciled: funding **+0.0076 USDC**, hedge marked **+0.20 USDC**, net ≈ **+0.009 USDC** on day 3/14 — deliberately minimal size |
 | **Real orders sent** | **0** by this repo's strategies — the project's first live bot (carry **C1**, DOGE) runs on OKX EEA and is tracked in `alpha-omega-trading` (`docs/16`) |
-| **Capital** | **~1,100 EUR** across the OKX accounts (verified read-only) — owner deposited **+1,000 EUR on 03/10** for the carry scale-up (deployment gated on the 15/10 review); the live canary (DOGE carry, owner-authorized) runs on the main account |
+| **Capital** | **~1,100 EUR** across the OKX accounts (verified read-only) — owner deposited **+1,000 EUR on 03/10** for the carry scale-up (deployment gated on the 15/10 review) |
+| **Squad & ops** | **8 executors + 1 director on 3 machines** (`A0-win` · `A0-mc2` · `DSH-mc2/omarchy/win` · `opencode-mc2/omarchy` · `agy-omarchy`; delivered work reviewed by Hermes), alerting live (`@DenaroAlertBot`), post-reboot check 34/34 |
 | **Last commit** | `main` — see `git log` for the current head |
 
 Repository: `C:\dev\money` locally, `github.com/grivetto/money` remotely. Python package under
@@ -39,9 +45,30 @@ Repository: `C:\dev\money` locally, `github.com/grivetto/money` remotely. Python
 
 ---
 
+## 📜 The story — from «La Baracca» to a measured rig
+
+*«La Baracca»* is Italian for a makeshift contraption that always needs one more patch — and for a
+year, through several attempts and several AI tools (OpenClaw, Hermes, Agent Zero, DeepSeek TUI),
+that is exactly what this project was: bots that ran, numbers that did not reconcile, zero euros
+earned. The turning point was not a feature. It was a decision: stop building, start measuring —
+and make the measuring a gate.
+
+| When | What happened | The lesson it left |
+| :--- | :--- | :--- |
+| **2026, spring → summer** | The `denaro` series: four codebases one after another — Binance on a phone, the first `money` (grid, DCA, scalper, hedge, futures, sentiment), `alpha-omega-trading` (49,162 lines, 17 bots, three machines), `denaro2` on the VPSes | building the system *first* and looking for something to capture *afterwards* does not work |
+| **2026-09** | The audit of `alpha-omega-trading` (`docs/01`): «the system works, on an unsupervised baracca» — unversioned services, capital the accounts did not have, 1,486 ticks lost silently, 10 of 12 outages from one stale path | stop; re-found |
+| **2026-09-23 → 30** | The re-foundation: this repository turns the rule into code — the **8-criteria gate**; the P-series experiments are pre-registered, measured and judged one by one; every family measured so far is archived | the gate is not a guideline: it is code, and its rejection is binding |
+| **2026-10-01** | The project's **first real order** executes on OKX EEA; the **canary C1** (DOGE funding carry, spot + perp hedge) opens — minimal size, fully reconciled | an experiment, not a harvest |
+| **2026-10-03** | Owner deposits **+1,000 EUR**; the fleet gains its agents (`DSH`, `A0`, `opencode`, `agy`), live alerting, and a post-reboot check (34/34) | capital does not create the edge — it makes the gain *visible* |
+
+Today the old code lives in `legacy/` as memory, not foundation, and only the research rig is
+allowed near production: **what to capture first, the system after.** This repository is the after.
+
+---
+
 ## 🏛 Architecture — from the bar to the verdict
 
-![Dalla barra al verdetto](assets/architettura.svg)
+![From the bar to the verdict](assets/architettura.svg)
 
 The pipeline is one-way and has no shortcuts: **real bars in, a numerical verdict out**. Nothing
 enters production from the left of the gate.
@@ -62,37 +89,44 @@ money/cancello.py              8 criteria, 3 verdicts, every reason carries its 
 promosso / archiviato / insufficiente          the verdict is binding
 ```
 
-### The system around the pipeline — updated 2026-10-02
+### The system around the pipeline — updated 2026-10-03 (evening)
 
-![Denaro — foto del sistema, 03/10/2026](FOTO_SISTEMA_2026-10-03.png)
+![Denaro — system snapshot, 03/10/2026](FOTO_SISTEMA_2026-10-03.png)
 
 ```
                      ┌──────────────────────── mc2 — the hub ────────────────────────┐
                      │ Hermes — direction, measurements, reviews, single git writer  │
                      │ fabric master — one action every 3 s (×100 since 02/10)       │
-                     │ Zabbix 7.0 «Money» (38 hosts) · A0-MC2 coder (Gemini 2.5)     │
+                     │ Zabbix 7.0 «Money» (38 hosts) · A0-mc2 + DSH-mc2 (:3080)      │
                      │ fabric worker (5 s) · funding collector (4 h) · DSH channel   │
                      └───────────┬─────────────────────────────────────┬─────────────┘
                                  │ tailscale / ssh                     │ briefs & deliveries
-                ┌────────────────▼───────────────────┐   ┌────────────▼───────────────────┐
-                │ MARCODG1 — trading & web           │   │ A0-PC (Windows) · DSH (Windows)│
-                │ · live canary — DOGE carry, 1×     │   │ coders / peer, file protocol   │
-                │ · dry bench — read-only, rc=2      │   └────────────────────────────────┘
+                ┌────────────────▼───────────────────┐   ┌────────────▼────────────────────┐
+                │ MARCODG1 — trading & web           │   │ A0-win + DSH-win (PC, Windows)  │
+                │ · live canary — DOGE carry, 1×     │   │ coders / peers, file protocol   │
+                │ · dry bench — read-only, rc=2      │   └─────────────────────────────────┘
                 │ · aggregator :8912 → 34 bots       │
                 │ · dashboard :8913 · landing :8914  │
                 │ · Grafana :3000 · health :8911     │
                 └────────────────────────────────────┘
      nuvola — monitoring post: health · exporter · Zabbix agent + tunnel · fabric worker (5 s)
 
-     helpers — OpenCode (mc2): free executor · JEV (TypeSafe): advisory gate
+     helpers — opencode-mc2 · opencode-omarchy · agy-omarchy: free executors
+     JEV (TypeSafe): advisory gate
 ```
 
 *One loop: idea → pre-registered spec (`coda_catena/` + `REGISTRO`) → executor → review (tests
 re-run in-repo) → measure (artifacts frozen in `prove/`) → 8-criteria gate → promote/archive →
-dry bench → canary → minimum-size live. Executors — A0-MC2, A0-PC, DSH, OpenCode — deliver to
-Hermes; the **agents node** (Omarchy) hosts DSH + a second OpenCode; nothing lands without review. Visual: [`FOTO_SISTEMA_2026-10-03.html`](FOTO_SISTEMA_2026-10-03.html) · [`.png`](FOTO_SISTEMA_2026-10-03.png). Previous snapshots:
-[`ARCHITETTURA_2026-09-30.md`](ARCHITETTURA_2026-09-30.md) ·
+dry bench → canary → minimum-size live. The executors — `A0-mc2`, `A0-win`, `DSH-mc2/omarchy/win`,
+`opencode-mc2/omarchy`, `agy-omarchy` — deliver to Hermes; the **agents node** (Omarchy) hosts
+`DSH-omarchy` and `opencode-omarchy` as systemd services (loopback-only, reached over an ssh
+tunnel); nothing lands without review. Visuals:
+[`FOTO_SISTEMA_2026-10-03.html`](FOTO_SISTEMA_2026-10-03.html) · [`.png`](FOTO_SISTEMA_2026-10-03.png) ·
+[`FOTO_SQUADRA_2026-10-03.html`](FOTO_SQUADRA_2026-10-03.html) · [`.png`](FOTO_SQUADRA_2026-10-03.png).
+Previous snapshots: [`ARCHITETTURA_2026-09-30.md`](ARCHITETTURA_2026-09-30.md) ·
 [`ARCHITETTURA_2026-10-01.md`](ARCHITETTURA_2026-10-01.md).*
+
+![The squad — 03/10/2026](FOTO_SQUADRA_2026-10-03.png)
 
 ### Core technologies
 
@@ -105,7 +139,7 @@ Hermes; the **agents node** (Omarchy) hosts DSH + a second OpenCode; nothing lan
 | Domain modelling | **`dataclasses`** (`frozen=True`), `enum`, full type hints, pure functions | the cost module has no I/O: it cannot lie, and it tests in milliseconds |
 | Cost model | **`money/costi.py`** — fractions, never percentages (`0.0035`, not `0.35`) | so that no factor-of-100 error can hide in a multiplication |
 | Gate | **`money/cancello.py`** — bootstrap CI at 90% with a fixed seed, t-stat, profit factor, drawdown, toll coverage, economic relevance, block independence | a criterion you cannot see cannot be discussed |
-| Tests | **pytest >= 8** (437 tests), **ruff >= 0.5** (`line-length = 120`, rules `E9`+`F`) | only rules that catch real errors: a CI that always shouts protects nothing |
+| Tests | **pytest >= 8** (449 tests), **ruff >= 0.5** (`line-length = 120`, rules `E9`+`F`) | only rules that catch real errors: a CI that always shouts protects nothing |
 | Config / packaging | **PyYAML >= 6**, **setuptools** (`src/` layout) | `pytest` imports the package from `src/` with no installation, so the suite runs on a fresh checkout |
 | Evidence | **JSON + plain-text artifacts** in `prove/`, Markdown decisions in `docs/` | a measurement that cannot be re-read is an opinion |
 | Version control | **git**, one writer per path, systemd/cron to be versioned in `deploy/` | the previous project's `systemd` and `crontab` were unversioned, and that caused 10 of 12 outages |
@@ -175,7 +209,7 @@ minimum order and a quarter per position, **no sensible order exists**.
 ## 🧪 Testing — and the independent reproduction
 
 ```
-437 passed
+449 passed
 ruff check . → All checks passed
 ```
 
@@ -254,7 +288,7 @@ money/
 │       ├── griglia_adattiva.py   node B — adaptive grid
 │       └── momento_4h.py         node C — 4-hour momentum
 ├── scripts/                  measurement runners, one per hypothesis, plus independent checks
-├── tests/                    437 offline tests
+├── tests/                    449 offline tests
 ├── docs/                     01 decision · 02 dry-run bench spec · 03 verdicts · 04 reproduction
 ├── prove/                    raw evidence: verdicts, JSON, comparison with prior evidence
 ├── assets/                   banner and architecture diagram
@@ -274,7 +308,7 @@ cd money
 python src/money/costi.py
 
 # the whole suite (offline, no keys, no network)
-python -m pytest tests -q          # 437 passed
+python -m pytest tests -q          # 449 passed
 ruff check .
 
 # re-measure a hypothesis on real OKX EEA bars (no keys needed: public data)
@@ -289,18 +323,20 @@ python demo_cancello.py
 
 ## 🚧 Open work, in order of value
 
-1. **Owner decision — X-Perps assessment.** `acctLv` 1 → 2. It is the largest lever the project
-   has, it is worth 7.86x on the toll, and it is not code. On EEA it may depend on MiCA: to be
-   verified with OKX.
-2. **Owner decision — where the 26 EUR go.** The main account is not a node: the architecture is
-   one node = one family = one dedicated subaccount.
-3. **Owner decision — the 1000 EUR.** At 26 EUR the gate's relevance threshold demands 38.5% net
-   per year; at 1000 EUR it demands 1.0%. Capital does not create the edge: it makes the gain
-   visible.
-4. **Dry-run bench** (spec in `docs/02`): reads the real balance, applies the `NON FINANZIATO`
-   guard, computes the order and **sends nothing**. Implementation belongs to `deploy/`.
-5. **A fourth question, not a fourth strategy.** With three families archived, the question is no
-   longer "which strategy next" but **what makes an edge findable** under this toll, on these
+1. **The first promoted edge is still missing — the honest headline.** The gate has archived every
+   family measured so far; the live thesis (funding carry) is in validation, not yet promoted.
+   Until an edge passes, nothing scales — that is rule one of the scaling path, not a mood.
+2. **Canary C1 review — 15/10.** The 14-day window closes with pre-registered criteria
+   (`alpha-omega-trading`, `docs/16`); on a green light, the multi-pair carry scale-up deploys —
+   plan written and ready (`docs/20`), owner-gated.
+3. **M1 validation release** (rules of 30/09): block bootstrap, DSR/PBO, ×3 cost scenarios —
+   `coda_catena/M1_release_validazione.md`; it also proposes aligning the gate with the risk
+   mandate (10% DD at deployment sizing) — awaiting the owner's OK.
+4. **Research queue:** P10 closed *insufficient* (23 < 30 trades, not archived) — the next lane
+   re-runs it on more samples. The P-series registry (`prove/REGISTRO_ESPERIMENTI.md`) is the
+   only entrance for new hypotheses.
+5. **A fourth question, not a fourth strategy.** With three families archived, the question is
+   not "which strategy next" but **what makes an edge findable** under this toll, on these
    markets, with this capital.
 
 ---
@@ -308,7 +344,7 @@ python demo_cancello.py
 ## 🗺 Scaling path
 
 ```
-gate (done) → first promoted edge (missing) → capital (26 EUR now, 1000 EUR next) → frequency
+gate (done) → first promoted edge (still missing) → capital (arrived: ~1.1k EUR, deploy gated on the 15/10 review) → frequency
 ```
 
 The order is not negotiable, and it is the exact inverse of what the previous project did.
@@ -317,10 +353,11 @@ The order is not negotiable, and it is the exact inverse of what the previous pr
 
 ## ⚖️ Disclaimer
 
-This is research code on a real account of 26 EUR. It sends no orders, and it has no execution
-module by design. Nothing here is investment advice. Crypto assets can lose all of their value;
-the mathematics in `costi.py` exists precisely to show how often that happens silently, one toll
-at a time.
+This is research code on a real account of **~1,100 EUR** — of which one canary (DOGE funding
+carry) trades at deliberately minimal size, owner-authorized and fully reconciled. The strategies
+of this repo send no orders, and the repo has no execution module by design. Nothing here is
+investment advice. Crypto assets can lose all of their value; the mathematics in `costi.py` exists
+precisely to show how often that happens silently, one toll at a time.
 
 ## 📄 License
 

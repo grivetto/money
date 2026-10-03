@@ -23,11 +23,11 @@ cimiento sobre el que construir.
 
 ---
 
-## 📊 Estado de un vistazo — 2026-09-25
+## 📊 Estado de un vistazo — 2026-10-03
 
 | | |
 | :--- | :--- |
-| **Tests** | **437 passed**, `ruff` limpio, en **dos entornos independientes** |
+| **Tests** | **449 passed**, `ruff` limpio, en **dos entornos independientes** |
 | **Estrategias medidas** | **3** familias (una por nodo), todas juzgadas a costes reales |
 | **Veredictos** | **3 archivadas** (familias) — el carry en vivo **C1** está en su ventana de validación canary (review 15/10) |
 | **Órdenes reales enviadas** | **0** por las estrategias de este repo — el primer bot en vivo del proyecto (carry **C1**, DOGE) opera en OKX EEA y se sigue en `alpha-omega-trading` (`docs/16`) |
@@ -36,6 +36,16 @@ cimiento sobre el que construir.
 
 Repositorio: `C:\dev\money` en local, `github.com/grivetto/money` en remoto. Paquete Python bajo
 `src/money/`, tests bajo `tests/`, evidencia bajo `prove/`, decisiones bajo `docs/`.
+
+---
+
+## 📜 La historia — de «La Baracca» a un rig medido
+
+*«La Baracca»* — el «cacharro» que siempre necesita otro parche: durante un año el proyecto fue
+exactamente eso — bots que corrían, números que no cuadraban, cero euros ganados. El punto de
+inflexión fue una decisión: dejar de construir y empezar a medir, hasta convertir la medición en
+un **cancello** de 8 criterios. Desde el 01/10 un canary carry (DOGE) opera con dinero real
+(review 15/10) y el capital es de ~1.100 EUR. La historia completa: `README.md` / `README.it.md`.
 
 ---
 
@@ -66,7 +76,7 @@ promosso / archiviato / insufficiente          the verdict is binding
 
 ![Denaro — foto del sistema, 03/10/2026](FOTO_SISTEMA_2026-10-03.png)
 
-**Primer bot en vivo del proyecto**: carry C1 (DOGE) en OKX EEA desde el 01/10 — tamaño mínimo, totalmente reconciliado, review el 15/10. Alrededor: los cuatro nodos (mc2 hub · MARCODG1 ops + live · nuvola monitorización · **omarchy agentes**: DSH + OpenCode), la fábrica ×100 (tick 3 s, worker 5 s), los operarios A0-MC2/A0-PC (Gemini 2.5), DSH, el ejecutor free OpenCode y el juez advisory JEV.
+**Primer bot en vivo del proyecto**: carry C1 (DOGE) en OKX EEA desde el 01/10 — tamaño mínimo, totalmente reconciliado, review el 15/10. Alrededor: los cuatro nodos (mc2 hub · MARCODG1 ops + live · nuvola monitorización · **omarchy agentes**: DSH + OpenCode), la fábrica ×100 (tick 3 s, worker 5 s), los operarios A0-mc2/A0-win (Gemini 2.5), DSH ×3 (mc2/omarchy/win), los ejecutores free OpenCode ×2 + agy-omarchy y el juez advisory JEV.
 
 *Visual: [`FOTO_SISTEMA_2026-10-03.html`](FOTO_SISTEMA_2026-10-03.html) · [`.png`](FOTO_SISTEMA_2026-10-03.png). Fotos anteriores: [`ARCHITETTURA_2026-09-30.md`](ARCHITETTURA_2026-09-30.md) · [`ARCHITETTURA_2026-10-01.md`](ARCHITETTURA_2026-10-01.md).*
 
@@ -81,7 +91,7 @@ promosso / archiviato / insufficiente          the verdict is binding
 | Modelado del dominio | **`dataclasses`** (`frozen=True`), `enum`, type hints completos, funciones puras | el módulo de costes no tiene I/O: no puede mentir, y se testea en milisegundos |
 | Modelo de costes | **`money/costi.py`** — fracciones, nunca porcentajes (`0.0035`, no `0.35`) | para que ningún error de factor 100 pueda esconderse en una multiplicación |
 | Puerta | **`money/cancello.py`** — intervalo de confianza bootstrap al 90% con semilla fija, t-stat, profit factor, drawdown, cobertura del peaje, relevancia económica, independencia de bloques | un criterio que no puedes ver no se puede discutir |
-| Tests | **pytest >= 8** (437 tests), **ruff >= 0.5** (`line-length = 120`, reglas `E9`+`F`) | solo reglas que atrapan errores reales: un CI que grita siempre no protege nada |
+| Tests | **pytest >= 8** (449 tests), **ruff >= 0.5** (`line-length = 120`, reglas `E9`+`F`) | solo reglas que atrapan errores reales: un CI que grita siempre no protege nada |
 | Config / empaquetado | **PyYAML >= 6**, **setuptools** (layout `src/`) | `pytest` importa el paquete desde `src/` sin instalación, así que la suite corre en un checkout fresco |
 | Evidencia | **artefactos JSON + texto plano** en `prove/`, decisiones en Markdown en `docs/` | una medición que no se puede releer es una opinión |
 | Control de versiones | **git**, un escritor por ruta, systemd/cron a versionar en `deploy/` | el `systemd` y el `crontab` del proyecto anterior no estaban versionados, y eso causó 10 de 12 caídas |
@@ -151,7 +161,7 @@ orden mínima de 1 EUR y un cuarto por posición, **no existe ninguna orden sens
 ## 🧪 Testing — y la reproducción independiente
 
 ```
-437 passed
+449 passed
 ruff check . → All checks passed
 ```
 
@@ -230,7 +240,7 @@ money/
 │       ├── griglia_adattiva.py   node B — adaptive grid
 │       └── momento_4h.py         node C — 4-hour momentum
 ├── scripts/                  measurement runners, one per hypothesis, plus independent checks
-├── tests/                    437 offline tests
+├── tests/                    449 offline tests
 ├── docs/                     01 decision · 02 dry-run bench spec · 03 verdicts · 04 reproduction
 ├── prove/                    raw evidence: verdicts, JSON, comparison with prior evidence
 ├── assets/                   banner and architecture diagram
@@ -250,7 +260,7 @@ cd money
 python src/money/costi.py
 
 # the whole suite (offline, no keys, no network)
-python -m pytest tests -q          # 437 passed
+python -m pytest tests -q          # 449 passed
 ruff check .
 
 # re-measure a hypothesis on real OKX EEA bars (no keys needed: public data)
@@ -266,13 +276,12 @@ python demo_cancello.py
 ## 🚧 Trabajo abierto, por orden de valor
 
 1. **Decisión del propietario — evaluación de X-Perps.** `acctLv` 1 → 2. Es la palanca más grande que el proyecto
-   tiene, vale 7,86x sobre el peaje, y no es código. En la EEA puede depender de MiCA: por
-   verificar con OKX.
-2. **Decisión del propietario — a dónde van los 26 EUR.** La cuenta principal no es un nodo: la arquitectura es
-   un nodo = una familia = una subcuenta dedicada.
-3. **Decisión del propietario — los 1000 EUR.** Con 26 EUR el umbral de relevancia de la puerta exige 38,5% neto
-   al año; con 1000 EUR exige 1,0%. El capital no crea la ventaja: hace
-   visible la ganancia.
+   tiene, valía 7,86x sobre el peaje, y no es código: resuelto el 30/09 — `acctLv 2` abierto en OKX EEA.
+2. **Decisiones del propietario — resoluciones del 03/10.** Capital depositado (~1.100 EUR) para la escala del
+   carry; el deploy espera la review del 15/10 con criterios pre-registrados.
+3. **Release de validación M1** (reglas del 30/09): block bootstrap, DSR/PBO, escenarios de coste ×3 —
+   `coda_catena/M1_release_validacion.md`; en espera del OK del propietario.
+   El capital no crea la ventaja: la hace visible.
 4. **Banco de pruebas en seco** (spec en `docs/02`): lee el saldo real, aplica la
    guarda `NON FINANZIATO`, calcula la orden y **no envía nada**. La implementación pertenece a `deploy/`.
 5. **Una cuarta pregunta, no una cuarta estrategia.** Con tres familias archivadas, la pregunta ya no es
@@ -284,7 +293,7 @@ python demo_cancello.py
 ## 🗺 Ruta de escalado
 
 ```
-gate (done) → first promoted edge (missing) → capital (26 EUR now, 1000 EUR next) → frequency
+gate (done) → first promoted edge (still missing) → capital (arrived: ~1.1k EUR, deploy gated on the 15/10 review) → frequency
 ```
 
 El orden no es negociable, y es exactamente el inverso de lo que hizo el proyecto anterior.
@@ -293,7 +302,7 @@ El orden no es negociable, y es exactamente el inverso de lo que hizo el proyect
 
 ## ⚖️ Disclaimer
 
-Esto es código de investigación sobre una cuenta real de 26 EUR. No envía órdenes, y no tiene módulo de
+Esto es código de investigación sobre una cuenta real de ~1.100 EUR — con un canary de carry a tamaño mínimo, autorizado y reconciliado. Las estrategias no envían órdenes, y no hay módulo de
 ejecución por diseño. Nada de esto es asesoramiento de inversión. Los criptoactivos pueden perder todo su valor;
 la matemática en `costi.py` existe precisamente para mostrar con qué frecuencia eso ocurre en silencio, un peaje
 cada vez.
