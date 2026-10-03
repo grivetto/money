@@ -21,6 +21,7 @@ Data: 2026-10-04 (notte). Stato: operativo.
 
 ## Regole di flotta (non negoziabili)
 - MAI `--dangerously-skip-permissions`; permessi via allowlist esplicita; deny-list per segreti (`**/.env*`, `.ssh`, token), `.git`, `git push/commit/reset --hard`.
+- **Modelli: solo online (API) — niente inference locale nella flotta** (decisione owner, 04/10; colibrì/GLM-5.2 valutato e scartato: 0,05–2 tok/s non regge i loop agentici).
 - Un free tier condiviso su tutte le macchine ⇒ niente ondate parallele identiche (429); riserva pronta.
 - Agenti MAI sul percorso del capitale: ordini/servizi solo Hermes; MARCODG1 = produzione (write confinato).
 - Zero silenzi: ogni consegna ha ACK/DONE/FAILED; ogni componente critico ha heartbeat.
