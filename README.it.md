@@ -1,6 +1,21 @@
-![money](assets/banner.png)
+<p align="center">
+  <img src="assets/banner.png" alt="money" width="100%"/>
+</p>
 
 # money — «il pedaggio prima della strategia»
+
+<p align="center">
+  <img src="assets/icon.svg" alt="money — icon" width="72" height="72"/>
+</p>
+
+<p align="center">
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.12+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.12+"></a>
+  <a href="https://www.okx.com/en-eu"><img src="https://img.shields.io/badge/OKX-EEA-000000?style=flat-square" alt="OKX EEA"></a>
+  <a href="https://github.com/ccxt/ccxt"><img src="https://img.shields.io/badge/CCXT-4.x-1E88E5?style=flat-square" alt="CCXT"></a>
+  <a href="https://www.docker.com/"><img src="https://img.shields.io/badge/Docker-Containerized-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker"></a>
+  <a href="https://www.zabbix.com/"><img src="https://img.shields.io/badge/Zabbix-7.0_LTS-D40000?style=flat-square&logo=zabbix&logoColor=white" alt="Zabbix 7.0 LTS"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-EUPL_1.1-blue.svg?style=flat-square" alt="EUPL 1.1 License"></a>
+</p>
 
 > **Nessuna strategia entra in produzione senza aver superato il cancello:** expectancy netta
 > positiva **fuori campione**, ai **costi reali** del conto su cui girerà.
