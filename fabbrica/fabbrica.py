@@ -284,6 +284,16 @@ def _fmt_jobs(j):
     return " · ".join(parts)
 
 
+def _fmt_lint(results):
+    if not results:
+        return "(in attesa)"
+    bad = sorted(k for k, r in results.items() if r.get("missing"))
+    ok = len(results) - len(bad)
+    if not bad:
+        return "%d/%d ok" % (ok, len(results))
+    return "%d/%d ok (da sistemare: %s)" % (ok, len(results), ", ".join(b[:-3] for b in bad))
+
+
 def check_jobs(st):
     """Job-store nel tick (Incremento 1 del piano hardening, 03/10/2026).
 
@@ -477,9 +487,7 @@ def write_stato(st):
             "%s %s/%s%s" % (k[:-3], _fmt(r.get("sc")), _fmt(r.get("tf")),
                             "" if not r.get("flags") else " DA SISTEMARE (" + ", ".join(r["flags"]) + ")")
             for k, r in sorted((st.get("jev_gate_results") or {}).items())) or "(in attesa)"),
-        "- lint spec: %s" % (", ".join(
-            "%s %s" % (k[:-3], "ok" if not r.get("missing") else "MANCA:" + "/".join(r["missing"]))
-            for k, r in sorted((st.get("lint_results") or {}).items())) or "(in attesa)"),
+        "- lint spec: %s" % _fmt_lint(st.get("lint_results")),
         "- job-store: %s" % _fmt_jobs(st.get("jobs")),
         "- control-plane: money@%s · STATO derivato, non fonte di verità" % st.get("control_rev", "?"),
         "- inbox: %s" % (", ".join(st.get("inbox") or []) or "(vuoto)"),
