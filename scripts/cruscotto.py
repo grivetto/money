@@ -470,10 +470,7 @@ def render(now, now_epoch, cache, stale, fab, sections, varianti, money_head, ao
 </div>"""
 
     # ---- ricerca
-    stat_names = ["con spec", "Infrastruttura", "Voci storiche"]
     counts = {}
-    all_rows = []
-    spec_rows = []
     for secname, entries in sections.items():
         for e in entries:
             counts[e["status"]] = counts.get(e["status"], 0) + 1
