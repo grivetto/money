@@ -300,6 +300,7 @@ def badge(status):
 
 CSS = """
 *{box-sizing:border-box}
+body{color:var(--foreground)}
 .wrap{max-width:940px}
 .hd{display:flex;align-items:baseline;gap:10px;margin:0 0 10px;flex-wrap:wrap}
 .hd .t{font-size:15px;font-weight:700;letter-spacing:.02em}
