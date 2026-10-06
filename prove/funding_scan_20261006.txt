@@ -1,0 +1,24 @@
+S2 — FUNDING SCAN X-PERP OKX EEA (scansione descrittiva — NON promozione)
+==============================================================================
+Dati: /home/sergio/s2-work/funding-scan/data/funding_xperp.jsonl | righe lette: 2872 | malformate: 0 | simboli: 10
+Costi: okx_eea (conto OKX EEA con X-Perps aperti (KYC + appropriateness assessment)) | giro misto 0.180% | slippage 0.040%/lato | ciclo 0.260% x 12/anno (1 apertura/chiusura al mese)
+
+simbolo                      n giorni   media/g annuo lordo annuo NETTO  lato %g+short autocorr payback criteri
+DOGE/USD:USD-310404        299   100  +0.0264%    +9.62%     +6.50% short    99.0%  +0.479     10g PSN
+LINK/USD:USD-310523        299   100  +0.0259%    +9.45%     +6.33% short    90.0%  +0.635     10g PSN
+ADA/USD:USD-310404         299   100  +0.0259%    +9.45%     +6.33% short    94.0%  +0.437     10g PSN
+XRP/USD:USD-310404         299   100  +0.0217%    +7.91%     +4.79% short    91.0%  +0.658     12g PSN
+LTC/USD:USD-310404         299   100  +0.0191%    +6.97%     +3.85% short    86.0%  +0.687     14g PSN
+AVAX/USD:USD-310530        299   100  +0.0180%    +6.57%     +3.45% short    81.0%  +0.440     14g PSN
+BTC/USD:USD-310404         299   100  -0.0098%    -3.59%     +0.47%  long    51.0%  +0.794     26g PSN
+SOL/USD:USD-310404         299   100  +0.0080%    +2.91%     -0.21% short    72.0%  +0.598     33g PS-
+ETH/USD:USD-310404         299   100  -0.0011%    -0.39%     -2.73%  long    66.0%  +0.731    240g PS-
+
+Criteri (NON promozione): persistenza > 0 [P] | n_giorni >= 60 [S] | netto > 0 dopo costi [N]; ! = anomalia
+CANDIDATI (7/10): DOGE/USD:USD-310404, LINK/USD:USD-310523, ADA/USD:USD-310404, XRP/USD:USD-310404, LTC/USD:USD-310404, AVAX/USD:USD-310530, BTC/USD:USD-310404
+La classifica esclude 1 simbolo/i 'da verificare' (un possibile errore di dati non e' un edge).
+DA VERIFICARE (|funding giornaliero| > 0.50% — possibile errore dati, non edge):
+  DOT/USD:USD-310808       giorno 2026-08-25: funding giornaliero +1.020%
+
+L'output e' DESCRITTIVO: i candidati si pre-registrano come esperimenti (spec propria) e passano da money.cancello.
+Nessuna promozione automatica. La classifica mescola lati diversi: controllare il campo 'lato' prima di confrontare.
