@@ -69,3 +69,19 @@ Difetti trovati e corretti lungo la strada (utili per il futuro):
   disco → ricostruzione → segreti → verifica) e `ricostruisci-marco.sh` (server fresco).
 - Creato in git il file mancante `deploy/systemd/money-banco-secco.timer`.
 - Priorità al recupero: `~/denaro/secrets/`, `~/canary/` (storico C1), `.env_banco`, config.
+
+### Esito ricostruzione (06/10 sera, completata)
+
+MARCODG1 ricostruito con il kit (`deploy/reinstall/`) e riportato in servizio:
+- base Ubuntu 26.04, utente marco (+sudo), repo money, venv, unit `money-*` enabled, crontab, timer;
+- **banco a secco PASS** (chiave read-only nuova, `chiave_solo_lettura=si`), equity 1.100,13 EUR;
+- **canary C1** ripartito con stato ricostruito dal monitor pre-incidente (11 ct @ 0,09466 / 109,89 DOGE @ 0,09473), riconciliazione OK;
+- tunnel Cloudflare (denaro/web.grivetto.eu) su, dashboard 200; tailscale su (IP nuovo 100.89.26.52);
+- zabbix-agent via tunnel (127.0.0.1:10051); fabbrica-worker shard: pubblica a mc2 via tunnel 2222;
+- fix applicati: gruppo `marco` mancante (216/GROUP), template fabbrica-worker istanziato per nodo (217/USER),
+  worker shard con unit `money-*`, known_hosts/chiave ssh marco→mc2, postboot_check v2.1.
+- Restano (fase 2): flotta paper di marco (0 bot ricostruiti: decisione portare/dismettere),
+  metriche grafana/prometheus, exporter.
+
+Le chiavi di marco sono nuove (authorized_keys nuova): per l'accesso usare la chiave di mc2 già depositata;
+ogni altro accesso storico va riautorizzato.

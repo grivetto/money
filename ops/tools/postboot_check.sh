@@ -60,7 +60,14 @@ for u in money-aggregator-marcodg1 money-dashboard-marcodg1 money-health-marcodg
   st=$(ssh -o BatchMode=yes -o ConnectTimeout=8 MARCODG1 "systemctl is-active $u" 2>/dev/null || true)
   [ "$st" = "active" ] && ok "MARCODG1 $u" || bad "MARCODG1 $u ($st)"
 done
-c=$(ssh -o BatchMode=yes -o ConnectTimeout=8 MARCODG1 'curl -s -o /dev/null -m 30 -w "%{http_code}" http://127.0.0.1:8912/api/infra.json' 2>/dev/null || true)
+# :8912 fa collect live (lento: ccxt+ssh). Verifichiamo lo snapshot su disco (fresco)
+# e l'HTTP su :8912 con margine ampio.
+sepoch=$(ssh -o BatchMode=yes -o ConnectTimeout=8 MARCODG1 'stat -c %Y /home/marco/denaro/health/infra_snapshot.json 2>/dev/null' 2>/dev/null || echo "")
+if [ -n "$sepoch" ]; then
+  sage=$(( $(date +%s) - sepoch ))
+  [ "$sage" -lt 180 ] && ok "MARCODG1 snapshot fresco (${sage}s)" || bad "MARCODG1 snapshot fermo (${sage}s)"
+fi
+c=$(ssh -o BatchMode=yes -o ConnectTimeout=8 MARCODG1 'curl -s -o /dev/null -m 90 -w "%{http_code}" http://127.0.0.1:8912/api/infra.json' 2>/dev/null || true)
 [ "$c" = "200" ] && ok "MARCODG1 aggregatore :8912" || bad "MARCODG1 aggregatore (HTTP $c)"
 c=$(ssh -o BatchMode=yes -o ConnectTimeout=8 MARCODG1 'curl -s -o /dev/null -m 30 -w "%{http_code}" http://127.0.0.1:8913/' 2>/dev/null || true)
 [ "$c" = "200" ] && ok "MARCODG1 dashboard :8913" || bad "MARCODG1 dashboard (HTTP $c)"
