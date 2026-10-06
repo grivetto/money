@@ -14,6 +14,7 @@ Uso:  python3 worker.py <marcodg1|nuvola>
 import json
 import os
 import socket
+import shlex
 import subprocess
 import sys
 import time
@@ -34,9 +35,30 @@ PUSH = {
 }
 
 
-def sh(cmd, timeout=12):
+_BIN_AMMESSI = frozenset({"systemctl", "curl", "ssh", "ls", "du", "df",
+                          "date", "hostname", "pgrep", "ss"})
+_METACARATTERI = frozenset(";|&<>`$")
+
+
+def sh(cmd, timeout=12, cwd=None):
+    """Comando SENZA shell (shlex.split + allowlist). Vedi fabbrica.py per la
+    motivazione (revisione Manus 06/10). rc 98 = comando rifiutato."""
+    if isinstance(cmd, str):
+        try:
+            parti = shlex.split(cmd)
+        except ValueError as exc:
+            return 98, "RIFIUTATO: comando non parsabile (%s)" % exc
+    else:
+        parti = [str(x) for x in cmd]
+    if not parti:
+        return 98, "RIFIUTATO: comando vuoto"
+    if any(c in _METACARATTERI for p in parti for c in p):
+        return 98, "RIFIUTATO: metacaratteri di shell"
+    if parti[0] not in _BIN_AMMESSI:
+        return 98, "RIFIUTATO: binario %r fuori allowlist" % parti[0]
     try:
-        r = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=timeout)
+        r = subprocess.run(parti, shell=False, capture_output=True, text=True,
+                           timeout=timeout, cwd=cwd)
         return r.returncode, ((r.stdout or "") + (r.stderr or "")).strip()
     except Exception as e:  # noqa: BLE001
         return 99, type(e).__name__

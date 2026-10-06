@@ -3,6 +3,16 @@
 Provenienza: implementato da Agent Zero (A0-MC2, contesto NTG4B2h5, 30/09/2026),
 verificato da Hermes (10/10 test nella venv del repo) e integrato in `fabbrica/jobs.py`.
 Solo stdlib; niente I/O di rete; tempi iniettabili via `now_ms` per i test.
+
+CONCORRENZA (revisione Manus 06/10, finding P1): enqueue e claim erano SELECT+INSERT
+e SELECT+UPDATE separati — con piu' worker lo stesso job poteva essere assegnato due
+volte, o un enqueue concorrente moriva con IntegrityError. Ora:
+- connessione in autocommit (`isolation_level = None`) con transazioni ESPLICITE;
+- `BEGIN IMMEDIATE` + `INSERT ... ON CONFLICT DO NOTHING` + SELECT per l'enqueue;
+- `BEGIN IMMEDIATE` + UPDATE condizionato (+ controllo rowcount) per il claim.
+La documentazione SQLite garantisce che una transazione IMMEDIATE prende il lock di
+scrittura subito: tra il SELECT e l'UPDATE nessun altro processo puo' infilarsi.
+I test di race usano connessioni separate (come processi veri) su file condiviso.
 """
 import sqlite3
 import json
@@ -13,14 +23,19 @@ from typing import Optional, Dict, Any, List
 
 class JobStore:
     def __init__(self, path: str):
-        """Apre/crea SQLite; PRAGMA journal_mode=WAL; crea la tabella se manca:
+        """Apre/crea SQLite; PRAGMA journal_mode=WAL + busy_timeout; crea la tabella
+        se manca:
         jobs(job_id TEXT PRIMARY KEY, kind TEXT NOT NULL, payload TEXT NOT NULL,
              idempotency_key TEXT NOT NULL UNIQUE, state TEXT NOT NULL DEFAULT 'queued',
              attempt INTEGER NOT NULL DEFAULT 0, max_attempts INTEGER NOT NULL DEFAULT 3,
              lease_until INTEGER, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL,
              last_error TEXT)"""
-        self.conn = sqlite3.connect(path)
+        self.conn = sqlite3.connect(path, timeout=30)
         self.conn.execute("PRAGMA journal_mode=WAL")
+        self.conn.execute("PRAGMA busy_timeout=30000")
+        # Autocommit: le transazioni sono ESPLICITE (BEGIN IMMEDIATE .. COMMIT),
+        # cosi' il lock di scrittura e' preso prima delle letture decisionali.
+        self.conn.isolation_level = None
         self.conn.execute("""
             CREATE TABLE IF NOT EXISTS jobs (
                 job_id TEXT PRIMARY KEY,
@@ -36,85 +51,91 @@ class JobStore:
                 last_error TEXT
             )
         """)
-        self.conn.commit()
 
     def _now_ms(self, now_ms: Optional[int]) -> int:
         if now_ms is None:
             return int(time.time() * 1000)
         return now_ms
 
+    def _transazione(self):
+        """Context manager: BEGIN IMMEDIATE .. COMMIT / ROLLBACK."""
+        store = self
+
+        class _Tx:
+            def __enter__(self):
+                store.conn.execute("BEGIN IMMEDIATE")
+                return store.conn
+
+            def __exit__(self, exc_type, exc, tb):
+                if exc_type is None:
+                    store.conn.execute("COMMIT")
+                else:
+                    store.conn.execute("ROLLBACK")
+                return False
+
+        return _Tx()
+
     def enqueue(self, kind, payload, idempotency_key, max_attempts=3, now_ms=None) -> str:
-        """payload: dict -> salvato come JSON (sort_keys=True, separators compatti).
-        DEDUP: se idempotency_key esiste gia' -> ritorna il job_id ESISTENTE, non crea nulla.
+        """payload: dict -> salvato come JSON (sort_keys=True, separatori compatti).
+        DEDUP ATOMICO: se idempotency_key esiste gia' -> ritorna il job_id ESISTENTE,
+        anche sotto concorrenza (INSERT ON CONFLICT + SELECT nella stessa transazione).
         Altrimenti: job_id = uuid4().hex, state='queued', attempt=0."""
         now = self._now_ms(now_ms)
         payload_json = json.dumps(payload, sort_keys=True, separators=(',', ':'))
-        
-        # Check for existing idempotency_key
-        cursor = self.conn.execute(
-            "SELECT job_id FROM jobs WHERE idempotency_key = ?",
-            (idempotency_key,)
-        )
-        row = cursor.fetchone()
-        if row:
-            return row[0]
-        
         job_id = uuid.uuid4().hex
-        self.conn.execute(
-            """INSERT INTO jobs (job_id, kind, payload, idempotency_key, state, attempt, max_attempts,
-                          lease_until, created_at, updated_at, last_error)
-                       VALUES (?, ?, ?, ?, 'queued', 0, ?, NULL, ?, ?, NULL)""",
-            (job_id, kind, payload_json, idempotency_key, max_attempts, now, now)
-        )
-        self.conn.commit()
-        return job_id
+        with self._transazione() as conn:
+            conn.execute(
+                """INSERT INTO jobs (job_id, kind, payload, idempotency_key, state, attempt,
+                              max_attempts, lease_until, created_at, updated_at, last_error)
+                   VALUES (?, ?, ?, ?, 'queued', 0, ?, NULL, ?, ?, NULL)
+                   ON CONFLICT(idempotency_key) DO NOTHING""",
+                (job_id, kind, payload_json, idempotency_key, max_attempts, now, now))
+            row = conn.execute(
+                "SELECT job_id FROM jobs WHERE idempotency_key = ?",
+                (idempotency_key,)).fetchone()
+        # row non puo' essere None: o il nostro INSERT e' passato, o esisteva gia'.
+        return row[0]
 
     def claim(self, now_ms=None, lease_ms=300_000) -> Optional[Dict[str, Any]]:
         """Prende UN job: prima il 'queued' piu' vecchio per created_at; se non ce ne sono,
         il 'running' con lease_until <= now_ms (lease scaduta -> ri-claim). Porta il job a
         'running', attempt += 1, lease_until = now_ms + lease_ms, updated_at = now_ms.
+        BEGIN IMMEDIATE: la scelta e l'UPDATE avvengono sotto il lock di scrittura, quindi
+        due worker concorrenti non possono ricevere lo stesso job.
         Ritorna {} con campi anche 'payload' (dict decodificato) e 'lease_until', o None."""
         now = self._now_ms(now_ms)
-        
-        # First try: oldest queued job
-        cursor = self.conn.execute(
-            """SELECT job_id, kind, payload, idempotency_key, state, attempt, max_attempts,
+        with self._transazione() as conn:
+            row = conn.execute(
+                """SELECT job_id, kind, payload, idempotency_key, state, attempt, max_attempts,
                           lease_until, created_at, updated_at, last_error
                    FROM jobs
                    WHERE state = 'queued'
                    ORDER BY created_at ASC, job_id ASC
-                   LIMIT 1"""
-        )
-        row = cursor.fetchone()
-        
-        if not row:
-            # Second try: running with expired lease
-            cursor = self.conn.execute(
-                """SELECT job_id, kind, payload, idempotency_key, state, attempt, max_attempts,
+                   LIMIT 1""").fetchone()
+            if not row:
+                row = conn.execute(
+                    """SELECT job_id, kind, payload, idempotency_key, state, attempt, max_attempts,
                               lease_until, created_at, updated_at, last_error
                        FROM jobs
                        WHERE state = 'running' AND lease_until <= ?
                        ORDER BY created_at ASC, job_id ASC
                        LIMIT 1""",
-                (now,)
-            )
-            row = cursor.fetchone()
-        
-        if not row:
-            return None
-        
-        job_id, kind, payload_json, idempotency_key, state, attempt, max_attempts, lease_until, created_at, updated_at, last_error = row
-        
-        new_attempt = attempt + 1
-        new_lease_until = now + lease_ms
-        
-        self.conn.execute(
-            """UPDATE jobs SET state = 'running', attempt = ?, lease_until = ?, updated_at = ?
-                       WHERE job_id = ?""",
-            (new_attempt, new_lease_until, now, job_id)
-        )
-        self.conn.commit()
-        
+                    (now,)).fetchone()
+            if not row:
+                return None
+
+            (job_id, kind, payload_json, idempotency_key, state, attempt, max_attempts,
+             lease_until, created_at, updated_at, last_error) = row
+
+            new_attempt = attempt + 1
+            new_lease_until = now + lease_ms
+            cur = conn.execute(
+                """UPDATE jobs SET state = 'running', attempt = ?, lease_until = ?, updated_at = ?
+                   WHERE job_id = ? AND state IN ('queued', 'running')""",
+                (new_attempt, new_lease_until, now, job_id))
+            if cur.rowcount != 1:  # difensivo: transizione non riuscita, non mentire
+                return None
+
         return {
             'job_id': job_id,
             'kind': kind,
@@ -126,45 +147,34 @@ class JobStore:
             'lease_until': new_lease_until,
             'created_at': created_at,
             'updated_at': now,
-            'last_error': last_error
+            'last_error': last_error,
         }
 
     def complete(self, job_id, now_ms=None) -> None:
         """state='done', lease_until=NULL, updated_at=now."""
         now = self._now_ms(now_ms)
-        self.conn.execute(
-            "UPDATE jobs SET state = 'done', lease_until = NULL, updated_at = ? WHERE job_id = ?",
-            (now, job_id)
-        )
-        self.conn.commit()
+        with self._transazione() as conn:
+            conn.execute(
+                "UPDATE jobs SET state = 'done', lease_until = NULL, updated_at = ? WHERE job_id = ?",
+                (now, job_id))
 
     def fail(self, job_id, error, now_ms=None) -> str:
         """state: 'queued' se attempt < max_attempts (riprova), altrimenti 'failed'.
         last_error = str(error) troncato a 500 caratteri; lease_until=NULL.
         Ritorna il nuovo state."""
         now = self._now_ms(now_ms)
-        
-        cursor = self.conn.execute(
-            "SELECT attempt, max_attempts FROM jobs WHERE job_id = ?",
-            (job_id,)
-        )
-        row = cursor.fetchone()
-        if not row:
-            raise ValueError(f"Job {job_id} not found")
-        
-        attempt, max_attempts = row
-        error_str = str(error)[:500]
-        
-        if attempt < max_attempts:
-            new_state = 'queued'
-        else:
-            new_state = 'failed'
-        
-        self.conn.execute(
-            "UPDATE jobs SET state = ?, last_error = ?, lease_until = NULL, updated_at = ? WHERE job_id = ?",
-            (new_state, error_str, now, job_id)
-        )
-        self.conn.commit()
+        with self._transazione() as conn:
+            row = conn.execute(
+                "SELECT attempt, max_attempts FROM jobs WHERE job_id = ?",
+                (job_id,)).fetchone()
+            if not row:
+                raise ValueError(f"Job {job_id} not found")
+            attempt, max_attempts = row
+            error_str = str(error)[:500]
+            new_state = 'queued' if attempt < max_attempts else 'failed'
+            conn.execute(
+                "UPDATE jobs SET state = ?, last_error = ?, lease_until = NULL, updated_at = ? WHERE job_id = ?",
+                (new_state, error_str, now, job_id))
         return new_state
 
     def pending(self, now_ms=None) -> List[Dict[str, Any]]:
@@ -172,11 +182,10 @@ class JobStore:
         now = self._now_ms(now_ms)
         cursor = self.conn.execute(
             """SELECT job_id, kind, payload, idempotency_key, state, attempt, max_attempts,
-                          lease_until, created_at, updated_at, last_error
-                   FROM jobs
-                   WHERE state IN ('queued', 'running')
-                   ORDER BY created_at ASC, job_id ASC"""
-        )
+                      lease_until, created_at, updated_at, last_error
+               FROM jobs
+               WHERE state IN ('queued', 'running')
+               ORDER BY created_at ASC, job_id ASC""")
         result = []
         for row in cursor.fetchall():
             job_id, kind, payload_json, idempotency_key, state, attempt, max_attempts, lease_until, created_at, updated_at, last_error = row
@@ -199,21 +208,18 @@ class JobStore:
         """{"queued": n, "running": n, "done": n, "failed": n,
             "oldest_queued_age_ms": int|None}"""
         now = self._now_ms(now_ms)
-        
+
         cursor = self.conn.execute(
-            "SELECT state, COUNT(*) FROM jobs GROUP BY state"
-        )
+            "SELECT state, COUNT(*) FROM jobs GROUP BY state")
         counts = {row[0]: row[1] for row in cursor.fetchall()}
-        
-        # Get oldest queued age
+
         cursor = self.conn.execute(
-            "SELECT MIN(created_at) FROM jobs WHERE state = 'queued'"
-        )
+            "SELECT MIN(created_at) FROM jobs WHERE state = 'queued'")
         row = cursor.fetchone()
         oldest_queued_age_ms = None
         if row and row[0] is not None:
             oldest_queued_age_ms = now - row[0]
-        
+
         return {
             'queued': counts.get('queued', 0),
             'running': counts.get('running', 0),

@@ -18,6 +18,7 @@ Vedi README.md per le regole (test prima dei numeri; cancello decide; produzione
 """
 import json
 import os
+import shlex
 import subprocess
 import sys
 import time
@@ -76,9 +77,37 @@ def shard_summary(name, soglia=180):
     return ("ok %ds" % int(age)) if age <= soglia else ("STALE %ds" % int(age))
 
 
-def sh(cmd, timeout=20):
+# Binari che la fabbrica puo' eseguire (allowlist esplicita: difesa in profondita').
+_BIN_AMMESSI = frozenset({"sha256sum", "curl", "git", "systemctl", "ssh", "ls",
+                          "du", "df", "date", "hostname", "pgrep", "ss"})
+_METACARATTERI = frozenset(";|&<>`$")
+
+
+def sh(cmd, timeout=20, cwd=None):
+    """Comando SENZA shell: shlex.split + allowlist + niente metacaratteri.
+
+    La versione precedente usava shell=True: qui la shell non esiste proprio —
+    niente espansione, pipe o concatenazioni. Un token con metacaratteri o un
+    binario fuori allowlist viene RIFIUTATO (rc 98) invece di essere eseguito.
+    Revisione Manus 06/10: la fabbrica legge spec/handoff di piu' agenti, la
+    superficie di comando va tenuta stretta.
+    """
+    if isinstance(cmd, str):
+        try:
+            parti = shlex.split(cmd)
+        except ValueError as exc:
+            return 98, "RIFIUTATO: comando non parsabile (%s)" % exc
+    else:
+        parti = [str(x) for x in cmd]
+    if not parti:
+        return 98, "RIFIUTATO: comando vuoto"
+    if any(c in _METACARATTERI for p in parti for c in p):
+        return 98, "RIFIUTATO: metacaratteri di shell"
+    if parti[0] not in _BIN_AMMESSI:
+        return 98, "RIFIUTATO: binario %r fuori allowlist" % parti[0]
     try:
-        r = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=timeout)
+        r = subprocess.run(parti, shell=False, capture_output=True, text=True,
+                           timeout=timeout, cwd=cwd)
         return r.returncode, (r.stdout or "") + (r.stderr or "")
     except Exception as e:
         return 99, "%s: %s" % (type(e).__name__, e)
@@ -106,7 +135,7 @@ def check_handoff_p2(st):
     if files:
         man = d / "MANIFEST.sha256"
         if man.exists():
-            rc, out = sh("cd %s && sha256sum -c MANIFEST.sha256" % d, timeout=30)
+            rc, out = sh("sha256sum -c MANIFEST.sha256", timeout=30, cwd=d)
             st["p2_handoff_manifest"] = "OK" if rc == 0 else "FALLITO"
             if rc != 0:
                 log("HANDOFF P2: MANIFEST FALLITO -> %s" % out.strip()[-200:])
