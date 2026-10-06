@@ -41,6 +41,10 @@ pythonpath = ["src"]
 
 [tool.ruff]
 line-length = 120
+# legacy/ = il codebase precedente, congelato come memoria (non si mantiene).
+# prove/  = evidenze e consegne d'archivio (byte-exact: non si toccano).
+# Il lint protegge SOLO il codice vivo: src/, tests/, scripts/, fabbrica/, deploy/.
+extend-exclude = ["legacy", "prove"]
 
 [tool.ruff.lint]
 # Solo regole che intercettano errori reali. Il codebase precedente aveva una CI rossa
