@@ -79,8 +79,8 @@ def checks_marcodg1(st):
     st["banco_rc"] = sysd("money-banco-secco.service", "ExecMainStatus")
     st["banco_last"] = sysd("money-banco-secco.timer", "LastTriggerUSec")
     st["svc"] = {u: sysd(u) for u in (
-        "denaro-aggregator-marcodg1", "denaro-dashboard-marcodg1",
-        "denaro-health-marcodg1", "denaro-landing", "cloudflared-denaro")}
+        "money-aggregator-marcodg1", "money-dashboard-marcodg1",
+        "money-health-marcodg1", "money-landing-marcodg1", "cloudflared")}
 
 
 def checks_nuvola(st):
@@ -89,8 +89,7 @@ def checks_nuvola(st):
                  "http://100.76.22.119:50080/api/health", timeout=10)
     st["a0win"] = out if rc == 0 else "DOWN"
     st["svc"] = {u: sysd(u) for u in (
-        "denaro-node-nuvola-trade", "denaro-health-nuvola",
-        "zabbix-agent", "zabbix-tunnel")}
+        "money-health-nuvola", "zabbix-agent", "zabbix-tunnel")}
 
 
 def main():
