@@ -11,7 +11,7 @@ Type=simple
 User=marco
 WorkingDirectory=/home/marco/money
 ExecStartPre=/bin/bash /home/marco/money/ops/aggregator/port_guard.sh money-aggregator-marcodg1.service infra_aggregator.py 8912
-ExecStart=/usr/bin/python3 /home/marco/money/ops/aggregator/infra_aggregator.py
+ExecStart=/home/marco/money/.venv/bin/python3 /home/marco/money/ops/aggregator/infra_aggregator.py
 Environment=HEALTH_DIR=/home/marco/denaro/health
 Environment=NODE_DIR=/home/marco/alpha-omega-trading/node_data
 Environment=AGG_PORT=8912

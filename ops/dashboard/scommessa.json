@@ -1,0 +1,20 @@
+{
+  "progetto": "Scommessa asimmetrica (airdrop farming)",
+  "ts": 1791302402.4271834,
+  "ts_iso": "2026-10-06T16:00:02Z",
+  "wallet": "0x8788D169201cb0D8E5b355e26924c9D3D51ad810",
+  "rete": "Base",
+  "tetto_perdita_eur": 42.0,
+  "ok": true,
+  "errore": null,
+  "eth": 2.115e-05,
+  "usdc": 0.0,
+  "prezzo_eth_eur": 2400.13,
+  "prezzo_usdc_eur": 0.88801,
+  "valore_eur": 0.05,
+  "gas_sufficiente": false,
+  "sopravvivenza_pct": 0.1,
+  "fase": "fondazione \u2014 wallet finanziato, layer di esecuzione on-chain da scrivere",
+  "prossimo_passo": "esecuzione on-chain: firma locale, invio, verifica, idempotenza",
+  "nota": "seed indipendente, nessun HD condiviso"
+}
