@@ -23,3 +23,7 @@ dati_cache/
 # .pytmp/ e le cache degli strumenti restano qui dentro invece che in %TEMP%.
 .venv/
 logs/
+
+# segreti banco (casa unica money, 2026-10-06)
+config/.env_banco
+!config/.env_banco.example
