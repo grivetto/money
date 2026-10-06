@@ -76,10 +76,15 @@ COSA QUESTO MODULO **NON** DIMOSTRA
   backtest non e' lo stesso oggetto di un edge trovato dopo 1.
 - **Non vede il futuro.** I ritorni che riceve sono passati; un regime nuovo non e' nel
   campione.
-- **Il t-statistic e il bootstrap assumono operazioni i.i.d.** Se i ritorni sono
-  autocorrelati o sovrapposti (posizioni aperte contemporaneamente), l'errore standard e'
-  sottostimato e l'IC bootstrap e' troppo stretto: il cancello diventa piu' permissivo di
-  quanto dichiari. Qui l'autocorrelazione NON viene corretta.
+- **Il t-statistic e il bootstrap i.i.d. assumono operazioni indipendenti.** Se i ritorni
+  sono autocorrelati o sovrapposti (posizioni aperte contemporaneamente), l'errore
+  standard e' sottostimato e l'IC i.i.d. e' troppo stretto: il cancello diventerebbe
+  piu' permissivo di quanto dichiari. DAL 06/10/2026 la dipendenza e' **misurata e
+  corretta nel verdetto** (revisione esterna, Sprint 2): se |autocorrelazione(1)| >
+  2/sqrt(n) il criterio 2 richiede ANCHE l'intervallo a blocchi
+  (`statistica.intervallo_media_blocchi`) e il criterio 3 usa il minore tra t naive e
+  t HAC (Newey-West). Il verdetto riporta `n_effettivo`, `blocco_block`, `autocorr_lag1`,
+  `t_hac` e il metodo usato (`metodo_ic`: "iid" oppure "iid+block").
 - **Lo slippage vive dentro `ritorni_netti`, non qui.** Questo modulo non stima costi:
   assume che chi produce l'esito li abbia gia' tolti, e che la tariffa dichiarata sia
   quella realmente pagata. Una tariffa assunta ma non ottenuta rende il criterio 6 falso.
@@ -102,6 +107,7 @@ import random
 from dataclasses import dataclass, replace
 from typing import Callable, Dict, Optional, Sequence, Tuple
 
+from . import statistica
 from .costi import Tariffa, get_tariffa, movimento_minimo
 
 # --- le soglie, tutte in un posto solo e tutte dichiarate -------------------------------
@@ -593,12 +599,28 @@ def _criteri() -> Tuple[Criterio, ...]:
                            "serie: nessun edge e' dimostrabile"), {"expectancy": exp}
         inf, sup = ic
         ok = inf > 0.0
+        dettagli = {"expectancy": exp, "ic_inf": inf, "ic_sup": sup}
+        extra = ""
+        if s.get("dipendenza_rilevante"):
+            ic_block = s.get("ic_block")
+            if ic_block is None:
+                ok = False
+                extra = ("; dipendenza temporale RILEVANTE ma intervallo a blocchi non "
+                         "calcolabile: senza la prova dipendente il criterio non passa")
+            else:
+                inf_b, sup_b = ic_block
+                ok = ok and inf_b > 0.0
+                extra = (f"; dipendenza temporale RILEVANTE (rho1 {s.get('autocorr_lag1'):+.3f}): "
+                         f"richiesto anche l'IC a blocchi [{_segnato_perc(inf_b)}, "
+                         f"{_segnato_perc(sup_b)}] (blocco {s.get('blocco_block')}): estremo "
+                         f"inferiore {'> 0' if inf_b > 0 else '<= 0'}")
+                dettagli.update({"ic_block_inf": inf_b, "ic_block_sup": sup_b})
         motivo = (
             f"expectancy netta {_segnato_perc(exp)} con IC bootstrap al "
             f"{opt['livello']:.0%} [{_segnato_perc(inf)}, {_segnato_perc(sup)}] "
             f"(seme {opt['seme']}, {opt['ricampionamenti']} ricampionamenti): estremo "
-            f"inferiore {'> 0' if ok else '<= 0'}")
-        return ok, motivo, {"expectancy": exp, "ic_inf": inf, "ic_sup": sup}
+            f"inferiore {'> 0' if inf > 0 else '<= 0'}{extra}")
+        return ok, motivo, dettagli
 
     def c_tstat(esito: Esito, s: dict, opt: dict) -> Tuple[bool, str, dict]:
         t = s.get("t_stat")
@@ -607,9 +629,18 @@ def _criteri() -> Tuple[Criterio, ...]:
             return False, (f"t-statistic non definito (deviazione standard nulla su "
                            f"{s.get('n')} operazioni): un edge senza dispersione non e' "
                            f"un edge misurabile"), {"t_stat": None}
-        ok = t > mn
-        motivo = (f"t-statistic {_per(t)} {'>' if ok else '<='} {_per(mn)} a una coda (5%)")
-        return ok, motivo, {"t_stat": t}
+        t_hac = s.get("t_hac")
+        if s.get("dipendenza_rilevante") and t_hac is not None:
+            t_eff = min(t, t_hac)
+            ok = t_eff > mn
+            motivo = (f"t-statistic naive {_per(t)} / HAC (Newey-West) {_per(t_hac)} con "
+                      f"dipendenza temporale rilevante: vale il conservativo {_per(t_eff)} "
+                      f"{'>' if ok else '<='} {_per(mn)} a una coda (5%)")
+        else:
+            t_eff = t
+            ok = t > mn
+            motivo = (f"t-statistic {_per(t)} {'>' if ok else '<='} {_per(mn)} a una coda (5%)")
+        return ok, motivo, {"t_stat": t, "t_hac": t_hac, "t_eff": t_eff}
 
     def c_profit_factor(esito: Esito, s: dict, opt: dict) -> Tuple[bool, str, dict]:
         pf = s.get("profit_factor")
@@ -792,6 +823,27 @@ def giudica(esito: Esito,
     s["ic_livello"] = LIVELLO_CONFIDENZA
     s["ic_ricampionamenti"] = ricampionamenti
     s["ic_seme"] = seme
+    # --- dipendenza temporale (revisione Manus 06/10): il bootstrap i.i.d. e il t naive
+    # sono troppo ottimistici su ritorni serialmente correlati (posizioni sovrapposte,
+    # pattern intrinseci). Se la dipendenza e' rilevante: criterio 2 -> serve ANCHE
+    # l'intervallo a blocchi; criterio 3 -> vale il minore tra t naive e t HAC.
+    _ac1 = statistica.autocorrelazione(esito.ritorni_netti, 1) if n_reali >= 3 else 0.0
+    _soglia_ac = 2.0 / math.sqrt(n_reali)
+    dipendenza = abs(_ac1) > _soglia_ac
+    blocco = max(2, int(round(n_reali ** (1.0 / 3.0))))
+    t_hac, se_hac = statistica.t_stat_newey_west(esito.ritorni_netti)
+    s["autocorr_lag1"] = _ac1
+    s["autocorr_soglia"] = _soglia_ac
+    s["dipendenza_rilevante"] = dipendenza
+    s["n_effettivo"] = statistica.n_effettivo(esito.ritorni_netti)
+    s["blocco_block"] = blocco
+    s["t_hac"] = t_hac
+    s["se_hac"] = se_hac
+    s["metodo_ic"] = "iid+block" if dipendenza else "iid"
+    s["ic_block"] = None
+    if dipendenza:
+        s["ic_block"] = statistica.intervallo_media_blocchi(
+            esito.ritorni_netti, blocco, LIVELLO_CONFIDENZA, ricampionamenti, seme)
     s["pedaggio_per_operazione"] = esito.pedaggio_per_operazione
     s["tariffa"] = f"{esito.tariffa.venue.value} | {esito.tariffa.condizione}"
     s["nome"] = esito.nome

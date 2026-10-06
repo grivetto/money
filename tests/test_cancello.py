@@ -554,3 +554,63 @@ def test_le_soglie_di_default_sono_quelle_dichiarate():
     assert RICAMPIONAMENTI == 10_000
     assert CAPITALE_RIFERIMENTO_DEFAULT == 1_000.0
     assert SEME_BOOTSTRAP == 20260101
+
+
+# ---------------------------------------------------------------------------------------
+# dipendenza temporale: bootstrap a blocchi e t HAC entrano nel verdetto (Sprint 2 Manus)
+# ---------------------------------------------------------------------------------------
+
+def test_serie_iid_pulita_usa_solo_il_criterio_iid():
+    """Su ritorni indipendenti il metodo resta 'iid' e l'IC a blocchi non si calcola."""
+    import random
+    rng = random.Random(42)
+    ritorni = [0.01 + rng.gauss(0, 0.02) for _ in range(120)]
+    v = giudica(esito("iid", ritorni))
+    s = v.statistiche
+    assert s["dipendenza_rilevante"] is False
+    assert s["metodo_ic"] == "iid"
+    assert s["ic_block"] is None
+
+
+def test_serie_autocorrelata_attiva_il_metodo_a_blocchi():
+    """AR(1) con phi alto: dipendenza rilevante -> IC a blocchi calcolato e dichiarato."""
+    import random
+    rng = random.Random(7)
+    x = 0.0
+    ritorni = []
+    for _ in range(200):
+        x = 0.9 * x + rng.gauss(0, 0.01)
+        ritorni.append(0.001 + x)
+    v = giudica(esito("ar1", ritorni))
+    s = v.statistiche
+    assert s["dipendenza_rilevante"] is True
+    assert s["metodo_ic"] == "iid+block"
+    assert s["ic_block"] is not None
+    assert s["t_hac"] is not None
+
+
+def test_dipendenza_rilevante_il_blocco_boccia_cio_che_iid_promuoverebbe():
+    """Il caso della revisione esterna: l'IC i.i.d. ha estremo inferiore > 0 (da solo
+    passerebbe), ma la dipendenza temporale e' reale — il criterio 2 richiede anche
+    l'IC a blocchi, che ha estremo inferiore <= 0, e il t conservativo (min naive/HAC)
+    va sotto soglia. Il verdetto deve essere 'archiviato' col motivo che cita i blocchi:
+    senza la correzione questa serie sarebbe passata."""
+    import random
+    rng = random.Random(11)
+    x = 0.0
+    ar = []
+    for _ in range(300):
+        x = 0.95 * x + rng.gauss(0, 0.01)
+        ar.append(x)
+    media_ar = sum(ar) / len(ar)
+    ritorni = [0.006 + (val - media_ar) for val in ar]  # media esattamente 0,6%/operazione
+
+    v = giudica(esito("ar-dipendente", ritorni))
+    s = v.statistiche
+    inf_iid, _ = s["ic_bootstrap"]
+    inf_block, _ = s["ic_block"]
+    assert inf_iid > 0            # il test i.i.d. da solo direbbe "si'"
+    assert inf_block <= 0         # il test a blocchi dice "no"
+    assert v.esito == "archiviato"
+    assert any("blocchi" in m for m in v.motivi)
+    assert "expectancy_ic90" in s["criteri_falliti"]
