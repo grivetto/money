@@ -43,6 +43,11 @@ from .rsi_mean_reversion import (SLIPPAGE_PER_LATO, TARIFFA_ASSUNTA, _rsi,
 TARIFFA_SCANSIONE = TARIFFA_ASSUNTA
 
 INIZIO_STORIA = "2020-10-01"
+#: Fine del campione dei run MANUALI (fissa, dichiarata). Il **loop giornaliero**
+#: (scripts/scansione_giornaliera.py) usa intenzionalmente `fine = ieri`: la finestra di
+#: verifica si estende giorno per giorno e non viene mai riusata (inizio e confine restano
+#: fissi). La discrepanza fra i due valori è di dichiarazione, non di sostanza: l'artefatto
+#: porta sempre `finestre.fine` esplicito (segnalato dalla contro-verifica DSH 06/10).
 FINE_STORIA = "2026-09-25"
 CONFINE_ADDESTRAMENTO = "2024-06-01"
 
