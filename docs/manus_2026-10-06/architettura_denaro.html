@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Denaro — Architettura di sistema & specifiche di trading applicate</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'JetBrains Mono', monospace;
+      background: #020617;
+      min-height: 100vh;
+      padding: 2rem;
+      color: white;
+    }
+    .container { max-width: 1240px; margin: 0 auto; }
+    .header { margin-bottom: 2rem; }
+    .header-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
+    .pulse-dot { width: 12px; height: 12px; background: #22d3ee; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    h1 { font-size: 1.45rem; font-weight: 700; letter-spacing: -0.025em; }
+    .subtitle { color: #94a3b8; font-size: 0.8rem; margin-left: 1.75rem; line-height: 1.5; }
+    .diagram-container {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 1rem;
+      border: 1px solid #1e293b;
+      padding: 1.5rem;
+      overflow-x: auto;
+    }
+    svg { width: 100%; min-width: 1100px; display: block; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 1rem; margin-top: 2rem; }
+    .card { background: rgba(15, 23, 42, 0.5); border-radius: 0.75rem; border: 1px solid #1e293b; padding: 1.25rem; }
+    .card-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
+    .card-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+    .card-dot.cyan { background: #22d3ee; } .card-dot.emerald { background: #34d399; }
+    .card-dot.violet { background: #a78bfa; } .card-dot.amber { background: #fbbf24; }
+    .card-dot.rose { background: #fb7185; }
+    .card h3 { font-size: 0.85rem; font-weight: 600; }
+    .card ul { list-style: none; color: #94a3b8; font-size: 0.72rem; line-height: 1.55; }
+    .card li { margin-bottom: 0.4rem; }
+    .card li b { color: #e2e8f0; font-weight: 600; }
+    .footer { text-align: center; margin-top: 1.5rem; color: #475569; font-size: 0.72rem; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-row">
+        <div class="pulse-dot"></div>
+        <h1>DENARO — Architettura di sistema &amp; specifiche di trading applicate</h1>
+      </div>
+      <p class="subtitle">
+        Documento per analisi esterna (Manus AI) · 2026-10-06 · stato verificato sugli impianti reali ·
+        nessun segreto incluso · i nodi sono indicati per nome.<br>
+        Progetto: trading sistematico crypto su <b>OKX EEA</b> — prima si misura se un edge esiste, ai costi reali, poi lo si automatizza.
+      </p>
+    </div>
+
+    <div class="diagram-container">
+      <svg viewBox="0 0 1400 1560">
+        <defs>
+          <marker id="ah" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#64748b" />
+          </marker>
+          <marker id="ah-em" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#34d399" />
+          </marker>
+          <marker id="ah-cy" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#22d3ee" />
+          </marker>
+          <marker id="ah-ro" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#fb7185" />
+          </marker>
+          <marker id="ah-am" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#fbbf24" />
+          </marker>
+          <marker id="ah-vi" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#a78bfa" />
+          </marker>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+
+        <rect width="100%" height="100%" fill="url(#grid)" />
+
+        <!-- ======================= ARROWS (drawn first, behind boxes) ======================= -->
+
+        <!-- OKX -> Canary: ordini reali -->
+        <path d="M 815 132 Q 920 190 998 262" fill="none" stroke="#fb7185" stroke-width="1.8" marker-end="url(#ah-ro)"/>
+        <text x="947" y="196" fill="#fb7185" font-size="8.5" text-anchor="middle">ordini reali — solo C1 (taglia minima)</text>
+
+        <!-- OKX -> Banco: saldi read-only -->
+        <path d="M 750 132 Q 980 185 1205 262" fill="none" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="5,5" marker-end="url(#ah-ro)"/>
+        <text x="1052" y="176" fill="#fb7185" font-size="8.5" text-anchor="middle">saldi read-only (riconciliazione)</text>
+
+        <!-- OKX -> mc2: dati pubblici -->
+        <path d="M 600 132 Q 450 165 318 212" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#ah)"/>
+        <text x="412" y="167" fill="#94a3b8" font-size="8.5" text-anchor="middle">dati pubblici (OHLCV · funding)</text>
+
+        <!-- OKX -> nuvola: dati pubblici per paper -->
+        <path d="M 655 132 Q 668 450 600 786" fill="none" stroke="#64748b" stroke-width="1.5" stroke-dasharray="2,4" marker-end="url(#ah)"/>
+        <text x="700" y="480" fill="#94a3b8" font-size="8.5" text-anchor="start">dati pubblici → paper</text>
+
+        <!-- mc2 <-> MARCODG1: Tailscale -->
+        <line x1="532" y1="462" x2="876" y2="462" stroke="#34d399" stroke-width="1.5" marker-end="url(#ah-em)"/>
+        <line x1="876" y1="474" x2="532" y2="474" stroke="#34d399" stroke-width="1.5" marker-end="url(#ah-em)"/>
+        <text x="705" y="455" fill="#34d399" font-size="8.5" text-anchor="middle">Tailscale · ssh · git push solo via mc2</text>
+
+        <!-- mc2 -> nuvola: worker -->
+        <path d="M 348 717 Q 356 756 382 786" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#ah-em)"/>
+        <text x="300" y="763" fill="#34d399" font-size="8.5">worker fabbrica @5 s</text>
+
+        <!-- nuvola -> MARCODG1: health -->
+        <path d="M 820 852 Q 1000 700 1112 560" fill="none" stroke="#64748b" stroke-width="1.5" marker-end="url(#ah)"/>
+        <text x="990" y="700" fill="#94a3b8" font-size="8.5" text-anchor="middle">health JSON → aggregatore</text>
+
+        <!-- MARCODG1 -> Cloudflare: web -->
+        <path d="M 1232 212 Q 1246 170 1252 120" fill="none" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#ah-cy)"/>
+        <text x="1295" y="172" fill="#22d3ee" font-size="8.5" text-anchor="start">web pubblico</text>
+
+        <!-- watchdog -> Telegram -->
+        <path d="M 150 412 C 118 300 128 200 163 122" fill="none" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="5,5" marker-end="url(#ah-ro)"/>
+        <text x="100" y="272" fill="#fb7185" font-size="8.5" text-anchor="middle">alert (max 1/h + rientro)</text>
+
+        <!-- agenti -> mc2: consegne -->
+        <line x1="200" y1="1086" x2="200" y2="720" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#ah-vi)"/>
+        <text x="208" y="900" fill="#a78bfa" font-size="8.5" text-anchor="start">consegne PROTCON → review Hermes</text>
+
+        <!-- ======================= EXTERNAL ======================= -->
+
+        <rect x="60" y="42" width="230" height="76" rx="6" fill="#0f172a"/>
+        <rect x="60" y="42" width="230" height="76" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="175" y="66" fill="white" font-size="11" font-weight="600" text-anchor="middle">Telegram</text>
+        <text x="175" y="82" fill="#94a3b8" font-size="9" text-anchor="middle">@DenaroAlertBot</text>
+        <text x="175" y="98" fill="#94a3b8" font-size="8" text-anchor="middle">canale alert unico</text>
+
+        <rect x="540" y="36" width="320" height="96" rx="6" fill="#0f172a"/>
+        <rect x="540" y="36" width="320" height="96" rx="6" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="700" y="60" fill="white" font-size="12" font-weight="600" text-anchor="middle">OKX EEA — eea.okx.com</text>
+        <text x="700" y="78" fill="#94a3b8" font-size="9" text-anchor="middle">spot · X-Perps (leva 1×) · funding ogni 8 h</text>
+        <text x="700" y="94" fill="#94a3b8" font-size="8" text-anchor="middle">regione EEA · account main + sub isolati (un bot per conto)</text>
+        <text x="700" y="114" fill="#fbbf24" font-size="8" text-anchor="middle">chiavi con IP-whitelist · permessi minimi</text>
+
+        <rect x="1140" y="42" width="220" height="76" rx="6" fill="#0f172a"/>
+        <rect x="1140" y="42" width="220" height="76" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="1250" y="66" fill="white" font-size="11" font-weight="600" text-anchor="middle">Cloudflare</text>
+        <text x="1250" y="82" fill="#94a3b8" font-size="9" text-anchor="middle">denaro.grivetto.eu</text>
+        <text x="1250" y="98" fill="#94a3b8" font-size="9" text-anchor="middle">web.grivetto.eu</text>
+
+        <!-- ======================= PERIMETRO ======================= -->
+
+        <rect x="40" y="170" width="1320" height="1030" rx="12" fill="rgba(251, 191, 36, 0.04)" stroke="#fbbf24" stroke-width="1" stroke-dasharray="8,4"/>
+        <text x="54" y="190" fill="#fbbf24" font-size="9" font-weight="600">PERIMETRO OPERATIVO — rete privata Tailscale · nessuna porta pubblica per gli agenti · IP-whitelist sulle chiavi</text>
+
+        <!-- ======================= mc2 ======================= -->
+
+        <rect x="60" y="215" width="470" height="500" rx="8" fill="#0b1120"/>
+        <rect x="60" y="215" width="470" height="500" rx="8" fill="rgba(6, 78, 59, 0.18)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="295" y="241" fill="#34d399" font-size="11" font-weight="600" text-anchor="middle">mc2 — HUB · REGIA · RICERCA</text>
+        <text x="295" y="256" fill="#94a3b8" font-size="8" text-anchor="middle">nodo di controllo · unico writer git</text>
+
+        <rect x="85" y="268" width="185" height="58" rx="6" fill="#0f172a"/>
+        <rect x="85" y="268" width="185" height="58" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="177" y="289" fill="white" font-size="10" font-weight="600" text-anchor="middle">Hermes — regia</text>
+        <text x="177" y="304" fill="#94a3b8" font-size="8" text-anchor="middle">misure · review · dispatch · git</text>
+        <text x="177" y="317" fill="#94a3b8" font-size="8" text-anchor="middle">ingegnere capo (LLM in ombra, mai nel caldo)</text>
+
+        <rect x="285" y="268" width="220" height="58" rx="6" fill="#0f172a"/>
+        <rect x="285" y="268" width="220" height="58" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="395" y="289" fill="white" font-size="10" font-weight="600" text-anchor="middle">Fabbrica master ×100</text>
+        <text x="395" y="304" fill="#94a3b8" font-size="8" text-anchor="middle">tick 3 s · job-store · gate JEV · lint</text>
+        <text x="395" y="317" fill="#94a3b8" font-size="8" text-anchor="middle">≈140.000 tiri · watchdog anti-silenzio</text>
+
+        <rect x="85" y="343" width="185" height="58" rx="6" fill="#0f172a"/>
+        <rect x="85" y="343" width="185" height="58" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="177" y="364" fill="white" font-size="10" font-weight="600" text-anchor="middle">Ricerca quant</text>
+        <text x="177" y="379" fill="#94a3b8" font-size="8" text-anchor="middle">pre-registrazione · misure</text>
+        <text x="177" y="392" fill="#94a3b8" font-size="8" text-anchor="middle">cancello a 8 criteri (codice)</text>
+
+        <rect x="285" y="343" width="220" height="58" rx="6" fill="#0f172a"/>
+        <rect x="285" y="343" width="220" height="58" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="395" y="364" fill="white" font-size="10" font-weight="600" text-anchor="middle">Aggregatore :8912 (fallback)</text>
+        <text x="395" y="379" fill="#94a3b8" font-size="8" text-anchor="middle">+ health :8911</text>
+        <text x="395" y="392" fill="#94a3b8" font-size="8" text-anchor="middle">snapshot 24 card bot</text>
+
+        <rect x="85" y="418" width="420" height="52" rx="6" fill="#0f172a"/>
+        <rect x="85" y="418" width="420" height="52" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="295" y="439" fill="white" font-size="10" font-weight="600" text-anchor="middle">Zabbix server · crontab · watchdog</text>
+        <text x="295" y="456" fill="#94a3b8" font-size="8" text-anchor="middle">alert → Telegram (max 1/h + rientro) · «un componente giù senza alert è un incidente»</text>
+
+        <rect x="85" y="487" width="420" height="52" rx="6" fill="#0f172a"/>
+        <rect x="85" y="487" width="420" height="52" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="295" y="508" fill="white" font-size="10" font-weight="600" text-anchor="middle">repo ~/money — git, un solo writer</text>
+        <text x="295" y="525" fill="#94a3b8" font-size="8" text-anchor="middle">src · tests (533 offline) · docs · prove/ (evidenze congelate) · coda_catena · fabbrica</text>
+
+        <rect x="85" y="556" width="420" height="52" rx="6" fill="#0f172a"/>
+        <rect x="85" y="556" width="420" height="52" rx="6" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="295" y="577" fill="white" font-size="10" font-weight="600" text-anchor="middle">A0-mc2 :50080 · DSH-mc2 :4080 · agy-mc2</text>
+        <text x="295" y="594" fill="#94a3b8" font-size="8" text-anchor="middle">canale di comando agenti (locale, loopback)</text>
+
+        <!-- ======================= MARCODG1 ======================= -->
+
+        <rect x="880" y="215" width="450" height="500" rx="8" fill="#0b1120"/>
+        <rect x="880" y="215" width="450" height="500" rx="8" fill="rgba(8, 51, 68, 0.22)" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="1105" y="241" fill="#22d3ee" font-size="11" font-weight="600" text-anchor="middle">MARCODG1 — TRADING · WEB</text>
+        <text x="1105" y="256" fill="#94a3b8" font-size="8" text-anchor="middle">nodo con le chiavi · capitale isolato per strategia</text>
+
+        <rect x="905" y="268" width="195" height="58" rx="6" fill="#0f172a"/>
+        <rect x="905" y="268" width="195" height="58" rx="6" fill="rgba(120, 53, 15, 0.4)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="1002" y="289" fill="white" font-size="10" font-weight="600" text-anchor="middle">Canary C1 — carry DOGE</text>
+        <text x="1002" y="304" fill="#94a3b8" font-size="8" text-anchor="middle">spot long + perp short 1× (isolated)</text>
+        <text x="1002" y="317" fill="#fbbf24" font-size="8" text-anchor="middle">review 15/10 — criteri pre-fissati</text>
+
+        <rect x="1115" y="268" width="190" height="58" rx="6" fill="#0f172a"/>
+        <rect x="1115" y="268" width="190" height="58" rx="6" fill="rgba(120, 53, 15, 0.4)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="1210" y="289" fill="white" font-size="10" font-weight="600" text-anchor="middle">Banco a secco — dry-run</text>
+        <text x="1210" y="304" fill="#94a3b8" font-size="8" text-anchor="middle">ogni 5' · chiave read-only</text>
+        <text x="1210" y="317" fill="#fbbf24" font-size="8" text-anchor="middle">PASS · riconciliazione quadra</text>
+
+        <rect x="905" y="343" width="400" height="58" rx="6" fill="#0f172a"/>
+        <rect x="905" y="343" width="400" height="58" rx="6" fill="rgba(8, 51, 68, 0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="1105" y="364" fill="white" font-size="10" font-weight="600" text-anchor="middle">health :8911 · aggregatore :8912 (primario)</text>
+        <text x="1105" y="379" fill="#94a3b8" font-size="8" text-anchor="middle">dashboard :8913 · landing :8914 · Grafana :3000</text>
+        <text x="1105" y="392" fill="#94a3b8" font-size="8" text-anchor="middle">snapshot servito (54 KB, rigenerato ogni minuto)</text>
+
+        <rect x="905" y="418" width="400" height="52" rx="6" fill="#0f172a"/>
+        <rect x="905" y="418" width="400" height="52" rx="6" fill="rgba(8, 51, 68, 0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="1105" y="439" fill="white" font-size="10" font-weight="600" text-anchor="middle">cloudflared · watchdog multi-check</text>
+        <text x="1105" y="456" fill="#94a3b8" font-size="8" text-anchor="middle">post-reboot check · systemd e cron versionati (deploy/)</text>
+
+        <rect x="905" y="487" width="400" height="52" rx="6" fill="#0f172a"/>
+        <rect x="905" y="487" width="400" height="52" rx="6" fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1.5"/>
+        <text x="1105" y="508" fill="white" font-size="10" font-weight="600" text-anchor="middle">Chiavi OKX residenti sul nodo (mai in git/log)</text>
+        <text x="1105" y="525" fill="#94a3b8" font-size="8" text-anchor="middle">permessi minimi · read-only per default · whitelist IP</text>
+
+        <rect x="905" y="556" width="400" height="52" rx="6" fill="#0f172a"/>
+        <rect x="905" y="556" width="400" height="52" rx="6" fill="rgba(8, 51, 68, 0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="1105" y="577" fill="white" font-size="10" font-weight="600" text-anchor="middle">Kill-switch · idempotenza ordini · preflight</text>
+        <text x="1105" y="594" fill="#94a3b8" font-size="8" text-anchor="middle">saldo · min_notional · simbolo abilitato · chiave valida</text>
+
+        <!-- ======================= nuvola ======================= -->
+
+        <rect x="340" y="790" width="480" height="200" rx="8" fill="#0b1120"/>
+        <rect x="340" y="790" width="480" height="200" rx="8" fill="rgba(6, 78, 59, 0.18)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="580" y="816" fill="#34d399" font-size="11" font-weight="600" text-anchor="middle">nuvola — COMPUTE · PAPER · MONITORING</text>
+        <text x="580" y="831" fill="#94a3b8" font-size="8" text-anchor="middle">nessuna chiave di trading su questo nodo</text>
+
+        <rect x="365" y="845" width="430" height="58" rx="6" fill="#0f172a"/>
+        <rect x="365" y="845" width="430" height="58" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="580" y="866" fill="white" font-size="10" font-weight="600" text-anchor="middle">Flotta paper — forward-test (17 bot)</text>
+        <text x="580" y="881" fill="#94a3b8" font-size="8" text-anchor="middle">mc2 7 · nuvola 6 · MARCODG1 4 — prezzi live, ordini simulati</text>
+        <text x="580" y="894" fill="#94a3b8" font-size="8" text-anchor="middle">candele OKX pubbliche · PaperExchange (fill con fee e slippage)</text>
+
+        <rect x="365" y="918" width="430" height="50" rx="6" fill="#0f172a"/>
+        <rect x="365" y="918" width="430" height="50" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="580" y="939" fill="white" font-size="10" font-weight="600" text-anchor="middle">worker fabbrica @5 s · feeder · Zabbix agent</text>
+        <text x="580" y="956" fill="#94a3b8" font-size="8" text-anchor="middle">monitoring post (exporter) — contribuisce al quadro «zero silenzi»</text>
+
+        <!-- ======================= AGENTI ======================= -->
+
+        <rect x="60" y="1086" width="1300" height="96" rx="8" fill="#0b1120"/>
+        <rect x="60" y="1086" width="1300" height="96" rx="8" fill="rgba(76, 29, 149, 0.25)" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="710" y="1110" fill="#a78bfa" font-size="10" font-weight="600" text-anchor="middle">SQUADRA AGENTI — 11 esecutori su 4 macchine + regia · canale solo file/git, nessun accesso al percorso ordini</text>
+        <text x="710" y="1131" fill="#94a3b8" font-size="8.5" text-anchor="middle">A0-win · A0-mc2 · DSH-win :3080 · DSH-omarchy :5080 · DSH-mc2 :4080 · opencode ×4 · agy</text>
+        <text x="710" y="1148" fill="#94a3b8" font-size="8.5" text-anchor="middle">consegne atomiche PROTCON (MANIFEST sha256) → review di Hermes (test rieseguiti nel repo) → integrazione</text>
+        <text x="710" y="1166" fill="#a78bfa" font-size="8" text-anchor="middle">modelli solo online · nomenclatura &lt;tool&gt;-&lt;macchina&gt; · «nessuna soglia abbassata per far passare qualcosa»</text>
+
+        <!-- ======================= PERCORSO DEL DENARO ======================= -->
+
+        <text x="54" y="1236" fill="#fbbf24" font-size="10" font-weight="600">IL PERCORSO DEL DENARO (specifiche di trading applicate) — nessuna esecuzione senza l'intera catena</text>
+
+        <rect x="60" y="1252" width="200" height="95" rx="6" fill="#0f172a"/>
+        <rect x="60" y="1252" width="200" height="95" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="160" y="1276" fill="white" font-size="10" font-weight="600" text-anchor="middle">1 · IDEA → spec</text>
+        <text x="160" y="1293" fill="#94a3b8" font-size="8" text-anchor="middle">pre-registrata nel registro</text>
+        <text x="160" y="1308" fill="#94a3b8" font-size="8" text-anchor="middle">varianti dichiarate PRIMA</text>
+        <text x="160" y="1323" fill="#94a3b8" font-size="8" text-anchor="middle">(anti data-snooping)</text>
+
+        <rect x="282" y="1252" width="200" height="95" rx="6" fill="#0f172a"/>
+        <rect x="282" y="1252" width="200" height="95" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="382" y="1276" fill="white" font-size="10" font-weight="600" text-anchor="middle">2 · MISURA</text>
+        <text x="382" y="1293" fill="#94a3b8" font-size="8" text-anchor="middle">dati reali, fee e slippage inclusi</text>
+        <text x="382" y="1308" fill="#94a3b8" font-size="8" text-anchor="middle">walk-forward + fuori campione</text>
+        <text x="382" y="1323" fill="#94a3b8" font-size="8" text-anchor="middle">artefatti raw in prove/</text>
+
+        <rect x="504" y="1252" width="200" height="95" rx="6" fill="#0f172a"/>
+        <rect x="504" y="1252" width="200" height="95" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="604" y="1276" fill="white" font-size="10" font-weight="600" text-anchor="middle">3 · CANCELLO (8 criteri)</text>
+        <text x="604" y="1293" fill="#94a3b8" font-size="8" text-anchor="middle">≥30 op · IC bootstrap &gt; 0 · t&gt;1,65</text>
+        <text x="604" y="1308" fill="#94a3b8" font-size="8" text-anchor="middle">PF&gt;1,20 · DD≤25% · pedaggio coperto</text>
+        <text x="604" y="1323" fill="#94a3b8" font-size="8" text-anchor="middle">≥10 €/anno/1000 € · indipendenza dal blocco migliore</text>
+
+        <rect x="726" y="1252" width="200" height="95" rx="6" fill="#0f172a"/>
+        <rect x="726" y="1252" width="200" height="95" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="826" y="1276" fill="white" font-size="10" font-weight="600" text-anchor="middle">4 · BANCO dry-run</text>
+        <text x="826" y="1293" fill="#94a3b8" font-size="8" text-anchor="middle">ogni 5' · chiave read-only</text>
+        <text x="826" y="1308" fill="#94a3b8" font-size="8" text-anchor="middle">prova generale del layer live</text>
+        <text x="826" y="1323" fill="#94a3b8" font-size="8" text-anchor="middle">PASS/FAIL + riconciliazione</text>
+
+        <rect x="948" y="1252" width="200" height="95" rx="6" fill="#0f172a"/>
+        <rect x="948" y="1252" width="200" height="95" rx="6" fill="rgba(120, 53, 15, 0.4)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="1048" y="1276" fill="white" font-size="10" font-weight="600" text-anchor="middle">5 · CANARY taglia minima</text>
+        <text x="1048" y="1293" fill="#fbbf24" font-size="8" text-anchor="middle">◄ SIAMO QUI — C1 carry DOGE in corso</text>
+        <text x="1048" y="1308" fill="#94a3b8" font-size="8" text-anchor="middle">un esperimento, non un raccolto</text>
+        <text x="1048" y="1323" fill="#94a3b8" font-size="8" text-anchor="middle">review 15/10 · criteri fissati prima</text>
+
+        <rect x="1170" y="1252" width="200" height="95" rx="6" fill="#0f172a"/>
+        <rect x="1170" y="1252" width="200" height="95" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="1270" y="1276" fill="white" font-size="10" font-weight="600" text-anchor="middle">6 · SCALA (gated)</text>
+        <text x="1270" y="1293" fill="#94a3b8" font-size="8" text-anchor="middle">piano pronto (docs/20)</text>
+        <text x="1270" y="1308" fill="#94a3b8" font-size="8" text-anchor="middle">deploy solo con review verde</text>
+        <text x="1270" y="1323" fill="#94a3b8" font-size="8" text-anchor="middle">e approvazione dell'owner</text>
+
+        <!-- frecce tra gli step -->
+        <line x1="262" y1="1300" x2="280" y2="1300" stroke="#64748b" stroke-width="1.5" marker-end="url(#ah)"/>
+        <line x1="484" y1="1300" x2="502" y2="1300" stroke="#64748b" stroke-width="1.5" marker-end="url(#ah)"/>
+        <line x1="706" y1="1300" x2="724" y2="1300" stroke="#64748b" stroke-width="1.5" marker-end="url(#ah)"/>
+        <line x1="928" y1="1300" x2="946" y2="1300" stroke="#64748b" stroke-width="1.5" marker-end="url(#ah)"/>
+        <line x1="1150" y1="1300" x2="1168" y2="1300" stroke="#64748b" stroke-width="1.5" marker-end="url(#ah)"/>
+
+        <text x="604" y="1382" fill="#94a3b8" font-size="8.5" text-anchor="middle">ramo NO → «archiviata»: evidenza congelata in prove/ (finora: tutte le famiglie archiviate tranne carry — è l'headline onesta)</text>
+        <text x="604" y="1400" fill="#94a3b8" font-size="8.5" text-anchor="middle">ramo SÌ → si prosegue allo stadio successivo · il cancello è vincolante: `if not giudica(esito): return`</text>
+
+        <!-- ======================= LEGEND ======================= -->
+
+        <text x="60" y="1450" fill="white" font-size="10" font-weight="600">LEGEND</text>
+
+        <rect x="60" y="1462" width="16" height="10" rx="2" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1"/>
+        <text x="82" y="1470" fill="#94a3b8" font-size="8">External (exchange / cloud / alert)</text>
+        <rect x="300" y="1462" width="16" height="10" rx="2" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1"/>
+        <text x="322" y="1470" fill="#94a3b8" font-size="8">Hub &amp; compute</text>
+        <rect x="470" y="1462" width="16" height="10" rx="2" fill="rgba(8, 51, 68, 0.4)" stroke="#22d3ee" stroke-width="1"/>
+        <text x="492" y="1470" fill="#94a3b8" font-size="8">Trading &amp; web</text>
+        <rect x="640" y="1462" width="16" height="10" rx="2" fill="rgba(120, 53, 15, 0.4)" stroke="#fbbf24" stroke-width="1"/>
+        <text x="662" y="1470" fill="#94a3b8" font-size="8">Denaro vivo (ordini reali / dry-run)</text>
+        <rect x="900" y="1462" width="16" height="10" rx="2" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1"/>
+        <text x="922" y="1470" fill="#94a3b8" font-size="8">Agenti AI</text>
+        <rect x="1050" y="1462" width="16" height="10" rx="2" fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1"/>
+        <text x="1072" y="1470" fill="#94a3b8" font-size="8">Sicurezza &amp; controlli</text>
+
+        <line x1="60" y1="1496" x2="86" y2="1496" stroke="#64748b" stroke-width="1.5" marker-end="url(#ah)"/>
+        <text x="94" y="1499" fill="#94a3b8" font-size="8">flusso dati</text>
+        <line x1="240" y1="1496" x2="266" y2="1496" stroke="#34d399" stroke-width="1.5" marker-end="url(#ah-em)"/>
+        <text x="274" y="1499" fill="#94a3b8" font-size="8">rete privata (Tailscale/ssh)</text>
+        <line x1="480" y1="1496" x2="506" y2="1496" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="5,5" marker-end="url(#ah-ro)"/>
+        <text x="514" y="1499" fill="#94a3b8" font-size="8">read-only / alert / controllo</text>
+        <line x1="720" y1="1496" x2="746" y2="1496" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#ah-vi)"/>
+        <text x="754" y="1499" fill="#94a3b8" font-size="8">consegne agenti</text>
+        <line x1="900" y1="1496" x2="926" y2="1496" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#ah-cy)"/>
+        <text x="934" y="1499" fill="#94a3b8" font-size="8">web pubblico</text>
+        <line x1="1080" y1="1496" x2="1106" y2="1496" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#ah-am)"/>
+        <text x="1114" y="1499" fill="#94a3b8" font-size="8">percorso del denaro</text>
+      </svg>
+    </div>
+
+    <!-- Info Cards -->
+    <div class="cards">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot rose"></div>
+          <h3>Mandato di rischio (applicato)</h3>
+        </div>
+        <ul>
+          <li>• Rischio per trade <b>2%</b> del capitale della strategia</li>
+          <li>• Stop giornaliero <b>−3%</b> → la giornata è finita</li>
+          <li>• Drawdown massimo <b>−10%</b> → revisione e stop</li>
+          <li>• Leva <b>1×</b>, margine isolato, un bot per conto</li>
+          <li>• Drawdown di mercato = costo del business;<br>&nbsp;&nbsp;perdite operative/ingegneristiche = non ammesse</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot amber"></div>
+          <h3>Costi reali applicati (misurati, non stimati)</h3>
+        </div>
+        <ul>
+          <li>• spot OKX EEA: maker 0,20% / taker 0,35%<br>&nbsp;&nbsp;→ round-trip misto <b>0,550%</b></li>
+          <li>• con X-Perps: maker 0,08% / taker 0,10%<br>&nbsp;&nbsp;→ round-trip misto <b>0,180%</b></li>
+          <li>• perp: maker 0,02% / taker 0,05%<br>&nbsp;&nbsp;→ round-trip misto <b>0,070%</b></li>
+          <li>• min_notional 1 € · sotto ~4 € nessun ordine sensato</li>
+          <li>• Soglia cancello: expectancy netta <b>≥ 3× pedaggio</b></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot violet"></div>
+          <h3>Regole dure di esecuzione</h3>
+        </div>
+        <ul>
+          <li>• Nessun ordine senza <b>chiave di idempotenza</b></li>
+          <li>• <b>Preflight</b> obbligatorio: saldo, min_notional,<br>&nbsp;&nbsp;simbolo abilitato, chiave valida</li>
+          <li>• <b>Kill-switch</b> e risk manager mai aggirati</li>
+          <li>• Segreti mai in git/log/chat · read-only per default</li>
+          <li>• Nessun LLM nel percorso caldo (in ombra sì,<br>&nbsp;&nbsp;a decidere no)</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot emerald"></div>
+          <h3>Stato al 06/10/2026</h3>
+        </div>
+        <ul>
+          <li>• Capitale <b>~1.100 €</b> (deposito 03/10, riconciliato)</li>
+          <li>• Strategie promosse: <b>0</b> — è l'headline onesta</li>
+          <li>• Esperimento vivo: <b>canary C1</b> carry DOGE (review 15/10)</li>
+          <li>• Forward-test paper: <b>17 bot</b> su 3 nodi</li>
+          <li>• Fabbrica ≈140.000 tiri · <b>533 test</b> offline · ruff pulito</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="footer">
+      Denaro («money») · documento preparato il 2026-10-06 da Hermes (nodo mc2) per analisi esterna (Manus AI) ·<br>
+      dati verificati sugli impianti reali · nessun segreto incluso · riferimenti: SCHEDA_PROGETTO.md, docs/01–22, prove/REGISTRO_ESPERIMENTI.md
+    </p>
+  </div>
+</body>
+</html>
