@@ -27,6 +27,7 @@ C1 (canary carry) e banco a secco mai interrotti.
 | MARCODG1 | watchdog v3 (`money-watchdog-marcodg1.timer`, nomi unit money) | run pulito |
 | MARCODG1 | banco a secco (`deploy/banco` + `deploy/scripts` in money; `.env_banco` in `money/config/`) | PASS, `fonte=money.costi`, ExecMainStatus=0 |
 | MARCODG1 | venv `money/.venv` (ccxt 4.5.85, requests, pyyaml) | canary test run rc=0 |
+| MARCODG1 | cron: push_metrics, infra_snapshot, canary, zabbix_bots → money (backup `.backup-20261006.txt` in `legacy_aot/`) | applicato 06/10 con approvazione; verifica al primo tick |
 | nuvola | health (:8911) — unit `money-health-nuvola` | healthy, 6 bot paper |
 
 Dashboard pubblica (verificata dalla catena nuova): **equity 1100,24 EUR · 24 bot · canary ✓**.
@@ -41,11 +42,8 @@ Difetti trovati e corretti lungo la strada (utili per il futuro):
 
 ## Pendente (in ordine di priorità)
 
-1. **Crontab di MARCODG1**: 4 righe (push_metrics, infra_snapshot, canary, zabbix_bots)
-   ancora su path alpha-omega. *Funzionano ancora* (alpha-omega è presente), ma vanno
-   ripuntate a money: la modifica del crontab di marco richiede l'approvazione esplicita
-   del proprietario (guard di sicurezza, 06/10). Il backup è pronto in
-   `legacy_aot/` al primo giro utile.
+1. ~~Crontab di MARCODG1~~ ✅ fatto (con approvazione del proprietario): le 4 righe
+   ripuntate a money; resta la sola riga `quality_shadow` (denaro2) per la fase 2.
 2. **Paper node engine** (`denaro-node-*`, `engine_paper`, config per-nodo) + **feeder
    ZeroMQ**: migrazione congiunta — dipendono dal package `denaro/` di alpha-omega.
    Decisione contestuale: portare l'engine in money o dismettere i paper node.

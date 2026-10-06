@@ -1,0 +1,8 @@
+# crontab MARCODG1 — pulito 2026-09-25
+# Rimossi: path morti (/home/marco/denaro/tools/*), residui kraken (progetto discontinuato)
+# Fix: snapshot infra ogni minuto (alimenta /api/infra.json via aggregator, TTL 300s)
+* * * * * /home/marco/denaro/venv/bin/python /home/marco/alpha-omega-trading/zabbix/push_metrics.py >> /home/marco/denaro/logs/zabbix_push.log 2>&1
+* * * * * cd /home/marco/alpha-omega-trading && /usr/bin/flock -n /tmp/denaro_snapshot_mcdg1.lock /usr/bin/env HEALTH_DIR=/home/marco/denaro/health NODE_DIR=/home/marco/alpha-omega-trading/node_data /home/marco/alpha-omega-trading/venv/bin/python denaro/infra_snapshot.py >> /home/marco/denaro/logs/infra_snapshot.log 2>&1
+*/15 * * * * mkdir -p /home/marco/denaro2/reports/quality_shadow && cd /home/marco/denaro && DENARO2_SECRETS=/home/marco/denaro/secrets /home/marco/denaro/venv/bin/python -m denaro2.cli quality --symbol BTC/EUR --timeframe 1h --json >> /home/marco/denaro2/reports/quality_shadow/quality_shadow_$(date +\%Y\%m\%d).log 2>&1
+*/10 * * * * cd /home/marco/canary && /home/marco/alpha-omega-trading/venv/bin/python canary_carry.py status --quiet >> /home/marco/canary/canary.log 2>&1
+* * * * * /usr/bin/flock -n /tmp/zabbix_bots.lock /home/marco/alpha-omega-trading/venv/bin/python /home/marco/alpha-omega-trading/zabbix/zabbix_bots.py >> /home/marco/denaro/logs/zabbix_bots.log 2>&1
