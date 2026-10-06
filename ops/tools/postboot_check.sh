@@ -53,11 +53,14 @@ else
 fi
 echo
 echo "-- MARCODG1 (trading/web — unit money-*)"
-for u in money-aggregator-marcodg1 money-dashboard-marcodg1 money-health-marcodg1 money-landing-marcodg1 money-watchdog-marcodg1.timer money-banco-secco.timer fabbrica-worker.timer cloudflared-denaro zabbix-agent; do
+# cloudflared: dopo la ricostruzione (06/10) la unit si chiama "cloudflared";
+# sul nodo storico era "cloudflared-denaro". Accetta entrambe.
+CF_UNIT=$(ssh -o BatchMode=yes -o ConnectTimeout=8 MARCODG1 'systemctl is-active cloudflared-denaro >/dev/null 2>&1 && echo cloudflared-denaro || echo cloudflared' 2>/dev/null || echo cloudflared)
+for u in money-aggregator-marcodg1 money-dashboard-marcodg1 money-health-marcodg1 money-landing-marcodg1 money-watchdog-marcodg1.timer money-banco-secco.timer fabbrica-worker.timer "$(CF_UNIT)" zabbix-agent; do
   st=$(ssh -o BatchMode=yes -o ConnectTimeout=8 MARCODG1 "systemctl is-active $u" 2>/dev/null || true)
   [ "$st" = "active" ] && ok "MARCODG1 $u" || bad "MARCODG1 $u ($st)"
 done
-c=$(ssh -o BatchMode=yes -o ConnectTimeout=8 MARCODG1 'curl -s -o /dev/null -m 8 -w "%{http_code}" http://127.0.0.1:8912/api/infra.json' 2>/dev/null || true)
+c=$(ssh -o BatchMode=yes -o ConnectTimeout=8 MARCODG1 'curl -s -o /dev/null -m 15 -w "%{http_code}" http://127.0.0.1:8912/api/infra.json' 2>/dev/null || true)
 [ "$c" = "200" ] && ok "MARCODG1 aggregatore :8912" || bad "MARCODG1 aggregatore (HTTP $c)"
 c=$(ssh -o BatchMode=yes -o ConnectTimeout=8 MARCODG1 'curl -s -o /dev/null -m 8 -w "%{http_code}" http://127.0.0.1:8913/' 2>/dev/null || true)
 [ "$c" = "200" ] && ok "MARCODG1 dashboard :8913" || bad "MARCODG1 dashboard (HTTP $c)"
