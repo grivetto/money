@@ -1,0 +1,26 @@
+# Money - Dashboard server mc2 (:8913, HTML + proxy /api/infra.json)
+# Migrato da denaro-dashboard-mc2.service (alpha-omega) il 2026-10-06 — casa unica = money.
+[Unit]
+Description=Money - Dashboard server mc2 (:8913, HTML + proxy /api/infra.json)
+After=network-online.target money-aggregator-mc2.service
+Wants=network-online.target money-aggregator-mc2.service
+
+[Service]
+Type=simple
+User=sergio
+WorkingDirectory=/home/sergio/money
+Environment=DASH_HOST=127.0.0.1
+Environment=DASH_PORT=8913
+Environment=DASH_HTML_DIR=/home/sergio/money/ops/dashboard
+Environment=DASH_HTML_FILE=dashboard_infra.html
+Environment="AGG_URLS=http://127.0.0.1:8912/infra.json"
+Environment=AGG_TIMEOUT=25
+Environment=DASH_CACHE_FILE=/home/sergio/denaro/health/infra_last_good.json
+ExecStart=/home/sergio/money/.venv/bin/python /home/sergio/money/ops/dashboard/serve_dashboard.py
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,18 @@
+# Money - Landing (static site, 127.0.0.1:8914, pubblico via Cloudflare web.grivetto.eu)
+# Migrato da denaro-landing (2026-10-06). I contenuti restano in ~/denaro/landing (dati).
+[Unit]
+Description=Money - Landing MARCODG1 (static site :8914, web.grivetto.eu)
+After=network.target
+
+[Service]
+Type=simple
+User=marco
+WorkingDirectory=/home/marco/denaro/landing
+ExecStart=/usr/bin/python3 -m http.server 8914 --bind 127.0.0.1 --directory /home/marco/denaro/landing
+Restart=always
+RestartSec=2
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

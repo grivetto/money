@@ -1,0 +1,24 @@
+# Money - Infra Aggregator mc2 (:8912, alimenta dashboard)
+# Migrato da denaro-aggregator-mc2.service (alpha-omega) il 2026-10-06 — casa unica = money.
+[Unit]
+Description=Money - Infra Aggregator mc2 (:8912, alimenta dashboard)
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=10
+
+[Service]
+Type=simple
+User=sergio
+WorkingDirectory=/home/sergio/money
+ExecStartPre=/bin/bash /home/sergio/money/ops/aggregator/port_guard.sh money-aggregator-mc2.service infra_aggregator.py 8912
+ExecStart=/home/sergio/money/.venv/bin/python /home/sergio/money/ops/aggregator/infra_aggregator.py
+Environment=HEALTH_DIR=/home/sergio/denaro/health
+Environment=NODE_DIR=/home/sergio/alpha-omega-trading/node_data
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

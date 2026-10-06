@@ -1,0 +1,24 @@
+# /etc/systemd/system/denaro-health-mc2.service
+# /etc/systemd/system/denaro-health-mc2.service
+# Denaro - Health Server mc2 (:8911)
+# 2026-09-25: path canonici del repo (~/alpha-omega-trading), venv del repo.
+[Unit]
+Description=Denaro - Health Server mc2 (:8911)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=sergio
+WorkingDirectory=/home/sergio/alpha-omega-trading
+ExecStart=/home/sergio/alpha-omega-trading/venv/bin/python /home/sergio/alpha-omega-trading/health_server_mc2.py
+Environment=HEALTH_DIR=/home/sergio/denaro/health
+Environment=HEALTH_PORT=8911
+Environment=HEALTH_HOST=127.0.0.1
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,30 @@
+# /etc/systemd/system/denaro-dashboard-mc2.service
+# /etc/systemd/system/denaro-dashboard-mc2.service
+# Denaro - dashboard server mc2 (:8913)
+# Serve dashboard_infra.html e fa da proxy verso l'Infra Aggregator locale.
+# 2026-09-25: path canonici del repo (~/alpha-omega-trading); DASH_HTML_DIR
+# spostato su ~/alpha-omega-trading/denaro (il vecchio path era morto -> 500).
+[Unit]
+Description=Denaro - Dashboard server mc2 (:8913, HTML + proxy /api/infra.json)
+After=network-online.target denaro-aggregator-mc2.service
+Wants=network-online.target denaro-aggregator-mc2.service
+
+[Service]
+Type=simple
+User=sergio
+WorkingDirectory=/home/sergio/alpha-omega-trading
+Environment=DASH_HOST=127.0.0.1
+Environment=DASH_PORT=8913
+Environment=DASH_HTML_DIR=/home/sergio/alpha-omega-trading/denaro
+Environment=DASH_HTML_FILE=dashboard_infra.html
+Environment="AGG_URLS=http://127.0.0.1:8912/infra.json"
+Environment=AGG_TIMEOUT=25
+Environment=DASH_CACHE_FILE=/home/sergio/denaro/health/infra_last_good.json
+ExecStart=/home/sergio/alpha-omega-trading/venv/bin/python /home/sergio/alpha-omega-trading/serve_dashboard.py
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

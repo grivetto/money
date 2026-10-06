@@ -1,0 +1,22 @@
+# Money - Health Server mc2 (:8911)
+# Migrato da denaro-health-mc2.service (alpha-omega) il 2026-10-06 — casa unica = money.
+[Unit]
+Description=Money - Health Server mc2 (:8911)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=sergio
+WorkingDirectory=/home/sergio/money
+ExecStart=/home/sergio/money/.venv/bin/python /home/sergio/money/ops/health/health_server_mc2.py
+Environment=HEALTH_DIR=/home/sergio/denaro/health
+Environment=HEALTH_PORT=8911
+Environment=HEALTH_HOST=127.0.0.1
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

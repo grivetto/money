@@ -1,0 +1,25 @@
+# Money - Dashboard server MARCODG1 (:8913) — migrato da denaro-dashboard-marcodg1 (2026-10-06)
+[Unit]
+Description=Money - Dashboard server MARCODG1 (:8913)
+After=network-online.target money-aggregator-marcodg1.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=marco
+WorkingDirectory=/home/marco/money
+Environment=DASH_HOST=127.0.0.1
+Environment=DASH_PORT=8913
+Environment=DASH_HTML_DIR=/home/marco/money/ops/dashboard
+Environment=DASH_HTML_FILE=dashboard_infra.html
+Environment=AGG_URLS=http://127.0.0.1:8912/infra.json
+Environment=AGG_TIMEOUT=25
+Environment=DASH_CACHE_FILE=/home/marco/denaro/health/infra_last_good.json
+ExecStart=/usr/bin/python3 /home/marco/money/ops/dashboard/serve_dashboard.py
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

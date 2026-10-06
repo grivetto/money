@@ -1,0 +1,21 @@
+# Money - Health Server nuvola (:8911) — migrato da denaro-health-nuvola (2026-10-06)
+[Unit]
+Description=Money - Health Server nuvola (:8911)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=sergio
+WorkingDirectory=/home/sergio/money
+ExecStart=/usr/bin/python3 /home/sergio/money/ops/health/health_server_nuvola.py
+Environment=HEALTH_DIR=/home/sergio/denaro/health
+Environment=HEALTH_PORT=8911
+Environment=HEALTH_HOST=127.0.0.1
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

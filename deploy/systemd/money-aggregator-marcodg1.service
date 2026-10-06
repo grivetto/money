@@ -1,0 +1,25 @@
+# Money - Infra Aggregator MARCODG1 (:8912) — migrato da denaro-aggregator-marcodg1 (2026-10-06)
+[Unit]
+Description=Money - Infra Aggregator MARCODG1 (:8912)
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=10
+
+[Service]
+Type=simple
+User=marco
+WorkingDirectory=/home/marco/money
+ExecStartPre=/bin/bash /home/marco/money/ops/aggregator/port_guard.sh money-aggregator-marcodg1.service infra_aggregator.py 8912
+ExecStart=/usr/bin/python3 /home/marco/money/ops/aggregator/infra_aggregator.py
+Environment=HEALTH_DIR=/home/marco/denaro/health
+Environment=NODE_DIR=/home/marco/alpha-omega-trading/node_data
+Environment=AGG_PORT=8912
+Environment=AGG_HOST=127.0.0.1
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

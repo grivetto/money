@@ -1,0 +1,11 @@
+# Money - Watchdog dashboard MARCODG1: ogni 2 minuti
+[Unit]
+Description=Money - Watchdog dashboard MARCODG1 (ogni 2 minuti)
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=2min
+Unit=money-watchdog-marcodg1.service
+
+[Install]
+WantedBy=timers.target
