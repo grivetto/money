@@ -1,0 +1,46 @@
+SCANSIONE S1 — screening esplorativo (NON una promozione)
+  tentativi totali : 512 (configurazioni 32 x simboli 16)
+  base correzione  : 322 tentativi valutabili (n_train >= 30); benchmark E[max SR] ~ 0,370 per operazione
+  finestre         : addestramento fino al 2024-06-01; verifica 2024-06-01 -> fine storia
+  costi            : okx_eea (conto OKX EEA con X-Perps aperti (KYC + appropriateness assessment)) | giro misto 0.1800% | slippage 0.04%/lato
+  soglie           : min op (verifica) 30, DSR >= 0.95
+
+SELEZIONI (una per configurazione: miglior simbolo in ADDESTRAMENTO)
+  configurazione                               simbolo    train n   exp tr  ver n   exp ve   t ve    DSR
+  donchian(n_in=20,n_out=10)                   BTC/USDT        30   +5,79%     17   +3,46%  1,071  0,333
+  mom_abs(L=10)                                AVAX/USDT       81  +12,38%     65   -0,10% -0,072  0,001
+  mom_abs(L=120)                               LINK/USDT       35   +0,07%      9   +3,35%  0,518  0,290
+  mom_abs(L=20)                                AVAX/USDT       49  +23,86%     55   -0,42% -0,284  0,001
+  mom_abs(L=250)                               LINK/USDT       31   +0,04%     29   -3,28% -1,644  0,000
+  mom_abs(L=60)                                DOGE/USDT       44  +42,04%     15  +10,14%  0,667  0,232
+  reversion_z(k=1.5,n=10)                      DOGE/USDT       48   +7,94%     30   +0,04%  0,025  0,025
+  rsi2(periodo=2,soglia_in=10.0,soglia_out=60.0) DOGE/USDT       64   +6,38%     47   +0,48%  0,469  0,021
+  rsi2(periodo=2,soglia_in=20.0,soglia_out=60.0) DOGE/USDT      103   +3,96%     75   -0,07% -0,082  0,001
+  rsi2(periodo=3,soglia_in=15.0,soglia_out=65.0) DOGE/USDT       36   +9,09%     26   -0,63% -0,376  0,013
+  turn_month(k=1,pos=primi)                    BCH/USDT        44   +1,05%     29   +0,00%  0,000  0,025
+  turn_month(k=1,pos=ultimi)                   SOL/USDT        43   +2,31%     29   -1,46% -2,387  0,000
+  turn_month(k=2,pos=primi)                    SOL/USDT        44   +2,03%     29   -0,37% -0,312  0,012
+  turn_month(k=2,pos=ultimi)                   DOGE/USDT       44   +3,75%     28   -1,92% -1,977  0,000
+  turn_month(k=3,pos=primi)                    DOGE/USDT       44   +4,23%     29   -0,18% -0,116  0,019
+  turn_month(k=3,pos=ultimi)                   SOL/USDT        44   +4,71%     28   -2,59% -2,516  0,000
+  weekday(giorno=0)                            AVAX/USDT      191   +0,03%    122   -0,39% -1,030  0,000
+  weekday(giorno=1)                            AVAX/USDT      191   +0,60%    122   -0,04% -0,090  0,000
+  weekday(giorno=2)                            DOGE/USDT      191   +2,39%    122   -1,11% -2,720  0,000
+  weekday(giorno=3)                            DOGE/USDT      192   +0,76%    122   +0,44%  0,964  0,001
+  weekday(giorno=4)                            DOGE/USDT      191   +0,72%    123   +0,29%  0,890  0,001
+  weekday(giorno=5)                            SOL/USDT       191   +0,51%    123   -0,09% -0,243  0,000
+  weekday(giorno=6)                            XRP/USDT       191   +0,45%    122   +0,29%  0,722  0,000
+
+CANDIDATI: nessuno. (Esito onesto: con i tentativi contati e il DSR, nessuna configurazione dimostra un edge robusto sulla verifica.)
+
+TOP 10 per expectancy di VERIFICA (descrittivo, non promozionale):
+  mom_abs(L=20)                                XLM/USDT   exp +10,41% n 36 t 1,048
+  mom_abs(L=60)                                XRP/USDT   exp +9,43% n 36 t 0,995
+  mom_abs(L=20)                                DOGE/USDT  exp +6,80% n 35 t 0,865
+  mom_abs(L=10)                                XLM/USDT   exp +6,19% n 56 t 0,804
+  mom_abs(L=10)                                XRP/USDT   exp +5,15% n 61 t 0,842
+  mom_abs(L=20)                                XRP/USDT   exp +4,85% n 49 t 0,774
+  reversion_z(k=1.5,n=10)                      ADA/USDT   exp +2,73% n 36 t 1,069
+  rsi2(periodo=3,soglia_in=15.0,soglia_out=65.0) XRP/USDT   exp +2,54% n 32 t 1,712
+  mom_abs(L=20)                                TRX/USDT   exp +2,34% n 39 t 1,220
+  mom_abs(L=10)                                DOGE/USDT  exp +2,34% n 69 t 0,586
