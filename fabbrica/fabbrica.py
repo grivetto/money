@@ -214,8 +214,12 @@ def check_jev_gate(st):
         st["jev_gate"] = "non disponibile (%s)" % type(e).__name__
         return
 
+    concluse = _spec_concluse()
     results = st.get("jev_gate_results") or {}
     for sp in sorted((REPO / "coda_catena").glob("P*.md")):
+        if sp.name in concluse:
+            results.pop(sp.name, None)  # spec conclusa: fuori dal gate (retrofit 06/10)
+            continue
         try:
             raw = sp.read_bytes()
         except Exception:
@@ -265,6 +269,26 @@ def _jobstore():
     return _JOBSTORE
 
 
+def _spec_concluse():
+    """Spec fuori dal gate di dispatch (concluse o non-esperimenti): `coda_catena/CONCLUSE.md`.
+
+    Una riga per spec, formato `- <file>.md — motivo`. Le righe non riconosciute vengono
+    ignorate. Fail-open: file assente -> insieme vuoto (il comportamento di prima).
+    """
+    out = set()
+    try:
+        txt = (REPO / "coda_catena" / "CONCLUSE.md").read_text(encoding="utf-8")
+    except Exception:  # noqa: BLE001
+        return out
+    for ln in txt.splitlines():
+        ln = ln.strip()
+        if ln.startswith("- "):
+            nome = ln[2:].split(" ", 1)[0].strip()
+            if nome.endswith(".md"):
+                out.add(nome)
+    return out
+
+
 def _inbox_size(name):
     p = BASE / "inbox" / name
     try:
@@ -301,7 +325,7 @@ def check_jobs(st):
       da gate JEV/lint, file in inbox) con idempotency_key STABILE: la dedup vive nel
       job-store e sopravvive ai riavvii (mai doppioni);
     - chiude da solo i job VERIFICABILI: spec materializzata, spec aggiornata (hash
-      nuovo), file inbox rimosso;
+      nuovo), file inbox rimosso, spec in `coda_catena/CONCLUSE.md` (fuori dal gate);
     - espone le statistiche in state.json e metrics.prom (factory_jobs_*).
     Kill-switch: con STOP presente NON accoda nuovi job (la coda resta intatta).
     """
@@ -312,6 +336,7 @@ def check_jobs(st):
         return
     try:
         now_ms = int(time.time() * 1000)
+        concluse = _spec_concluse()
         if not st.get("kill_switch"):
             sid = st.get("spec_next")
             if sid:
@@ -319,13 +344,13 @@ def check_jobs(st):
                               {"spec_id": sid, "desc": st.get("spec_next_desc", "")},
                               "spec_materialize:%s" % sid, now_ms=now_ms)
             for name, r in (st.get("jev_gate_results") or {}).items():
-                if r.get("flags"):
+                if r.get("flags") and name not in concluse:
                     store.enqueue("spec_fix",
                                   {"spec": name, "hash": r.get("hash"), "via": "jev",
                                    "flags": r.get("flags")},
                                   "spec_fix:jev:%s:%s" % (name, r.get("hash")), now_ms=now_ms)
             for name, r in (st.get("lint_results") or {}).items():
-                if r.get("missing"):
+                if r.get("missing") and name not in concluse:
                     store.enqueue("spec_fix",
                                   {"spec": name, "hash": r.get("hash"), "via": "lint",
                                    "missing": r.get("missing")},
@@ -347,11 +372,14 @@ def check_jobs(st):
                 else:
                     done = True  # voce sparita dalla coda: il job non ha piu' oggetto
             elif j["kind"] == "spec_fix":
-                if p.get("via") == "jev":
-                    cur = (st.get("jev_gate_results") or {}).get(p.get("spec")) or {}
+                if p.get("spec") in concluse:
+                    done = True  # spec conclusa (retrofit 06/10): il fix non ha piu' oggetto
                 else:
-                    cur = (st.get("lint_results") or {}).get(p.get("spec")) or {}
-                done = cur.get("hash") != p.get("hash")  # spec aggiornata (o sparita)
+                    if p.get("via") == "jev":
+                        cur = (st.get("jev_gate_results") or {}).get(p.get("spec")) or {}
+                    else:
+                        cur = (st.get("lint_results") or {}).get(p.get("spec")) or {}
+                    done = cur.get("hash") != p.get("hash")  # spec aggiornata (o sparita)
             elif j["kind"] == "inbox_file":
                 size = _inbox_size(p.get("file"))
                 done = size is None or size != p.get("size")
@@ -386,9 +414,14 @@ def check_lint(st):
     except Exception as e:  # noqa: BLE001
         st["lint"] = "non disponibile (%s)" % type(e).__name__
         return
+    concluse = _spec_concluse()
     results = st.get("lint_results") or {}
     for sp in sorted((REPO / "coda_catena").glob("*.md")):
-        if sp.name == "README.md":
+        if sp.name in ("README.md", "CONCLUSE.md"):
+            results.pop(sp.name, None)  # non sono spec: fuori anche dal lint
+            continue
+        if sp.name in concluse:
+            results.pop(sp.name, None)  # spec conclusa: fuori dal gate (retrofit 06/10)
             continue
         try:
             raw = sp.read_bytes()

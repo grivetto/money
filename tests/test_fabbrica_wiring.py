@@ -145,3 +145,50 @@ def test_stato_e_metriche_mostrano_jobs(amb):
     assert "control-plane: money@abc1234" in stato
     assert "factory_jobs_queued 2" in met
     assert "factory_specs_lint_bad 1" in met
+
+
+def test_concluse_chiudono_i_job_spec_fix(amb):
+    """Una spec in CONCLUSE.md esce dal gate: i suoi job spec_fix si chiudono da soli."""
+    base, repo = amb
+    st = {"kill_switch": False,
+          "jev_gate_results": {"P99.md": {"hash": "aaaaaaaaaaaaaaaa", "flags": ["x"]}}}
+    _fab.check_jobs(st)
+    assert st["jobs"]["queued"] == 1                      # senza concluse: accodato
+    (repo / "coda_catena" / "CONCLUSE.md").write_text("- P99.md \u2014 archiviata (test)\n")
+    _fab.check_jobs(st)
+    assert st["jobs"]["queued"] == 0                      # conclusa: chiuso, non ri-accodato
+    assert st["jobs"]["done"] >= 1
+
+
+def test_concluse_non_accodano_nuovi_fix(amb):
+    base, repo = amb
+    (repo / "coda_catena" / "CONCLUSE.md").write_text("- P99.md \u2014 archiviata (test)\n")
+    st = {"kill_switch": False,
+          "jev_gate_results": {"P99.md": {"hash": "aaaaaaaaaaaaaaaa", "flags": ["x"]}},
+          "lint_results": {"P99.md": {"hash": "aaaaaaaaaaaaaaaa", "missing": ["obiettivo"]}}}
+    _fab.check_jobs(st)
+    assert st["jobs"]["queued"] == 0
+
+
+def test_lint_salta_e_pulisce_le_concluse(amb):
+    _, repo = amb
+    (repo / "coda_catena" / "P99.md").write_text("solo testo senza blocchi")
+    st = {}
+    _fab.check_lint(st)
+    assert "P99.md" in st["lint_results"]
+    (repo / "coda_catena" / "CONCLUSE.md").write_text("- P99.md \u2014 archiviata (test)\n")
+    _fab.check_lint(st)
+    assert "P99.md" not in st["lint_results"]
+
+
+def test_concluse_file_assente_fail_open(amb):
+    _, _ = amb
+    assert _fab._spec_concluse() == set()
+
+
+def test_lint_ignora_il_file_concluse_stesso(amb):
+    _, repo = amb
+    (repo / "coda_catena" / "CONCLUSE.md").write_text("- P99.md \u2014 archiviata (test)\n")
+    st = {}
+    _fab.check_lint(st)
+    assert "CONCLUSE.md" not in (st.get("lint_results") or {})
