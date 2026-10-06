@@ -196,7 +196,10 @@ def _fattibilita(capitale: float, nozionale: float, min_notional: float,
                  frazione: float) -> Dict[str, Any]:
     """Usa money.costi se importabile, altrimenti il controllo esplicito locale."""
     try:
-        src = os.environ.get("MONEY_SRC", "/home/sergio/money_repo/src")
+        # default: PROJECT_ROOT/src del repo money (il vecchio default puntava a un
+        # path morto di mc2); l'env MONEY_SRC delle unit resta prioritario.
+        src = os.environ.get("MONEY_SRC") or str(
+            Path(__file__).resolve().parents[2] / "src")
         if src not in sys.path:
             sys.path.insert(0, src)
         from money.costi import verifica_fattibilita  # noqa: PLC0415
@@ -218,7 +221,10 @@ def _fattibilita(capitale: float, nozionale: float, min_notional: float,
 def _pedaggio() -> Tuple[float, str]:
     """(pct, nome): la tariffa assunta, da money.costi quando disponibile."""
     try:
-        src = os.environ.get("MONEY_SRC", "/home/sergio/money_repo/src")
+        # default: PROJECT_ROOT/src del repo money (il vecchio default puntava a un
+        # path morto di mc2); l'env MONEY_SRC delle unit resta prioritario.
+        src = os.environ.get("MONEY_SRC") or str(
+            Path(__file__).resolve().parents[2] / "src")
         if src not in sys.path:
             sys.path.insert(0, src)
         from money.costi import get_tariffa  # noqa: PLC0415
