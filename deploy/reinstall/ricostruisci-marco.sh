@@ -51,9 +51,12 @@ for u in \
   money-aggregator-marcodg1.service money-dashboard-marcodg1.service money-health-marcodg1.service \
   money-landing-marcodg1.service money-watchdog-marcodg1.service money-watchdog-marcodg1.timer \
   money-banco-secco.service money-banco-secco.timer \
-  fabbrica-worker.service fabbrica-worker.timer ; do
+  fabbrica-worker.timer ; do
   install -m 644 "$u" "/etc/systemd/system/$u"
 done
+# fabbrica-worker.service e' un TEMPLATE con placeholder: istanza per-nodo
+sed -e "s/__USER__/$UTENTE/" -e "s|__HOME__|$H|" -e "s/__NODE__/marcodg1/" \
+  "$H/money/deploy/systemd/fabbrica-worker.service" > /etc/systemd/system/fabbrica-worker.service
 systemctl daemon-reload
 for u in \
   money-aggregator-marcodg1 money-dashboard-marcodg1 money-health-marcodg1 money-landing-marcodg1 \
