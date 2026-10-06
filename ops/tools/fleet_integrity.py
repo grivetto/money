@@ -1,0 +1,599 @@
+#!/usr/bin/env python3
+"""fleet_integrity.py — il controllo che dichiara lo stato della flotta (docs/60 §60.6).
+
+Perche' esiste
+--------------
+Il 25/09/2026 tre guasti dello stesso tipo sono convissuti per giorni senza un allarme:
+
+1. **1.486 tick saltati in silenzio** su due nodi live (conti senza capitale);
+2. **553 + 560 restart** di unit systemd che puntavano a path non piu' esistenti;
+3. **un miner di terzi** (utente `zabbix`) per 4 giorni su una macchina di produzione, con
+   199% di CPU e meta' della RAM — causa diretta del ping-pong SafeMode del nodo live.
+
+Nessuno dei tre era un errore di strategia. Tutti e tre erano **assenza di un controllo che
+dichiara lo stato**. Questo strumento e' quel controllo: legge e basta, non modifica nulla,
+e restituisce un esito binario (OK / ALLARME) con le prove.
+
+Cosa controlla (ogni check e' indipendente e fallisce in modo esplicito)
+-----------------------------------------------------------------------
+- `miner`      : processi con nome kernel-like in userspace, file in /var/tmp|/tmp|/dev/shm
+                 che sembrano payload, connessioni verso porte tipiche dei pool di mining.
+- `crontab`    : voci che rilanciano binari da directory temporanee o con nomi ingannevoli.
+- `zabbix`     : `AllowKey=system.run[*]` attiva (esecuzione comandi remoti) e regole sudo
+                 verso file INESISTENTI (una regola verso un path e' root in attesa).
+- `systemd`    : unit `denaro*` non attive, con contatore di restart patologico, o il cui
+                 `ExecStart`/`EnvironmentFile`/`WorkingDirectory` non esiste sul disco.
+- `trading`    : nodi live che **saltano ogni tick** (equity inattendibile / capitale assente).
+
+Uso
+---
+    # sulla macchina locale (o dentro un nodo, via ssh)
+    python tools/fleet_integrity.py
+    python tools/fleet_integrity.py --json
+
+    # su piu' host, da una macchina con le chiavi ssh (come fa l'aggregator)
+    python tools/fleet_integrity.py --host nuvola --host MARCODG1 --host mc2
+
+Esito: 0 = nessun allarme, 1 = almeno un allarme. Pensato per un timer systemd o un cron:
+un controllo che non puo' fallire non e' un controllo.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+from typing import Any, Dict, List, Optional
+
+# --- configurazione dei segnali -------------------------------------------------
+
+#: Porte tipiche dei pool di mining (stratum). Non e' una lista esaustiva: e' la lista dei
+#: valori osservati sul campo, e serve a distinguere "traffico strano" da "traffico noto".
+PORTE_POOL = ("3333", "33333", "14444", "45700", "5555", "7777", "8888", "9999")
+
+#: Nomi che imitano thread del kernel ma non hanno le parentesi quadre in `ps`.
+NOMI_KERNEL_INGANNEVOLI = re.compile(
+    r"(kworker|kswapd|kdevtmpfsi|kthreadd|ksoftirqd|migration)[/_]?[a-z0-9]*\s*$",
+    re.IGNORECASE)
+
+#: Directory che un payload sceglie perche' sono volatili e poco ispezionate.
+DIR_TEMP = ("/var/tmp", "/tmp", "/dev/shm")
+
+#: Pattern di file che nella quasi totalita' dei casi sono payload.
+NOMI_PAYLOAD = re.compile(
+    r"(^\.(kworker|kdevtmpfsi|kinsing|lpe|syslog|daemon|cron_clean)"
+    r"|xmrig|\.self$|\.kworker)", re.IGNORECASE)
+
+#: Porte in ascolto che non hanno motivo di essere raggiungibili su un nodo di questa
+#: flotta. Non e' una policy completa: e' cio' che l'audit del 25/09 ha trovato esposto
+#: senza che nessuno lo sapesse (postgres e agent Zabbix su interfaccia pubblica).
+PORTE_DA_SEGNALARE = {
+    "5432": "postgres in ascolto: su un nodo di trading non serve esposto",
+    "3306": "mysql in ascolto",
+    "6379": "redis in ascolto",
+    "9200": "elasticsearch in ascolto",
+    "10050": "agent Zabbix in ascolto: con system.run attivo e' esecuzione di comandi",
+    "2375": "docker daemon in TCP non cifrato",
+}
+
+#: Directory health note della flotta: si sommano a --health-dir (se esistono su
+#: questa macchina). Stanno fuori dalla funzione perche' i test le neutralizzano
+#: (un test non deve leggere la health della macchina che lo esegue).
+DIR_HEALTH_NOTE = ("/home/sergio/denaro/health", "/home/marco/denaro/health")
+
+#: Crontab di sistema e configurazione dell'agent Zabbix: costanti, cosi' i test
+#: possono puntarle a una directory temporanea senza permessi di root.
+DIR_CRONTAB = "/var/spool/cron/crontabs"
+CONF_ZABBIX = "/etc/zabbix/zabbix_agentd.conf"
+DIR_ZABBIX_D = "/etc/zabbix/zabbix_agentd.d"
+
+#: File .json nella health dir che NON sono heartbeat di un servizio (il check
+#: "fossile" non si applica): `infra_last_good.json` e' la cache ON-DEMAND del
+#: dashboard — la scrive serve_dashboard quando qualcuno chiede la pagina, e
+#: restare ferma di notte e' il suo comportamento normale. Falso positivo
+#: osservato su MARCODG1 il 26/09: ferma da 3h31m a dashboard non visitata.
+#: (trend.json e' invece una LISTA e viene gia' saltato per non-distinto.)
+FILE_HEALTH_NON_HEARTBEAT = {"infra_last_good.json"}
+
+
+class Esito:
+    """Raccoglitore di reperti. Ogni reperto ha un livello, un check e una prova."""
+
+    def __init__(self) -> None:
+        self.reperti: List[Dict[str, str]] = []
+
+    def allarme(self, check: str, prova: str, cosa: str) -> None:
+        self.reperti.append({"livello": "ALLARME", "check": check,
+                             "prova": prova, "cosa": cosa})
+
+    def nota(self, check: str, prova: str, cosa: str) -> None:
+        self.reperti.append({"livello": "nota", "check": check,
+                             "prova": prova, "cosa": cosa})
+
+    @property
+    def allarmi(self) -> List[Dict[str, str]]:
+        return [r for r in self.reperti if r["livello"] == "ALLARME"]
+
+    def esito(self) -> int:
+        return 1 if self.allarmi else 0
+
+
+# --- esecuzione comandi ---------------------------------------------------------
+
+def _run(cmd: List[str], timeout: int = 25, input: Optional[str] = None) -> str:
+    """Esegue un comando di sola lettura. Vuoto se fallisce: il check lo dira'."""
+    try:
+        out = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, input=input)
+        return out.stdout or ""
+    except Exception:
+        return ""
+
+
+# --- check: miner ---------------------------------------------------------------
+
+def check_miner(e: Esito) -> None:
+    """Processi con nome kernel-like in userspace, payload in dir temporanee, pool."""
+    ps = _run(["ps", "-eo", "pid,user,pcpu,rss,args", "--sort=-pcpu"])
+    for riga in ps.splitlines()[1:]:
+        parti = riga.split(None, 4)
+        if len(parti) < 5:
+            continue
+        pid, user, pcpu, _rss, args = parti
+        eseguibile = args.split()[0] if args.split() else ""
+        # un thread del kernel appare come "[kworker/...]": le parentesi quadre sono la
+        # differenza fra un thread vero e un processo che si spaccia per tale.
+        if eseguibile.startswith("["):
+            continue
+        if not NOMI_KERNEL_INGANNEVOLI.search(os.path.basename(eseguibile)):
+            continue
+        e.allarme("miner", f"pid={pid} user={user} cpu={pcpu}% cmd={args[:90]}",
+                  "processo utente che imita un thread del kernel "
+                  "(nome falsificato: e' la firma del miner trovato il 25/09)")
+
+    # payload su disco
+    for d in DIR_TEMP:
+        if not os.path.isdir(d):
+            continue
+        try:
+            voci = os.listdir(d)
+        except PermissionError:
+            e.nota("miner", f"{d}: permesso negato",
+                   "non ispezionabile senza privilegi: il check e' cieco qui")
+            continue
+        for v in voci:
+            if NOMI_PAYLOAD.search(v):
+                p = os.path.join(d, v)
+                e.allarme("miner", p,
+                          "file con nome da payload in directory temporanea "
+                          "(verifica hash prima di cancellare)")
+
+    # connessioni verso pool
+    ss = _run(["ss", "-tnp"])
+    for riga in ss.splitlines():
+        for porta in PORTE_POOL:
+            if f":{porta} " in riga or riga.rstrip().endswith(f":{porta}"):
+                e.allarme("miner", riga.strip()[:150],
+                          f"connessione verso la porta {porta} (pool di mining tipico)")
+                break
+
+
+# --- check: crontab -------------------------------------------------------------
+
+def check_crontab(e: Esito) -> None:
+    """Cron che rilanciano binari da directory temporanee o con `cron_clean`."""
+    base = DIR_CRONTAB
+    if not os.path.isdir(base):
+        return
+    try:
+        utenti = os.listdir(base)
+    except PermissionError:
+        e.nota("crontab", base, "permesso negato: esegui come root per il check completo")
+        return
+    for u in utenti:
+        p = os.path.join(base, u)
+        try:
+            with open(p, encoding="utf-8", errors="replace") as f:
+                testo = f.read()
+        except (PermissionError, OSError):
+            e.nota("crontab", p, "non leggibile senza privilegi")
+            continue
+        for riga in testo.splitlines():
+            if not riga.strip() or riga.lstrip().startswith("#"):
+                # anche i commenti di intestazione di `crontab` portano informazione:
+                # `/dev/shm/.cron_clean_*` come sorgente e' la traccia di una manomissione.
+                if "cron_clean" in riga or "/dev/shm" in riga:
+                    e.allarme("crontab", f"{u}: {riga.strip()[:120]}",
+                              "crontab installato da /dev/shm (artefatto di manomissione, "
+                              "visto il 19/09 su mc2)")
+                continue
+            # Si giudicano i PERCORSI, non la riga intera: `>> /tmp/log` e' solo una
+            # redirezione e non deve diventare un allarme (falso positivo osservato il
+            # 25/09 su una riga di log legittima). E si escludono i FILE DI LOCK:
+            # `flock -n /tmp/x.lock ...` e' la guardia di mutua esclusione dei cron
+            # legittimi (falso positivo osservato il 27/09 sui cron snapshot/quality).
+            eseguibile = riga.split(">")[0]
+            trovato = None
+            for d in DIR_TEMP:
+                for token in eseguibile.split():
+                    if token.startswith(d + "/") and not token.endswith(
+                            (".lock", ".pid", ".sock")):
+                        trovato = (d, token)
+                        break
+                if trovato:
+                    break
+            if trovato:
+                d, _percorso = trovato
+                e.allarme("crontab", f"{u}: {riga.strip()[:120]}",
+                          f"cron che esegue un binario da {d}: nessun servizio "
+                          "legittimo vive nelle directory temporanee")
+            if NOMI_PAYLOAD.search(eseguibile):
+                e.allarme("crontab", f"{u}: {riga.strip()[:120]}",
+                          "cron con nome di payload")
+
+
+# --- check: porte esposte -------------------------------------------------------
+
+def _system_runs_attivi(percorsi=None) -> bool:
+    """L'agent Zabbix puo' eseguire comandi remoti (AllowKey=system.run[*])?
+
+    Dal 25/09/2026 su mc2 e MARCODG1 la regola e' commentata (vettore del miner):
+    il default di Zabbix >= 5, senza una AllowKey esplicita, e' system.run NEGATO.
+    Si legge comunque la configurazione, perche' il giorno che qualcuno la
+    riattiva il check deve tornare a urlare.
+    """
+    if percorsi is None:
+        percorsi = [CONF_ZABBIX]
+        if os.path.isdir(DIR_ZABBIX_D):
+            percorsi += [os.path.join(DIR_ZABBIX_D, f)
+                         for f in sorted(os.listdir(DIR_ZABBIX_D))
+                         if f.endswith(".conf")]
+    attivo = False
+    for p in percorsi:
+        try:
+            with open(p, encoding="utf-8", errors="replace") as f:
+                for riga in f:
+                    s = riga.strip()
+                    if not s or s.startswith("#") or "=" not in s:
+                        continue
+                    k, v = s.split("=", 1)
+                    k, v = k.strip(), v.strip()
+                    if k == "EnableRemoteCommands":
+                        attivo = (v == "1")
+                    elif k in ("AllowKey", "DenyKey") and "system.run" in v:
+                        attivo = (k == "AllowKey")
+        except (PermissionError, OSError):
+            continue
+    return attivo
+
+
+def check_porte(e: Esito) -> None:
+    """Porte in ascolto che non hanno motivo di essere raggiungibili.
+
+    L'audit del 25/09 ha trovato `postgres` e l'agent Zabbix in ascolto su indirizzi
+    non-locali con `ufw` **inactive**: nessuno lo sapeva. Non e' una policy di
+    sicurezza completa: e' il promemoria che l'esposizione va **vista**, non supposta.
+
+    Per la 10050 il pericolo vero e' la coppia "in ascolto + system.run attivo":
+    con `system.run` disattivato (hardening 25/09) un agent su indirizzi interni
+    non e' piu' esecuzione di comandi, ma resta un'esposizione da VEDERE -> nota.
+    """
+    system_run = _system_runs_attivi()
+    ss = _run(["ss", "-ltnp"])
+    for riga in ss.splitlines()[1:]:
+        parti = riga.split()
+        if len(parti) < 4:
+            continue
+        locale = parti[3]
+        if locale.startswith("127.") or locale.startswith("[::1]"):
+            continue                      # solo loopback: non e' esposizione
+        indirizzo, _, porta = locale.rpartition(":")
+        if porta not in PORTE_DA_SEGNALARE:
+            continue
+        if (porta == "10050" and not system_run
+                and indirizzo not in ("0.0.0.0", "*", "::", "[::]")):
+            e.nota("porte", riga.strip()[:130],
+                   "agent Zabbix in ascolto su indirizzo interno, system.run "
+                   "NON attivo (hardening 25/09): esposto ma non eseguibile")
+            continue
+        e.allarme("porte", riga.strip()[:130], PORTE_DA_SEGNALARE[porta])
+
+
+# --- check: zabbix --------------------------------------------------------------
+
+def check_zabbix(e: Esito) -> None:
+    """Esecuzione comandi remoti e regole sudo verso file inesistenti."""
+    conf = CONF_ZABBIX
+    if os.path.exists(conf):
+        try:
+            with open(conf, encoding="utf-8", errors="replace") as f:
+                for riga in f:
+                    s = riga.strip()
+                    if s.startswith("AllowKey=system.run"):
+                        e.allarme("zabbix", f"{conf}: {s}",
+                                  "l'agent esegue comandi arbitrari su richiesta: e' il "
+                                  "vettore con cui e' entrato il miner del 19/09")
+        except PermissionError:
+            e.nota("zabbix", conf, "non leggibile senza privilegi")
+    d = "/etc/sudoers.d"
+    if os.path.isdir(d):
+        try:
+            for f in os.listdir(d):
+                p = os.path.join(d, f)
+                try:
+                    with open(p, encoding="utf-8", errors="replace") as fh:
+                        testo = fh.read()
+                except (PermissionError, OSError):
+                    continue
+                for m in re.finditer(r"(/[A-Za-z0-9_./-]+\.(?:sh|py))", testo):
+                    target = m.group(1)
+                    if not os.path.exists(target):
+                        e.allarme("zabbix" if "zabbix" in testo.lower() else "sudoers",
+                                  f"{p} -> {target}",
+                                  "regola sudo verso un file INESISTENTE: se quel file "
+                                  "compare, l'utente ottiene root senza password")
+        except PermissionError:
+            pass
+
+
+# --- check: systemd ------------------------------------------------------------
+
+def _systemctl_props(unit: str, props) -> Dict[str, str]:
+    """Prop=Value per l'unita', in UNA chiamata (output deterministico per chiave)."""
+    cmd = ["systemctl", "show"]
+    for p in props:
+        cmd += ["-p", p]
+    cmd.append(unit)
+    out = _run(cmd)
+    d: Dict[str, str] = {}
+    for riga in out.splitlines():
+        if "=" in riga:
+            k, v = riga.split("=", 1)
+            d[k.strip()] = v.strip()
+    return d
+
+
+def _percorso_stato_restart() -> str:
+    """Dove si ricorda NRestarts fra due esecuzioni (override: FLEET_INTEGRITY_STATE)."""
+    return os.environ.get("FLEET_INTEGRITY_STATE") or os.path.join(
+        os.path.expanduser("~"), ".cache", "fleet_integrity", "restarts.json")
+
+
+def _carica_stato_restart() -> Dict[str, int]:
+    try:
+        with open(_percorso_stato_restart(), encoding="utf-8") as f:
+            d = json.load(f)
+        if not isinstance(d, dict):
+            return {}
+        out: Dict[str, int] = {}
+        for k, v in d.items():
+            try:
+                out[str(k)] = int(v)
+            except (TypeError, ValueError):
+                continue
+        return out
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+def _salva_stato_restart(d: Dict[str, int]) -> None:
+    """Best-effort: senza stato il check resta valido, solo meno preciso."""
+    try:
+        p = _percorso_stato_restart()
+        os.makedirs(os.path.dirname(p), exist_ok=True)
+        tmp = p + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(d, f, ensure_ascii=False, indent=1, sort_keys=True)
+        os.replace(tmp, p)
+    except Exception:  # noqa: BLE001
+        pass
+
+
+def check_systemd(e: Esito) -> None:
+    """Unit denaro*: stato, restart patologici, path delle direttive inesistenti.
+
+    Due falsi positivi chiusi il 26/09 (osservati su MARCODG1), che rendevano il
+    check inutilizzabile come segnale:
+    - le unit `oneshot` comandate da un timer, fra un run e l'altro, sono
+      `inactive/dead` PER DESIGN (l'ultimo run e' riuscito): non sono guasti;
+    - `NRestarts` storici su unit ora stabili (113 e 710, da guasti vecchi): il
+      contatore da solo non dice "ciclo in corso". Si allarma se il contatore
+      CRESCE fra due esecuzioni del check (ciclo in corso ADESSO) oppure se
+      l'unita' e' giu' con un contatore patologico.
+    """
+    out = _run(["systemctl", "list-units", "denaro*", "--all", "--no-pager",
+                "--plain", "--no-legend"])
+    restarts_prima = _carica_stato_restart()
+    restarts_ora: Dict[str, int] = {}
+    for riga in out.splitlines():
+        parti = riga.split()
+        if len(parti) < 4:
+            continue
+        unit, load, active, sub = parti[0], parti[1], parti[2], parti[3]
+        props = _systemctl_props(unit, ("Type", "Result", "NRestarts"))
+        tipo = props.get("Type", "")
+        risultato = props.get("Result", "")
+        try:
+            n = int(props.get("NRestarts", "0") or "0")
+        except ValueError:
+            n = 0
+        restarts_ora[unit] = n
+
+        if active != "active" and sub not in ("running", "exited"):
+            # oneshot riuscito (fra due run del timer) o oneshot in esecuzione
+            # ADESSO: stati normali, non guasti.
+            oneshot_ok = tipo == "oneshot" and (
+                risultato == "success"
+                or (active == "activating" and sub in ("start", "running")))
+            if not oneshot_ok:
+                e.allarme("systemd", f"{unit} {active}/{sub}",
+                          "unita' della flotta non attiva: se e' un nodo, il trading e' fermo; "
+                          "se e' telemetria, la flotta e' cieca")
+
+        prec = restarts_prima.get(unit)
+        if prec is not None and n - prec >= 10:
+            e.allarme("systemd", f"{unit} NRestarts={n} (era {prec})",
+                      "restart patologici IN CORSO fra due esecuzioni del check: "
+                      "l'unita' si sta riavviando a ripetizione adesso")
+        elif n >= 50 and active != "active":
+            e.allarme("systemd", f"{unit} NRestarts={n}",
+                      "restart patologici su unita' non attiva: ciclo morto e nessuno "
+                      "se ne accorge (osservati 553 e 560 restart)")
+
+        # path delle direttive
+        for prop in ("ExecStart", "EnvironmentFile", "WorkingDirectory"):
+            val = _run(["systemctl", "show", "-p", prop, "--value", unit]).strip()
+            if not val:
+                continue
+            for token in val.split():
+                if not token.startswith("/"):
+                    continue
+                if token.startswith("-"):      # prefisso "-" = path opzionale, per systemd
+                    token = token[1:]
+                if not os.path.exists(token):
+                    e.allarme("systemd", f"{unit} {prop}={token}",
+                              "direttiva che punta a un path inesistente: e' la causa "
+                              "radice dei 1.113 restart osservati il 25/09")
+    _salva_stato_restart(restarts_ora)
+
+
+# --- check: trading ------------------------------------------------------------
+
+def check_trading(e: Esito, dir_health: Optional[str] = None,
+                  max_eta_s: float = 600.0) -> None:
+    """Nodi live che saltano ogni tick o che non scrivono piu' health (fossili)."""
+    import time
+    candidati = []
+    if dir_health:
+        candidati.append(dir_health)
+    for d in DIR_HEALTH_NOTE:
+        if os.path.isdir(d) and d not in candidati:
+            candidati.append(d)
+    if not candidati:
+        e.nota("trading", "nessuna dir health trovata",
+               "controllo dei nodi live non eseguito su questa macchina")
+        return
+    ora = time.time()
+    for d in candidati:
+        try:
+            files = [f for f in os.listdir(d)
+                     if f.endswith(".json") and f not in FILE_HEALTH_NON_HEARTBEAT]
+        except (PermissionError, OSError):
+            continue
+        for f in files:
+            p = os.path.join(d, f)
+            try:
+                with open(p, encoding="utf-8", errors="replace") as fh:
+                    h = json.load(fh)
+            except Exception:
+                continue
+            # i file di AGGREGAZIONE (es. trend.json) sono liste, non dict per
+            # bot: non hanno le chiavi di salute, e il check su di loro crashava
+            # (AttributeError: 'list' object has no attribute 'get', 26/09).
+            if not isinstance(h, dict):
+                continue
+            eta = ora - os.path.getmtime(p)
+            err = str(h.get("error") or "")
+            blocked = h.get("blocked")
+            if eta > max_eta_s:
+                # [03/10] I bot DICHIARATI non operativi (status blocked/stopped: es. dry-bench
+                # non finanziati o ritirati) non hanno heartbeat atteso: il loro file fermo
+                # non e' un allarme. Se ripartono, il file riprende e il check torna vivo.
+                if str(h.get("status") or "").lower() in ("blocked", "stopped"):
+                    continue
+                e.allarme("trading", f"{f} eta'={eta:.0f}s",
+                          "health FOSSILE mentre il servizio risulta attivo: nessuno "
+                          "scrive piu' lo stato del bot")
+            elif blocked and "inattendibile" in err:
+                e.allarme("trading", f"{f} equity={h.get('total_equity')} err={err[:60]}",
+                          "il bot salta OGNI tick: il conto non ha il capitale che la "
+                          "config dichiara (1.486 tick persi in silenzio il 25/09)")
+
+
+# --- orchestrazione -------------------------------------------------------------
+
+def esegui(host: Optional[str] = None, dir_health: Optional[str] = None) -> Dict[str, Any]:
+    """Esegue i check. Con `host`, li esegue REMOTI via ssh con questo stesso file."""
+    if host:
+        script_path = sys.argv[0]
+        try:
+            with open(script_path, encoding="utf-8") as f:
+                script_content = f.read()
+        except Exception:
+            return {"host": host, "esito": 1,
+                    "reperti": [{"livello": "ALLARME", "check": "ssh",
+                                 "prova": f"impossibile leggere {script_path}",
+                                 "cosa": "controllo remoto non eseguibile: script locale non leggibile"}]}
+        cmd = ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=15", host, "python3 - --json"]
+        out = _run(cmd, timeout=90, input=script_content)
+        try:
+            dati = json.loads(out.strip())
+            dati["host"] = host
+            return dati
+        except Exception:
+            return {"host": host, "esito": 1,
+                    "reperti": [{"livello": "ALLARME", "check": "ssh",
+                                 "prova": (out or "nessun output")[:200],
+                                 "cosa": "controllo remoto non eseguibile: la flotta non "
+                                         "e' ispezionabile (chiave ssh, path o permessi)"}]}
+    e = Esito()
+    check_miner(e)
+    check_crontab(e)
+    check_porte(e)
+    check_zabbix(e)
+    check_systemd(e)
+    check_trading(e, dir_health=dir_health)
+    return {"host": os.uname().nodename if hasattr(os, "uname") else "locale",
+            "esito": e.esito(), "reperti": e.reperti}
+
+
+def _stampa(ris: Dict[str, Any]) -> None:
+    allarmi = [r for r in ris["reperti"] if r["livello"] == "ALLARME"]
+    note = [r for r in ris["reperti"] if r["livello"] == "nota"]
+    testa = "ALLARME" if allarmi else "OK"
+    print(f"[{testa}] {ris['host']} — {len(allarmi)} allarmi, {len(note)} note")
+    for r in allarmi:
+        print(f"  ALLARME {r['check']:9s} {r['prova']}")
+        print(f"          -> {r['cosa']}")
+    for r in note:
+        print(f"  nota    {r['check']:9s} {r['prova']}")
+
+
+def main(argv: Optional[List[str]] = None) -> int:
+    ap = argparse.ArgumentParser(description="Controllo d'integrita' della flotta Denaro")
+    ap.add_argument("--host", action="append", default=[],
+                    help="host ssh da controllare (ripetibile); senza, controlla il locale")
+    ap.add_argument("--health-dir", default=None,
+                    help="directory dei file health dei bot (default: i path noti)")
+    ap.add_argument("--json", action="store_true")
+    args = ap.parse_args(argv)
+
+    try:
+        risultati = [esegui(h, args.health_dir) for h in args.host] if args.host \
+            else [esegui(dir_health=args.health_dir)]
+    except Exception as exc:  # noqa: BLE001
+        # Un crash del CHECK non deve confondersi con un allarme: exit 1 =
+        # reperti trovati, exit 2 = il check stesso e' rotto. Osservato il
+        # 26/09: il crash su trend.json usciva 1, indistinguibile da un
+        # allarme vero, e l'unita' restava "failed" senza dire perche'.
+        errore = {"host": os.uname().nodename if hasattr(os, "uname") else "locale",
+                  "esito": 2, "errore": repr(exc)[:300], "reperti": []}
+        if args.json:
+            print(json.dumps(errore, indent=2, ensure_ascii=False))
+        else:
+            print(f"ERRORE INTERNO {errore['host']}: {errore['errore']}")
+        return 2
+
+    if args.json:
+        print(json.dumps(risultati if len(risultati) > 1 else risultati[0],
+                         indent=2, ensure_ascii=False))
+    else:
+        for r in risultati:
+            _stampa(r)
+    return 1 if any(r["esito"] for r in risultati) else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
