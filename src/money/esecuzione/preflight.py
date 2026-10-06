@@ -4,6 +4,10 @@ Ogni controllo e' una tupla (nome, ok, dettaglio) e resta nella risposta: un
 preflight negato non dice solo "no", dice PERCHE'. Tocca la rete (exchange):
 le eccezioni diventano controlli falliti, non traceback — fermo e' meglio che
 rotto, ma muto no.
+
+FAIL-CLOSED sui permessi (revisione Manus 06/10): un permesso non leggibile,
+vuoto o non interpretabile NON autorizza - blocca. "Non verificabile" non e'
+mai "probabilmente va bene" sul percorso del denaro.
 """
 from __future__ import annotations
 
@@ -32,19 +36,21 @@ def preflight(exchange: Any, symbol: str, nozionale_eur: float,
     """
     controlli: List[Tuple[str, bool, str]] = []
 
-    # 1. permessi chiave (best-effort, come il banco: se illeggibili non blocca,
-    #    ma resta scritto che non li abbiamo verificati)
+    # 1. permessi chiave — FAIL-CLOSED: se non sono leggibili con certezza,
+    #    l'ordine non parte (prima era fail-open: "proseguito non verificato").
     try:
         risposta = exchange.privateGetAccountConfig()
         dati = (risposta or {}).get("data") or []
         perm = str(dati[0].get("perm")) if dati else ""
         if perm:
             puo_tradare = "trade" in perm
-            controlli.append(("permessi_chiave", puo_tradare, perm or "n/d"))
+            controlli.append(("permessi_chiave", puo_tradare, perm))
         else:
-            controlli.append(("permessi_chiave", True, "non leggibili: proseguito non verificato"))
+            controlli.append(("permessi_chiave", False,
+                              "permesso non leggibile (risposta vuota): fail-closed, ordine bloccato"))
     except Exception as exc:
-        controlli.append(("permessi_chiave", True, f"non verificabili ({exc.__class__.__name__})"))
+        controlli.append(("permessi_chiave", False,
+                          f"non verificabili ({exc.__class__.__name__}): fail-closed, ordine bloccato"))
 
     # 2. simbolo presente e attivo
     try:

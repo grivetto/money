@@ -1,4 +1,5 @@
-"""Preflight: ogni controllo dice il perche', e le eccezioni di rete sono fallimenti, non crash."""
+"""Preflight: ogni controllo dice il perche', le eccezioni di rete sono fallimenti
+(rifornito Manus 06/10: i permessi non verificabili NON autorizzano — fail-closed)."""
 
 
 class StubExchange:
@@ -23,6 +24,20 @@ class StubExchange:
         if self._esplodi_saldo:
             raise ConnectionError("giu'")
         return {"EUR": {"free": self._eur, "total": self._eur, "used": 0.0}}
+
+
+class StubPermEsplode(StubExchange):
+    """privateGetAccountConfig solleva (rete lenta/timeout)."""
+
+    def privateGetAccountConfig(self):
+        raise TimeoutError("rete lenta")
+
+
+class StubPermVuoto(StubExchange):
+    """Risposta senza il campo perm: non interpretabile."""
+
+    def privateGetAccountConfig(self):
+        return {"data": []}
 
 
 from money.esecuzione.preflight import preflight
@@ -69,3 +84,19 @@ def test_min_notional_dal_mercato_vince_sulla_config():
         mercati={"BTC/EUR": {"active": True, "limits": {"cost": {"min": 5.0}}}},
         eur_libero=50.0), "BTC/EUR", 3.0, min_notional_cfg=1.0)
     assert not esito.ok and any("min_notional" in m for m in esito.motivi_rifiuto())
+
+
+# --- fail-closed sui permessi (revisione Manus 06/10, finding P0) -----------------------
+
+def test_permessi_non_verificabili_bloccano_l_ordine():
+    """Rete giu' su privateGetAccountConfig: fail-closed. 'Non verificabile'
+    non e' mai 'probabilmente va bene' sul percorso del denaro."""
+    esito = preflight(StubPermEsplode(eur_libero=50.0), "BTC/EUR", 10.0)
+    assert not esito.ok
+    assert any("permessi" in m and "fail-closed" in m for m in esito.motivi_rifiuto())
+
+
+def test_permesso_vuoto_blocca_l_ordine():
+    esito = preflight(StubPermVuoto(eur_libero=50.0), "BTC/EUR", 10.0)
+    assert not esito.ok
+    assert any("permessi" in m for m in esito.motivi_rifiuto())
