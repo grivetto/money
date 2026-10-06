@@ -91,6 +91,54 @@ def carica_state():
     return None
 
 
+# --- check funding: soglia di anomalia (retrofit 2026-10-06) --------------------------------
+#: Tasso di funding giornaliero implicito oltre il quale il cumulato non e' credibile:
+#: 0,5%/giorno = ~182%/anno. Il check precedente confrontava il cumulato col 0,1% del
+#: nozionale A UN ISTANTE: con la taglia minima il cumulato di pochi giorni supera quella
+#: soglia per costruzione, e l'"anomalia" scattava a ogni riga di log (alert fatigue).
+SOGLIA_FUNDING_GIORNO = 0.005
+
+
+def anomalia_funding(fnd, pos_ct, ct_val, mark, ts_open_iso, now=None):
+    """Ritorna la descrizione dell'anomalia funding, o None se il cumulato e' plausibile.
+
+    Il funding si ACCUMULA sulla finestra: l'unica grandezza confrontabile e' il tasso
+    giornaliero implicito = |cumulato| / (nozionale * giorni di apertura). Senza `ts_open`
+    (o senza giorni positivi) il check tace: un numero di giorni inventato sarebbe peggio
+    di un check mancato, e lo stato del canary porta sempre `ts_open`.
+    """
+    try:
+        fnd = float(fnd)
+        pos_ct = float(pos_ct)
+        ct_val = float(ct_val)
+        mark = float(mark)
+    except (TypeError, ValueError):
+        return None
+    if not fnd or pos_ct <= 0 or mark <= 0:
+        return None
+    nozionale = pos_ct * ct_val * mark
+    if nozionale <= 0:
+        return None
+    giorni = None
+    if ts_open_iso:
+        try:
+            t0 = datetime.fromisoformat(str(ts_open_iso))
+            if t0.tzinfo is None:
+                t0 = t0.replace(tzinfo=timezone.utc)
+            momento = now or datetime.now(timezone.utc)
+            giorni = (momento - t0).total_seconds() / 86400.0
+        except (TypeError, ValueError):
+            giorni = None
+    if not giorni or giorni <= 0:
+        return None
+    tasso = abs(fnd) / nozionale / giorni
+    if tasso > SOGLIA_FUNDING_GIORNO:
+        return (f"funding cum {fnd:+.4f} = {tasso * 100:.2f}%/g "
+                f"(nozionale {nozionale:.2f} USDC, {giorni:.1f} g): oltre la soglia "
+                f"{SOGLIA_FUNDING_GIORNO:.2%}/g — verificare i dati")
+    return None
+
+
 def attesa_fill(ex, oid, sym, secondi=60, passo=1.5):
     """Poll fino a closed; ritorna (order, esito) con esito in {closed,reprice,partial}."""
     for _ in range(int(secondi / passo)):
@@ -330,8 +378,9 @@ def main():
                 an.append(f"DELTA-QTY {delta:.2f}")
             if mark and pos_ct and float(p.get("avgPx") or 0) and mark > float(p["avgPx"]) * 1.4:
                 an.append("MARK +40% -> valutare margine")
-            if fnd and abs(fnd) / (pos_ct * CT_VAL * mark) > 0.001:
-                an.append(f"funding cum {fnd:.4f}")
+            a_fnd = anomalia_funding(fnd, pos_ct, CT_VAL, mark, st.get("ts_open"))
+            if a_fnd:
+                an.append(a_fnd)
             if an:
                 lin.append("   ANOMALIE: " + ", ".join(an))
             st.update({"status": "open", "last_pos_ct": pos_ct, "last_mark": mark, "last_upl": upl,
