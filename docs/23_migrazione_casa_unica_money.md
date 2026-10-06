@@ -60,3 +60,12 @@ Difetti trovati e corretti lungo la strada (utili per il futuro):
 - Guardie: `ops/aggregator/port_guard.sh` (copie estranee), watchdog v3, health server.
 - Regola invariata: nessuna unit toccata senza verifica successiva; ogni cutover ha il
   suo backup.
+
+## Incidente 06/10 sera — MARCODG1 non risale al riavvio
+
+- Confermato down su 4 canali (ping, ssh refused, tailscale offline, dashboard 530). I soldi
+  e le posizioni C1 stanno su OKX e non sono toccati; il monitor canary è in pausa.
+- Predisposto il **kit di ripristino**: `deploy/reinstall/` — `README-MARCODG1.md` (recupero
+  disco → ricostruzione → segreti → verifica) e `ricostruisci-marco.sh` (server fresco).
+- Creato in git il file mancante `deploy/systemd/money-banco-secco.timer`.
+- Priorità al recupero: `~/denaro/secrets/`, `~/canary/` (storico C1), `.env_banco`, config.

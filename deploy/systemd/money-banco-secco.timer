@@ -1,0 +1,13 @@
+[Unit]
+Description=Banco a secco money — run periodico (timer)
+Documentation=file:/home/marco/money/docs/02_banco_di_prova_a_secco.md
+After=network-online.target
+
+[Timer]
+OnBootSec=90s
+OnUnitActiveSec=5min
+AccuracySec=15s
+Unit=money-banco-secco.service
+
+[Install]
+WantedBy=timers.target
