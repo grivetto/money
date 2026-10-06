@@ -24,7 +24,7 @@ Capitale attuale: **~1.100 EUR** (deposito del proprietario del 03/10, riconcili
 | **Capitale** | ~1.100 EUR; deploy della scala carry **gated** sulla review del 15/10 (piano pronto, `docs/20`). |
 | **Infrastruttura** | «Fabbrica» ×100 (tick 3s): oltre **139.000 tiri**; job-store; gate JEV; watchdog anti-silenzio; alert Telegram. |
 | **Squadra** | **11 esecutori su 4 macchine + regia** (Hermes); consegne con hash byte-exact, review obbligatoria. |
-| **Qualità** | **514 test verdi** offline, `ruff` pulito, misure riproducibili in ambienti indipendenti. |
+| **Qualità** | **558 test verdi** offline, `ruff` pulito, misure riproducibili in ambienti indipendenti. |
 
 ## 3. Cos'è il progetto (contesto)
 
@@ -173,7 +173,7 @@ cron drift) oggi versionati in `deploy/`.
 
 ## 12. Qualità e riproducibilità
 
-- **514 test offline** (nessuna chiave, nessuna rete) + `ruff` pulito — veloce su checkout fresco.
+- **558 test offline** (nessuna chiave, nessuna rete) + `ruff` pulito — veloce su checkout fresco.
 - Le misure si riproducono **cifra per cifra** su ambienti indipendenti (Windows 3.14 / mc2 3.12;
   `docs/04`). Limite dichiarato: è lo *stesso codice* altrove — non una seconda implementazione.
 - La provenienza degli artefatti è verificata (P9, MANIFEST sha256).
@@ -182,7 +182,7 @@ cron drift) oggi versionati in `deploy/`.
 
 ```bash
 git clone https://github.com/grivetto/money && cd money
-python -m pytest tests -q        # 514 passed (offline)
+python -m pytest tests -q        # 558 passed (offline)
 python src/money/costi.py        # la matematica del pedaggio
 MONEY_CACHE=/tmp/mc python scripts/misura_trend_lungo.py   # ri-misura su dati reali OKX (pubblici)
 python demo_cancello.py          # il cancello che decide a due pedaggi diversi
@@ -192,7 +192,7 @@ python demo_cancello.py          # il cancello che decide a due pedaggi diversi
 
 ```
 src/money/     costi · dati · cancello · statistica · rischio · contabilità · economia · ricerca/
-tests/         514 test offline          scripts/   runner di misura + cruscotto + canary
+tests/         558 test offline          scripts/   runner di misura + cruscotto + canary
 docs/          01–22: decisioni, protocolli, dossier, incidenti, costi
 prove/         evidenze raw (verdetti, JSON, consegne con hash) — congelate
 coda_catena/   spec pre-registrate       fabbrica/  il nastro (regole + STATO)

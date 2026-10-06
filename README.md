@@ -46,7 +46,7 @@ foundation to build on.
 
 | | |
 | :--- | :--- |
-| **Tests** | **533 passed**, `ruff` clean, in **two independent environments** |
+| **Tests** | **558 passed**, `ruff` clean, in **two independent environments** |
 | **Strategies measured** | **3** families (one per node), all judged at real costs — plus the pre-registered P-series experiments (P1–P13), every verdict frozen in `prove/` |
 | **Verdicts** | **3 archived** (strategy families) — the live carry **C1** is in its canary validation window (review 15/10); **P10** (cross-timeframe momentum): *insufficient* (23 trades < 30 — kept, not archived) |
 | **Live canary C1** | DOGE funding carry on OKX EEA, fully reconciled: funding **+0.0076 USDC**, hedge marked **+0.20 USDC**, net ≈ **+0.009 USDC** on day 3/14 — deliberately minimal size |
@@ -154,7 +154,7 @@ Previous snapshots: [`ARCHITETTURA_2026-09-30.md`](ARCHITETTURA_2026-09-30.md) �
 | Domain modelling | **`dataclasses`** (`frozen=True`), `enum`, full type hints, pure functions | the cost module has no I/O: it cannot lie, and it tests in milliseconds |
 | Cost model | **`money/costi.py`** — fractions, never percentages (`0.0035`, not `0.35`) | so that no factor-of-100 error can hide in a multiplication |
 | Gate | **`money/cancello.py`** — bootstrap CI at 90% with a fixed seed, t-stat, profit factor, drawdown, toll coverage, economic relevance, block independence | a criterion you cannot see cannot be discussed |
-| Tests | **pytest >= 8** (533 tests), **ruff >= 0.5** (`line-length = 120`, rules `E9`+`F`) | only rules that catch real errors: a CI that always shouts protects nothing |
+| Tests | **pytest >= 8** (558 tests), **ruff >= 0.5** (`line-length = 120`, rules `E9`+`F`) | only rules that catch real errors: a CI that always shouts protects nothing |
 | Config / packaging | **PyYAML >= 6**, **setuptools** (`src/` layout) | `pytest` imports the package from `src/` with no installation, so the suite runs on a fresh checkout |
 | Evidence | **JSON + plain-text artifacts** in `prove/`, Markdown decisions in `docs/` | a measurement that cannot be re-read is an opinion |
 | Version control | **git**, one writer per path, systemd/cron to be versioned in `deploy/` | the previous project's `systemd` and `crontab` were unversioned, and that caused 10 of 12 outages |
@@ -224,7 +224,7 @@ minimum order and a quarter per position, **no sensible order exists**.
 ## 🧪 Testing — and the independent reproduction
 
 ```
-533 passed
+558 passed
 ruff check . → All checks passed
 ```
 
@@ -303,7 +303,7 @@ money/
 │       ├── griglia_adattiva.py   node B — adaptive grid
 │       └── momento_4h.py         node C — 4-hour momentum
 ├── scripts/                  measurement runners, one per hypothesis, plus independent checks
-├── tests/                    533 offline tests
+├── tests/                    558 offline tests
 ├── docs/                     01 decision · 02 dry-run bench spec · 03 verdicts · 04 reproduction
 ├── prove/                    raw evidence: verdicts, JSON, comparison with prior evidence
 ├── assets/                   banner and architecture diagram
@@ -323,7 +323,7 @@ cd money
 python src/money/costi.py
 
 # the whole suite (offline, no keys, no network)
-python -m pytest tests -q          # 533 passed
+python -m pytest tests -q          # 558 passed
 ruff check .
 
 # re-measure a hypothesis on real OKX EEA bars (no keys needed: public data)

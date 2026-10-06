@@ -37,7 +37,7 @@ sua storia, come memoria di cosa è stato provato — non come base su cui costr
 
 ---
 
-## 📊 Stato in sintesi — 2026-10-03
+## 📊 Stato in sintesi — 2026-10-06
 
 > **TL;DR** — un rig di ricerca onesto su denaro vero: il cancello ha archiviato tutte le famiglie
 > misurate finora; un canary live (carry DOGE) è dentro la finestra di validazione; capitale
@@ -45,7 +45,7 @@ sua storia, come memoria di cosa è stato provato — non come base su cui costr
 
 | | |
 | :--- | :--- |
-| **Test** | **533 passati**, `ruff` pulito, in **due ambienti indipendenti** |
+| **Test** | **558 passati**, `ruff` pulito, in **due ambienti indipendenti** |
 | **Strategie misurate** | **3** famiglie (una per nodo), tutte giudicate ai costi reali — più gli esperimenti pre-registrati della serie P (P1–P13), ogni verdetto congelato in `prove/` |
 | **Verdetti** | **3 archiviate** (famiglie) — il carry live **C1** è nella finestra di validazione canary (review 15/10); **P10** (momentum cross-timeframe): *insufficiente* (23 operazioni < 30 — conservata, non archiviata) |
 | **Canary C1 live** | carry di funding DOGE su OKX EEA, completamente riconciliato: funding **+0,0076 USDC**, hedge marcato **+0,20 USDC**, netto ≈ **+0,009 USDC** al giorno 3/14 — taglia volutamente minima |
@@ -73,7 +73,7 @@ costruire, cominciare a misurare — e fare del misurare un cancello.
 | **2026-09** | L'audit di `alpha-omega-trading` (`docs/01`): «il sistema funziona, su una baracca non supervisionata» — servizi non versionati, capitali che i conti non avevano, 1.486 tick persi in silenzio, 10 guasti su 12 da un solo path obsoleto | fermarsi; rifondare |
 | **2026-09-23 → 30** | La rifondazione: questo repository trasforma la regola in codice — il **cancello a 8 criteri**; gli esperimenti della serie P sono pre-registrati, misurati e giudicati uno a uno; ogni famiglia misurata finora è archiviata | il cancello non è una linea guida: è codice, e il suo rifiuto è vincolante |
 | **2026-10-01** | Il **primo ordine reale** del progetto viene eseguito su OKX EEA; nasce il **canary C1** (carry di funding DOGE, spot + hedge perp) — taglia minima, completamente riconciliato | un esperimento, non un raccolto |
-| **2026-10-03** | L'owner deposita **+1.000 EUR**; la flotta guadagna i suoi agenti (`DSH`, `A0`, `opencode`, `agy`), l'alerting live e il check post-riavvio (34/34) | il capitale non crea l'edge — rende *visibile* il guadagno |
+| **2026-10-06** | L'owner deposita **+1.000 EUR**; la flotta guadagna i suoi agenti (`DSH`, `A0`, `opencode`, `agy`), l'alerting live e il check post-riavvio (34/34) | il capitale non crea l'edge — rende *visibile* il guadagno |
 
 Oggi il codice vecchio vive in `legacy/` come memoria, non come fondamenta, e solo il rig di
 ricerca può avvicinarsi alla produzione: **prima cosa catturare, poi il sistema.** Questo
@@ -104,9 +104,9 @@ money/cancello.py              8 criteri, 3 verdetti, ogni motivo porta il suo n
 promosso / archiviato / insufficiente          il verdetto e' vincolante
 ```
 
-### Il sistema attorno alla pipeline — aggiornato 03/10/2026 (sera)
+### Il sistema attorno alla pipeline — aggiornato 2026-10-06 (sera)
 
-![Denaro — foto del sistema, 03/10/2026](FOTO_SISTEMA_2026-10-03.png)
+![Denaro — foto del sistema, 2026-10-06](FOTO_SISTEMA_2026-10-06.png)
 
 ```
                      ┌──────────────────────── mc2 — l'hub ──────────────────────────┐
@@ -136,12 +136,12 @@ promozione/archivio → banco a secco → canary → live a taglia minima. Gli e
 `A0-win`, `DSH-mc2/omarchy/win`, `opencode-mc2/omarchy`, `agy-omarchy` — consegnano a Hermes; il
 **nodo agenti** (Omarchy) ospita `DSH-omarchy` e `opencode-omarchy` come servizi systemd
 (loopback-only, raggiunti via tunnel ssh); niente entra senza review. Visual:
-[`FOTO_SISTEMA_2026-10-03.html`](FOTO_SISTEMA_2026-10-03.html) · [`.png`](FOTO_SISTEMA_2026-10-03.png) ·
-[`FOTO_SQUADRA_2026-10-03.html`](FOTO_SQUADRA_2026-10-03.html) · [`.png`](FOTO_SQUADRA_2026-10-03.png).
+[`FOTO_SISTEMA_2026-10-06.html`](FOTO_SISTEMA_2026-10-06.html) · [`.png`](FOTO_SISTEMA_2026-10-06.png) ·
+[`FOTO_SQUADRA_2026-10-06.html`](FOTO_SQUADRA_2026-10-06.html) · [`.png`](FOTO_SQUADRA_2026-10-06.png).
 Foto precedenti: [`ARCHITETTURA_2026-09-30.md`](ARCHITETTURA_2026-09-30.md) ·
 [`ARCHITETTURA_2026-10-01.md`](ARCHITETTURA_2026-10-01.md).*
 
-![La squadra — 03/10/2026](FOTO_SQUADRA_2026-10-03.png)
+![La squadra — 2026-10-06](FOTO_SQUADRA_2026-10-06.png)
 
 ### Le tecnologie usate
 
@@ -154,7 +154,7 @@ Foto precedenti: [`ARCHITETTURA_2026-09-30.md`](ARCHITETTURA_2026-09-30.md) ·
 | Modellazione del dominio | **`dataclasses`** (`frozen=True`), `enum`, type hints completi, funzioni pure | il modulo dei costi non fa I/O: non può mentire, e si testa in millisecondi |
 | Modello dei costi | **`money/costi.py`** — frazioni, mai percentuali (`0.0035`, non `0.35`) | così nessun errore di fattore 100 può nascondersi in una moltiplicazione |
 | Cancello | **`money/cancello.py`** — IC bootstrap al 90% con seme fisso, t-stat, profit factor, drawdown, copertura del pedaggio, rilevanza economica, indipendenza dai blocchi | un criterio che non vedi non può essere discusso |
-| Test | **pytest >= 8** (533 test), **ruff >= 0.5** (`line-length = 120`, regole `E9`+`F`) | solo regole che intercettano errori reali: una CI che grida sempre non protegge niente |
+| Test | **pytest >= 8** (558 test), **ruff >= 0.5** (`line-length = 120`, regole `E9`+`F`) | solo regole che intercettano errori reali: una CI che grida sempre non protegge niente |
 | Config e pacchetto | **PyYAML >= 6**, **setuptools** (layout `src/`) | `pytest` importa il pacchetto da `src/` senza installazione, così la suite gira su un checkout appena fatto |
 | Prove | **artefatti JSON e testo** in `prove/`, decisioni in Markdown in `docs/` | una misura che non si può rileggere è un'opinione |
 | Controllo di versione | **git**, un solo scrittore per percorso, systemd e cron da versionare in `deploy/` | nel progetto precedente `systemd` e `crontab` non erano versionati, ed è stata la causa di 10 guasti su 12 |
@@ -225,7 +225,7 @@ minimo d'ordine di 1 EUR e un quarto per posizione, **non esiste nessun ordine s
 ## 🧪 Testing — e la riproduzione indipendente
 
 ```
-533 passed
+558 passed
 ruff check . → All checks passed
 ```
 
@@ -304,7 +304,7 @@ money/
 │       ├── griglia_adattiva.py   nodo B — griglia adattiva
 │       └── momento_4h.py         nodo C — momento a 4 ore
 ├── scripts/                  runner di misura, uno per ipotesi, piu' le verifiche indipendenti
-├── tests/                    533 test offline
+├── tests/                    558 test offline
 ├── docs/                     01 decisione · 02 specifica del banco a secco · 03 verdetti · 04 riproduzione
 ├── prove/                    prove grezze: verdetti, JSON, confronto con l'evidenza precedente
 ├── assets/                   banner e diagramma di architettura
@@ -324,7 +324,7 @@ cd money
 python src/money/costi.py
 
 # tutta la suite (offline, nessuna chiave, nessuna rete)
-python -m pytest tests -q          # 533 passed
+python -m pytest tests -q          # 558 passed
 ruff check .
 
 # rimisura una ipotesi su barre reali OKX EEA (nessuna chiave: dati pubblici)

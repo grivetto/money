@@ -1,0 +1,28 @@
+{
+  "generato_da": "scripts/genera_status.py",
+  "snapshot": "2026-10-06 (sera)",
+  "test_offline": {
+    "count": 558,
+    "verificato_il": "2026-10-06 17:55",
+    "comando": "python -m pytest -q (venv, offline)"
+  },
+  "qualita": {
+    "ruff": "pulito",
+    "compileall": "ok",
+    "verificato_il": "2026-10-06"
+  },
+  "fee": {
+    "verificato_il": "2026-10-06",
+    "fonte": "OKX privateGetAccountTradeFee (conto main, acctLv 2)",
+    "tariffa_default": "okx_eea_con_perp (maker 0,08% / taker 0,10% / giro misto 0,18%)"
+  },
+  "strategie_promosse": 0,
+  "esperimento_vivo": "canary C1 — carry DOGE (spot+perp 1x, taglia minima); review 15/10/2026",
+  "capitale_dichiarato_eur": 1100.14,
+  "capitale_nota": "valore dichiarato dal proprietario, riconciliato read-only; non una prova pubblica",
+  "impianti": {
+    "fabbrica": "tick 3s (x100), job-store atomico, watchdog anti-silenzio",
+    "nodi": "mc2 (regia/ricerca) · MARCODG1 (trading/web) · nuvola (paper/compute)",
+    "revisione_esterna": "finding Manus 06/10 applicati (Sprint 0/1/2)"
+  }
+}
