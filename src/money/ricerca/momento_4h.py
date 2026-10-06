@@ -83,7 +83,8 @@ SLIPPAGE_PER_LATO: float = 0.0004
 
 #: Tariffa assunta. `okx_eea_spot` e' la verita' di oggi (conto senza derivati):
 #: 0,550% per giro con `tipo="misto"` — entro a limite, esco a mercato.
-TARIFFA_ASSUNTA: str = "okx_eea_spot"
+#: Aggiornata 2026-10-06 (conto main con X-Perps attivi, fee spot verificate live).
+TARIFFA_ASSUNTA: str = "okx_eea_con_perp"
 
 #: Come si paga il pedaggio. Non negoziabile: la regola esce a mercato (stop o orizzonte),
 #: quindi il lato di uscita e' taker. Assumere `maker` qui sarebbe l'inganno che il progetto

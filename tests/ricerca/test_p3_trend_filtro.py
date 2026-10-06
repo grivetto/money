@@ -128,7 +128,7 @@ def test_sma_allineata_e_solo_passato():
 
 def test_ritorno_netto_include_fee_e_slippage():
     lordo = 0.02
-    atteso = (1 - 0.0004) * (1 + lordo) * (1 - 0.0004) - 1 - 0.0055
+    atteso = (1 - 0.0004) * (1 + lordo) * (1 - 0.0004) - 1 - 0.0018
     assert P3.ritorno_netto(lordo) == pytest.approx(atteso, abs=1e-5)
     assert P3.ritorno_netto(lordo) < lordo
 

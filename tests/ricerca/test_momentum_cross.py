@@ -129,13 +129,14 @@ def test_costi_da_money_costi_applicati_una_volta_per_giro():
     esito = M.backtest(serie, cfg)
     assert esito.operazioni_eseguite == 1
 
-    tariffa = get_tariffa("okx_eea_spot")
+    tariffa = get_tariffa(M.TARIFFA_ASSUNTA)
     slip = M.SLIPPAGE_PER_LATO
     lordo = 110.0 / 101.0 - 1.0
     atteso = (1.0 - slip) * (1.0 + lordo) * (1.0 - slip) - 1.0 - tariffa.giro_misto
     assert esito.capitale_finale == pytest.approx(1000.0 * (1.0 + atteso), rel=1e-9)
-    # Il pedaggio e' quello di money.costi (0,55% misto), non un numero scritto a mano.
-    assert tariffa.giro_misto == pytest.approx(0.0055)
+    # Il pedaggio e' quello di money.costi alla tariffa ASSUNTA dal modulo (0,18% misto
+    # con X-Perps, verifica live 06/10/2026), non un numero scritto a mano.
+    assert tariffa.giro_misto == pytest.approx(0.0018)
 
     # Senza costi il risultato e' piu' alto: la differenza E' il costo, non rumore.
     senza = backtest_portafoglio(serie, {"A": ops}, esposizione=1.0,
@@ -143,9 +144,10 @@ def test_costi_da_money_costi_applicati_una_volta_per_giro():
     assert senza.capitale_finale == pytest.approx(1000.0 * (1.0 + lordo), rel=1e-9)
     assert esito.capitale_finale < senza.capitale_finale
 
-    # La tariffa secondaria (con X-Perps) riduce il pedaggio.
-    perp = M.backtest(serie, cfg, tariffa=get_tariffa(M.TARIFFA_SECONDARIA))
-    assert perp.capitale_finale > esito.capitale_finale
+    # La tariffa "senza derivati" (okx_eea_spot, scenario di stress) e' piu' cara:
+    # il risultato peggiora. Il pedaggio vero del conto e' quello assunto dal modulo.
+    stress = M.backtest(serie, cfg, tariffa=get_tariffa("okx_eea_spot"))
+    assert stress.capitale_finale < esito.capitale_finale
 
 
 def test_hook_equipesato_alloca_equity_diviso_k():
@@ -156,7 +158,7 @@ def test_hook_equipesato_alloca_equity_diviso_k():
     ops = M.operazioni_paniere(serie, cfg)
     esito = M.backtest(serie, cfg)
     slip = M.SLIPPAGE_PER_LATO
-    tariffa = get_tariffa("okx_eea_spot")
+    tariffa = get_tariffa(M.TARIFFA_ASSUNTA)
     lordo = 110.0 / 100.0 - 1.0
     netto = (1.0 - slip) * (1.0 + lordo) * (1.0 - slip) - 1.0 - tariffa.giro_misto
     assert (ops[0].indice_ingresso, ops[0].indice_uscita) == (2, 3)

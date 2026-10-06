@@ -58,7 +58,9 @@ def test_una_tariffa_senza_data_e_scaduta():
 
 
 def test_il_default_del_progetto_e_verificato():
-    assert get_tariffa().verificato_il == get_tariffa("okx_eea_spot").verificato_il
+    # Dal 2026-10-06 il default e' la tariffa "con derivati" del conto main, verificata live.
+    assert get_tariffa().verificato_il >= "2026-10-06"
+    assert get_tariffa("okx_eea_spot").verificato_il == "2026-09-27"  # stress, verificata
 
 
 def test_l_eta_massima_dev_essere_positiva():

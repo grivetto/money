@@ -36,7 +36,8 @@ from ..costi import Tariffa, get_tariffa, movimento_minimo
 from ..dati import Barra, SerieBarre
 
 SLIPPAGE_PER_LATO: float = 0.0004
-TARIFFA_ASSUNTA: str = "okx_eea_spot"
+#: Aggiornata 2026-10-06 (conto main con X-Perps attivi, fee spot verificate live).
+TARIFFA_ASSUNTA: str = "okx_eea_con_perp"
 TIPO_ORDINE: str = "misto"
 ESPOSIZIONE: float = 0.25
 

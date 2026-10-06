@@ -39,7 +39,10 @@ from ..dati import Barra, SerieBarre
 
 #: Slippage assunto per lato (mediana spread misurata 2026-09-25, vedi momento_4h).
 SLIPPAGE_PER_LATO: float = 0.0004
-TARIFFA_ASSUNTA: str = "okx_eea_spot"
+#: Assunzione aggiornata il 2026-10-06: il conto main ha i X-Perps attivi (acctLv 2),
+#: fee spot verificate live (0,080%/0,100%). Le misure passate restano con la tariffa
+#: dichiarata nel registro; da qui in avanti si misura al pedaggio vero del conto.
+TARIFFA_ASSUNTA: str = "okx_eea_con_perp"
 TIPO_ORDINE: str = "misto"
 ESPOSIZIONE: float = 0.25
 

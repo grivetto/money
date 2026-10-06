@@ -17,7 +17,7 @@ I NUMERI (misurati sulle pagine ufficiali OKX EEA, in `_audit/` del progetto pre
 OKX EEA pubblica DUE tabelle spot. La differenza non e' il livello VIP: e' se il conto ha
 aperto i derivati (X-Perps).
 
-    conto senza derivati  (acctLv 1, la situazione di oggi)   maker 0,200%  taker 0,350%
+    conto senza derivati  (acctLv 1, scenario di stress)     maker 0,200%  taker 0,350%
     conto con X-Perps     (basta un assessment)               maker 0,080%  taker 0,100%
 
 Da cui il costo di un giro completo (aprire + chiudere):
@@ -27,6 +27,10 @@ Da cui il costo di un giro completo (aprire + chiudere):
 
 Cioe': **il pedaggio si puo' abbassare di quasi 4 volte senza aggiungere un euro di
 capitale.** E' la leva piu' grande che il progetto abbia mai avuto, e non e' codice.
+
+Dal 2026-10-01 il conto main ha i X-Perps attivi (acctLv 2): la seconda tabella e' la
+realtà del conto, verificata live il 2026-10-06. Da quella data le misure usano la
+tariffa con derivati; la tabella senza derivati resta come scenario di stress.
 
 CONTRATTO
 ---------
@@ -102,7 +106,8 @@ TARIFFE: Dict[str, Tariffa] = {
     "okx_eea_spot": Tariffa(
         Venue.OKX_EEA, maker=0.0020, taker=0.0035,
         condizione="conto OKX EEA senza derivati attivi (acctLv 1)",
-        note="la tariffa che il progetto paga oggi",
+        note="legacy/stress: NON e' piu' la tariffa del conto main (dal 01/10/26 ha X-Perps); "
+             "resta come scenario conservativo nelle misure",
     ),
     "okx_eea_con_perp": Tariffa(
         Venue.OKX_EEA, maker=0.0008, taker=0.0010,
@@ -163,9 +168,9 @@ _VERIFICHE: Dict[str, Tuple[str, str]] = {
         "privateGetAccountTradeFee, conto main acctLv 2: maker 0,020% / taker 0,050% "
         "(docs/01 §2, docs/05)"),
     "okx_eea_con_perp": (
-        "2026-09-25",
-        "pagine ufficiali OKX EEA: assunzione **conservativa**, valida finche' acctLv non e' 2 "
-        "(docs/01 §6)"),
+        "2026-10-06",
+        "privateGetAccountTradeFee sul conto main acctLv 2 (06/10/2026): gruppo spot con "
+        "derivati maker 0,080% / taker 0,100%; confermato dal fill del canary C1 (0,10% taker)"),
 }
 
 TARIFFE: Dict[str, Tariffa] = {
@@ -209,7 +214,10 @@ def verifica_freschezza(tariffa: Tariffa, oggi: Optional[Any] = None,
 
 
 #: La tariffa che il progetto assume quando nessuno dice diversamente: la verita' di oggi.
-TARIFFA_DEFAULT = "okx_eea_spot"
+#: Aggiornata il 2026-10-06: il conto main ha i X-Perps attivi (acctLv 2) e le fee spot
+#: verificate live sono quelle della tabella "con derivati" (0,080%/0,100%);
+#: `okx_eea_spot` resta disponibile come scenario di stress.
+TARIFFA_DEFAULT = "okx_eea_con_perp"
 
 
 def get_tariffa(nome: str = TARIFFA_DEFAULT) -> Tariffa:

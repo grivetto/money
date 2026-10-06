@@ -64,20 +64,33 @@ def test_le_tariffe_sono_ordinate_come_la_realtа_misurata():
     assert con.giro_taker == pytest.approx(0.0020)
 
 
-def test_la_tariffa_swap_misurata_sull_account_non_sostituisce_l_assunzione():
-    """La tariffa SWAP letta dal conto (0,070%) e' piu' bassa di quella assunta (0,180%).
+def test_la_tariffa_swap_misurata_non_sostituisce_quella_spot():
+    """La tariffa SWAP misurata sul conto (0,070%) vale per i DERIVATI, non per lo spot.
 
-    Il test fissa ENTRAMBE, e il motivo e' preciso: `okx_eea_con_perp` e' l'assunzione
-    conservativa valida **finche' `acctLv` non e' 2**, la tariffa misurata vale solo con i
-    derivati attivi. Se qualcuno "allinea" l'assunzione al numero misurato senza che
-    l'account sia salito di livello, il cancello diventa piu' permissivo di quanto sia lecito:
-    e' il modo silenzioso di abbassare il pedaggio sulla carta.
+    Dal 2026-10-06 il conto main ha `acctLv` 2 e l'assunzione spot e' quella "con derivati"
+    (0,180% misto), verificata live. La tariffa SWAP e' piu' bassa e NON sostituisce quella
+    spot: usarla per strategie spot sarebbe il modo silenzioso di abbassare il pedaggio
+    sulla carta. Il test fissa entrambe.
     """
-    assunto = get_tariffa("okx_eea_con_perp")
-    misurato = get_tariffa("okx_eea_swap_lv1")
-    assert misurato.giro_misto == pytest.approx(0.0007)
-    assert misurato.giro_misto < assunto.giro_misto
-    assert "acctLv 2" in misurato.condizione
+    spot = get_tariffa("okx_eea_con_perp")
+    swap = get_tariffa("okx_eea_swap_lv1")
+    assert swap.giro_misto == pytest.approx(0.0007)
+    assert swap.giro_misto < spot.giro_misto
+    assert "acctLv 2" in swap.condizione
+
+
+def test_il_default_e_la_tariffa_vera_del_conto():
+    """Il default e' la tariffa vera del conto, con la verifica live (retrofit 06/10/2026).
+
+    Verifica del 2026-10-06 (privateGetAccountTradeFee, conto main acctLv 2):
+    spot maker 0,080% / taker 0,100%. `okx_eea_spot` (senza derivati) resta come scenario
+    di stress: il default non deve tornare indietro senza che il conto cambi davvero.
+    """
+    from money.costi import TARIFFA_DEFAULT
+    assert TARIFFA_DEFAULT == "okx_eea_con_perp"
+    t = get_tariffa()
+    assert t.venue is Venue.OKX_EEA
+    assert t.verificato_il >= "2026-10-06"
 
 
 # --- il movimento minimo: la disuguaglianza che uccide le strategie --------------

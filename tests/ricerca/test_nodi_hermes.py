@@ -131,9 +131,10 @@ def test_donchian_una_posizione_alla_volta():
 def test_ritorno_netto_costi():
     # lordo 2% -> netto = (1-s)(1+0.02)(1-s) - 1 - pedaggio; mai additivo
     netto = R.ritorno_netto(0.02)
-    atteso = (1 - 0.0004) * 1.02 * (1 - 0.0004) - 1 - 0.0055
+    atteso = (1 - 0.0004) * 1.02 * (1 - 0.0004) - 1 - 0.0018
     assert abs(netto - atteso) < 1e-12
-    assert R.pedaggio() == D.pedaggio() == 0.0055  # misto: 0,20% maker + 0,35% taker
+    # misto con X-Perps (conto main, verifica live 06/10/2026): 0,08% maker + 0,10% taker
+    assert R.pedaggio() == D.pedaggio() == 0.0018
 
 
 def test_esito_degenere_non_esplode():
