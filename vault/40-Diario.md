@@ -27,3 +27,24 @@
 - **Incidente provider risolto**: credito Google degli A0 a secco (402) → preset spostati su `openrouter/deepseek-v4-flash`; un file troncato recuperato via snapshot `_time_travel`.
 - Sistemato l'**A0 Launcher di omarchy** (crash all'avvio: sandbox su FUSE senza SUID → wrapper `~/.local/bin/a0-launcher` con `--no-sandbox` + voce di menu; docker abilitato al boot).
 - **Porte DSH standardizzate** (direttiva proprietario): win `3080` · mc2 `dsh-web` **4080** · omarchy **5080** — unit aggiornati e riavviati con backup `.bak-20261003`; 3080 non più occupata da mc2/omarchy.
+
+## 2026-10-04 — opencode su tutta la flotta
+- **opencode su 4 nodi** (mc2, omarchy, nuvola, MARCODG1 — v2.0.22, PONG ovunque): flotta a **11 esecutori su 4 macchine + regia** (docs/21).
+- Costi ricorrenti censiti (docs/22): 9 €/mese VPS + ~22 €/mese Google AI Pro.
+- Regola di flotta: **modelli solo online** (niente inference locale).
+
+## 2026-10-06 — Ricostruzione MARCODG1, revisione Manus, scansioni S1/S2
+- **MARCODG1 ricostruito** (kit `ricostruisci-marco.sh`): crontab → money, credenziali Zabbix ruotate, stack servizi money riallineato; post-ricostruzione verificata.
+- **Revisione esterna Manus applicata** (Sprint 0/1/2): esecuzione fail-closed + clOrdId per intento + journal; fabbrica job-store atomico + shell=False; cancello con dipendenza temporale (IC a blocchi, t HAC). Suite 558.
+- **Migrazione "casa unica = money", fase 1**: osservabilità e alerting portati in money su mc2/MARCODG1/nuvola (aggregator, dashboard, health, watch_alerts, banco); alpha-omega dismesso come casa.
+- **S1 (scansione esplorativa)**: 7 famiglie × 32 config su 16 major → **0 candidati**; descrittivi mom_abs XLM/XRP/DOGE.
+- **Contro-verifica indipendente S1 (DSH omarchy)**: numeri riprodotti al 7º decimale; `rsi2(3,15,65)` su XRP l'unico robusto → **watchlist**.
+- **S2 (scansione funding carry X-Perp)**: 7 candidati descrittivi lato short (DOGE +6,50%, LINK +6,33%, ADA +6,33%, …); nessuna promozione — da pre-registrare come esperimenti.
+- P4/P8 retrofit formato-contratto; canary funding check normalizzato; costi = verità del conto (`okx_eea_con_perp`).
+
+## 2026-10-07 — S3 caccia adattiva; aiutanti tutti in auto-start
+- **S3 "caccia adattiva"**: griglia estesa (10 famiglie, 61 config) + raffinamento locale (±1 passo), DSR sull'unione dei tentativi → **0 candidati** (1.760 tentativi su major; 6.902 su universo ampio/58 simboli). Il loop notturno ora esegue **S1+S3**.
+- **Flotta in auto-start**: opencode → servizio systemd (`Restart=always`) su **tutti e 4 i nodi**; **agy** (remote-control) daemon su tutti e 4; win: DSH-Web sotto Task Scheduler con restart automatico; `dsh-bridge` su mc2 disabilitato (residuo storico).
+- **Accesso win sistemato**: chiave SSH per utente admin va in `C:\ProgramData\ssh\administrators_authorized_keys` (per gli admin Windows ignora `~/.ssh/authorized_keys`).
+- Test di resilienza kill→restart passati su tutti i nodi per opencode e agy.
+- Hermes: installati plugin utili (ticker crypto desktop, fxmacrodata, echarts).

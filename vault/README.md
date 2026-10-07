@@ -10,7 +10,7 @@ Qui c'è la vista d'insieme, aggiornata dagli agenti.
 - (se apri come vault la home `/home/sergio`, la trovi sotto `money/vault`)
 
 ## Chi scrive
-Hermes (e DSH quando serve). Ultimo aggiornamento: **2026-09-29**.
+Hermes (e DSH quando serve). Ultimo aggiornamento: **2026-10-07**.
 
 ## Mappa
 - [[00-Sala-di-Controllo]] — stato in una schermata
