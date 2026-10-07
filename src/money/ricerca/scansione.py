@@ -356,39 +356,14 @@ def seleziona_sopravvissuti(selezioni: Sequence[dict], *, min_op: int = MIN_OP,
     return fuori
 
 
-def scansiona(serie_per_simbolo: Dict[str, SerieBarre], *, griglia: Sequence[dict] = GRIGLIA,
-              confine: str = CONFINE_ADDESTRAMENTO, tariffa: Optional[Tariffa] = None,
-              slippage: float = SLIPPAGE_PER_LATO, min_op: int = MIN_OP,
-              soglia_dsr: float = SOGLIA_DSR,
-              progresso: Optional[Callable[[str], None]] = None) -> dict:
-    """Gira la scansione completa: trial, selezione (solo addestramento), correzione.
+def seleziona_e_correggi(trials: Sequence[dict], *, min_op: int = MIN_OP,
+                         soglia_dsr: float = SOGLIA_DSR) -> dict:
+    """Selezione (una per configurazione, solo addestramento) + DSR + candidati + top.
 
-    Ritorna un dict serializzabile con: meta, trials (tutti, con entrambe le finestre),
-    selezioni (una per configurazione: il miglior simbolo in addestramento), candidati
-    (selezioni che passano `seleziona_sopravvissuti`) e top_oos (classifica descrittiva).
+    Estratto da `scansiona` per riuso (scansione adattiva S3): la correzione per selezione
+    multipla si applica ai tentativi VALUTABILI della lista ricevuta — S3 le passa l'UNIONE
+    dei tentativi dei due stadi, cosi' nessuna prova resta fuori dal conteggio.
     """
-    confine_ms = a_ms(confine)
-    tar = tariffa if tariffa is not None else get_tariffa(TARIFFA_SCANSIONE)
-    trials: List[dict] = []
-    for cfg in griglia:
-        chiave = chiave_config(cfg)
-        for simbolo in sorted(serie_per_simbolo):
-            barre = serie_per_simbolo[simbolo]
-            stato = stato_per_config(barre, cfg)
-            trades = simula(barre, stato, tariffa=tar, slippage_per_lato=slippage)
-            train, oos = dividi(trades, confine_ms)
-            trials.append({
-                "chiave": chiave,
-                "famiglia": cfg["famiglia"],
-                "params": {k: v for k, v in cfg.items() if k != "famiglia"},
-                "simbolo": simbolo,
-                "train": metriche(train),
-                "oos": metriche(oos),
-            })
-            if progresso is not None:
-                progresso(f"{chiave} su {simbolo}: train n={trials[-1]['train']['n']} "
-                          f"oos n={trials[-1]['oos']['n']}")
-
     # Selezione: per ogni configurazione, il MIGLIOR simbolo in addestramento (n >= min_op,
     # massima expectancy). La verifica non entra nella scelta.
     per_config: Dict[str, List[dict]] = {}
@@ -428,6 +403,57 @@ def scansiona(serie_per_simbolo: Dict[str, SerieBarre], *, griglia: Sequence[dic
         [t for t in trials if (t["oos"]["n"] or 0) >= min_op and t["oos"]["expectancy"] is not None],
         key=lambda t: -(t["oos"]["expectancy"]),
     )[:20]
+    return {
+        "selezioni": selezioni,
+        "candidati": candidati,
+        "top_oos": top_oos,
+        "n_tentativi": n_tentativi,
+        "varianza_sharpe_train": var_sharpe,
+        "sr0_benchmark": (sharpe_atteso_massimo(n_tentativi, var_sharpe)
+                          if n_tentativi >= 2 else 0.0),
+    }
+
+
+def scansiona(serie_per_simbolo: Dict[str, SerieBarre], *, griglia: Sequence[dict] = GRIGLIA,
+              stato_fn: Callable[[Sequence[Barra], dict], List[Optional[bool]]] = stato_per_config,
+              confine: str = CONFINE_ADDESTRAMENTO, tariffa: Optional[Tariffa] = None,
+              slippage: float = SLIPPAGE_PER_LATO, min_op: int = MIN_OP,
+              soglia_dsr: float = SOGLIA_DSR,
+              progresso: Optional[Callable[[str], None]] = None) -> dict:
+    """Gira la scansione completa: trial, selezione (solo addestramento), correzione.
+
+    `stato_fn` inietta famiglie aggiuntive (S3) senza toccare il motore: stessa convenzione
+    di `stato_per_config` (vettore causale di desiderio di posizione).
+
+    Ritorna un dict serializzabile con: meta, trials (tutti, con entrambe le finestre),
+    selezioni (una per configurazione: il miglior simbolo in addestramento), candidati
+    (selezioni che passano `seleziona_sopravvissuti`) e top_oos (classifica descrittiva).
+    """
+    confine_ms = a_ms(confine)
+    tar = tariffa if tariffa is not None else get_tariffa(TARIFFA_SCANSIONE)
+    trials: List[dict] = []
+    for cfg in griglia:
+        chiave = chiave_config(cfg)
+        for simbolo in sorted(serie_per_simbolo):
+            barre = serie_per_simbolo[simbolo]
+            stato = stato_fn(barre, cfg)
+            trades = simula(barre, stato, tariffa=tar, slippage_per_lato=slippage)
+            train, oos = dividi(trades, confine_ms)
+            trials.append({
+                "chiave": chiave,
+                "famiglia": cfg["famiglia"],
+                "params": {k: v for k, v in cfg.items() if k != "famiglia"},
+                "simbolo": simbolo,
+                "train": metriche(train),
+                "oos": metriche(oos),
+            })
+            if progresso is not None:
+                progresso(f"{chiave} su {simbolo}: train n={trials[-1]['train']['n']} "
+                          f"oos n={trials[-1]['oos']['n']}")
+
+    correzione = seleziona_e_correggi(trials, min_op=min_op, soglia_dsr=soglia_dsr)
+    n_tentativi = correzione["n_tentativi"]
+    var_sharpe = correzione["varianza_sharpe_train"]
 
     return {
         "meta": {
@@ -442,11 +468,10 @@ def scansiona(serie_per_simbolo: Dict[str, SerieBarre], *, griglia: Sequence[dic
             "min_op": min_op,
             "soglia_dsr": soglia_dsr,
             "varianza_sharpe_train": var_sharpe,
-            "sr0_benchmark": (sharpe_atteso_massimo(n_tentativi, var_sharpe)
-                              if n_tentativi >= 2 else 0.0),
+            "sr0_benchmark": correzione["sr0_benchmark"],
         },
         "trials": trials,
-        "selezioni": selezioni,
-        "candidati": candidati,
-        "top_oos": top_oos,
+        "selezioni": correzione["selezioni"],
+        "candidati": correzione["candidati"],
+        "top_oos": correzione["top_oos"],
     }
