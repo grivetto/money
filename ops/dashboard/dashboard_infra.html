@@ -253,7 +253,7 @@ footer { margin-top: 30px; text-align: center; color: var(--dim); font-size: 11p
   </div>
 
   <div class="card" style="margin-bottom:18px; border-color:rgba(0,243,255,0.25)">
-    <h2><span class="ico">▦</span> OFFICINA PAPER — 17 BOT IN FORWARD TEST (SIMULATO)</h2>
+    <h2><span class="ico">▦</span> OFFICINA PAPER — FORWARD TEST (SIMULATO)</h2>
     <div id="flotta"></div>
   </div>
 
@@ -271,8 +271,8 @@ footer { margin-top: 30px; text-align: center; color: var(--dim); font-size: 11p
 
   <div class="grid" style="margin-top:20px">
     <div class="card" style="grid-column:1/-1"><h2><span class="ico">█</span> NODE ENGINE — TUTTI I BOT (paper + live)</h2><div id="nodebots"></div></div>
-    <div class="card" style="grid-column:1/-1"><h2><span class="ico">⛶</span> NODI DENARO (3 macchine)</h2><div id="nodes"></div></div>
-    <div class="card" style="grid-column:1/-1"><h2><span class="ico">⚙</span> SERVIZI DENARO (per macchina)</h2><div id="services"></div></div>
+    <div class="card" style="grid-column:1/-1"><h2><span class="ico">⛶</span> NODI MONEY (3 macchine)</h2><div id="nodes"></div></div>
+    <div class="card" style="grid-column:1/-1"><h2><span class="ico">⚙</span> SERVIZI MONEY (per macchina)</h2><div id="services"></div></div>
     <div class="card" style="grid-column:1/-1"><h2><span class="ico">∿</span> TREND EQUITY (ultime 4h)</h2><div id="trend"></div></div>
     <div class="card" style="grid-column:1/-1"><h2><span class="ico">✖</span> ERRORI BOT</h2><div id="errors"></div></div>
   </div>
@@ -304,14 +304,15 @@ const BOT_META = {
   'marcodg1:okx:XLM/EUR': {sym: 'XLM/EUR', ex: 'OKX·MARCOSUB1·TREND', color: '#ff2bd6'},
   'marcodg1:okx:ALGO/EUR': {sym: 'ALGO/EUR', ex: 'OKX·MARCOSUB1·TREND', color: '#ff9500'},
 };
-const ORDER = [
-  'mc2:paper:BTC/EUR', 'mc2:paper:ETH/EUR', 'mc2:paper:SOL/EUR',
-  'mc2:paper:XRP/EUR', 'mc2:paper:DOGE/EUR', 'mc2:paper:TRX/EUR',
-  'mc2:paper:CRV/EUR', 'nuvola:paper:LINK/EUR', 'nuvola:paper:AVAX/EUR',
-  'nuvola:paper:DOT/EUR', 'nuvola:paper:UNI/EUR', 'nuvola:paper:SUI/EUR', 'nuvola:paper:MINA/EUR',
-  'marcodg1:paper:ADA/EUR', 'marcodg1:paper:ARB/EUR', 'marcodg1:paper:XLM/EUR',
-  'marcodg1:paper:ALGO/EUR',
-];
+// Paper bot della flotta: lista DINAMICA dal payload — mostra i bot che il
+// sistema crea e avvia davvero (niente liste fisse da aggiornare a mano).
+function paperBots(bots) {
+  const ord = ['mc2', 'nuvola', 'marcodg1'];
+  return Object.keys(bots)
+    .filter(k => k.includes(':paper:'))
+    .sort((a, b) => (ord.indexOf(a.split(':')[0]) - ord.indexOf(b.split(':')[0])) ||
+                    a.localeCompare(b));
+}
 
 /* ── CANARY C1 — mission control (01/10) ── */
 let markHist = [];
@@ -380,8 +381,9 @@ function renderBoard(d) {
 
 function renderFlotta(d) {
   const bots = d.bots || {};
-  const fresh = ORDER.filter(n => bots[n] && !bots[n].stale && bots[n].status === 'running').length;
-  const chips = ORDER.map(n => {
+  const order = paperBots(bots);
+  const fresh = order.filter(n => bots[n] && !bots[n].stale && bots[n].status === 'running').length;
+  const chips = order.map(n => {
     const b = bots[n] || {};
     const sym = n.split(':').pop();
     const ok = !b.stale && b.status === 'running';
@@ -391,9 +393,9 @@ function renderFlotta(d) {
       'border-radius:5px;font-size:10px;letter-spacing:1px;color:' + col + '">' + esc(sym) + ' · ' + esc(ok ? 'paper ✓' : st) + '</span>';
   }).join('');
   $('flotta').innerHTML =
-    '<div class="row"><span class="k">OFFICINA PAPER — FORWARD TEST (SIMULATO)</span><span class="pill ' + (fresh === ORDER.length ? 'ok' : 'warn') + '">' +
-    fresh + ' / ' + ORDER.length + ' ATTIVI</span></div>' +
-    '<div style="font-size:11px;color:var(--dim);margin:8px 0 6px">I 17 bot trend della flotta girano in forward test sui prezzi live: ' +
+    '<div class="row"><span class="k">OFFICINA PAPER — FORWARD TEST (SIMULATO)</span><span class="pill ' + (fresh === order.length ? 'ok' : 'warn') + '">' +
+    fresh + ' / ' + order.length + ' ATTIVI</span></div>' +
+    '<div style="font-size:11px;color:var(--dim);margin:8px 0 6px">I bot paper della flotta — quelli che il sistema crea e avvia — girano in forward test sui prezzi live: ' +
     'fill simulati, nessun ordine, nessuna chiave. Il live del progetto è il canary qui sopra. ' +
     'Storia e stato completo su <a href="https://zab.grivetto.eu/zabbix.php?action=latest.view" target="_blank" style="color:var(--neon-cyan)">ZABBIX ▸</a> (' +
     Object.keys(bots).length + ' bot monitorati, aggiornati ogni minuto).</div>' +
@@ -439,7 +441,7 @@ const ebKeys = Object.keys(eb).filter(k => eb[k] && eb[k].ok && eb[k].eur !== nu
   // Flotta storica: riepilogo compatto (le 17 card dei bot spenti erano rumore)
   const bots = d.bots || {};
   renderFlotta(d);
-  const shown = ORDER.filter(n => bots[n] && !bots[n].stale && bots[n].status === 'running').length;
+  const shown = paperBots(bots).filter(n => bots[n] && !bots[n].stale && bots[n].status === 'running').length;
 
   // Prezzi
   const pr = d.prices || {};
@@ -543,7 +545,7 @@ function renderServices(d) {
     div.style.borderLeft = `3px solid ${colors[name] || '#00f3ff'}`;
     div.style.paddingLeft = '8px';
     const units = Object.entries(s.units || {})
-      .map(([u, v]) => `<span class="pill ${v ? 'ok' : 'bad'}">${esc(u.replace(/^denaro-/, ''))}</span>`)
+      .map(([u, v]) => `<span class="pill ${v ? 'ok' : 'bad'}">${esc(u.replace(/^(money-|denaro-)/, ''))}</span>`)
       .join(' ');
     div.innerHTML = `
       <span class="k" style="display:flex;align-items:center;gap:10px">

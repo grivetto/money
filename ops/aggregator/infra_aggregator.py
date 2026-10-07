@@ -778,27 +778,27 @@ def read_trend():
         return []
 
 
-# Servizi Denaro per macchina (stesso set di push_metrics.py) → dashboard
+# Servizi del progetto money per macchina (stesso set di push_metrics.py) → dashboard
 SERVICE_UNITS = {
     "marcodg1": {
         "ssh": [],
         "units": [
-            "denaro-node-marcodg1-xrp", "denaro-node-paper",
-            "denaro-health-marcodg1", "denaro-aggregator-marcodg1",
-            "denaro-dashboard-marcodg1", "denaro-landing",
-            "cloudflared-denaro", "zabbix-agent",
+            "money-aggregator-marcodg1", "money-dashboard-marcodg1",
+            "money-health-marcodg1", "money-landing-marcodg1",
+            "money-watchdog-marcodg1.timer", "money-banco-secco.timer",
+            "fabbrica-worker.timer", "cloudflared", "zabbix-agent",
         ],
     },
     "nuvola": {
         "ssh": ["sergio@87.106.3.15", "-p", "22"],
-        "units": ["denaro-node-nuvola-trade", "denaro-health-nuvola",
+        "units": ["denaro-node-nuvola-trade", "money-health-nuvola",
                   "zabbix-agent", "zabbix-tunnel"],
     },
     "mc2": {
         "ssh": ["sergio@127.0.0.1", "-p", "2222"],  # tunnel inverso
-        "units": ["denaro-node-mc2", "denaro-feeder-mc2", "denaro-health-mc2",
-                  "denaro-dashboard-mc2",
-                  "zabbix-agent", "zabbix-tunnel-reverse"],
+        "units": ["money-aggregator-mc2", "money-dashboard-mc2", "money-health-mc2",
+                  "denaro-node-mc2", "denaro-feeder-mc2",
+                  "cloudflared-home", "zabbix-agent", "zabbix-tunnel-reverse"],
     },
 }
 
