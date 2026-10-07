@@ -123,7 +123,11 @@ def check_dsh(st):
         st["dsh_heads"] = heads
         st["dsh_new"] = heads - int(st["dsh_heads_seen"])
         if st["dsh_new"] > 0:
-            log("CANALE DSH: %d voci nuove in results.md -> AZIONE per Hermes (leggere)" % st["dsh_new"])
+            if st.get("dsh_new_logged") != st["dsh_new"]:
+                log("CANALE DSH: %d voci nuove in results.md -> AZIONE per Hermes (leggere)" % st["dsh_new"])
+                st["dsh_new_logged"] = st["dsh_new"]
+        else:
+            st["dsh_new_logged"] = 0
     except Exception:
         st["dsh_new"] = -1
 
