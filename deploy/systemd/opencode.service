@@ -1,0 +1,24 @@
+# /etc/systemd/system/opencode.service
+# opencode API server — auto-start + always-on (system unit, user marco)
+
+[Unit]
+Description=opencode API server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=marco
+Group=marco
+WorkingDirectory=/home/marco
+Environment=HOME=/home/marco
+Environment=PATH=/home/marco/.opencode/bin:/home/marco/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ExecStart=/home/marco/.opencode/bin/opencode serve --service
+Restart=always
+RestartSec=5
+TimeoutStopSec=15
+KillMode=mixed
+SyslogIdentifier=opencode
+
+[Install]
+WantedBy=multi-user.target

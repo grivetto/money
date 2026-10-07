@@ -1,0 +1,24 @@
+# /etc/systemd/system/opencode.service — omarchy (user sergio)
+# opencode API server — auto-start + always-on
+
+[Unit]
+Description=opencode API server (omarchy)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=sergio
+Group=sergio
+WorkingDirectory=/home/sergio
+Environment=HOME=/home/sergio
+Environment=PATH=/home/sergio/.opencode/bin:/home/sergio/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ExecStart=/home/sergio/.opencode/bin/opencode serve --service
+Restart=always
+RestartSec=5
+TimeoutStopSec=15
+KillMode=mixed
+SyslogIdentifier=opencode
+
+[Install]
+WantedBy=multi-user.target

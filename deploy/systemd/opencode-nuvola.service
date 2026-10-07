@@ -1,0 +1,25 @@
+# /etc/systemd/system/opencode.service — nuvola (user sergio)
+# opencode API server — auto-start + always-on
+# Nota: su nuvola il gruppo primario di sergio non si chiama "sergio" (gid 27):
+# NON specificare Group= (systemd usa il gruppo primario dell'utente).
+
+[Unit]
+Description=opencode API server (nuvola)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=sergio
+WorkingDirectory=/home/sergio
+Environment=HOME=/home/sergio
+Environment=PATH=/home/sergio/.opencode/bin:/home/sergio/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ExecStart=/home/sergio/.opencode/bin/opencode serve --service
+Restart=always
+RestartSec=5
+TimeoutStopSec=15
+KillMode=mixed
+SyslogIdentifier=opencode
+
+[Install]
+WantedBy=multi-user.target
