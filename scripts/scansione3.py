@@ -15,6 +15,7 @@ NON promuove nulla: i sopravvissuti sono candidati da pre-registrare come esperi
 Uso:  .venv/bin/python scripts/scansione3.py                    # fine = ieri UTC
       .venv/bin/python scripts/scansione3.py --fine 2026-10-06  # override
       .venv/bin/python scripts/scansione3.py --simboli BTC/USDT,ETH/USDT --outdir /tmp/s3
+      .venv/bin/python scripts/scansione3.py --universo ampio   # tutte le USDT spot coperte >=95%
 """
 from __future__ import annotations
 
@@ -92,6 +93,9 @@ def report(results: dict) -> str:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
+    ap.add_argument("--universo", choices=("major", "ampio"), default="major",
+                    help="major = i 16 major dichiarati; ampio = tutte le coppie USDT spot "
+                         "attive di OKX EEA filtrate dal selettore di copertura (come P14/P5)")
     ap.add_argument("--simboli", default=",".join(SIMBOLI))
     ap.add_argument("--inizio", default=S3.S.INIZIO_STORIA)
     ap.add_argument("--fine", default=None, help="default: ieri UTC")
@@ -105,11 +109,20 @@ def main() -> int:
 
     fine = args.fine or (datetime.now(timezone.utc).date() - timedelta(days=1)).isoformat()
     t0 = time.time()
-    simboli = [s.strip() for s in args.simboli.split(",") if s.strip()]
     from money.dati import Scarica  # noqa: PLC0415
     scarica = Scarica()
-    print(f"carico l'universo ({len(simboli)} simboli, {args.inizio} -> {fine})...")
-    dati = carica_universo(scarica, simboli, args.inizio, fine)
+    if args.universo == "ampio":
+        from misura_p14 import coppie_usdt_spot, seleziona  # noqa: PLC0415
+        candidati = coppie_usdt_spot(scarica.cliente())
+        print(f"universo ampio: {len(candidati)} coppie USDT candidate, "
+              f"filtro copertura >= 95% su [{args.inizio} -> {fine}]...")
+        dati, dettaglio = seleziona(scarica, candidati, args.inizio, fine, 0.95)
+        esclusi = sum(1 for d in dettaglio if "escluso" in d)
+        print(f"universo ampio: {len(dati)} simboli ammessi, {esclusi} esclusi")
+    else:
+        simboli = [s.strip() for s in args.simboli.split(",") if s.strip()]
+        print(f"carico l'universo major ({len(simboli)} simboli, {args.inizio} -> {fine})...")
+        dati = carica_universo(scarica, simboli, args.inizio, fine)
     if len(dati) < 2:
         print("universo insufficiente: servono almeno 2 simboli con copertura piena")
         return 1
@@ -127,7 +140,8 @@ def main() -> int:
     outdir = Path(args.outdir)
     outdir.mkdir(parents=True, exist_ok=True)
     stamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M")
-    base = f"scansione_S3_{stamp}"
+    prefisso = "scansione_S3" if args.universo == "major" else "scansione_S3ampio"
+    base = f"{prefisso}_{stamp}"
     (outdir / f"{base}.json").write_text(
         json.dumps({"generato": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                     "finestre": {"inizio": args.inizio, "fine": fine, "confine": args.confine},
@@ -141,7 +155,7 @@ def main() -> int:
     if not args.no_registro:
         meta = results["meta"]
         cand = results["candidati"]
-        riga = (f"\n- {datetime.now(timezone.utc):%F} — **S3 — caccia adattiva (strumento nuovo)** "
+        riga = (f"\n- {datetime.now(timezone.utc):%F} — **S3 — caccia adattiva (universo {args.universo})** "
                 f"[{args.inizio} -> {fine}, confine {args.confine}]: griglia estesa "
                 f"{meta['n_configurazioni_stadio1']} + vicini {meta['n_configurazioni_stadio2']} "
                 f"= {meta['n_trials']} tentativi ({meta['n_trials_valutabili']} valutabili); "
