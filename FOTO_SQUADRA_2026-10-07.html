@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Denaro — La squadra · 07/10/2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'JetBrains Mono', monospace;
+      background: #020617;
+      min-height: 100vh;
+      padding: 2rem;
+      color: white;
+    }
+    .container { max-width: 1240px; margin: 0 auto; }
+    .header { margin-bottom: 1.5rem; }
+    .header-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
+    .pulse-dot { width: 12px; height: 12px; background: #34d399; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+    h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.025em; }
+    .subtitle { color: #94a3b8; font-size: 0.875rem; margin-left: 1.75rem; }
+    .invarianti {
+      margin: 0.75rem 0 0 1.75rem; color: #64748b; font-size: 0.72rem;
+      border-left: 2px solid #1e293b; padding-left: 0.75rem;
+    }
+    .diagram-container {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 1rem;
+      border: 1px solid #1e293b;
+      padding: 1.25rem;
+      overflow-x: auto;
+    }
+    svg { width: 100%; min-width: 1050px; display: block; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .card {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 0.75rem;
+      border: 1px solid #1e293b;
+      padding: 1.15rem;
+    }
+    .card-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.65rem; }
+    .card-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .card-dot.cyan { background: #22d3ee; }
+    .card-dot.emerald { background: #34d399; }
+    .card-dot.violet { background: #a78bfa; }
+    .card-dot.amber { background: #fbbf24; }
+    .card-dot.rose { background: #fb7185; }
+    .card h3 { font-size: 0.85rem; font-weight: 600; }
+    .card ul { list-style: none; color: #94a3b8; font-size: 0.72rem; }
+    .card li { margin-bottom: 0.38rem; line-height: 1.45; }
+    .card li b { color: #e2e8f0; font-weight: 600; }
+    .card code { color: #a78bfa; }
+    .footer { text-align: center; margin-top: 1.4rem; color: #475569; font-size: 0.72rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-row">
+        <div class="pulse-dot"></div>
+        <h1>PROGETTO DENARO — LA SQUADRA</h1>
+      </div>
+      <p class="subtitle">07/10/2026 · 14 esecutori + 1 regia su 5 macchine · nomenclatura ufficiale <code>&lt;tool&gt;-&lt;macchina&gt;</code> · stato verificato live · nessun segreto in questo documento</p>
+      <p class="invarianti">Invarianti: un task per esecutore · review di Hermes prima di ogni integrazione · segreti mai nei canali · agenti mai sul percorso del capitale · il capitale si muove solo con l'OK del proprietario.</p>
+    </div>
+
+    <div class="diagram-container">
+      <svg viewBox="0 0 1160 830">
+        <defs>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+
+        <!-- Background -->
+        <rect width="100%" height="100%" fill="url(#grid)" />
+
+        <!-- ============ BOUNDARIES ============ -->
+        <!-- mc2 -->
+        <rect x="30" y="20" width="530" height="680" rx="12" fill="rgba(251, 191, 36, 0.04)" stroke="#fbbf24" stroke-width="1" stroke-dasharray="8,4"/>
+        <text x="46" y="44" fill="#fbbf24" font-size="11" font-weight="600">mc2 — controllo · regia</text>
+
+        <!-- omarchy -->
+        <rect x="600" y="20" width="540" height="280" rx="12" fill="rgba(167, 139, 250, 0.05)" stroke="#a78bfa" stroke-width="1" stroke-dasharray="8,4"/>
+        <text x="616" y="44" fill="#a78bfa" font-size="11" font-weight="600">omarchy — nodo agenti (LAN)</text>
+
+        <!-- nuvola -->
+        <rect x="600" y="330" width="260" height="240" rx="12" fill="rgba(34, 211, 238, 0.05)" stroke="#22d3ee" stroke-width="1" stroke-dasharray="8,4"/>
+        <text x="616" y="354" fill="#22d3ee" font-size="11" font-weight="600">nuvola</text>
+
+        <!-- MARCODG1 -->
+        <rect x="880" y="330" width="260" height="240" rx="12" fill="rgba(251, 113, 133, 0.05)" stroke="#fb7185" stroke-width="1" stroke-dasharray="8,4"/>
+        <text x="896" y="354" fill="#fb7185" font-size="11" font-weight="600">MARCODG1</text>
+
+        <!-- PC Windows -->
+        <rect x="600" y="590" width="540" height="180" rx="12" fill="rgba(148, 163, 184, 0.04)" stroke="#94a3b8" stroke-width="1" stroke-dasharray="8,4"/>
+        <text x="616" y="614" fill="#94a3b8" font-size="11" font-weight="600">PC del proprietario — Windows (riacceso 07/10)</text>
+
+        <!-- ============ MC2 CONTENT ============ -->
+        <!-- Hermes -->
+        <rect x="52" y="62" width="240" height="104" rx="6" fill="rgba(15, 23, 42, 1)"/>
+        <rect x="52" y="62" width="240" height="104" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="172" y="90" fill="white" font-size="12" font-weight="600" text-anchor="middle">HERMES</text>
+        <text x="172" y="107" fill="#94a3b8" font-size="8" text-anchor="middle">ingegnere capo · regia di squadra</text>
+        <text x="172" y="122" fill="#94a3b8" font-size="8" text-anchor="middle">misure · review · integrazione · alert</text>
+        <text x="172" y="137" fill="#94a3b8" font-size="8" text-anchor="middle">capitale solo con OK del proprietario</text>
+        <text x="172" y="154" font-size="7.5" text-anchor="middle"><tspan fill="#34d399">●</tspan><tspan fill="#94a3b8"> in servizio</tspan></text>
+
+        <!-- DSH-mc2 -->
+        <rect x="306" y="62" width="234" height="104" rx="6" fill="rgba(15, 23, 42, 1)"/>
+        <rect x="306" y="62" width="234" height="104" rx="6" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="423" y="90" fill="white" font-size="11" font-weight="600" text-anchor="middle">DSH-mc2</text>
+        <text x="423" y="107" fill="#94a3b8" font-size="8" text-anchor="middle">harness DeepSeek — esecutore di casa</text>
+        <text x="423" y="122" fill="#94a3b8" font-size="8" text-anchor="middle">dsh-web :4080 · headless (PONG-MC2 ✓)</text>
+        <text x="423" y="137" fill="#94a3b8" font-size="8" text-anchor="middle">comando diretto, niente canale file</text>
+        <text x="423" y="154" font-size="7.5" text-anchor="middle"><tspan fill="#34d399">●</tspan><tspan fill="#94a3b8"> attivo</tspan></text>
+
+        <!-- A0-mc2 -->
+        <rect x="52" y="186" width="240" height="104" rx="6" fill="rgba(15, 23, 42, 1)"/>
+        <rect x="52" y="186" width="240" height="104" rx="6" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="172" y="214" fill="white" font-size="11" font-weight="600" text-anchor="middle">A0-mc2</text>
+        <text x="172" y="231" fill="#94a3b8" font-size="8" text-anchor="middle">Agent Zero v2.13 · operaio</text>
+        <text x="172" y="246" fill="#94a3b8" font-size="8" text-anchor="middle">:50080 · Gemini 2.5-flash</text>
+        <text x="172" y="261" fill="#94a3b8" font-size="8" text-anchor="middle">task async + consegne in handoff</text>
+        <text x="172" y="278" font-size="7.5" text-anchor="middle"><tspan fill="#34d399">●</tspan><tspan fill="#94a3b8"> HTTP 200</tspan></text>
+
+        <!-- opencode-mc2 -->
+        <rect x="306" y="186" width="234" height="104" rx="6" fill="rgba(15, 23, 42, 1)"/>
+        <rect x="306" y="186" width="234" height="104" rx="6" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="423" y="214" fill="white" font-size="11" font-weight="600" text-anchor="middle">opencode-mc2</text>
+        <text x="423" y="231" fill="#94a3b8" font-size="8" text-anchor="middle">esecutore coding free</text>
+        <text x="423" y="246" fill="#94a3b8" font-size="8" text-anchor="middle">ling-3.1-flash-free · v2.0.22</text>
+        <text x="423" y="261" fill="#94a3b8" font-size="8" text-anchor="middle">headless --auto · PONG ✓</text>
+        <text x="423" y="278" font-size="7.5" text-anchor="middle"><tspan fill="#34d399">●</tspan><tspan fill="#94a3b8"> operativo</tspan></text>
+
+        <!-- agy-mc2 -->
+        <rect x="52" y="310" width="240" height="104" rx="6" fill="rgba(15, 23, 42, 1)"/>
+        <rect x="52" y="310" width="240" height="104" rx="6" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="172" y="338" fill="white" font-size="11" font-weight="600" text-anchor="middle">agy-mc2</text>
+        <text x="172" y="355" fill="#94a3b8" font-size="8" text-anchor="middle">Antigravity CLI · v1.3.1</text>
+        <text x="172" y="370" fill="#94a3b8" font-size="8" text-anchor="middle">Gemini 3.8 / Claude · allowlist</text>
+        <text x="172" y="385" fill="#94a3b8" font-size="8" text-anchor="middle">mai --dangerously-skip-permissions</text>
+        <text x="172" y="402" font-size="7.5" text-anchor="middle"><tspan fill="#34d399">●</tspan><tspan fill="#94a3b8"> operativo</tspan></text>
+
+        <!-- fabbrica -->
+        <rect x="306" y="310" width="234" height="104" rx="6" fill="rgba(15, 23, 42, 1)"/>
+        <rect x="306" y="310" width="234" height="104" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.2"/>
+        <text x="423" y="338" fill="white" font-size="10" font-weight="600" text-anchor="middle">FABBRICA — il nastro</text>
+        <text x="423" y="355" fill="#94a3b8" font-size="7.5" text-anchor="middle">tick n. 175k · ogni 3s (×100)</text>
+        <text x="423" y="370" fill="#94a3b8" font-size="7.5" text-anchor="middle">master + worker shard @10s sui nodi</text>
+        <text x="423" y="385" fill="#94a3b8" font-size="7.5" text-anchor="middle">watchdog + gate JEV + job-store</text>
+        <text x="423" y="402" font-size="7.5" text-anchor="middle"><tspan fill="#34d399">●</tspan><tspan fill="#94a3b8"> viva</tspan></text>
+
+        <!-- Canali -->
+        <rect x="52" y="434" width="488" height="128" rx="6" fill="rgba(15, 23, 42, 1)"/>
+        <rect x="52" y="434" width="488" height="128" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.2"/>
+        <text x="296" y="460" fill="white" font-size="10" font-weight="600" text-anchor="middle">COME LI COMANDO — un protocollo solo</text>
+        <text x="296" y="482" fill="#94a3b8" font-size="7.5" text-anchor="middle">dispatch: ssh (nodi) · HTTP (A0) · CLI locale (mc2)</text>
+        <text x="296" y="498" fill="#94a3b8" font-size="7.5" text-anchor="middle">consegna: pacchetto PROTCON (MANIFEST sha256) → review di Hermes</text>
+        <text x="296" y="514" fill="#94a3b8" font-size="7.5" text-anchor="middle">canali asincroni: dsh/ (DSH-win) · dsh-mc2/ (DSH-omarchy)</text>
+        <text x="296" y="530" fill="#94a3b8" font-size="7.5" text-anchor="middle">modelli: solo online (API) — niente inference locale</text>
+        <text x="296" y="546" fill="#94a3b8" font-size="7.5" text-anchor="middle">fail-closed: permesso mancante ⇒ non si esegue, si segnala</text>
+
+        <!-- Regole -->
+        <rect x="52" y="576" width="488" height="104" rx="6" fill="rgba(15, 23, 42, 1)"/>
+        <rect x="52" y="576" width="488" height="104" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.2"/>
+        <text x="296" y="600" fill="white" font-size="10" font-weight="600" text-anchor="middle">REGOLE DI SQUADRA</text>
+        <text x="296" y="622" fill="#94a3b8" font-size="7.5" text-anchor="middle">nessun self-report vale: ogni consegna è rieseguita nel repo canonico</text>
+        <text x="296" y="638" fill="#94a3b8" font-size="7.5" text-anchor="middle">un task per esecutore · mai due bot sullo stesso conto</text>
+        <text x="296" y="654" fill="#94a3b8" font-size="7.5" text-anchor="middle">segreti: mai nei canali e nei log; chiavi citate per fingerprint</text>
+        <text x="296" y="670" fill="#94a3b8" font-size="7.5" text-anchor="middle">agenti mai sul percorso del capitale · MARCODG1 = produzione (write confinato)</text>
+
+        <text x="52" y="700" fill="#64748b" font-size="7.5">missione: far guadagnare Denaro — live: canary C1 DOGE in validazione (review 15/10)</text>
+
+        <!-- ============ OMARCHY CONTENT ============ -->
+        <!-- DSH-omarchy -->
+        <rect x="620" y="62" width="250" height="104" rx="6" fill="rgba(15, 23, 42, 1)"/>
+        <rect x="620" y="62" width="250" height="104" rx="6" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="745" y="90" fill="white" font-size="11" font-weight="600" text-anchor="middle">DSH-omarchy</text>
+        <text x="745" y="107" fill="#94a3b8" font-size="8" text-anchor="middle">peer di ricerca · dsh-web :5080</text>
+        <text x="745" y="122" fill="#94a3b8" font-size="8" text-anchor="middle">headless via ssh · canale dsh-mc2/</text>
+        <text x="745" y="137" fill="#94a3b8" font-size="8" text-anchor="middle">consegne: P10 · F2 carry</text>
+        <text x="745" y="154" font-size="7.5" text-anchor="middle"><tspan fill="#34d399">●</tspan><tspan fill="#94a3b8"> attivo</tspan></text>
+
+        <!-- opencode-omarchy -->
+        <rect x="880" y="62" width="250" height="104" rx="6" fill="rgba(15, 23, 42, 1)"/>
+        <rect x="880" y="62" width="250" height="104" rx="6" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="1005" y="90" fill="white" font-size="11" font-weight="600" text-anchor="middle">opencode-omarchy</text>
+        <text x="1005" y="107" fill="#94a3b8" font-size="8" text-anchor="middle">esecutore coding free</text>
+        <text x="1005" y="122" fill="#94a3b8" font-size="8" text-anchor="middle">ling-3.1-flash-free · v1.18.34</text>
+        <text x="1005" y="137" fill="#94a3b8" font-size="8" text-anchor="middle">headless --auto · PONG ✓</text>
+        <text x="1005" y="154" font-size="7.5" text-anchor="middle"><tspan fill="#34d399">●</tspan><tspan fill="#94a3b8"> in squadra</tspan></text>
+
+        <!-- agy-omarchy -->
+        <rect x="620" y="176" width="510" height="98" rx="6" fill="rgba(15, 23, 42, 1)"/>
+        <rect x="620" y="176" width="510" height="98" rx="6" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="875" y="202" fill="white" font-size="11" font-weight="600" text-anchor="middle">agy-omarchy — Antigravity CLI · v1.2.17</text>
+        <text x="875" y="220" fill="#94a3b8" font-size="8" text-anchor="middle">esecutore headless · modelli Gemini 3.8 / Claude · allowlist esplicita</text>
+        <text x="875" y="235" fill="#94a3b8" font-size="8" text-anchor="middle">login proprietario una-tantum · smoke PONG-AGY ✓</text>
+        <text x="875" y="256" font-size="7.5" text-anchor="middle"><tspan fill="#34d399">●</tspan><tspan fill="#94a3b8"> in squadra</tspan></text>
+
+        <!-- ============ NUVOLA CONTENT ============ -->
+        <rect x="620" y="372" width="220" height="86" rx="6" fill="rgba(15, 23, 42, 1)"/>
+        <rect x="620" y="372" width="220" height="86" rx="6" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="730" y="398" fill="white" font-size="10.5" font-weight="600" text-anchor="middle">opencode-nuvola</text>
+        <text x="730" y="415" fill="#94a3b8" font-size="7.5" text-anchor="middle">coding free · v2.0.22 · PONG ✓</text>
+        <text x="730" y="438" font-size="7.5" text-anchor="middle"><tspan fill="#34d399">●</tspan><tspan fill="#94a3b8"> operativo</tspan></text>
+
+        <rect x="620" y="468" width="220" height="86" rx="6" fill="rgba(15, 23, 42, 1)"/>
+        <rect x="620" y="468" width="220" height="86" rx="6" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="730" y="494" fill="white" font-size="10.5" font-weight="600" text-anchor="middle">agy-nuvola</text>
+        <text x="730" y="511" fill="#94a3b8" font-size="7.5" text-anchor="middle">Antigravity · v1.2.17</text>
+        <text x="730" y="534" font-size="7.5" text-anchor="middle"><tspan fill="#34d399">●</tspan><tspan fill="#94a3b8"> operativo</tspan></text>
+
+        <text x="620" y="566" fill="#64748b" font-size="7.5">+ worker fabbrica shard @10s ✓</text>
+
+        <!-- ============ MARCODG1 CONTENT ============ -->
+        <rect x="900" y="372" width="220" height="86" rx="6" fill="rgba(15, 23, 42, 1)"/>
+        <rect x="900" y="372" width="220" height="86" rx="6" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="1010" y="398" fill="white" font-size="10.5" font-weight="600" text-anchor="middle">opencode-marcodg1</text>
+        <text x="1010" y="415" fill="#94a3b8" font-size="7.5" text-anchor="middle">coding free · v2.0.24 · PONG ✓</text>
+        <text x="1010" y="438" font-size="7.5" text-anchor="middle"><tspan fill="#34d399">●</tspan><tspan fill="#94a3b8"> operativo</tspan></text>
+
+        <rect x="900" y="468" width="220" height="86" rx="6" fill="rgba(15, 23, 42, 1)"/>
+        <rect x="900" y="468" width="220" height="86" rx="6" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="1010" y="494" fill="white" font-size="10.5" font-weight="600" text-anchor="middle">agy-marcodg1</text>
+        <text x="1010" y="511" fill="#94a3b8" font-size="7.5" text-anchor="middle">Antigravity · v1.2.17 · scratch-only</text>
+        <text x="1010" y="534" font-size="7.5" text-anchor="middle"><tspan fill="#34d399">●</tspan><tspan fill="#94a3b8"> operativo</tspan></text>
+
+        <text x="900" y="566" fill="#64748b" font-size="7.5">+ banco secco ✓ · canary C1 live</text>
+
+        <!-- ============ PC CONTENT ============ -->
+        <!-- A0-win -->
+        <rect x="620" y="632" width="160" height="104" rx="6" fill="rgba(15, 23, 42, 1)"/>
+        <rect x="620" y="632" width="160" height="104" rx="6" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="700" y="660" fill="white" font-size="10" font-weight="600" text-anchor="middle">A0-win</text>
+        <text x="700" y="678" fill="#94a3b8" font-size="7.5" text-anchor="middle">Agent Zero · :50080</text>
+        <text x="700" y="693" fill="#94a3b8" font-size="7.5" text-anchor="middle">Docker · HTTP + review</text>
+        <text x="700" y="726" font-size="7.5" text-anchor="middle"><tspan fill="#34d399">●</tspan><tspan fill="#94a3b8"> HTTP 200</tspan></text>
+
+        <!-- DSH-win -->
+        <rect x="790" y="632" width="160" height="104" rx="6" fill="rgba(15, 23, 42, 1)"/>
+        <rect x="790" y="632" width="160" height="104" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="870" y="660" fill="white" font-size="10" font-weight="600" text-anchor="middle">DSH-win</text>
+        <text x="870" y="678" fill="#94a3b8" font-size="7.5" text-anchor="middle">peer di ricerca</text>
+        <text x="870" y="693" fill="#94a3b8" font-size="7.5" text-anchor="middle">bacheca + web :3080</text>
+        <text x="870" y="726" font-size="7.5" text-anchor="middle"><tspan fill="#fbbf24">◐</tspan><tspan fill="#94a3b8"> fix avvio in corso</tspan></text>
+
+        <!-- agy-win -->
+        <rect x="960" y="632" width="170" height="104" rx="6" fill="rgba(15, 23, 42, 1)"/>
+        <rect x="960" y="632" width="170" height="104" rx="6" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="1045" y="660" fill="white" font-size="10" font-weight="600" text-anchor="middle">agy-win</text>
+        <text x="1045" y="678" fill="#94a3b8" font-size="7.5" text-anchor="middle">Antigravity CLI</text>
+        <text x="1045" y="693" fill="#94a3b8" font-size="7.5" text-anchor="middle">coding / analisi</text>
+        <text x="1045" y="726" font-size="7.5" text-anchor="middle"><tspan fill="#fbbf24">◐</tspan><tspan fill="#94a3b8"> da collaudare</tspan></text>
+
+        <text x="620" y="756" fill="#64748b" font-size="7.5">PC riacceso il 07/10: A0-win su (Docker) · DSH-win in sistemazione · agy-win segnalato dall'owner</text>
+
+        <!-- ============ LEGEND ============ -->
+        <rect x="30" y="788" width="14" height="12" rx="2" fill="rgba(6, 78, 59, 0.8)" stroke="#34d399" stroke-width="1"/>
+        <text x="52" y="798" fill="#94a3b8" font-size="8">regia</text>
+        <rect x="102" y="788" width="14" height="12" rx="2" fill="rgba(76, 29, 149, 0.8)" stroke="#a78bfa" stroke-width="1"/>
+        <text x="124" y="798" fill="#94a3b8" font-size="8">esecutori (vivi)</text>
+        <rect x="234" y="788" width="14" height="12" rx="2" fill="rgba(30, 41, 59, 0.9)" stroke="#94a3b8" stroke-width="1"/>
+        <text x="256" y="798" fill="#94a3b8" font-size="8">canali / turnaround</text>
+        <rect x="386" y="787" width="14" height="12" rx="2" fill="rgba(30, 41, 59, 0.9)" stroke="#fbbf24" stroke-width="1"/>
+        <text x="408" y="798" fill="#94a3b8" font-size="8">in collaudo / manuale</text>
+        <text x="1130" y="798" fill="#475569" font-size="7.5" text-anchor="end">stato verificato il 07/10/2026 · servizi live + smoke test (PONG)</text>
+      </svg>
+    </div>
+
+    <!-- Info Cards -->
+    <div class="cards">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot emerald"></div>
+          <h3>COSA È CAMBIATO (dal 03/10)</h3>
+        </div>
+        <ul>
+          <li>• <b>flotta su 4 nodi</b>: opencode e agy ora anche su <b>nuvola</b> e <b>MARCODG1</b> — 4 + 4 esecutori</li>
+          <li>• <b>mc2</b>: opencode aggiornato (v2.0.22) · agy aggiornato (v1.3.1)</li>
+          <li>• <b>fabbrica ×100</b>: master su mc2 + worker shard su MARCODG1/nuvola @10s</li>
+          <li>• <b>PC Windows riacceso (07/10)</b>: A0-win su · DSH-win in sistemazione · agy-win segnalato</li>
+          <li>• <b>cruscotto «andamento progetto»</b> in chat (fabbrica + soldi + ricerca + coda)</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot violet"></div>
+          <h3>DOVE SI LAVORA ADESSO</h3>
+        </div>
+        <ul>
+          <li>• <b>fabbrica</b>: tick n. 175k e salita · watchdog · gate JEV · job-store</li>
+          <li>• <b>ricerca</b>: P1–P14 misurate — prossima spec da materializzare: <b>economia unitaria</b></li>
+          <li>• <b>capitale</b>: canary C1 DOGE live (review 15/10) — piano carry pronto, serve OK proprietario</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot amber"></div>
+          <h3>PROSSIMI PASSI</h3>
+        </div>
+        <ul>
+          <li>• <b>DSH-win</b>: fix finestra di avvio + un turno per smaltire le richieste aperte (dal 28/09)</li>
+          <li>• <b>job-store fabbrica</b>: 25 <code>spec_fix</code> in coda — da collegare il consumatore</li>
+          <li>• <b>canary C1</b>: review 15/10 → eventuale scala carry</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="footer">
+      Progetto Denaro / Money · foto della squadra generata da Hermes su mc2 · 7 ottobre 2026 · vista umana: vault/20-Squadra.md · nessun segreto in questo documento
+    </p>
+  </div>
+</body>
+</html>

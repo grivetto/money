@@ -4,11 +4,19 @@
 <meta charset="utf-8">
 <title>web.grivetto.eu</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preload" as="image" href="squadra-2026-10-07.png">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: system-ui, -apple-system, sans-serif;
-    background: #0d1117;
+    background-color: #0d1117;
+    background-image:
+      linear-gradient(180deg, rgba(13, 17, 23, 0.62) 0%, rgba(13, 17, 23, 0.90) 100%),
+      url("squadra-2026-10-07.png");
+    background-size: cover, cover;
+    background-position: center, center top;
+    background-repeat: no-repeat, no-repeat;
+    background-attachment: fixed, fixed;
     color: #e6edf3;
     min-height: 100vh;
     display: flex;
@@ -31,10 +39,11 @@
     background-clip: text;
   }
   .subtitle {
-    color: #8b949e;
+    color: #a8b3c2;
     font-size: 1.125rem;
     margin-bottom: 2rem;
     line-height: 1.6;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.65);
   }
   .links {
     display: flex;
@@ -48,17 +57,18 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
-    background: #161b22;
+    background: rgba(22, 27, 34, 0.82);
     border: 1px solid #30363d;
     border-radius: 8px;
     color: #58a6ff;
     text-decoration: none;
     font-weight: 500;
     transition: all 0.2s;
+    backdrop-filter: blur(4px);
   }
   .link:hover {
     border-color: #58a6ff;
-    background: #1f2937;
+    background: rgba(31, 41, 55, 0.92);
     transform: translateY(-1px);
   }
   .status {
@@ -72,6 +82,7 @@
     color: #22c55e;
     font-size: 0.875rem;
     font-weight: 500;
+    backdrop-filter: blur(4px);
   }
   .dot {
     width: 8px;
@@ -86,11 +97,13 @@
   }
   .footer {
     margin-top: 3rem;
-    color: #484f58;
+    color: #8b949e;
     font-size: 0.875rem;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
   }
-  .footer a { color: #8b949e; text-decoration: none; }
+  .footer a { color: #a5b3c2; text-decoration: none; }
   .footer a:hover { color: #58a6ff; }
+  .footer code { color: #c9d1d9; }
 </style>
 </head>
 <body>
@@ -109,8 +122,9 @@
     </a>
   </div>
   <div class="footer">
-    Nodi: <code>mc2</code> · <code>MARCODG1</code> · <code>nuvola</code> · <code>omarchy</code> |
-    Repo: <a href="https://github.com/grivetto/money" target="_blank" rel="noopener">grivetto/money</a>
+    Nodi: <code>mc2</code> · <code>MARCODG1</code> · <code>nuvola</code> · <code>omarchy</code> · <code>win</code> |
+    Repo: <a href="https://github.com/grivetto/money" target="_blank" rel="noopener">grivetto/money</a> |
+    Sfondo: <a href="squadra-2026-10-07.png" target="_blank" rel="noopener">la squadra · 07/10/2026</a>
   </div>
 </div>
 </body>
