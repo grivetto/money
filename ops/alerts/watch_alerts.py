@@ -120,7 +120,7 @@ def check_carry() -> int:
                       f"⚠️ canary · monitor fermo ({'n/d' if eta is None else format(eta / 60, '.0f') + ' min'})",
                       "✅ canary · monitor di nuovo attivo")
     # 2) anomalie canary (status sola lettura)
-    r3 = _ssh("cd /home/marco/canary && /home/marco/alpha-omega-trading/venv/bin/python "
+    r3 = _ssh("cd /home/marco/canary && /home/marco/money/.venv/bin/python3 "
               "canary_carry.py status --quiet", 60)
     out = (r3.stdout or "").strip()
     anomalia = ("ANOMALIE" in out) or (r3.returncode != 0)
@@ -251,7 +251,7 @@ def check_bots() -> int:
 
 def check_flotta() -> int:
     """fleet_integrity sui nodi remoti: allarme al canale se compare un ALLARME."""
-    tool = Path(__file__).resolve().parent / "fleet_integrity.py"
+    tool = Path(__file__).resolve().parent.parent / "tools" / "fleet_integrity.py"
     try:
         r = subprocess.run([sys.executable, str(tool), "--host", "MARCODG1",
                             "--host", "nuvola", "--json"],
@@ -285,7 +285,7 @@ def digest() -> int:
         righe.append(f"Flotta: {run} running / {len(bots)} voci")
     except Exception as e:  # noqa: BLE001
         righe.append(f"(aggregatore non leggibile: {type(e).__name__})")
-    r = _ssh("cd /home/marco/canary && /home/marco/alpha-omega-trading/venv/bin/python "
+    r = _ssh("cd /home/marco/canary && /home/marco/money/.venv/bin/python3 "
              "canary_carry.py status --quiet", 60)
     if r.returncode == 0 and (r.stdout or "").strip():
         righe.append("Canary: " + (r.stdout or "").strip().splitlines()[0][:170])

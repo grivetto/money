@@ -28,6 +28,7 @@ File prioritari (in ordine):
 | 5 | `/etc/cloudflared/` + `/var/lib/tailscale/` + `/etc/zabbix/` | tunnel/identità/agent (ripristino veloce) |
 | 6 | `/home/marco/denaro/health/` + `/home/marco/alpha-omega-trading/node_data/` | stato bot/paper (rigenerabili) |
 | 7 | `/home/marco/.ssh/` | accessi |
+| 8 | `/home/marco/.zbx_cred` | credenziali API Zabbix (push metriche) |
 
 Dal nodo in rescue (vecchio root probabilmente montato su `/mnt`):
 
@@ -58,7 +59,7 @@ cd /root/money-setup && bash deploy/reinstall/ricostruisci-marco.sh
 ```
 
 Lo script fa: pacchetti → utente → clone repo → venv (ccxt/requests/pyyaml) → directory →
-unit systemd (money-* + fabbrica) enabled → crontab versionato → lista dei passi manuali.
+unit systemd (money-* + fabbrica) enabled → crontab (`deploy/cron/crontab-marcodg1.txt`) → lista dei passi manuali.
 
 ## C — SEGRETI (manuali, mai in git)
 
@@ -69,7 +70,8 @@ unit systemd (money-* + fabbrica) enabled → crontab versionato → lista dei p
 | `~/alpha-omega-trading/config/*.env` | chiavi sub-account (paper/live) | dal backup rescue |
 | tunnel cloudflared | token/credenziali del tunnel `denaro` | Cloudflare Zero Trust → Tunnels → token; `cloudflared service install <TOKEN>` |
 | tailscale | identità del nodo | `tailscale up` (login); il nodo riprende il nome `marcodg1` |
-| zabbix-agent | connessione al server su mc2 | installare `zabbix-agent`, `Server=`/`ServerActive=` → mc2 (vedi backup `/etc/zabbix`), `enable --now` |
+| `~/.zbx_cred` | credenziali API Zabbix (utente Admin; push metriche) | dal backup; oppure rigenerare con reset password via DB su mc2 (procedura ops) — `chmod 600` |
+| zabbix-agent | connessione al server su mc2 | installare `zabbix-agent`; conf (pattern nuvola): `Server=127.0.0.1,100.87.24.42` · `ServerActive=127.0.0.1:10051` · `ListenIP=127.0.0.1,<tailscale-del-nodo>`; in Zabbix l'interfaccia dell'host deve puntare al tailscale del nodo; `enable --now` |
 
 Deposito sicuro di un segreto (modello):
 

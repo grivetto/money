@@ -65,8 +65,8 @@ for u in \
 done
 systemctl list-timers 'money-*' 'fabbrica-*' --no-pager | head -6 || true
 
-echo "== 7/8 crontab (backup versionato del nodo) =="
-sudo -u "$UTENTE" bash -lc "crontab $H/money/deploy/systemd/legacy_aot/crontab-marcodg1.backup-20261006.txt"
+echo "== 7/8 crontab (versione money, approvata e verificata) =="
+sudo -u "$UTENTE" bash -lc "crontab $H/money/deploy/cron/crontab-marcodg1.txt"
 sudo -u "$UTENTE" bash -lc "crontab -l | grep -vE '^#|^$' | wc -l"
 
 echo "== 8/8 Servizi esterni — MANUALI (vedi README) =="
@@ -75,6 +75,7 @@ cat <<'EOF'
   [ ] cloudflared: installare e collegare il tunnel 'denaro' (token dalla dashboard Cloudflare)
   [ ] tailscale:   curl -fsSL https://tailscale.com/install.sh | sh  &&  tailscale up
   [ ] zabbix-agent: installare, server = nodo mc2 (vedi README)  + enable --now
+  [ ] .zbx_cred:   ~/.zbx_cred (credenziali API Zabbix per push_metrics/zabbix_bots) — dal deposito, chmod 600
   [ ] canary:      ripristinare canary_state.json / canary_events.jsonl / canary.log in ~/canary (se recuperati)
   [ ] grafana/prometheus: opzionali (fase 2)
 

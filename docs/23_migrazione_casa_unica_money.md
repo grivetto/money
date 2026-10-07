@@ -85,3 +85,22 @@ MARCODG1 ricostruito con il kit (`deploy/reinstall/`) e riportato in servizio:
 
 Le chiavi di marco sono nuove (authorized_keys nuova): per l'accesso usare la chiave di mc2 già depositata;
 ogni altro accesso storico va riautorizzato.
+
+## Residui post-ricostruzione trovati e corretti (2026-10-07)
+
+Dopo la ricostruzione del 06/10 il nodo era "su", ma una serie di residui teneva
+ciechi i monitor — e nessun alert li segnalava, perché i check stessi erano rotti.
+
+| # | Residuo | Effetto | Fix |
+|---|---------|---------|-----|
+| 1 | crontab reinstallato = copia PRE-migrazione (path alpha-omega morti) | monitor canary cieco, push Zabbix / snapshot / sync bot fermi da ~14h | riapplicata la versione money: `deploy/cron/crontab-marcodg1.txt` (kit aggiornato); riga quality_shadow sospesa (fase 2) |
+| 2 | `~/.zbx_cred` non ripristinato (non era nel kit) | push_metrics / zabbix_bots senza login API | password Admin ruotata di nuovo (reset via DB, verificato); creds depositate su mc2 e sul nodo (600) |
+| 3 | known_hosts e chiave ssh nodo→nuvola assenti | aggregatore: nuvola "non raggiungibile" | known_hosts aggiunto (fingerprint verificato) + chiave marco autorizzata su nuvola |
+| 4 | interfaccia Zabbix host MARCODG1 = vecchio IP tailscale (100.70.254.121) | item passivi dell'agent stagnanti dal 06/10 | interfaccia → 100.89.26.52; agent allineato al pattern nuvola (`Server=127.0.0.1,100.87.24.42` · `ServerActive=127.0.0.1:10051` · `ListenIP=127.0.0.1,100.89.26.52`) — verificato: avail=1, item ripartiti |
+| 5 | watch_alerts: venv canary morto + path fleet_integrity errato (mc2) | alert ripetuti "exit 127" e "check rotto" | path aggiornati a money (`money/.venv/bin/python3`, `ops/tools/fleet_integrity.py`) |
+| 6 | push_metrics: crash heal su health file mancanti | rc=1 ogni minuto (dopo il push) | guard "unit presente sul nodo" + lettura JSON robusta |
+| 7 | scommessa: scp verso path morto (`alpha-omega/denaro`) | scheda scommessa ferma al 06/10 | target → `money/ops/dashboard/scommessa.json` (crontab mc2 aggiornato, run verificato) |
+| 8 | stato bot: 4 paper marcodg1 tra i "running" | allarme flotta perpetuo per bot non ricostruiti | rimossi dallo stato (fase 2: decisione portare/dismettere) |
+
+Regola confermata (zero-silenzi): i check che sorvegliano devono restare verdi LORO per primi —
+un residuo di ricostruzione che spegne i check è un incidente, non un dettaglio.

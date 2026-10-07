@@ -341,12 +341,27 @@ def heal_if_stale() -> None:
     """Riavvia le unit il cui health/state e' congelato (bot morto)."""
     now = time.time()
     state = _load_heal_state()
+    unit_presente: dict[str, bool] = {}
+
+    def _unit_presente(unit: str) -> bool:
+        """[07/10] La unit esiste su questo nodo? Dopo la ricostruzione i paper
+        node non sono ancora riportati: senza questo guard HEAL tenterebbe riavvii
+        di unit inesistenti e crasherebbe su health file mancanti."""
+        if unit not in unit_presente:
+            import subprocess
+            r = subprocess.run(["systemctl", "cat", unit],
+                               capture_output=True, timeout=10)
+            unit_presente[unit] = (r.returncode == 0)
+        return unit_presente[unit]
+
     for source, unit in HEAL_UNITS.items():
+        if not _unit_presente(unit):
+            continue
         if unit not in state:
             state[unit] = 0.0
         if now - state[unit] < HEAL_COOLDOWN_S:
             continue  # rate-limit: riavvio recente
-        ts = read_json(source).get("timestamp", 0) if source.suffix == ".json" and "health" in source.name else 0
+        ts = (read_json(source) or {}).get("timestamp", 0) if source.suffix == ".json" and "health" in source.name else 0
         age = now - ts if ts else 0
         if source.suffix == ".json" and "paper" in source.name:
             age = now - file_mtime(source)

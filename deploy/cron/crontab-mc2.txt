@@ -1,0 +1,23 @@
+# crontab mc2 — pulito 2026-09-25 (aggiornato 2026-10-07: target scommessa → money)
+# Fix: path canonici /home/sergio/alpha-omega-trading (prima metà righe puntavano a ~/denaro/*)
+# zabbix_fleet/ds_heartbeat/backup/moa: invariati
+# DISABLED 2026-09-25 (push a host inesistenti; copertura via push_metrics/zabbix_bots): * * * * * /usr/bin/python3 /home/sergio/zabbix_monitoring/zabbix_fleet.py >> /home/sergio/zabbix_monitoring/monitor.log 2>&1
+* * * * * /usr/bin/python3 /home/sergio/hermes_bridge/ds_heartbeat.py >> /home/sergio/hermes_bridge/ds_heartbeat.log 2>&1
+*/5 * * * * /usr/bin/python3 /home/sergio/money/ops/tools/gen_dashboard.py >> /home/sergio/money/logs/gen_dashboard.log 2>&1
+# [01/10/26] DISATTIVATO (pulizia Zabbix): host alpha-omega-bot-* rimossi; health su dashboard. Riabilitare assieme agli host.
+# * * * * * /usr/bin/python3 /home/sergio/alpha-omega-trading/tools/zabbix_bots.py >> /home/sergio/alpha-omega-trading/logs/zabbix_bots.log 2>&1
+* * * * * /usr/bin/flock -n /tmp/denaro_snapshot.lock /usr/bin/env HEALTH_DIR=/home/sergio/denaro/health NODE_DIR=/home/sergio/alpha-omega-trading/node_data /home/sergio/money/.venv/bin/python /home/sergio/money/ops/aggregator/infra_snapshot.py >> /home/sergio/money/logs/infra_snapshot_mc2.log 2>&1
+*/15 * * * * cd /home/sergio/denaro2 && set -a && . /home/sergio/.hermes/.env && set +a && /usr/bin/flock -n /tmp/quality_shadow.lock /home/sergio/alpha-omega-trading/venv/bin/python -m denaro2.quality_shadow --symbols-file config/quality_symbols.txt --source cron >> reports/quality_shadow.log 2>&1
+17 3 * * * sqlite3 /home/sergio/.hermes/state.db ".backup /home/sergio/.hermes/backups/state_$(date +\%Y\%m\%d).db" && find /home/sergio/.hermes/backups -name "state_*.db" -mtime +14 -delete >/dev/null 2>&1
+17 4 * * * /usr/bin/python3 /home/sergio/scripts/hermes_moa_anti_refusal.py --apply >> /home/sergio/.hermes/logs/moa-patch.log 2>&1
+*/10 * * * * cd /home/sergio/money && /usr/bin/python3 ops/tools/scommessa.py --out ops/dashboard/scommessa.json >> logs/scommessa.log 2>&1 && scp -q -o BatchMode=yes -o ConnectTimeout=10 ops/dashboard/scommessa.json MARCODG1:/home/marco/money/ops/dashboard/scommessa.json
+* * * * * /home/sergio/money/.venv/bin/python /home/sergio/money/fabbrica/watchdog.py >> /home/sergio/money/fabbrica/log/watchdog.log 2>&1
+13 */4 * * * cd /home/sergio/money && mkdir -p logs && /home/sergio/money/.venv/bin/python scripts/raccogli_funding.py --giorni 3 >> logs/raccolta_funding.log 2>&1
+*/5 * * * * /usr/bin/flock -n /tmp/denaro_alerts_check.lock /home/sergio/money/.venv/bin/python /home/sergio/money/ops/alerts/watch_alerts.py check >> /home/sergio/money/logs/watch_alerts.log 2>&1
+*/15 * * * * /usr/bin/flock -n /tmp/denaro_alerts_carry.lock /home/sergio/money/.venv/bin/python /home/sergio/money/ops/alerts/watch_alerts.py carry >> /home/sergio/money/logs/watch_alerts.log 2>&1
+0 9 * * * /usr/bin/flock -n /tmp/denaro_alerts_digest.lock /home/sergio/money/.venv/bin/python /home/sergio/money/ops/alerts/watch_alerts.py digest >> /home/sergio/money/logs/watch_alerts.log 2>&1
+*/30 * * * * /usr/bin/flock -n /tmp/denaro_alerts_flotta.lock /home/sergio/money/.venv/bin/python /home/sergio/money/ops/alerts/watch_alerts.py flotta >> /home/sergio/money/logs/watch_alerts.log 2>&1
+*/10 * * * * /usr/bin/flock -n /tmp/denaro_alerts_bots.lock /home/sergio/money/.venv/bin/python /home/sergio/money/ops/alerts/watch_alerts.py bots >> /home/sergio/money/logs/watch_alerts.log 2>&1
+*/5 * * * * cd /home/sergio/money && mkdir -p logs && /usr/bin/flock -n /tmp/cruscotto.lock /home/sergio/money/.venv/bin/python scripts/cruscotto.py >> logs/cruscotto.log 2>&1
+# Loop ricerca money — scansione giornaliera (auto, 05:15 UTC)
+15 5 * * * cd /home/sergio/money && .venv/bin/python scripts/scansione_giornaliera.py >> logs/scansione_loop.log 2>&1
