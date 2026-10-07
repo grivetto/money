@@ -102,5 +102,10 @@ ciechi i monitor — e nessun alert li segnalava, perché i check stessi erano r
 | 7 | scommessa: scp verso path morto (`alpha-omega/denaro`) | scheda scommessa ferma al 06/10 | target → `money/ops/dashboard/scommessa.json` (crontab mc2 aggiornato, run verificato) |
 | 8 | stato bot: 4 paper marcodg1 tra i "running" | allarme flotta perpetuo per bot non ricostruiti | rimossi dallo stato (fase 2: decisione portare/dismettere) |
 
+Extra hardening (07/10): sul nodo anche `PermitRootLogin without-password` (drop-in
+`/etc/ssh/sshd_config.d/99-denaro.conf`, allineato a mc2); resta da valutare col
+proprietario `PasswordAuthentication no` + fail2ban (ci sono ~7k tentativi di forza
+bruta al giorno sull'IP pubblico).
+
 Regola confermata (zero-silenzi): i check che sorvegliano devono restare verdi LORO per primi —
 un residuo di ricostruzione che spegne i check è un incidente, non un dettaglio.

@@ -267,16 +267,23 @@ def check_flotta() -> int:
         allarmi = [x for x in (h.get("reperti") or []) if x.get("livello") == "ALLARME"]
         if allarmi:
             problemi.append(f"{h.get('host')}: {len(allarmi)} — {str(allarmi[0].get('prova'))[:60]}")
+    # il check e' di nuovo leggibile: chiudi l'eventuale allarme "check rotto"
+    # (senza questa chiamata il rientro non parte mai: il ramo successo era muto)
+    rientro_check = gestisci("flotta:check", False, "",
+                             "✅ fleet_integrity: di nuovo leggibile")
     problema = bool(problemi)
-    return gestisci("flotta:allarmi", problema,
-                    "⚠️ FLEET: " + "; ".join(problemi)[:300],
-                    "✅ FLEET: nessun allarme sui nodi remoti")
+    return rientro_check + gestisci("flotta:allarmi", problema,
+                                    "⚠️ FLEET: " + "; ".join(problemi)[:300],
+                                    "✅ FLEET: nessun allarme sui nodi remoti")
 
 
 def digest() -> int:
     righe = ["🫀 Denaro — check giornaliero"]
     try:
-        d = json.loads(urllib.request.urlopen("http://127.0.0.1:8912/infra.json", timeout=10).read())
+        # [07/10] la fonte e' il payload MASTER del nodo (via ssh), non la vista locale
+        # di mc2 (che non vede il saldo main: la chiave OKX e' whitelisted su MARCODG1)
+        r = _ssh("curl -s -m 15 http://127.0.0.1:8912/api/infra.json", 40)
+        d = json.loads(r.stdout)
         eq = ((d.get("equity_breakdown") or {}).get("OKX main") or {}).get("eur")
         if eq is not None:
             righe.append(f"Capitale OKX main: {eq:.2f} €")
