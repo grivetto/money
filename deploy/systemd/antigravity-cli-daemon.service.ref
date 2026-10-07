@@ -1,0 +1,28 @@
+# antigravity-cli-daemon (agy remote-control) — riferimento deploy
+# Generata automaticamente da `agy remote-control start` su nuvola/omarchy/MARCODG1
+# (user unit: ~/.config/systemd/user/antigravity-cli-daemon.service + loginctl enable-linger)
+#
+# Su mc2 (agy via snap) la unit è creata manualmente con ExecStart=/snap/bin/agy.
+#
+# Deploy su un nodo nuovo:
+#   1. agy già installato e autenticato (token OAuth in ~/.gemini/antigravity-cli/)
+#   2. agy remote-control start   → crea la unit + abilita linger
+#   3. systemctl --user status antigravity-cli-daemon   → verifica "active"
+
+[Unit]
+Description=antigravity remote-control daemon
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+ExecStart=/home/sergio/.local/bin/agy remote-control serve
+Restart=on-failure
+RestartSec=10s
+RestartPreventExitStatus=3
+TimeoutStopSec=30s
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target
