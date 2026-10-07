@@ -107,5 +107,18 @@ Extra hardening (07/10): sul nodo anche `PermitRootLogin without-password` (drop
 proprietario `PasswordAuthentication no` + fail2ban (ci sono ~7k tentativi di forza
 bruta al giorno sull'IP pubblico).
 
+### Allineamento servizi + paper bot sulla dashboard (07/10/26, richiesta owner)
+- **Dashboard `denaro.grivetto.eu`**: card NODI/SERVIZI ora del progetto money — elenchi unit
+  aggiornati in `SERVICE_UNITS` (aggregator) e `SERVICES` (push_metrics): unit correnti
+  (money-* + engine/feeder/timer), rimossi i nomi morti; la card OFFICINA PAPER è **dinamica** —
+  renderizza i paper bot presenti nel payload (quelli che il sistema crea/avvia), niente lista fissa.
+- **Zabbix**: 12 item `svc.*` nuovi; 16 trigger riportati ai nuovi item; 4 trigger + 10 item
+  delle unità morte disattivati (storia conservata); 8 trigger nuovi (timer + aggregator-mc2);
+  monitor "Flotta paper MARCODG1" spenti (fase 2). Verifica: 0 problemi aperti per i servizi.
+- **Residui trovati e chiusi mentre ero dentro**: `zabbix_healer` di nuvola **disattivato**
+  (non autenticava dalla nascita, 10/09; coerente con la decisione auto-heal off del 03/10;
+  log troncato da 342k righe); catena active-check di nuvola **ripristinata** (host key del nodo
+  cambiato con la ricostruzione → known_hosts aggiornato + tunnel riavviato → "working again").
+
 Regola confermata (zero-silenzi): i check che sorvegliano devono restare verdi LORO per primi —
 un residuo di ricostruzione che spegne i check è un incidente, non un dettaglio.
