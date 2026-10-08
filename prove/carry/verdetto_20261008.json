@@ -1,0 +1,136 @@
+{
+  "data": "2026-10-08",
+  "path": "data/funding_xperp.jsonl",
+  "simboli": {
+    "ADA/USD:USD-310404": {
+      "lordo_annuo_pct": 9.5094,
+      "costo_annuo_pct": 1.68,
+      "netto_annuo_pct": 7.8294,
+      "ci95": [
+        8.7393,
+        10.174
+      ],
+      "n_episodi": 0,
+      "n_osservazioni_indipendenti": 101,
+      "netto_oos_pct": 9.2101,
+      "verdetto": "insufficiente"
+    },
+    "AVAX/USD:USD-310530": {
+      "lordo_annuo_pct": 6.6815,
+      "costo_annuo_pct": 1.68,
+      "netto_annuo_pct": 5.0015,
+      "ci95": [
+        5.6585,
+        7.8254
+      ],
+      "n_episodi": 1,
+      "n_osservazioni_indipendenti": 101,
+      "netto_oos_pct": 9.3522,
+      "verdetto": "insufficiente"
+    },
+    "BTC/USD:USD-310404": {
+      "lordo_annuo_pct": -3.366,
+      "costo_annuo_pct": 1.68,
+      "netto_annuo_pct": -5.046,
+      "ci95": [
+        -5.4824,
+        -1.3502
+      ],
+      "n_episodi": 0,
+      "n_osservazioni_indipendenti": 101,
+      "netto_oos_pct": -0.6619,
+      "verdetto": "archiviato"
+    },
+    "DOGE/USD:USD-310404": {
+      "lordo_annuo_pct": 9.6669,
+      "costo_annuo_pct": 1.68,
+      "netto_annuo_pct": 7.9869,
+      "ci95": [
+        9.2158,
+        10.0555
+      ],
+      "n_episodi": 0,
+      "n_osservazioni_indipendenti": 101,
+      "netto_oos_pct": 7.9431,
+      "verdetto": "insufficiente"
+    },
+    "DOT/USD:USD-310808": {
+      "lordo_annuo_pct": 18.4332,
+      "costo_annuo_pct": 1.68,
+      "netto_annuo_pct": 16.7532,
+      "ci95": [
+        10.8935,
+        31.8507
+      ],
+      "n_episodi": 1,
+      "n_osservazioni_indipendenti": 62,
+      "netto_oos_pct": 8.5513,
+      "verdetto": "promosso"
+    },
+    "ETH/USD:USD-310404": {
+      "lordo_annuo_pct": -0.2096,
+      "costo_annuo_pct": 1.68,
+      "netto_annuo_pct": -1.8896,
+      "ci95": [
+        -1.8612,
+        1.3571
+      ],
+      "n_episodi": 0,
+      "n_osservazioni_indipendenti": 101,
+      "netto_oos_pct": 5.2015,
+      "verdetto": "insufficiente"
+    },
+    "LINK/USD:USD-310523": {
+      "lordo_annuo_pct": 9.4618,
+      "costo_annuo_pct": 1.68,
+      "netto_annuo_pct": 7.7818,
+      "ci95": [
+        7.7604,
+        11.535
+      ],
+      "n_episodi": 1,
+      "n_osservazioni_indipendenti": 101,
+      "netto_oos_pct": 12.9909,
+      "verdetto": "insufficiente"
+    },
+    "LTC/USD:USD-310404": {
+      "lordo_annuo_pct": 7.0727,
+      "costo_annuo_pct": 1.68,
+      "netto_annuo_pct": 5.3927,
+      "ci95": [
+        6.2132,
+        7.9066
+      ],
+      "n_episodi": 0,
+      "n_osservazioni_indipendenti": 101,
+      "netto_oos_pct": 7.7511,
+      "verdetto": "insufficiente"
+    },
+    "SOL/USD:USD-310404": {
+      "lordo_annuo_pct": 3.0567,
+      "costo_annuo_pct": 1.68,
+      "netto_annuo_pct": 1.3767,
+      "ci95": [
+        2.0851,
+        4.0629
+      ],
+      "n_episodi": 0,
+      "n_osservazioni_indipendenti": 101,
+      "netto_oos_pct": 4.806,
+      "verdetto": "insufficiente"
+    },
+    "XRP/USD:USD-310404": {
+      "lordo_annuo_pct": 7.977,
+      "costo_annuo_pct": 1.68,
+      "netto_annuo_pct": 6.297,
+      "ci95": [
+        7.3282,
+        8.6794
+      ],
+      "n_episodi": 0,
+      "n_osservazioni_indipendenti": 101,
+      "netto_oos_pct": 7.5882,
+      "verdetto": "insufficiente"
+    }
+  }
+}
