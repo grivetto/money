@@ -65,7 +65,7 @@
       <div class="rows">
         <div><span>cadenza</span><b>3 s (systemd timer)</b></div>
         <div><span>job chiusi / falliti</span><b>26 / 0</b></div>
-        <div><span>in coda</span><b class="warn">2 · da 53 h</b></div>
+        <div><span>in coda</span><b class="ok">0 · coda vuota</b></div>
         <div><span>worker nodi</span><b>marcodg1 2s · nuvola 13s</b></div>
       </div>
       <div class="note">lint spec 2/2 ok · kill-switch off</div>
@@ -95,8 +95,8 @@
 
   <h2>Blocchi aperti (per il proprietario / lane spec)</h2>
   <ul>
-    <li><span class="bad">A0-win giù</span> — la porta 50080 cade nel range <b>escluso 50000–50059</b> (Hyper-V/winnat): serve <b>1 ciclo elevato</b> (net stop winnat → net start winnat → docker start agent-zero). In più: token Telegram del bot A0 non valido → l'app va in loop a startup.</li>
-    <li><span class="warn">2 job in coda da 53 h</span> — spec P4_funding_carry / P8_funding_harvest al cancello JEV (0,18 · 0,39) con <i>gap: test falsificabile</i> da aggiungere.</li>
+    <li><span class="bad">A0-win non raggiungibile</span> — la porta 50080 cade nel range <b>escluso 50000–50059</b> (Hyper-V/winnat): il container gira e la web risponde <b>dentro</b> il container (HTTP 200, verificato), ma <b>la pubblicazione della porta non è attiva</b> → non è raggiungibile dall'esterno. Serve <b>1 ciclo elevato</b> (net stop winnat → net start winnat → docker restart agent-zero). <i>Correzione: l'errore Telegram nei log NON era bloccante (plugin in retry), solo rumore; contributo Google e token TG gestiti a parte.</i></li>
+    <li><span class="ok">risolto stasera</span> — <b>collo di bottiglia chiuso</b>: le 2 spec in coda sono state sistemate e <b>P4 è stata MISURATA</b> (modulo + runner + 6 test, suite 601; verdetto: 9 simboli su 10 sotto la soglia dell'8% netto dichiarata PRIMA ⇒ <b>nessuna allocazione di capitale</b>; DOT +16,75% ma con copertura ridotta). P8 conclusa come infrastruttura. Coda fabbrica <b>0 job</b>, gate JEV vuoto.</li>
     <li><span class="ok">risolto oggi</span> — credenziali Zabbix stantie (account in blocco): riallineate su mc2 + MARCODG1, pipeline metriche ripartita (53 valori/min, 20 bot/160 valori).</li>
   </ul>
 
