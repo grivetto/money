@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Denaro — andamento lavori</title>
+<style>
+  .wrap { max-width: 980px; color: var(--foreground); font-size: 13px; }
+  h1 { font-size: 19px; margin: 0 0 2px 0; letter-spacing: -.2px; }
+  .sub { color: var(--muted-foreground); font-size: 11.5px; margin-bottom: 14px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+  .card { border: 1px solid var(--border); background: var(--card); border-radius: 10px; padding: 11px 12px; }
+  .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted-foreground); display: flex; justify-content: space-between; gap: 6px; }
+  .big { font-size: 22px; font-weight: 600; margin: 5px 0 7px 0; }
+  .rows div { display: flex; justify-content: space-between; padding: 2px 0; border-bottom: 1px dashed var(--border); }
+  .rows div:last-child { border-bottom: 0; }
+  .rows span { color: var(--muted-foreground); }
+  .note { margin-top: 7px; font-size: 11px; color: var(--muted-foreground); }
+  .ok { color: #34d399; font-weight: 600; }
+  .warn { color: #fbbf24; font-weight: 600; }
+  .bad { color: #fb7185; font-weight: 600; }
+  h2 { font-size: 13px; margin: 16px 0 7px 0; text-transform: uppercase; letter-spacing: .09em; color: var(--muted-foreground); }
+  .pipe { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .step { border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; background: var(--card); }
+  .step b { display: block; font-size: 15px; }
+  .step i { font-style: normal; color: var(--muted-foreground); font-size: 10.5px; }
+  .arr { color: var(--accent); font-size: 15px; }
+  ul { margin: 4px 0 0 0; padding-left: 16px; }
+  li { margin-bottom: 5px; }
+  .foot { margin-top: 14px; padding-top: 8px; border-top: 1px solid var(--border); color: var(--muted-foreground); font-size: 11px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Denaro — andamento lavori (pipeline strategie → bot)</h1>
+  <div class="sub">gio 8 ott 2026 · 22:20 CEST · dati da log/DB/API reali · control-plane <b>money@d7ee0e0b</b></div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="lbl"><span>Caccia continua S4</span><span class="ok">ATTIVA</span></div>
+      <div class="big">run 110</div>
+      <div class="rows">
+        <div><span>config valutabili</span><b>156.412</b></div>
+        <div><span>papabili (DSR basso)</span><b>2.304</b></div>
+        <div><span>candidati validati</span><b class="warn">0</b></div>
+        <div><span>saturazione spazio</span><b>~15/10 · ≈6 gg</b></div>
+      </div>
+      <div class="note">cron */10 su mc2 · lotto 160 · ~4 s/giro</div>
+    </div>
+
+    <div class="card">
+      <div class="lbl"><span>Loop giornaliero S1/S3</span><span class="ok">OK</span></div>
+      <div class="big">05:15 · oggi</div>
+      <div class="rows">
+        <div><span>finestra dati</span><b>→ 07/10</b></div>
+        <div><span>tentativi S1 / S3</span><b>512 / 1.760</b></div>
+        <div><span>candidati</span><b class="warn">0</b></div>
+        <div><span>artefatti</span><b>in prove/scansioni</b></div>
+      </div>
+      <div class="note">nessuna promozione: manca ancora l'edge</div>
+    </div>
+
+    <div class="card">
+      <div class="lbl"><span>Fabbrica bot</span><span class="ok">ATTIVA</span></div>
+      <div class="big">tick 202.342</div>
+      <div class="rows">
+        <div><span>cadenza</span><b>3 s (systemd timer)</b></div>
+        <div><span>job chiusi / falliti</span><b>26 / 0</b></div>
+        <div><span>in coda</span><b class="warn">2 · da 53 h</b></div>
+        <div><span>worker nodi</span><b>marcodg1 2s · nuvola 13s</b></div>
+      </div>
+      <div class="note">lint spec 2/2 ok · kill-switch off</div>
+    </div>
+
+    <div class="card">
+      <div class="lbl"><span>Flotta bot</span><span class="ok">OK</span></div>
+      <div class="big">20 bot</div>
+      <div class="rows">
+        <div><span>equity main (OKX)</span><b>1.100,23 €</b></div>
+        <div><span>canary DOGE</span><b>aperto</b></div>
+        <div><span>banco a secco</span><b>rc=0 · 5 min</b></div>
+        <div><span>subaccount</span><b class="warn">a dust</b></div>
+      </div>
+      <div class="note">bot operativi ma su capitale di test</div>
+    </div>
+  </div>
+
+  <h2>Pipeline</h2>
+  <div class="pipe">
+    <div class="step"><b>156.412</b><i>config valutabili</i></div><span class="arr">→</span>
+    <div class="step"><b>2.304</b><i>papabili</i></div><span class="arr">→</span>
+    <div class="step"><b class="warn">0</b><i>candidati (cancello)</i></div><span class="arr">→</span>
+    <div class="step"><b>26</b><i>job fabbrica chiusi</i></div><span class="arr">→</span>
+    <div class="step"><b>20</b><i>bot in flotta</i></div>
+  </div>
+
+  <h2>Blocchi aperti (per il proprietario / lane spec)</h2>
+  <ul>
+    <li><span class="bad">A0-win giù</span> — la porta 50080 cade nel range <b>escluso 50000–50059</b> (Hyper-V/winnat): serve <b>1 ciclo elevato</b> (net stop winnat → net start winnat → docker start agent-zero). In più: token Telegram del bot A0 non valido → l'app va in loop a startup.</li>
+    <li><span class="warn">2 job in coda da 53 h</span> — spec P4_funding_carry / P8_funding_harvest al cancello JEV (0,18 · 0,39) con <i>gap: test falsificabile</i> da aggiungere.</li>
+    <li><span class="ok">risolto oggi</span> — credenziali Zabbix stantie (account in blocco): riallineate su mc2 + MARCODG1, pipeline metriche ripartita (53 valori/min, 20 bot/160 valori).</li>
+  </ul>
+
+  <div class="foot">Ogni riga è verificata con comando reale: log caccia (run 110 @20:00:06Z), fabbrica/state.json (tick 202.342 @20:15:47Z), jobs.db (26 done / 2 queued), aggregator infra.json, API Zabbix 7.0 (dev-platform: 13/14 operai up).</div>
+</div>
+</body>
+</html>
