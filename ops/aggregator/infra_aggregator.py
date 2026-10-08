@@ -787,18 +787,20 @@ SERVICE_UNITS = {
             "money-health-marcodg1", "money-landing-marcodg1",
             "money-watchdog-marcodg1.timer", "money-banco-secco.timer",
             "fabbrica-worker.timer", "cloudflared", "zabbix-agent",
+            "money-prometheus", "money-grafana", "money-exporter",
         ],
     },
     "nuvola": {
         "ssh": ["sergio@87.106.3.15", "-p", "22"],
         "units": ["denaro-node-nuvola-trade", "money-health-nuvola",
-                  "zabbix-agent", "zabbix-tunnel"],
+                  "zabbix-agent", "zabbix-tunnel", "denaro-exporter"],
     },
     "mc2": {
         "ssh": ["sergio@127.0.0.1", "-p", "2222"],  # tunnel inverso
         "units": ["money-aggregator-mc2", "money-dashboard-mc2", "money-health-mc2",
                   "denaro-node-mc2", "denaro-feeder-mc2",
-                  "cloudflared-home", "zabbix-agent", "zabbix-tunnel-reverse"],
+                  "cloudflared-home", "zabbix-agent", "zabbix-tunnel-reverse",
+                  "denaro-exporter-mc2"],
     },
 }
 
