@@ -80,8 +80,8 @@ MARCODG1 ricostruito con il kit (`deploy/reinstall/`) e riportato in servizio:
 - zabbix-agent via tunnel (127.0.0.1:10051); fabbrica-worker shard: pubblica a mc2 via tunnel 2222;
 - fix applicati: gruppo `marco` mancante (216/GROUP), template fabbrica-worker istanziato per nodo (217/USER),
   worker shard con unit `money-*`, known_hosts/chiave ssh marco→mc2, postboot_check v2.1.
-- Restano (fase 2): flotta paper di marco (0 bot ricostruiti: decisione portare/dismettere),
-  metriche grafana/prometheus, exporter.
+- Restano (fase 2): flotta paper di marco (0 bot ricostruiti: decisione portare/dismettere).
+  Metriche grafana/prometheus/exporter: **ripristinate l'08/10** (vedi sotto).
 
 Le chiavi di marco sono nuove (authorized_keys nuova): per l'accesso usare la chiave di mc2 già depositata;
 ogni altro accesso storico va riautorizzato.
@@ -122,3 +122,18 @@ bruta al giorno sull'IP pubblico).
 
 Regola confermata (zero-silenzi): i check che sorvegliano devono restare verdi LORO per primi —
 un residuo di ricostruzione che spegne i check è un incidente, non un dettaglio.
+
+### Fase 2 — monitoring ripristinato (08/10/26)
+- **Prometheus + Grafana + exporter** riattivati su MARCODG1 (`/home/marco/denaro`):
+  `money-prometheus` (9090, retention 90d, regole risk in `prometheus/rules/`),
+  `money-grafana` (3000, **accesso diretto anonimo** → `grafana.grivetto.eu` apre il grafico
+  «Money — Flotta & Rischio» senza login), `money-exporter` (denaro2, 9100, unico con blocco
+  flotta). Target Prometheus: **4/4 UP** (exporter dei 3 nodi via tailscale + self).
+- Integrati nel tracking: unit nei servizi della dashboard e in Zabbix (item `svc.money-prometheus`,
+  `svc.money-grafana`, `svc.money-exporter`, `svc.denaro-exporter`, `svc.denaro-exporter-mc2`
+  + trigger "non in esecuzione"/"nessun dato").
+- Fix collaterali: `main_okx.env` del nodo 644→600 (il loader denaro2 pretende 600); chiave main di
+  nuvola morta (`50119 API key doesn't exist`) → sostituita con quella del nodo (backup
+  `main_okx.env.bak-20261008`); exporter nuvola era bloccato (restart, serviva 0 byte); aggiunta
+  metrica `denaro_node_paper_running` per i bot paper nel grafico.
+- Kit di deploy replicabile in `deploy/reinstall/monitoring/` (deploy.sh + config + README).

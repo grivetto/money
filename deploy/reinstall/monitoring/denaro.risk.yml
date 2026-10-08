@@ -1,0 +1,48 @@
+groups:
+  - name: denaro.risk
+    interval: 30s
+    rules:
+      - alert: DailyLossLimitExceeded
+        expr: denaro_risk_daily_pnl_pct < -3.0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Daily loss limit exceeded on {{ $labels.account }}"
+          description: "Account {{ $labels.account }} on node {{ $labels.node }} has daily PnL {{ $value | printf \"%.2f\" }}% (limit: -3%)"
+
+      - alert: MaxDrawdownExceeded
+        expr: denaro_risk_max_dd_pct < -10.0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Max drawdown exceeded on {{ $labels.account }}"
+          description: "Account {{ $labels.account }} on node {{ $labels.node }} has max drawdown {{ $value | printf \"%.2f\" }}% (limit: -10%)"
+
+      - alert: KillSwitchActive
+        expr: denaro_risk_kill_switch == 1
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Kill switch activated on {{ $labels.account }}"
+          description: "Kill switch is active for account {{ $labels.account }} on node {{ $labels.node }}. All trading blocked."
+
+      - alert: EquityFetchError
+        expr: denaro_equity_real_error == 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Cannot fetch real equity from OKX for {{ $labels.account }}"
+          description: "Equity fetch failing for account {{ $labels.account }} on node {{ $labels.node }} for 5+ minutes"
+
+      - alert: ExporterDown
+        expr: up{job=~"denaro-exporter.*"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Denaro exporter down on {{ $labels.node }}"
+          description: "Exporter for node {{ $labels.node }} has been down for 2+ minutes"

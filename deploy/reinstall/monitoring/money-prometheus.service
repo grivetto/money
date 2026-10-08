@@ -1,0 +1,22 @@
+[Unit]
+Description=Prometheus (money) — MARCODG1
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=marco
+WorkingDirectory=/home/marco/denaro
+ExecStart=/home/marco/denaro/prometheus/prometheus \
+  --config.file=/home/marco/denaro/prometheus.yml \
+  --storage.tsdb.path=/home/marco/denaro/prometheus-data \
+  --storage.tsdb.retention.time=90d \
+  --web.enable-lifecycle \
+  --web.listen-address=127.0.0.1:9090
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

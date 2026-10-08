@@ -1,0 +1,39 @@
+global:
+  scrape_interval: 30s
+  evaluation_interval: 30s
+  external_labels:
+    project: "money"
+    environment: "production"
+
+rule_files:
+  - "/home/marco/denaro/prometheus/rules/*.yml"
+
+scrape_configs:
+  # exporter del nodo (flotta completa + equity main) — locale
+  - job_name: "denaro-exporter-marcodg1"
+    static_configs:
+      - targets: ["127.0.0.1:9100"]
+        labels:
+          node: "MARCODG1"
+          role: "trading"
+
+  # exporter di nuvola (via tailscale)
+  - job_name: "denaro-exporter-nuvola"
+    static_configs:
+      - targets: ["100.103.169.99:9100"]
+        labels:
+          node: "nuvola"
+          role: "trading"
+
+  # exporter di mc2 (via tailscale)
+  - job_name: "denaro-exporter-mc2"
+    static_configs:
+      - targets: ["100.87.24.42:9100"]
+        labels:
+          node: "mc2"
+          role: "monitoring"
+
+  # Prometheus self-monitoring
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]

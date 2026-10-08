@@ -1,0 +1,19 @@
+[Unit]
+Description=Prometheus exporter (money) — MARCODG1
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=marco
+WorkingDirectory=/home/marco/denaro2
+Environment=DEN_EXPORTER_PORT=9100
+Environment=DEN_EXPORTER_HOST=127.0.0.1
+Environment=DEN_AGG_URL=http://127.0.0.1:8912
+Environment=DENARO2_SECRETS=/home/marco/denaro/secrets
+ExecStart=/home/marco/denaro/venv/bin/python -m denaro2.exporter
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
