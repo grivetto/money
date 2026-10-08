@@ -48,3 +48,9 @@
 - **Accesso win sistemato**: chiave SSH per utente admin va in `C:\ProgramData\ssh\administrators_authorized_keys` (per gli admin Windows ignora `~/.ssh/authorized_keys`).
 - Test di resilienza kill→restart passati su tutti i nodi per opencode e agy.
 - Hermes: installati plugin utili (ticker crypto desktop, fxmacrodata, echarts).
+
+## 2026-10-08 — S4 «caccia continua» in cron; omarchy ricompletato; landing «trading»
+- **S4 «caccia continua» attivata** (direttiva proprietario: «ricerca di un edge nuovo e funzionale ogni 10 minuti»): lotto di 96 configurazioni MAI testate dal vicinato dichiarato dei semi S1/S3 (156.005 config totali), best-first sull'addestramento, DSR cumulativa con ricontrollo/declassamento dei candidati; ~3 s a giro su mc2; evidenza `prove/caccia_continua/`; liveness nel watchdog (`watch_alerts check`, ferma >45′ = allarme).
+- **omarchy post-ricostruzione, servizi ricostituiti**: `dsh-web.service` :5080 (fix della unit rimasta a :3080 nel repo), `opencode.service`, `antigravity-cli-daemon` (agy, linger on), docker + agent-zero `unless-stopped`; smoke: PONG su DSH headless, opencode, agy.
+- **Trovato e corretto su omarchy**: un opencode stantio 1.18.35 (mise) mascherava il v2.0.24 ufficiale via PATH (errore sul db v2) → rimosso da mise, `~/.local/bin/opencode` → symlink al binario ufficiale.
+- **Landing**: nuovo sfondo a tema trading (`TRADING_2026-10-08.html/.jpg`), overlay alleggerito a due strati — candele/curva/ticker visibili e testo leggibile; live su web.grivetto.eu.

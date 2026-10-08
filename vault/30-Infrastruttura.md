@@ -6,7 +6,7 @@
 | **mc2** | regia + ricerca | Hermes, fabbrica ×100 (master 3 s), bridge/canali, Zabbix «Money», A0-mc2, **DSH-mc2 (dsh-web :4080 + headless)**, opencode, agy — **tutti in auto-start (07/10)** |
 | **MARCODG1** | lato exchange + web | banco a secco (5 min, DRY-RUN), aggregatore :8912, dashboard/landing, Grafana, **canary C1 live**, worker fabbrica, opencode + agy (auto-start) |
 | **nuvola** | appoggio | health, exporter, zabbix-agent + tunnel, worker fabbrica, opencode + agy (auto-start) |
-| **nodo agenti** (Omarchy) | agenti | **DSH-omarchy** (headless + web UI `dsh-web` :5080) + **opencode-omarchy** + **agy-omarchy** — auto-start |
+| **nodo agenti** (Omarchy) | agenti | **DSH-omarchy** (headless + web UI `dsh-web` :5080) + **opencode-omarchy** (v2.0.24) + **agy-omarchy** + A0 (:50080, Docker) — **servizi auto-start, completati 08/10** |
 | **win** (PC Windows, «andromeda») | agenti Windows | A0-win (:50080, Docker), **DSH-win** (`DSH-Web` :3080, Task Scheduler), opencode — accesso SSH di regia in auto (chiave ed25519) |
 
 ## URL pubblici

@@ -10,7 +10,7 @@ Group=sergio
 WorkingDirectory=/home/sergio
 Environment=HOME=/home/sergio
 Environment=PATH=/home/sergio/.local/share/mise/installs/node/26.8.1/bin:/home/sergio/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-ExecStart=/home/sergio/.local/share/mise/installs/node/26.8.1/bin/node /home/sergio/.local/share/mise/installs/node/26.8.1/lib/node_modules/@deepseek-ai/dsh/lib/bin.js web --no-open --port 3080 --trusted-host omarchy --trusted-host omarchy:3080 --trusted-host omarchy.local --trusted-host omarchy.local:3080 --trusted-host 192.168.1.98 --trusted-host 192.168.1.98:3080
+ExecStart=/home/sergio/.local/share/mise/installs/node/26.8.1/bin/node /home/sergio/.local/share/mise/installs/node/26.8.1/lib/node_modules/@deepseek-ai/dsh/lib/bin.js web --no-open --port 5080 --trusted-host omarchy --trusted-host omarchy:5080 --trusted-host omarchy.local --trusted-host omarchy.local:5080 --trusted-host 192.168.1.98 --trusted-host 192.168.1.98:5080
 Restart=always
 RestartSec=5
 TimeoutStopSec=15

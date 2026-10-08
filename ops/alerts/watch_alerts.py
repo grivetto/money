@@ -2,7 +2,8 @@
 """Watchdog alert Denaro sul canale Telegram di progetto (@DenaroAlertBot) — zero silenzi.
 
 Modalità:
-  check    (default) — mc2: container docker attesi, unit utente critiche, disco.
+  check    (default) — mc2: container docker attesi, unit utente critiche, disco,
+             liveness della caccia continua S4 (prove/caccia_continua/stato.json).
   carry    — MARCODG1 via ssh: raggiungibilità, monitor canary fermo, anomalie canary.
   bots     — salute bot dal payload aggregatore: regressioni running->giù con rientro,
              nodi non raggiungibili dall'aggregatore.
@@ -37,6 +38,8 @@ CONTAINERS = ["agent-zero", "zabbix-web", "zabbix-server", "zabbix-db", "freellm
 UNITS = ["fabbrica-tick.timer", "hermes-gateway.service", "denaro-node-mc2.service"]
 DISCO_MAX_PCT = 90.0
 MONITOR_FERMO_S = 1800  # il cron canary gira ogni 10': oltre 30' = monitor fermo
+CACCIA_STATO = Path("/home/sergio/money/prove/caccia_continua/stato.json")
+CACCIA_FERMA_S = 2700  # la caccia (S4) gira ogni 10': oltre 45' senza un giro = ferma
 
 
 def docker_stati() -> dict:
@@ -69,6 +72,29 @@ def unit_stato(unit: str) -> str:
         return "unknown"
 
 
+def caccia_stato(percorso: Path = CACCIA_STATO, adesso: float | None = None) -> tuple[bool, str]:
+    """(problema, dettaglio) sulla liveness della caccia continua (S4, cron */10 su mc2).
+
+    Ferma = stato assente (cron mai partito / stato cancellato) oppure nessun giro da
+    oltre `CACCIA_FERMA_S`. Spazio esaurito = fine corsa dichiarata, non un guasto.
+    Stato illeggibile: non e' un problema da qui — lo gestisce la caccia stessa
+    (fallimenti consecutivi + alert dopo 3 giri).
+    """
+    ora = time.time() if adesso is None else adesso
+    try:
+        if not percorso.exists():
+            return True, "stato assente (cron mai partito o stato cancellato)"
+        d = json.loads(percorso.read_text(encoding="utf-8"))
+        if d.get("esaurito"):
+            return False, "spazio esaurito (fine corsa dichiarata)"
+        eta = ora - percorso.stat().st_mtime
+        if eta > CACCIA_FERMA_S:
+            return True, f"nessun giro da {eta / 60:.0f} min"
+        return False, f"ok ({eta / 60:.0f} min fa)"
+    except Exception as errore:  # noqa: BLE001
+        return False, f"stato illeggibile ({type(errore).__name__}) — gestito dalla caccia"
+
+
 def check_locale() -> int:
     cambi = 0
     stati = docker_stati()
@@ -91,6 +117,10 @@ def check_locale() -> int:
                           f"✅ mc2 · disco rientrato ({pct:.0f}%)")
     except Exception:  # noqa: BLE001
         pass
+    problema, dettaglio = caccia_stato()
+    cambi += gestisci("caccia:ferma", problema,
+                      f"⚠️ mc2 · caccia continua (S4) ferma: {dettaglio}",
+                      "✅ mc2 · caccia continua (S4) di nuovo in corsa")
     return cambi
 
 
