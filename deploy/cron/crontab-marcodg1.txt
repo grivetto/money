@@ -7,3 +7,6 @@
 # */15 * * * * [sospeso 07/10] mkdir -p /home/marco/denaro2/reports/quality_shadow && cd /home/marco/denaro && DENARO2_SECRETS=/home/marco/denaro/secrets /home/marco/denaro/venv/bin/python -m denaro2.cli quality --symbol BTC/EUR --timeframe 1h --json >> /home/marco/denaro2/reports/quality_shadow/quality_shadow_$(date +\%Y\%m\%d).log 2>&1
 */10 * * * * cd /home/marco/canary && /home/marco/money/.venv/bin/python3 canary_carry.py status --quiet >> /home/marco/canary/canary.log 2>&1
 * * * * * /usr/bin/flock -n /tmp/zabbix_bots.lock /usr/bin/python3 /home/marco/money/ops/zabbix/zabbix_bots.py >> /home/marco/denaro/logs/zabbix_bots.log 2>&1
+
+# [09/10/26] tabellone contabile: versato->equity->fee->realizzato (ownership: proprietario)
+0 8 * * * cd /home/marco/money && /usr/bin/python3 scripts/tabellone.py --env /home/marco/denaro/secrets/main_okx.env --equity-url http://127.0.0.1:8912/api/infra.json --versato 1067 >> /home/marco/money/logs/tabellone.log 2>&1
