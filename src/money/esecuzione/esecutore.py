@@ -28,6 +28,7 @@ from typing import Any, Dict, List, Optional
 
 from ..costi import get_tariffa
 from . import rischio, stato as modulo_stato
+from .invio import Gamba, invia_gamba
 from .preflight import preflight
 
 ETICHETTA_DRY = "DRY-RUN, NON INVIATO"
@@ -254,9 +255,9 @@ class Esecutore:
                 "stato": "intent", "ts": time.time(), "live": True}
             modulo_stato.salva(self.stato_path, st)
             try:
-                risposta = ex.create_order(ordine.symbol, ordine.tipo, ordine.side,
-                                           ordine.qty, prezzo_mercato,
-                                           {"clOrdId": ordine.cl_ord_id})
+                risposta = invia_gamba(ex, Gamba(
+                    ordine.symbol, ordine.side, ordine.qty, prezzo_mercato or 0.0,
+                    ordine.cl_ord_id, tipo=ordine.tipo))
             except Exception as exc:
                 testo = str(exc)
                 if "clOrdId" in testo or "duplicate" in testo.lower():

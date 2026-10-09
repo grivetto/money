@@ -19,6 +19,15 @@ from pathlib import Path
 
 import ccxt
 
+#: importa la primitiva di invio (unico punto create_order) dal package money
+for _ant in Path(__file__).resolve().parents:
+    _src = _ant / "src"
+    if (_src / "money" / "__init__.py").exists():
+        if str(_src) not in sys.path:
+            sys.path.insert(0, str(_src))
+        break
+from money.esecuzione.invio import Gamba, invia_gamba  # noqa: E402
+
 ENV = Path("/home/marco/denaro/secrets/main_okx.env")
 
 
@@ -94,7 +103,8 @@ def main():
         if not flag("--execute"):
             print("[DRY] ordine non inviato")
             return
-        o = ex.create_order(pair, "limit", "buy", float(qty), float(px))
+        cid = f"swp{int(time.time())}"
+        o = invia_gamba(ex, Gamba(pair, "buy", float(qty), float(px), cid))
         print("order:", o["id"], o["status"])
         oo = None
         try:
@@ -156,8 +166,7 @@ def main():
         if not flag("--execute"):
             print("[DRY] nessun ordine inviato")
             return
-        o = ex.create_order(sym, "limit", "buy", sz, float(px),
-                            params={"tdMode": td, "clOrdId": cid})
+        o = invia_gamba(ex, Gamba(sym, "buy", sz, float(px), cid, td_mode=td))
         print("ORDER CREATO:", o["id"], o["status"])
         time.sleep(2)
         pend = ex.fetch_open_orders(sym)

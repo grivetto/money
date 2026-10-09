@@ -28,6 +28,8 @@ DIR = Path(__file__).resolve().parent
 STATE = DIR / "canary_state.json"
 EVENTS = DIR / "canary_events.jsonl"
 
+from money.esecuzione.invio import Gamba, invia_gamba
+
 INST = "DOGE-USD_UM_XPERP-310404"
 SYM_PER = "DOGE/USD:USD-310404"
 SYM_SPOT = "DOGE/USDC"
@@ -253,7 +255,7 @@ def main():
             print("[DRY] nessun ordine inviato")
             return
         cid = cid_stabile("c1cv", f"convert|{usdc_amt}")
-        o = ex.create_order("USDC/EUR", "limit", "buy", usdc_amt, float(px), params={"clOrdId": cid})
+        o = invia_gamba(ex, Gamba("USDC/EUR", "buy", usdc_amt, float(px), cid))
         oo, esito = attesa_fill(ex, o["id"], "USDC/EUR", 45)
         if esito != "closed":
             try:
@@ -288,7 +290,7 @@ def main():
         mid1 = float(t_s["last"])
         seme_s1 = intento(st, "intent_s1", f"{SYM_SPOT}|buy|{Q_SPOT}|{ds}")
         cid = cid_stabile("c1s", seme_s1)
-        o1 = ex.create_order(SYM_SPOT, "limit", "buy", Q_SPOT, float(px1), params={"clOrdId": cid})
+        o1 = invia_gamba(ex, Gamba(SYM_SPOT, "buy", Q_SPOT, float(px1), cid))
         oo1, es1 = attesa_fill(ex, o1["id"], SYM_SPOT, 60)
         if es1 == "reprice":
             print("spot: reprice")
@@ -306,7 +308,7 @@ def main():
             t_s = ex.fetch_ticker(SYM_SPOT)
             px1b = ex.price_to_precision(SYM_SPOT, float(t_s["ask"]) * 1.004)
             seme_s2 = intento(st, "intent_s2", f"{seme_s1}|reprice")
-            o1b = ex.create_order(SYM_SPOT, "limit", "buy", residuo, float(px1b), params={"clOrdId": cid_stabile("c1s", seme_s2)})
+            o1b = invia_gamba(ex, Gamba(SYM_SPOT, "buy", residuo, float(px1b), cid_stabile("c1s", seme_s2)))
             oo1b, es1 = attesa_fill(ex, o1b["id"], SYM_SPOT, 45)
             if es1 != "closed":
                 try:
@@ -328,8 +330,8 @@ def main():
         px2 = ex.price_to_precision(SYM_PER, float(t_p["bid"]) * 0.998)
         mid2 = float(t_p["last"])
         seme_p1 = intento(st, "intent_p1", f"{SYM_PER}|sell|{ct}|{ds}")
-        o2 = ex.create_order(SYM_PER, "limit", "sell", float(ct), float(px2),
-                             params={"tdMode": MGN, "clOrdId": cid_stabile("c1p", seme_p1)})
+        o2 = invia_gamba(ex, Gamba(SYM_PER, "sell", float(ct), float(px2),
+                                   cid_stabile("c1p", seme_p1), td_mode=MGN))
         oo2, es2 = attesa_fill(ex, o2["id"], SYM_PER, 60)
         if es2 == "reprice":
             try:
@@ -339,8 +341,8 @@ def main():
             t_p = ex.fetch_ticker(SYM_PER)
             px2b = ex.price_to_precision(SYM_PER, float(t_p["bid"]) * 0.996)
             seme_p2 = intento(st, "intent_p2", f"{seme_p1}|reprice")
-            o2b = ex.create_order(SYM_PER, "limit", "sell", float(ct), float(px2b),
-                                  params={"tdMode": MGN, "clOrdId": cid_stabile("c1p", seme_p2)})
+            o2b = invia_gamba(ex, Gamba(SYM_PER, "sell", float(ct), float(px2b),
+                                        cid_stabile("c1p", seme_p2), td_mode=MGN))
             oo2, es2 = attesa_fill(ex, o2b["id"], SYM_PER, 45)
             if es2 != "closed":
                 try:
@@ -368,7 +370,7 @@ def main():
             pxu = ex.price_to_precision(SYM_SPOT, float(t_s["bid"]) * 0.998)
             try:
                 seme_u = intento(st, "intent_u", f"unwind|{SYM_SPOT}|{qty_doge}")
-                ou = ex.create_order(SYM_SPOT, "limit", "sell", qty_doge, float(pxu), params={"clOrdId": cid_stabile("c1u", seme_u)})
+                ou = invia_gamba(ex, Gamba(SYM_SPOT, "sell", qty_doge, float(pxu), cid_stabile("c1u", seme_u)))
                 attesa_fill(ex, ou["id"], SYM_SPOT, 45)
                 evento("unwind_spot", ordine=ou["id"])
             except Exception as e:
@@ -430,9 +432,9 @@ def main():
             t_p = ex.fetch_ticker(SYM_PER)
             px = ex.price_to_precision(SYM_PER, float(t_p["ask"]) * 1.002)
             seme_x = intento(st, "intent_x", f"close_perp|{SYM_PER}|{ct}")
-            o = ex.create_order(SYM_PER, "limit", "buy", ct, float(px),
-                                params={"tdMode": st.get("perp", {}).get("mgnMode", MGN), "reduceOnly": True,
-                                        "clOrdId": cid_stabile("c1x", seme_x)})
+            o = invia_gamba(ex, Gamba(SYM_PER, "buy", ct, float(px),
+                                      cid_stabile("c1x", seme_x),
+                                      td_mode=st.get("perp", {}).get("mgnMode", MGN), reduce_only=True))
             oo, es = attesa_fill(ex, o["id"], SYM_PER, 60)
             if es != "closed":
                 try:
@@ -446,7 +448,7 @@ def main():
             t_s = ex.fetch_ticker(SYM_SPOT)
             px = ex.price_to_precision(SYM_SPOT, float(t_s["bid"]) * 0.998)
             seme_y = intento(st, "intent_y", f"close_spot|{SYM_SPOT}|{b_doge}")
-            o = ex.create_order(SYM_SPOT, "limit", "sell", b_doge, float(px), params={"clOrdId": cid_stabile("c1y", seme_y)})
+            o = invia_gamba(ex, Gamba(SYM_SPOT, "sell", b_doge, float(px), cid_stabile("c1y", seme_y)))
             oo, es = attesa_fill(ex, o["id"], SYM_SPOT, 60)
             if es != "closed":
                 try:
