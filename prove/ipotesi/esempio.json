@@ -1,0 +1,13 @@
+{
+  "nome": "prova-screener-rsi2",
+  "autore": "test-pipeline",
+  "timeframe": "1d",
+  "inizio": "2020-10-01",
+  "fine": "2026-10-08",
+  "confine": "2024-06-01",
+  "simboli": ["BTC/USDT", "ETH/USDT"],
+  "configs": [
+    {"famiglia": "rsi2", "periodo": 2, "soglia_in": 10.0, "soglia_out": 60.0},
+    {"famiglia": "mom_abs", "L": 20}
+  ]
+}
