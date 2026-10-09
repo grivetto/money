@@ -77,7 +77,11 @@ def _famiglie_disponibili() -> tuple:
 
 
 def carica_estensione(path: str):
-    """Carica un modulo che espone `stato_fn(barre, cfg)` per famiglie NUOVE."""
+    """Carica un modulo che espone `stato_fn(barre, cfg)` per famiglie NUOVE.
+
+    Ritorna (stato_fn, famiglie): le `famiglie` sono l'attributo opzionale `FAMIGLIE`
+    (tuple di nomi) che l'estensione puo' dichiarare, per il fail-closed della validazione.
+    """
     import importlib.util
     spec = importlib.util.spec_from_file_location("_estensione_ipotesi", path)
     if not spec or not spec.loader:
@@ -86,24 +90,29 @@ def carica_estensione(path: str):
     spec.loader.exec_module(mod)
     if not hasattr(mod, "stato_fn"):
         raise SystemExit("l'estensione deve esporre `stato_fn(barre, cfg)`")
-    return mod.stato_fn
+    return mod.stato_fn, tuple(getattr(mod, "FAMIGLIE", ()))
 
 
-def valida(ip: dict) -> None:
-    """Fail-closed sull'ipotesi: senza questi campi non si misura nulla."""
+def valida(ip: dict, famiglie_extra: tuple = ()) -> None:
+    """Fail-closed sull'ipotesi: senza questi campi non si misura nulla.
+
+    `famiglie_extra` = famiglie fornite da un'--estensione (il controllo di appartenenza
+    deve includerle, altrimenti l'estensione e' inutile).
+    """
     mancanti = [c for c in ("nome", "timeframe", "inizio", "fine", "confine",
                             "simboli", "configs") if not ip.get(c)]
     if mancanti:
         raise SystemExit(f"ipotesi incompleta: mancano {mancanti}")
     if not isinstance(ip["configs"], list) or not ip["configs"]:
         raise SystemExit("`configs` deve essere una lista non vuota")
+    disponibili = tuple(_famiglie_disponibili()) + tuple(famiglie_extra)
     for i, cfg in enumerate(ip["configs"]):
         if not cfg.get("famiglia"):
             raise SystemExit(f"configs[{i}] senza `famiglia`")
-        if cfg["famiglia"] not in _famiglie_disponibili():
+        if cfg["famiglia"] not in disponibili:
             raise SystemExit(
                 f"configs[{i}] famiglia ignota {cfg['famiglia']!r}: disponibili "
-                f"{_famiglie_disponibili()} (o passa --estensione)")
+                f"{disponibili} (o passa --estensione)")
 
 
 def _dsr_valore(sel: dict):
@@ -144,11 +153,14 @@ def main() -> int:
     a = ap.parse_args()
 
     ip = json.loads(Path(a.ipotesi).read_text(encoding="utf-8"))
-    valida(ip)
 
+    # l'estensione va caricata PRIMA della validazione: le sue famiglie devono
+    # superare il fail-closed, altrimenti l'estensione e' inutile.
     stato_fn = S.stato_per_config
+    famiglie_extra: tuple = ()
     if a.estensione:
-        stato_fn = carica_estensione(a.estensione)
+        stato_fn, famiglie_extra = carica_estensione(a.estensione)
+    valida(ip, famiglie_extra=famiglie_extra)
 
     slippage = SLIPPAGE_PER_LATO * float(a.stress)
     tariffa = get_tariffa(TARIFFA)
