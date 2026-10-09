@@ -78,7 +78,9 @@ def equity_aggregator(url: str) -> dict:
             "breakdown": d.get("equity_breakdown"), "ts": d.get("timestamp")}
 
 
-def bills(ex, inst_type: str, tetto: int = 60) -> list[dict]:
+def bills(ex, inst_type: str, tetto: int = 60) -> tuple[list[dict], bool]:
+    """Ritorna (movimenti, completo). `completo=False` se una pagina ha dato errore:
+    un elenco troncato NON deve sembrare un totale affidabile."""
     out, after = [], None
     for _ in range(tetto):
         p = {"instType": inst_type, "limit": 100}
@@ -87,7 +89,7 @@ def bills(ex, inst_type: str, tetto: int = 60) -> list[dict]:
         try:
             d = ex.privateGetAccountBillsArchive(p)["data"]
         except Exception:
-            break
+            return out, False
         if not d:
             break
         out += d
@@ -95,7 +97,7 @@ def bills(ex, inst_type: str, tetto: int = 60) -> list[dict]:
         if len(d) < 100:
             break
         time.sleep(0.25)
-    return out
+    return out, True
 
 
 def flussi_eur(ex) -> dict:
@@ -103,12 +105,14 @@ def flussi_eur(ex) -> dict:
     Il versato affidabile resta quello dichiarato dal proprietario (`--versato`)."""
     tot = 0.0
     dettaglio = []
+    completo = True
     for fonte, fn, segno in (("deposito", "privateGetAssetDepositHistory", 1),
                              ("prelievo", "privateGetAssetWithdrawalHistory", -1)):
         try:
             righe = getattr(ex, fn)({"limit": 100})["data"]
         except Exception:
             righe = []
+            completo = False
         for r in righe:
             ccy = r.get("ccy") or "EUR"
             try:
@@ -119,7 +123,8 @@ def flussi_eur(ex) -> dict:
             tot += eur
             dettaglio.append({"tipo": fonte, "ccy": ccy, "amt": amt,
                               "eur": round(eur, 2), "ts": r.get("ts")})
-    return {"netto_eur": round(tot, 2), "n": len(dettaglio), "dettaglio": dettaglio}
+    return {"netto_eur": round(tot, 2), "n": len(dettaglio),
+            "dettaglio": dettaglio, "completo": completo}
 
 
 def main() -> int:
@@ -149,8 +154,11 @@ def main() -> int:
                    "enableRateLimit": True, "options": {"defaultType": "spot"}})
 
     tutti = []
+    ok_bills = True
     for it in ("SPOT", "SWAP"):
-        tutti += bills(ex, it)
+        b, completo = bills(ex, it)
+        tutti += b
+        ok_bills = ok_bills and completo
     reale = fee = 0.0
     for r in tutti:
         try:
@@ -174,8 +182,26 @@ def main() -> int:
     if a.versato is not None:
         esito["scarto_versato_eur"] = round(a.versato - fl["netto_eur"], 2)
 
-    if eq["equity"] is not None:
+    # --- fail-closed: il netto esiste SOLO se ogni fonte e' completa ------------------
+    # Un totale "best effort" spacciato per verita' e' peggio di nessun totale.
+    motivi = []
+    if eq.get("equity") is None:
+        motivi.append("equity non disponibile (aggregator)")
+    if not ok_bills:
+        motivi.append("bills troncati (pagina in errore)")
+    if not fl["completo"]:
+        motivi.append("flussi depositi/prelievi incompleti")
+    esito["fonti"] = {
+        "equity": "ok" if eq.get("equity") is not None else "error",
+        "bills": "ok" if ok_bills else "partial",
+        "flussi": "ok" if fl["completo"] else "partial",
+    }
+    if not motivi:
         esito["netto_vs_versato_eur"] = round(eq["equity"] - versato, 2)
+        esito["stato"] = "RECONCILED"
+    else:
+        esito["stato"] = "INCOMPLETE"
+        esito["motivi_incompletezza"] = motivi
 
     if a.json:
         print(json.dumps(esito, ensure_ascii=False, indent=2))
