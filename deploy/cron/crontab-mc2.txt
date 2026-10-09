@@ -23,3 +23,5 @@
 15 5 * * * cd /home/sergio/money && .venv/bin/python scripts/scansione_giornaliera.py >> logs/scansione_loop.log 2>&1
 # S4 — caccia continua: ricerca edge nuovi ogni 10' (auto; dichiarazione in src/money/ricerca/caccia_continua.py)
 */10 * * * * cd /home/sergio/money && /usr/bin/flock -n /tmp/caccia_continua.lock /home/sergio/money/.venv/bin/python scripts/caccia_continua.py >> logs/caccia_continua.log 2>&1
+# Operai di sviluppo (A0 · DSH · agy · opencode) — collector Zabbix, ogni minuto (auto; heartbeat dev.collector.heartbeat)
+* * * * * cd /home/sergio/money && /usr/bin/flock -n /tmp/dev_platform.lock /home/sergio/money/.venv/bin/python ops/zabbix/dev_platform.py >> logs/dev_platform.log 2>&1
