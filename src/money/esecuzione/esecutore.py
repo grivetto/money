@@ -127,21 +127,31 @@ class Esecutore:
     def costruisci(self, symbol: str, side: str, nozionale_eur: float,
                    prezzo: float, step: float, min_notional: float,
                    intent_id: str = "") -> OrdineCostruito:
-        """L'ordine come payload. Assertions sul percorso del capitale: qui si rompe
+        """L'ordine come payload. Controlli sul percorso del capitale: qui si rompe
         PRIMA, non dopo l'invio. `intent_id` identifica UN intento: stesso intento
-        anche dopo un restart -> stesso clOrdId."""
-        assert prezzo > 0, "prezzo di riferimento non positivo"
-        assert step > 0, "step non positivo"
-        assert nozionale_eur > 0, "nozionale non positivo"
-        assert self.tariffa.giro_taker < 0.05, f"tariffa insensata: {self.tariffa.giro_taker:.2%}/giro"
+        anche dopo un restart -> stesso clOrdId.
+
+        Le invarianti economiche sono ECCEZIONI APPLICATIVE (Rifiutato), non `assert`:
+        con Python ottimizzato (`-O`) gli assert vengono rimossi e un controllo di
+        capitale non puo' dipendere da questo.
+        """
+        if not prezzo > 0:
+            raise Rifiutato(f"prezzo di riferimento non positivo: {prezzo!r}")
+        if not step > 0:
+            raise Rifiutato(f"step non positivo: {step!r}")
+        if not nozionale_eur > 0:
+            raise Rifiutato(f"nozionale non positivo: {nozionale_eur!r}")
+        if not self.tariffa.giro_taker < 0.05:
+            raise Rifiutato(f"tariffa insensata: {self.tariffa.giro_taker:.2%}/giro")
         if side not in ("buy", "sell"):
             raise Rifiutato(f"side {side!r} non valido")
 
         qty = quantita_da_nozionale(nozionale_eur, prezzo, step)
         nozionale_eff = round(qty * prezzo, 6)
         # Mai spendere piu' del nozionale: l'arrotondamento e' per difetto, e lo dimostriamo.
-        assert nozionale_eff <= nozionale_eur + 1e-6, \
-            f"arrotondamento in su sul capitale: {nozionale_eff} > {nozionale_eur}"
+        if nozionale_eff > nozionale_eur + 1e-6:
+            raise Rifiutato(
+                f"arrotondamento in su sul capitale: {nozionale_eff} > {nozionale_eur}")
         if qty <= 0 or nozionale_eff < min_notional:
             raise Rifiutato(
                 f"NON_FATTIBILE: qty={qty} nozionale={nozionale_eff:.4f} < min_notional {min_notional:.4f}")

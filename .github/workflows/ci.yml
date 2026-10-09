@@ -1,0 +1,31 @@
+name: CI
+# Qualita' minima del repo money: lint, test, compilazione e test con -O (assert rimossi).
+# Il progetto non deve potersi dichiarare "verde" con assert disattivabili o lint rosso.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  qualita:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Installa dipendenze
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]" 2>/dev/null || pip install -e . || true
+          pip install pytest ruff
+      - name: Ruff (lint)
+        run: ruff check .
+      - name: Compilazione (compileall)
+        run: python -m compileall -q src scripts ops
+      - name: Test (normale)
+        run: python -m pytest -q
+      - name: "Test con -O (assert rimossi: i controlli di capitale devono reggere)"
+        run: python -O -m pytest -q

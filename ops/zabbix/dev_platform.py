@@ -248,9 +248,9 @@ def ensure_triggers(auth, hostid: str) -> int:
     defs = []
     for k, nome, _, _ in OPERAIO_ITEMS:
         defs.append((f"Operaio giù: {nome}", f"last(/{HOST}/{k})=0"))
-    defs.append((f"dev-platform: collector muto (nessun push da 10m)",
+    defs.append(("dev-platform: collector muto (nessun push da 10m)",
                  f"nodata(/{HOST}/dev.collector.heartbeat,10m)=1"))
-    defs.append((f"dev-platform: almeno un operaio giù",
+    defs.append(("dev-platform: almeno un operaio giù",
                  f"last(/{HOST}/dev.workers_up)<last(/{HOST}/dev.workers_total)"))
     fatti = 0
     for desc, expr in defs:

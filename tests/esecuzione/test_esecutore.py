@@ -90,12 +90,16 @@ def test_nozionale_sotto_min_notional_rifiutato(ambiente):
         e.costruisci("BTC/EUR", "buy", 0.50, 80000.0, 0.00001, 1.0, intent_id="t1")
 
 
-def test_input_rotti_sono_assertion(ambiente):
+def test_input_rotti_sono_rifiutati(ambiente):
+    """Invarianti economiche = eccezioni applicative, NON assert: con `python -O` gli
+    assert vengono rimossi e un controllo di capitale non puo' sparire."""
     e = ez.Esecutore(**ambiente_arg(ambiente))
-    with pytest.raises(AssertionError):
+    with pytest.raises(ez.Rifiutato, match="prezzo"):
         e.costruisci("BTC/EUR", "buy", 10.0, 0.0, 0.00001, 1.0, intent_id="t1")
-    with pytest.raises(AssertionError):
+    with pytest.raises(ez.Rifiutato, match="step"):
         e.costruisci("BTC/EUR", "buy", 10.0, 100.0, 0.0, 1.0, intent_id="t1")
+    with pytest.raises(ez.Rifiutato, match="nozionale"):
+        e.costruisci("BTC/EUR", "buy", 0.0, 100.0, 0.00001, 1.0, intent_id="t1")
 
 
 # --- idempotenza per INTENTO (non per giorno) -------------------------------------------

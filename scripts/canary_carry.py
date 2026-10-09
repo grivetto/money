@@ -14,6 +14,7 @@ Subcomandi (default sola lettura; le scritture richiedono --execute):
 Sicurezze: chiavi mai stampate; LIMIT (mai market); clOrdId idempotenti; poll di fill;
 fill parziale gestito e registrato; stato in canary_state.json; eventi in canary_events.jsonl.
 """
+import hashlib
 import json
 import sys
 import time
@@ -55,6 +56,21 @@ def client():
         "password": env["OKX_PASSPHRASE"], "hostname": "eea.okx.com",
         "enableRateLimit": True, "options": {"defaultType": "spot"},
     })
+
+
+def cid_stabile(prefisso: str, intento: str) -> str:
+    """clOrdId IDEMPOTENTE: stesso intento -> stesso id, cosi' un retry dopo timeout
+    NON duplica l'ordine. Un id legato all'orologio (time.time()) cambia a ogni retry:
+    e' esattamente il rischio che questo helper elimina."""
+    return prefisso + hashlib.sha256(intento.encode()).hexdigest()[:10]
+
+
+def intento(st: dict, chiave: str, seme: str) -> str:
+    """Token di intento PERSISTITO: fissato al primo tentativo, riusato nei retry."""
+    if not st.get(chiave):
+        st[chiave] = seme
+        salva_state(st)
+    return st[chiave]
 
 
 def arg(nome, default=None):
@@ -236,7 +252,7 @@ def main():
         if not flag("--execute"):
             print("[DRY] nessun ordine inviato")
             return
-        cid = "c1cv" + str(int(time.time()))
+        cid = cid_stabile("c1cv", f"convert|{usdc_amt}")
         o = ex.create_order("USDC/EUR", "limit", "buy", usdc_amt, float(px), params={"clOrdId": cid})
         oo, esito = attesa_fill(ex, o["id"], "USDC/EUR", 45)
         if esito != "closed":
@@ -265,10 +281,13 @@ def main():
             ex.privatePostAccountSetLeverage({"instId": INST, "lever": LEVER, "mgnMode": "cross"})
             globals()["MGN"] = "cross"
         # gamba 1: SPOT buy limit
+        st = st or {}
+        ds = now_iso()[:10]
         t_s = ex.fetch_ticker(SYM_SPOT)
         px1 = ex.price_to_precision(SYM_SPOT, float(t_s["ask"]) * 1.002)
         mid1 = float(t_s["last"])
-        cid = "c1s" + str(int(time.time()))
+        seme_s1 = intento(st, "intent_s1", f"{SYM_SPOT}|buy|{Q_SPOT}|{ds}")
+        cid = cid_stabile("c1s", seme_s1)
         o1 = ex.create_order(SYM_SPOT, "limit", "buy", Q_SPOT, float(px1), params={"clOrdId": cid})
         oo1, es1 = attesa_fill(ex, o1["id"], SYM_SPOT, 60)
         if es1 == "reprice":
@@ -286,7 +305,8 @@ def main():
             residuo = Q_SPOT - filled_prev
             t_s = ex.fetch_ticker(SYM_SPOT)
             px1b = ex.price_to_precision(SYM_SPOT, float(t_s["ask"]) * 1.004)
-            o1b = ex.create_order(SYM_SPOT, "limit", "buy", residuo, float(px1b), params={"clOrdId": "c1s" + str(int(time.time()) + 1)})
+            seme_s2 = intento(st, "intent_s2", f"{seme_s1}|reprice")
+            o1b = ex.create_order(SYM_SPOT, "limit", "buy", residuo, float(px1b), params={"clOrdId": cid_stabile("c1s", seme_s2)})
             oo1b, es1 = attesa_fill(ex, o1b["id"], SYM_SPOT, 45)
             if es1 != "closed":
                 try:
@@ -307,8 +327,9 @@ def main():
         t_p = ex.fetch_ticker(SYM_PER)
         px2 = ex.price_to_precision(SYM_PER, float(t_p["bid"]) * 0.998)
         mid2 = float(t_p["last"])
+        seme_p1 = intento(st, "intent_p1", f"{SYM_PER}|sell|{ct}|{ds}")
         o2 = ex.create_order(SYM_PER, "limit", "sell", float(ct), float(px2),
-                             params={"tdMode": MGN, "clOrdId": "c1p" + str(int(time.time() + 2))})
+                             params={"tdMode": MGN, "clOrdId": cid_stabile("c1p", seme_p1)})
         oo2, es2 = attesa_fill(ex, o2["id"], SYM_PER, 60)
         if es2 == "reprice":
             try:
@@ -317,8 +338,9 @@ def main():
                 pass
             t_p = ex.fetch_ticker(SYM_PER)
             px2b = ex.price_to_precision(SYM_PER, float(t_p["bid"]) * 0.996)
+            seme_p2 = intento(st, "intent_p2", f"{seme_p1}|reprice")
             o2b = ex.create_order(SYM_PER, "limit", "sell", float(ct), float(px2b),
-                                  params={"tdMode": MGN, "clOrdId": "c1p" + str(int(time.time() + 3))})
+                                  params={"tdMode": MGN, "clOrdId": cid_stabile("c1p", seme_p2)})
             oo2, es2 = attesa_fill(ex, o2b["id"], SYM_PER, 45)
             if es2 != "closed":
                 try:
@@ -345,7 +367,8 @@ def main():
             t_s = ex.fetch_ticker(SYM_SPOT)
             pxu = ex.price_to_precision(SYM_SPOT, float(t_s["bid"]) * 0.998)
             try:
-                ou = ex.create_order(SYM_SPOT, "limit", "sell", qty_doge, float(pxu), params={"clOrdId": "c1u" + str(int(time.time()))})
+                seme_u = intento(st, "intent_u", f"unwind|{SYM_SPOT}|{qty_doge}")
+                ou = ex.create_order(SYM_SPOT, "limit", "sell", qty_doge, float(pxu), params={"clOrdId": cid_stabile("c1u", seme_u)})
                 attesa_fill(ex, ou["id"], SYM_SPOT, 45)
                 evento("unwind_spot", ordine=ou["id"])
             except Exception as e:
@@ -406,9 +429,10 @@ def main():
             ct = abs(float(p.get("pos")))
             t_p = ex.fetch_ticker(SYM_PER)
             px = ex.price_to_precision(SYM_PER, float(t_p["ask"]) * 1.002)
+            seme_x = intento(st, "intent_x", f"close_perp|{SYM_PER}|{ct}")
             o = ex.create_order(SYM_PER, "limit", "buy", ct, float(px),
                                 params={"tdMode": st.get("perp", {}).get("mgnMode", MGN), "reduceOnly": True,
-                                        "clOrdId": "c1x" + str(int(time.time()))})
+                                        "clOrdId": cid_stabile("c1x", seme_x)})
             oo, es = attesa_fill(ex, o["id"], SYM_PER, 60)
             if es != "closed":
                 try:
@@ -421,7 +445,8 @@ def main():
         if b_doge > 0.01:
             t_s = ex.fetch_ticker(SYM_SPOT)
             px = ex.price_to_precision(SYM_SPOT, float(t_s["bid"]) * 0.998)
-            o = ex.create_order(SYM_SPOT, "limit", "sell", b_doge, float(px), params={"clOrdId": "c1y" + str(int(time.time()))})
+            seme_y = intento(st, "intent_y", f"close_spot|{SYM_SPOT}|{b_doge}")
+            o = ex.create_order(SYM_SPOT, "limit", "sell", b_doge, float(px), params={"clOrdId": cid_stabile("c1y", seme_y)})
             oo, es = attesa_fill(ex, o["id"], SYM_SPOT, 60)
             if es != "closed":
                 try:

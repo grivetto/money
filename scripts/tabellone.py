@@ -188,7 +188,7 @@ def main() -> int:
     print(f"  PnL realizzato       : {reale:>10,.2f} EUR")
     if "netto_vs_versato_eur" in esito:
         n = esito["netto_vs_versato_eur"]
-        print(f"  ------------------------------------------------")
+        print("  ------------------------------------------------")
         print(f"  NETTO vs VERSATO     : {n:>10,.2f} EUR   {'<-- guadagno' if n > 0 else '<-- perdita'}")
     if "scarto_versato_eur" in esito:
         print(f"  (scarto versato dichiarato vs API: {esito['scarto_versato_eur']:+,.2f})")
