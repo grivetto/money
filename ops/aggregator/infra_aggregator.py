@@ -216,11 +216,36 @@ def fetch_okx_balance(env):
             for k, v in (b.get("free") or {}).items():
                 if v and float(v) > 0:
                     free_merged[k] = free_merged.get(k, 0.0) + float(v)
+        # 2026-10-11: i fondi in Simple Earn (savings) NON compaiono ne' in trading ne'
+        # in funding: con ~1.097 USDC messi a rendita l'equity e' scivolata da ~1.100 a
+        # ~120 EUR (bug visto dal vivo). Si sommano anche i saldi savings (retry 2x;
+        # se fallisce, l'account resta leggibile su trading+funding e si annota l'errore).
+        sav_tot, sav_err = {}, None
+        for _tent in range(2):
+            sav_tot = {}
+            try:
+                sav = ex.privateGetFinanceSavingsBalance({}) or {}
+                for r in (sav.get("data") or []):
+                    ccy = r.get("ccy")
+                    try:
+                        amt = float(r.get("amt") or 0)
+                    except (TypeError, ValueError):
+                        continue
+                    if ccy and amt > 0:
+                        sav_tot[ccy] = sav_tot.get(ccy, 0.0) + amt
+                sav_err = None
+                break
+            except Exception as exc:
+                sav_err = str(exc)[:120]
+        for _ccy, _amt in sav_tot.items():
+            tot_merged[_ccy] = tot_merged.get(_ccy, 0.0) + _amt
         if letti == 0:
             return {"ok": False, "error": "fetch_balance fallito su trading e funding"}
         total = {k: round(v, 6) for k, v in tot_merged.items()}
         free = {k: round(v, 6) for k, v in free_merged.items()}
-        val = {"ok": True, "total": total, "free": free}
+        val = {"ok": True, "total": total, "free": free, "savings_ok": sav_err is None}
+        if sav_err:
+            val["savings_error"] = sav_err
         _balance_cache[key] = (now, val)
         return val
     except Exception as e:
@@ -292,7 +317,23 @@ def _remote_okx_snippet(env_path, prefix=""):
         "        if v and float(v) > 0:\n            tot[k] = tot.get(k, 0.0) + float(v)\n"
         "    for k, v in (b.get('free') or {}).items():\n"
         "        if v and float(v) > 0:\n            fre[k] = fre.get(k, 0.0) + float(v)\n"
-        "print(json.dumps({'ok': nok > 0, 'total': tot, 'free': fre}))\n"
+        # 2026-10-11: anche il saldo Simple Earn (savings), che trading/funding non vedono.
+        # Senza questo, con ~1.097 USDC a rendita l'equity scende da ~1.100 a ~120 EUR.
+        "sok = True\n"
+        "try:\n"
+        "    _sav = ex.privateGetFinanceSavingsBalance({}) or {}\n"
+        "except Exception:\n"
+        "    _sav = {}\n"
+        "    sok = False\n"
+        "for _r in (_sav.get('data') or []):\n"
+        "    _c = _r.get('ccy')\n"
+        "    try:\n"
+        "        _a = float(_r.get('amt') or 0)\n"
+        "    except Exception:\n"
+        "        continue\n"
+        "    if _c and _a > 0:\n"
+        "        tot[_c] = tot.get(_c, 0.0) + _a\n"
+        "print(json.dumps({'ok': nok > 0, 'total': tot, 'free': fre, 'savings_ok': sok}))\n"
     )
 
 

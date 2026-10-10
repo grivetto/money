@@ -71,6 +71,14 @@ def saldi(ex, prefisso=""):
     fu = ex.privateGetAssetBalances({"ccy": "EUR,USDC,USDT"})["data"]
     for r in fu:
         print(f"  funding {r.get('ccy')}: availBal={r.get('availBal')}")
+    # 2026-10-11: i fondi a rendita (Simple Earn) stanno in un comparto a parte:
+    # trading+funding non li vedono, ma sono capitale a tutti gli effetti.
+    try:
+        for r in ex.privateGetFinanceSavingsBalance({}).get("data", []):
+            print(f"  savings {r.get('ccy')}: amt={r.get('amt')} loanAmt={r.get('loanAmt')} "
+                  f"earnings={r.get('earnings')} rate={r.get('rate')}")
+    except Exception as exc:
+        print(f"  savings: ERR {type(exc).__name__} {str(exc)[:80]}")
 
 
 def main():
