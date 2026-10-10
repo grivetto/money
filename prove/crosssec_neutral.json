@@ -1,0 +1,108 @@
+{
+ "ts": "2026-10-10T18:43:14Z",
+ "simboli": 90,
+ "barre": 2199,
+ "costo_giro": 0.0026,
+ "varianti": [
+  {
+   "lookback": 30,
+   "ribilancio": 7,
+   "k": 3,
+   "train": {
+    "n": 1339,
+    "exp": 0.001279,
+    "t": 0.728,
+    "sharpe": 0.0199
+   },
+   "oos": {
+    "n": 859,
+    "exp": -0.003629,
+    "t": -1.853,
+    "sharpe": -0.0632
+   },
+   "rendimento_cum": -1.405,
+   "max_dd": 0.9984,
+   "spread_ls_bps": 19210.0
+  },
+  {
+   "lookback": 30,
+   "ribilancio": 14,
+   "k": 3,
+   "train": {
+    "n": 1339,
+    "exp": 0.000729,
+    "t": 0.432,
+    "sharpe": 0.0118
+   },
+   "oos": {
+    "n": 859,
+    "exp": -0.002075,
+    "t": -1.202,
+    "sharpe": -0.041
+   },
+   "rendimento_cum": -0.8066,
+   "max_dd": 0.9923,
+   "spread_ls_bps": 19210.0
+  },
+  {
+   "lookback": 90,
+   "ribilancio": 7,
+   "k": 3,
+   "train": {
+    "n": 1339,
+    "exp": -0.002767,
+    "t": -1.829,
+    "sharpe": -0.05
+   },
+   "oos": {
+    "n": 859,
+    "exp": -0.003845,
+    "t": -2.164,
+    "sharpe": -0.0738
+   },
+   "rendimento_cum": -7.0084,
+   "max_dd": 1.0,
+   "spread_ls_bps": 38116.8
+  },
+  {
+   "lookback": 90,
+   "ribilancio": 14,
+   "k": 5,
+   "train": {
+    "n": 1339,
+    "exp": -0.001392,
+    "t": -1.222,
+    "sharpe": -0.0334
+   },
+   "oos": {
+    "n": 859,
+    "exp": -0.001815,
+    "t": -1.474,
+    "sharpe": -0.0503
+   },
+   "rendimento_cum": -3.4239,
+   "max_dd": 0.9953,
+   "spread_ls_bps": 38116.8
+  },
+  {
+   "lookback": 180,
+   "ribilancio": 30,
+   "k": 5,
+   "train": {
+    "n": 1339,
+    "exp": -0.000916,
+    "t": -0.926,
+    "sharpe": -0.0253
+   },
+   "oos": {
+    "n": 859,
+    "exp": -0.001629,
+    "t": -1.271,
+    "sharpe": -0.0434
+   },
+   "rendimento_cum": -2.625,
+   "max_dd": 0.9884,
+   "spread_ls_bps": 89948.5
+  }
+ ]
+}
