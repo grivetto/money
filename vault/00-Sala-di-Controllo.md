@@ -11,7 +11,7 @@ Capitale: **≈1.100 €** su OKX, **zero bot live**, nessun ordine reale senza 
 |---|---|---|
 | OKX main (funding) | ≈1.100 € | +1.000 € depositati il 03/10 (SEPA, verificato) |
 | Sub-account | dust | mc2sub1 / marcosub1 / nuvolasub1 |
-| **Totale flotta** | **≈1.100 €** | live: https://denaro.grivetto.eu |
+| **Totale flotta** | **≈1.100 €** | live: https://denaro.grivetto.eu (dashboard su /dashboard) |
 
 ## Ricerca — dove siamo
 | Nodo | Stato | Risultato in una riga |

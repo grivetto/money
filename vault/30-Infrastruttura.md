@@ -10,8 +10,8 @@
 | **win** (PC Windows, «andromeda») | agenti Windows | A0-win (:50080, Docker), **DSH-win** (`DSH-Web` :3080, Task Scheduler), opencode — accesso SSH di regia in auto (chiave ed25519) |
 
 ## URL pubblici
-- Dashboard flotta: **https://denaro.grivetto.eu** (json: `/api/infra.json`)
-- Sito: https://web.grivetto.eu
+- Dashboard flotta: **https://denaro.grivetto.eu/dashboard** (json: `/api/infra.json`; la root di denaro.grivetto.eu è la landing «il trading»)
+- Sito squadra dev: https://web.grivetto.eu (sfondo: foto squadra `squadra-dev-2026-10-11.jpg`)
 
 ## Soldi e chiavi (stato al 29/09)
 - OKX main: ~100,00 € in **funding** — la chiave main risponde solo dall'IP di MARCODG1
