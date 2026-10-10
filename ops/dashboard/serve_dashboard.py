@@ -17,9 +17,11 @@ Perche' esiste (incident 2026-09-10):
     mostrava "SIGNAL LOST" anche se il dato buono di 30 secondi prima c'era.
 
 Cosa fa adesso:
-  GET /                 -> dashboard HTML (no-store)
-  GET /dashboard        -> idem
-  GET /dashboard/       -> idem (prima era 404)
+  GET /                 -> landing "il trading" (landing.html, no-store)
+  GET /index.html       -> idem
+  GET /dashboard        -> dashboard HTML «Neon Grid» (no-store)
+  GET /dashboard/       -> idem
+  GET /trading-2026-10-08.jpg -> sfondo statico della landing (cache 1 giorno)
   GET /api/infra.json   -> JSON dell'aggregator (proxy) + fallback last-good
   GET /infra.json       -> alias di /api/infra.json
   GET /scommessa.json   -> dato della scommessa asimmetrica (spec DSH 19/09)
@@ -31,6 +33,7 @@ Configurazione (env var, override da riga di comando):
   DASH_PORT         default 8913
   DASH_HTML_DIR     default /home/sergio/denaro/denaro
   DASH_HTML_FILE    default dashboard_infra.html
+  DASH_LANDING_FILE default landing.html
   AGG_URL           default http://127.0.0.1:8912/infra.json
   AGG_TIMEOUT       default 6 (secondi)
   DASH_CACHE_FILE   default /home/sergio/denaro/health/infra_last_good.json
@@ -55,7 +58,14 @@ import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-HTML_ROUTES = {"/", "/dashboard", "/dashboard/", "/index.html"}
+# Route HTML: la dashboard «Neon Grid» resta su /dashboard; la radice serve
+# la landing "il trading" (richiesta owner 11/10/2026, spostata da web.grivetto.eu).
+DASHBOARD_ROUTES = {"/dashboard"}
+LANDING_ROUTES = {"/", "/index.html"}
+# Asset statici serviti dalla stessa dir HTML (sfondo della landing).
+ASSET_ROUTES = {
+    "/trading-2026-10-08.jpg": ("trading-2026-10-08.jpg", "image/jpeg"),
+}
 JSON_ROUTES = {"/api/infra.json", "/infra.json", "/api/infra", "/infra", "/api/dsh.json", "/dsh.json"}
 # La scheda scommessa legge il file scritto dal cron (tools/scommessa.py su
 # MARCODG1); il server lo serve senza cache: se manca -> 404 "nessun dato".
@@ -172,6 +182,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
     # iniettati da make_server()
     html_dir: Path = Path(".")
     html_file: str = "dashboard_infra.html"
+    landing_file: str = "landing.html"
     agg: AggregatorClient = None  # type: ignore[assignment]
 
     # ---------- helper ----------
@@ -179,9 +190,9 @@ class DashboardHandler(BaseHTTPRequestHandler):
         self.send_response(status)
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(body)))
-        self.send_header("Cache-Control", "no-store")
-        self.send_header("Access-Control-Allow-Origin", "*")
-        for k, v in (extra or {}).items():
+        headers = {"Cache-Control": "no-store", "Access-Control-Allow-Origin": "*"}
+        headers.update(extra or {})  # le chiavi extra sovrascrivono i default (no duplicati)
+        for k, v in headers.items():
             self.send_header(k, v)
         self.end_headers()
         if not head_only and body:
@@ -193,15 +204,35 @@ class DashboardHandler(BaseHTTPRequestHandler):
     def _html_path(self) -> Path:
         return Path(self.html_dir) / self.html_file
 
-    def _serve_html(self, head_only: bool = False) -> None:
-        path = self._html_path()
+    def _landing_path(self) -> Path:
+        return Path(self.html_dir) / self.landing_file
+
+    def _serve_file(self, path: Path, ctype: str, head_only: bool = False) -> None:
+        """Serve un file (HTML o asset) dalla dir; 500/404 con log se manca."""
         try:
             body = path.read_bytes()
         except OSError as exc:
-            log("HTML non leggibile %s: %s" % (path, exc))
-            self._send(500, ("dashboard HTML non trovato: %s" % path).encode(), "text/plain; charset=utf-8", head_only=head_only)
+            log("file non leggibile %s: %s" % (path, exc))
+            self._send(500, ("file non trovato: %s" % path).encode(), "text/plain; charset=utf-8",
+                       head_only=head_only)
             return
-        self._send(200, body, "text/html; charset=utf-8", {"X-Denaro-Html": path.name}, head_only=head_only)
+        self._send(200, body, ctype, {"X-Denaro-Html": path.name}, head_only=head_only)
+
+    def _serve_html(self, head_only: bool = False) -> None:
+        self._serve_file(self._html_path(), "text/html; charset=utf-8", head_only=head_only)
+
+    def _serve_landing(self, head_only: bool = False) -> None:
+        self._serve_file(self._landing_path(), "text/html; charset=utf-8", head_only=head_only)
+
+    def _serve_asset(self, name: str, ctype: str, head_only: bool = False) -> None:
+        path = Path(self.html_dir) / name
+        try:
+            body = path.read_bytes()
+        except OSError as exc:
+            log("asset non leggibile %s: %s" % (path, exc))
+            self._send(404, b"", ctype, head_only=head_only)
+            return
+        self._send(200, body, ctype, {"Cache-Control": "public, max-age=86400"}, head_only=head_only)
 
     def _serve_json(self, head_only: bool = False) -> None:
         raw, meta = self.agg.fetch()
@@ -230,7 +261,9 @@ class DashboardHandler(BaseHTTPRequestHandler):
         st["service"] = "denaro-dashboard"
         st["html"] = str(self._html_path())
         st["html_exists"] = self._html_path().is_file()
-        st["ok"] = bool(st["has_cache"]) and st["html_exists"]
+        st["landing"] = str(self._landing_path())
+        st["landing_exists"] = self._landing_path().is_file()
+        st["ok"] = bool(st["has_cache"]) and st["html_exists"] and st["landing_exists"]
         body = json.dumps(st).encode()
         self._send(200 if st["ok"] else 503, body, "application/json; charset=utf-8", head_only=head_only)
 
@@ -284,7 +317,13 @@ class DashboardHandler(BaseHTTPRequestHandler):
                 log("favicon non leggibile: %s" % _exc)
                 self._send(404, b"", "image/svg+xml")
             return
-        if path in HTML_ROUTES or path == "":
+        _asset = ASSET_ROUTES.get(path)
+        if _asset is not None:
+            self._serve_asset(_asset[0], _asset[1])
+            return
+        if path in LANDING_ROUTES or path == "":
+            self._serve_landing()
+        elif path in DASHBOARD_ROUTES:
             self._serve_html()
         elif path in SCOMMESSA_ROUTES:
             self._serve_scommessa()
@@ -308,7 +347,13 @@ class DashboardHandler(BaseHTTPRequestHandler):
                 log("favicon non leggibile: %s" % _exc)
                 self._send(404, b"", "image/svg+xml")
             return
-        if path in HTML_ROUTES:
+        _asset = ASSET_ROUTES.get(path)
+        if _asset is not None:
+            self._serve_asset(_asset[0], _asset[1], head_only=True)
+            return
+        if path in LANDING_ROUTES:
+            self._serve_landing(head_only=True)
+        elif path in DASHBOARD_ROUTES:
             self._serve_html(head_only=True)
         elif path in SCOMMESSA_ROUTES:
             self._serve_scommessa(head_only=True)
@@ -323,9 +368,11 @@ class DashboardHandler(BaseHTTPRequestHandler):
         pass
 
 
-def make_server(host: str, port: int, html_dir: Path, html_file: str, agg: AggregatorClient) -> ThreadingHTTPServer:
+def make_server(host: str, port: int, html_dir: Path, html_file: str, landing_file: str,
+                agg: AggregatorClient) -> ThreadingHTTPServer:
     DashboardHandler.html_dir = html_dir
     DashboardHandler.html_file = html_file
+    DashboardHandler.landing_file = landing_file
     DashboardHandler.agg = agg
     ThreadingHTTPServer.daemon_threads = True
     ThreadingHTTPServer.allow_reuse_address = True
@@ -338,6 +385,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--port", type=int, default=int(os.getenv("DASH_PORT", "8913")))
     ap.add_argument("--html-dir", default=os.getenv("DASH_HTML_DIR", "/home/sergio/denaro/denaro"))
     ap.add_argument("--html-file", default=os.getenv("DASH_HTML_FILE", "dashboard_infra.html"))
+    ap.add_argument("--landing-file", default=os.getenv("DASH_LANDING_FILE", "landing.html"))
     ap.add_argument("--agg-urls", default=os.getenv("AGG_URLS") or os.getenv("AGG_URL", "http://127.0.0.1:8912/infra.json"),
                     help="URL dell'aggregatore separati da virgola, in ordine di preferenza (failover)")
     ap.add_argument("--agg-timeout", type=float, default=float(os.getenv("AGG_TIMEOUT", "6")))
@@ -349,7 +397,7 @@ def main(argv: list[str] | None = None) -> int:
     agg = AggregatorClient(args.agg_urls, args.agg_timeout, Path(args.cache_file), args.stale_warn)
 
     try:
-        srv = make_server(args.host, args.port, html_dir, args.html_file, agg)
+        srv = make_server(args.host, args.port, html_dir, args.html_file, args.landing_file, agg)
     except OSError as exc:
         log("bind %s:%d fallito: %s" % (args.host, args.port, exc))
         if getattr(exc, "errno", None) == 98:
@@ -357,10 +405,15 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     html_path = html_dir / args.html_file
-    log("dashboard su http://%s:%d  html=%s (%s)  aggregator=%s" % (
-        args.host, args.port, html_path, "ok" if html_path.is_file() else "MANCANTE!", " , ".join(agg.urls)))
+    landing_path = html_dir / args.landing_file
+    log("dashboard su http://%s:%d  html=%s (%s)  landing=%s (%s)  aggregator=%s" % (
+        args.host, args.port, html_path, "ok" if html_path.is_file() else "MANCANTE!",
+        landing_path, "ok" if landing_path.is_file() else "MANCANTE!",
+        " , ".join(agg.urls)))
     if not html_path.is_file():
-        log("ATTENZIONE: il file HTML non esiste, la pagina rispondera' 500")
+        log("ATTENZIONE: il file HTML non esiste, /dashboard rispondera' 500")
+    if not landing_path.is_file():
+        log("ATTENZIONE: il file landing non esiste, / rispondera' 500")
 
     try:
         srv.serve_forever()

@@ -3,17 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>La squadra dev · grivetto.eu</title>
-<meta name="description" content="La squadra dev dietro il progetto Denaro: tredici agenti AI su cinque macchine e una regia di ingegneria. Chi costruisce, misura e sorveglia il sistema.">
+<title>Denaro — il trading · denaro.grivetto.eu</title>
+<meta name="description" content="Denaro: trading sistematico crypto su OKX EEA. L'accesso al progetto — dashboard della flotta, monitoraggio dei nodi e stato del sistema.">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#05070c">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://web.grivetto.eu/">
-<meta property="og:title" content="La squadra dev — grivetto.eu">
-<meta property="og:description" content="Tredici agenti AI, cinque macchine, una regia: la squadra dev dietro il progetto Denaro.">
-<meta property="og:image" content="https://web.grivetto.eu/squadra-dev-2026-10-11.jpg">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23070b12'/%3E%3Cpath d='M16 6l9 10-9 10-9-10z' fill='none' stroke='%2358c8ff' stroke-width='2.4'/%3E%3Ccircle cx='16' cy='16' r='2.6' fill='%23b18cff'/%3E%3C/svg%3E">
-<link rel="preload" as="image" href="squadra-dev-2026-10-11.jpg">
+<meta property="og:url" content="https://denaro.grivetto.eu/">
+<meta property="og:title" content="Denaro — il trading">
+<meta property="og:description" content="Trading sistematico crypto su OKX EEA · dashboard, monitoring e stato della flotta.">
+<meta property="og:image" content="https://denaro.grivetto.eu/trading-2026-10-08.jpg">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/favicon.svg">
+<link rel="preload" as="image" href="trading-2026-10-08.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -40,15 +41,15 @@
     min-height:100vh;
     font-family:'Space Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
     color:var(--ink);
-    background:var(--bg) url("squadra-dev-2026-10-11.jpg") center top / cover fixed no-repeat;
+    background:var(--bg) url("trading-2026-10-08.jpg") center top / cover fixed no-repeat;
     display:flex;align-items:center;justify-content:center;
     padding:clamp(20px,4vw,52px) clamp(16px,3vw,36px);
   }
   body::before{
     content:"";position:fixed;inset:0;z-index:-2;
     background:
-      radial-gradient(1100px 560px at 50% 14%, rgba(88,166,255,.10), transparent 62%),
-      linear-gradient(180deg, rgba(5,7,12,.46) 0%, rgba(5,7,12,.68) 50%, rgba(5,7,12,.92) 100%);
+      radial-gradient(1100px 560px at 50% 16%, rgba(88,166,255,.10), transparent 62%),
+      linear-gradient(180deg, rgba(5,7,12,.50) 0%, rgba(5,7,12,.72) 52%, rgba(5,7,12,.93) 100%);
   }
   body::after{
     content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
@@ -62,7 +63,7 @@
   ::selection{background:rgba(88,200,255,.28)}
   a:focus-visible{outline:2px solid rgba(88,200,255,.75);outline-offset:3px;border-radius:12px}
 
-  .frame{width:100%;max-width:920px;display:flex;flex-direction:column;gap:clamp(24px,3.8vh,38px)}
+  .frame{width:100%;max-width:880px;display:flex;flex-direction:column;gap:clamp(26px,4.2vh,40px)}
 
   /* ── top bar ─────────────────────────────────────── */
   .topbar{
@@ -80,7 +81,7 @@
     color:var(--cyan);opacity:.92;padding-left:.36em;
   }
   .wordmark{
-    font-size:clamp(56px,11vw,104px);font-weight:700;line-height:1;letter-spacing:.055em;
+    font-size:clamp(58px,11.5vw,108px);font-weight:700;line-height:1;letter-spacing:.055em;
     background:linear-gradient(118deg,#7dd3fc 0%,#58a6ff 36%,#a371f7 70%,#e879f9 100%);
     -webkit-background-clip:text;background-clip:text;color:transparent;
     filter:drop-shadow(0 0 28px rgba(88,166,255,.30)) drop-shadow(0 3px 12px rgba(0,0,0,.65));
@@ -105,12 +106,12 @@
     font-family:var(--mono);font-size:12px;letter-spacing:.05em;
   }
 
-  /* ── squad cards ─────────────────────────────────── */
+  /* ── cards ───────────────────────────────────────── */
   .cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   .card{
-    position:relative;display:flex;align-items:flex-start;gap:16px;padding:18px 18px;
+    position:relative;display:flex;align-items:center;gap:16px;padding:19px 18px;
     background:var(--panel);border:1px solid var(--border);border-radius:14px;
-    color:var(--ink);overflow:hidden;
+    color:var(--ink);text-decoration:none;overflow:hidden;
     backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
     transition:border-color .2s,transform .2s,box-shadow .25s,background .2s;
   }
@@ -124,21 +125,18 @@
     border-color:var(--border-strong);background:var(--panel-hover);transform:translateY(-2px);
     box-shadow:0 14px 36px rgba(0,0,0,.45), 0 0 30px rgba(88,166,255,.12);
   }
+  .card:hover::before,.card:hover::after{opacity:1}
   .ico{
     flex:0 0 auto;width:43px;height:43px;border-radius:11px;display:grid;place-items:center;
     border:1px solid rgba(88,166,255,.34);color:#9fc6ff;
     background:linear-gradient(150deg,rgba(88,166,255,.16),rgba(163,113,247,.10));
   }
-  .ico.violet{border-color:rgba(177,140,255,.34);color:#cdb6ff;background:linear-gradient(150deg,rgba(163,113,247,.18),rgba(88,200,255,.08))}
-  .ico.green{border-color:rgba(47,227,164,.34);color:#7cf0c8;background:linear-gradient(150deg,rgba(47,227,164,.14),rgba(88,166,255,.08))}
   .ico svg{width:21px;height:21px}
-  .card h2{font-size:16px;font-weight:600;letter-spacing:.02em;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  .mult{
-    font-family:var(--mono);font-size:11px;font-weight:500;color:var(--cyan);
-    border:1px solid rgba(88,200,255,.35);border-radius:999px;padding:1px 8px;letter-spacing:.02em;
-  }
+  .card h2{font-size:16px;font-weight:600;letter-spacing:.02em}
   .card p{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-top:4px;letter-spacing:.03em}
-  .card p.role{color:var(--muted-2);font-size:10.5px;margin-top:3px}
+  .arrow{margin-left:auto;color:var(--muted-2);transition:transform .2s,color .2s}
+  .arrow svg{width:18px;height:18px;display:block}
+  .card:hover .arrow{transform:translateX(3px);color:#9fc6ff}
 
   /* ── links / footer ──────────────────────────────── */
   .linksrow{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
@@ -179,115 +177,63 @@
   <header class="topbar">
     <span class="brand">
       <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="3"><path d="M16 5l10 11-10 11L6 16z"/></svg>
-      grivetto.eu
+      denaro.grivetto.eu
     </span>
-    <span>la squadra dev</span>
+    <span>sala controllo</span>
   </header>
 
   <main class="hero">
-    <p class="kicker">dietro il progetto denaro</p>
-    <h1 class="wordmark">SQUADRA</h1>
-    <p class="tagline">tredici agenti AI · cinque macchine · <span class="hl">una regia</span></p>
+    <p class="kicker">il trading · accesso al progetto</p>
+    <h1 class="wordmark">DENARO</h1>
+    <p class="tagline">Trading sistematico crypto · <span class="hl">OKX&nbsp;EEA</span></p>
     <div class="statusrow">
-      <span class="pill"><span class="dot"></span>squadra in servizio</span>
-      <span class="chip">5 nodi · 13 agenti + Hermes</span>
+      <span class="pill"><span class="dot"></span>Sistema operativo</span>
+      <span class="chip">flotta · 5 nodi · 13 agenti</span>
     </div>
   </main>
 
-  <section class="cards" aria-label="La squadra">
-
-    <div class="card">
+  <section class="cards" aria-label="Accessi">
+    <a class="card" href="/dashboard">
       <span class="ico" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 3l7 9-7 9-7-9z"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/>
+          <path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/>
         </svg>
       </span>
       <span>
-        <h2>HERMES</h2>
-        <p>regia · ingegnere capo — mc2</p>
-        <p class="role">misure, review, integrazione: chi decide e firma</p>
+        <h2>Dashboard</h2>
+        <p>flotta bot · equity · posizioni</p>
       </span>
-    </div>
-
-    <div class="card">
-      <span class="ico green" aria-hidden="true">
+      <span class="arrow" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="5" y="8" width="14" height="10" rx="3"/><path d="M12 8V5"/><circle cx="9.5" cy="13" r="1" fill="currentColor" stroke="none"/><circle cx="14.5" cy="13" r="1" fill="currentColor" stroke="none"/>
+          <path d="M5 12h14M13 6l6 6-6 6"/>
         </svg>
       </span>
-      <span>
-        <h2>A0 <span class="mult">×2</span></h2>
-        <p>operai autonomi — mc2 · win</p>
-        <p class="role">task asincroni e consegne in handoff</p>
-      </span>
-    </div>
+    </a>
 
-    <div class="card">
+    <a class="card" href="https://zab.grivetto.eu/" target="_blank" rel="noopener">
       <span class="ico" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 6l5 6-5 6"/><path d="M12 18h8"/>
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
         </svg>
       </span>
       <span>
-        <h2>DSH <span class="mult">×3</span></h2>
-        <p>esecutori di ricerca — mc2 · omarchy · win</p>
-        <p class="role">harness DeepSeek, contro-verifiche indipendenti</p>
+        <h2>Monitoring</h2>
+        <p>nodi · metriche · allarmi</p>
       </span>
-    </div>
-
-    <div class="card">
-      <span class="ico violet" aria-hidden="true">
+      <span class="arrow" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M8 4c-2 0-3 1-3 3v3c0 1.5-.8 2-2 2 1.2 0 2 .5 2 2v3c0 2 1 3 3 3"/><path d="M16 4c2 0 3 1 3 3v3c0 1.5.8 2 2 2-1.2 0-2 .5-2 2v3c0 2-1 3-3 3"/>
+          <path d="M5 12h14M13 6l6 6-6 6"/>
         </svg>
       </span>
-      <span>
-        <h2>opencode <span class="mult">×4</span></h2>
-        <p>operai coding — mc2 · nuvola · omarchy · MARCODG1</p>
-        <p class="role">sessioni headless in parallelo, servizio con auto-restart</p>
-      </span>
-    </div>
-
-    <div class="card">
-      <span class="ico violet" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M13 2L4 14h6l-1 8 9-12h-6z"/>
-        </svg>
-      </span>
-      <span>
-        <h2>agy <span class="mult">×4</span></h2>
-        <p>agenti Antigravity — mc2 · nuvola · omarchy · MARCODG1</p>
-        <p class="role">allowlist, mai permessi pericolosi, niente inferenza locale</p>
-      </span>
-    </div>
-
-    <div class="card">
-      <span class="ico green" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/>
-        </svg>
-      </span>
-      <span>
-        <h2>FABBRICA</h2>
-        <p>il nastro continuo — mc2 + worker sui nodi</p>
-        <p class="role">un tick ogni 3 secondi, mai ferma</p>
-      </span>
-    </div>
-
+    </a>
   </section>
 
   <nav class="linksrow" aria-label="Collegamenti">
-    <a class="ghost" href="https://denaro.grivetto.eu/" target="_blank" rel="noopener">
+    <a class="ghost" href="https://web.grivetto.eu/" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M7 17L17 7"/><path d="M9 7h8v8"/>
+        <path d="M17 20h5v-2a3 3 0 00-5.36-1.86"/><path d="M9 20H4v-2a3 3 0 015.36-1.86"/><circle cx="12" cy="7" r="3"/><circle cx="19" cy="10" r="2"/><circle cx="5" cy="10" r="2"/>
       </svg>
-      il progetto · denaro
-    </a>
-    <a class="ghost" href="https://zab.grivetto.eu/" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-      </svg>
-      monitoring · zab
+      la squadra · web
     </a>
     <a class="ghost" href="https://github.com/grivetto/money" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -303,7 +249,9 @@
       <span class="n">mc2</span>·<span class="n">MARCODG1</span>·<span class="n">nuvola</span>·<span class="n">omarchy</span>·<span class="n">win</span>
     </span>
     <span class="credits">
-      <a href="squadra-dev-2026-10-11.jpg" target="_blank" rel="noopener">la squadra · 11/10/2026</a>
+      <a href="trading-2026-10-08.jpg" target="_blank" rel="noopener">il trading · 08/10/2026</a>
+      <a class="sep">·</a>
+      <a href="https://web.grivetto.eu/" target="_blank" rel="noopener">la squadra · 11/10/2026</a>
       <a class="sep">·</a>
       <span>© 2026 Sergio Grivetto</span>
     </span>

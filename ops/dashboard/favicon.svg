@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0a1226"/>
+      <stop offset="1" stop-color="#070b12"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="7" fill="url(#g)"/>
+  <!-- trend line (cyan) -->
+  <path d="M4.5 21.5 L11 16.5 L15.5 18.5 L27.5 9.5" fill="none" stroke="#58c8ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+  <!-- candlestick 1 (red, down) -->
+  <line x1="9.2" y1="12.2" x2="9.2" y2="21.8" stroke="#ff5b7a" stroke-width="1.1" stroke-linecap="round"/>
+  <rect x="7.5" y="14.2" width="3.4" height="5.2" rx="0.8" fill="#ff5b7a"/>
+  <!-- candlestick 2 (green, up) -->
+  <line x1="19.4" y1="7.6" x2="19.4" y2="17.2" stroke="#2fe3a4" stroke-width="1.1" stroke-linecap="round"/>
+  <rect x="17.7" y="9.4" width="3.4" height="5.6" rx="0.8" fill="#2fe3a4"/>
+  <!-- small wick dot accent -->
+  <circle cx="24.6" cy="7.2" r="1.5" fill="#b18cff"/>
+</svg>
