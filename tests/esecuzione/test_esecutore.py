@@ -63,10 +63,38 @@ def ambiente_arg(amb):
 
 @pytest.fixture()
 def live(ambiente, monkeypatch):
+    """Armatura completa: MONEY_LIVE_ARMED=1 + PromotionArtifact FIRMATO e valido.
+
+    Il lock live non accetta piu' un file qualsiasi: la fixture costruisce l'artefatto
+    con `promozione.crea` e lo scrive con `promozione.scrivi`, come farebbe il cancello.
+    """
+    from money.esecuzione import promozione as PR
+
     monkeypatch.setenv("MONEY_LIVE_ARMED", "1")
-    ambiente["promo"].write_text("promossa dal cancello\n", encoding="utf-8")
-    ambiente["promozione"] = str(ambiente["promo"])
+    art = PR.crea(strategy_id="test_live", nome="fixture", capitale_max_eur=100.0,
+                  n_tentativi_ipotesi=24, n_tentativi_cumulativi=311838, dsr=0.97)
+    ambiente["promozione"] = str(PR.scrivi(art, ambiente["promo"].parent))
     return ambiente
+
+
+def test_live_rifiuta_file_di_promozione_spazzatura(ambiente, monkeypatch):
+    """Regressione: prima il lock accettava qualsiasi file esistente (verificato in probe)."""
+    monkeypatch.setenv("MONEY_LIVE_ARMED", "1")
+    ambiente["promo"].write_text('{"non": "una promozione"}', encoding="utf-8")
+    with pytest.raises(ez.Rifiutato, match="promozione non valida"):
+        ez.Esecutore(live=True, promozione_path=str(ambiente["promo"]), **ambiente_arg(ambiente))
+
+
+def test_live_rifiuta_promozione_manomessa(live):
+    import json
+    from pathlib import Path
+
+    p = Path(live["promozione"])
+    d = json.loads(p.read_text(encoding="utf-8"))
+    d["capitale_max_eur"] = 999999.0          # manomissione: l'hash non torna piu'
+    p.write_text(json.dumps(d), encoding="utf-8")
+    with pytest.raises(ez.Rifiutato, match="promozione non valida"):
+        ez.Esecutore(live=True, promozione_path=live["promozione"], **ambiente_arg(live))
 
 
 # --- sizing (la lezione int(step)) -------------------------------------------------------

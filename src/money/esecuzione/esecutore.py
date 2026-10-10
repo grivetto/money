@@ -119,9 +119,16 @@ class Esecutore:
         if self.live:
             if os.environ.get("MONEY_LIVE_ARMED") != "1":
                 raise Rifiutato("live richiesto ma MONEY_LIVE_ARMED != 1: resto in dry-run per costruzione")
+            # Fail-closed: il lock NON basta che il file esista. L'artefatto deve essere
+            # leggibile, con hash integro, verdetto PROMOSSA, DSR e scadenza validi.
             if not promozione_path or not os.path.exists(promozione_path):
                 raise Rifiutato("live richiesto senza file di promozione del cancello: "
                                 "nessun edge misurato, nessun ordine reale")
+            from . import promozione as _promozione
+            try:
+                self.promozione = _promozione.leggi(promozione_path)
+            except (_promozione.PromozioneInvalida, ValueError, KeyError, TypeError, OSError) as exc:
+                raise Rifiutato(f"promozione non valida, live bloccato: {exc}") from None
 
     # --- costruzione: pura, testabile, senza rete ----------------------------------------
 
