@@ -57,3 +57,4 @@
 
 ## 2026-10-10 — S4 raddoppiata; priorità ricerca edge
 - **S4 «caccia continua»: cadenza raddoppiata** (direttiva proprietario: «diamo priorità alla ricerca di edge buoni e validi, raddoppia il cron»): da `*/10` a `*/5` su mc2 (~288 giri/giorno, ~46.000 config/giorno a lotto 160); watchdog liveness 45'→25'; metodo/DSR/spazio invariati. Stato: 315 giri, 316k valutabili, 5.214 papabili, 0 candidati; saturazione stimata ~2–3 giorni.
+- **Verifica post-avvio (10/10, 06:15–07:00Z)**: 10 tick consecutivi ogni 5' esatti (scarto max ~5 s), 0 buchi; il rallentamento del contatore `cumulativi` è fisiologico — la frontiera attraversa la coda dello spazio (fasce a finestre estreme quasi mai valutabili: `donchian n_in`≥100 → 0/2.689; `ema fast`≥20 → 0/6.440), non un guasto; coerenza `somma stat.n` ≡ contatore verificata (316.104). Lezione registrata in skill.
