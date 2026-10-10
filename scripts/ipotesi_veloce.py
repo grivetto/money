@@ -184,6 +184,29 @@ def main() -> int:
             "dsr": _dsr_valore(sel), "verdetto": v, "motivo": motivo,
         })
 
+    # --- consistenza cross-simbolo: il meccanismo regge su PIU' simboli, o e' un caso? ---
+    # Una selezione puo' vincere su un simbolo per fortuna. Il test forte e' la MEDIA del
+    # meccanismo su TUTTI i simboli: se la configurazione ha expectancy OOS positiva solo
+    # sul "migliore" e negativa altrove, non e' un edge -- e' selezione.
+    per_config: dict = {}
+    for t in res["trials"]:
+        per_config.setdefault(t["chiave"], []).append(t)
+    consistenza = []
+    for chiave in sorted(per_config):
+        oos_exp = [t["oos"]["expectancy"] for t in per_config[chiave]
+                   if (t["oos"]["n"] or 0) >= S.MIN_OP and t["oos"]["expectancy"] is not None]
+        if not oos_exp:
+            consistenza.append({"config": chiave, "n_simboli": 0, "quota_positiva": None,
+                                "media_attesa": None, "verdetto_meccanismo": "NON_TESTABILE"})
+            continue
+        quota = sum(1 for x in oos_exp if x > 0) / len(oos_exp)
+        media = sum(oos_exp) / len(oos_exp)
+        # PROMOSSO solo se la MAGGIORANZA dei simboli e' positiva E la media e' positiva.
+        vm = "COERENTE" if (quota >= 0.6 and media > 0) else "NON COERENTE"
+        consistenza.append({"config": chiave, "n_simboli": len(oos_exp),
+                            "quota_positiva": round(quota, 3), "media_attesa": round(media, 6),
+                            "verdetto_meccanismo": vm})
+
     out = {
         "ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "ipotesi": ip.get("nome"), "autore": ip.get("autore"),
@@ -194,6 +217,7 @@ def main() -> int:
         "n_tentativi_dsr": n_eff,
         "candidati": len(res["candidati"]),
         "selezioni": esiti,
+        "consistenza_meccanismo": consistenza,
     }
 
     if a.json:

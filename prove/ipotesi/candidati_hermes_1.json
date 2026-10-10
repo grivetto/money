@@ -1,0 +1,17 @@
+{
+  "nome": "candidati-hermes-1",
+  "autore": "hermes",
+  "timeframe": "1d",
+  "inizio": "2020-10-01",
+  "fine": "2026-10-08",
+  "confine": "2024-06-01",
+  "simboli": ["BTC/USDT", "ETH/USDT", "SOL/USDT", "DOGE/USDT", "XRP/USDT", "LINK/USDT", "DOT/USDT"],
+  "configs": [
+    {"famiglia": "vol_regime", "n_in": 20, "n_out": 10, "vol_n": 20, "look": 120, "q": 0.40},
+    {"famiglia": "vol_regime", "n_in": 55, "n_out": 20, "vol_n": 20, "look": 120, "q": 0.30},
+    {"famiglia": "vol_confirmata", "L": 20, "v_n": 20, "v_mult": 2.0},
+    {"famiglia": "vol_confirmata", "L": 60, "v_n": 20, "v_mult": 3.0},
+    {"famiglia": "capitolazione", "disc": 3, "soglia": 0.12, "v_mult": 2.0, "v_n": 20, "tieni": 5},
+    {"famiglia": "capitolazione", "disc": 5, "soglia": 0.20, "v_mult": 3.0, "v_n": 20, "tieni": 7}
+  ]
+}
