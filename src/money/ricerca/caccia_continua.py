@@ -2,7 +2,7 @@
 
 COSA E' (E COSA NON E')
 =======================
-Estensione a ciclo continuo del banco esplorativo (S1/S3). Ogni giro — cron, ogni 10
+Estensione a ciclo continuo del banco esplorativo (S1/S3). Ogni giro — cron, ogni 5
 minuti — valuta un LOTTO di configurazioni **mai testate prima**, prese dal vicinato a
 ±1 passo (`PASSI_VICINI` di S3) delle configurazioni gia' viste (semi: S1+S3+S3ampio),
 entro i `LIMITI` dichiarati qui sotto, PRIMA dei numeri. L'ordine e' BEST-FIRST

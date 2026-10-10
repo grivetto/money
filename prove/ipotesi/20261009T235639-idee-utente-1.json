@@ -1,0 +1,118 @@
+{
+ "ts": "2026-10-09T23:56:39Z",
+ "ipotesi": "idee-utente-1",
+ "autore": "lista-strategie proprietario",
+ "finestre": {
+  "inizio": "2020-10-01",
+  "confine": "2024-06-01",
+  "fine": "2026-10-08"
+ },
+ "stress_slippage": 1.0,
+ "tariffa": "okx_eea_con_perp",
+ "n_config": 4,
+ "n_trials_valutabili": 24,
+ "n_tentativi_dsr": 24,
+ "candidati": 0,
+ "selezioni": [
+  {
+   "config": "rsi2(periodo=2,soglia_in=10.0,soglia_out=60.0)",
+   "simbolo": "DOGE/USDT",
+   "train": {
+    "n": 64,
+    "expectancy": 0.06381197474273859,
+    "t_stat": 1.0290804052602296,
+    "profit_factor": 3.1006123936504,
+    "win_rate": 0.640625,
+    "sharpe": 0.1286350506575287,
+    "somma": 4.0839663835352695
+   },
+   "oos": {
+    "n": 47,
+    "expectancy": 0.004822561102596585,
+    "t_stat": 0.46906681574873865,
+    "profit_factor": 1.1939817094158616,
+    "win_rate": 0.574468085106383,
+    "sharpe": 0.06842042709113423,
+    "somma": 0.22666037182203952
+   },
+   "dsr": 0.30916617617869824,
+   "verdetto": "RESPINTA",
+   "motivo": "DSR 0.3092 < 0.95 (selezione multipla)"
+  },
+  {
+   "config": "rsi2(periodo=5,soglia_in=30.0,soglia_out=50.0)",
+   "simbolo": "DOGE/USDT",
+   "train": {
+    "n": 41,
+    "expectancy": 0.09214712488522121,
+    "t_stat": 1.0743034427537759,
+    "profit_factor": 3.53495860672098,
+    "win_rate": 0.6585365853658537,
+    "sharpe": 0.16777801006473791,
+    "somma": 3.77803212029407
+   },
+   "oos": {
+    "n": 29,
+    "expectancy": -0.010896983056477027,
+    "t_stat": -0.6810068624501221,
+    "profit_factor": 0.737455062625794,
+    "win_rate": 0.5517241379310345,
+    "sharpe": -0.12645979962356846,
+    "somma": -0.31601250863783376
+   },
+   "dsr": 0.0785751072808829,
+   "verdetto": "RESPINTA",
+   "motivo": "verifica con 29 operazioni < 30 (campione insufficiente)"
+  },
+  {
+   "config": "terzo_giorno(disc=3,tieni=5)",
+   "simbolo": "DOGE/USDT",
+   "train": {
+    "n": 66,
+    "expectancy": 0.06354676094656861,
+    "t_stat": 1.1026247335799497,
+    "profit_factor": 2.845527396887421,
+    "win_rate": 0.5454545454545454,
+    "sharpe": 0.13572372244704553,
+    "somma": 4.194086222473528
+   },
+   "oos": {
+    "n": 54,
+    "expectancy": -0.0020765402131715195,
+    "t_stat": -0.16507329457010958,
+    "profit_factor": 0.9392479170636612,
+    "win_rate": 0.4074074074074074,
+    "sharpe": -0.022463630103161637,
+    "somma": -0.11213317151126205
+   },
+   "dsr": 0.1156724738883273,
+   "verdetto": "RESPINTA",
+   "motivo": "expectancy di verifica -0.0020765402131715195 non positiva"
+  },
+  {
+   "config": "terzo_giorno(disc=3,tieni=7)",
+   "simbolo": "DOGE/USDT",
+   "train": {
+    "n": 59,
+    "expectancy": 0.08208616628655997,
+    "t_stat": 1.1779253158655523,
+    "profit_factor": 3.2906811320584426,
+    "win_rate": 0.576271186440678,
+    "sharpe": 0.15335281408927923,
+    "somma": 4.843083810907038
+   },
+   "oos": {
+    "n": 51,
+    "expectancy": -0.011629540720015798,
+    "t_stat": -0.768200710183362,
+    "profit_factor": 0.7501090412399142,
+    "win_rate": 0.37254901960784315,
+    "sharpe": -0.10756961550059349,
+    "somma": -0.5931065767208057
+   },
+   "dsr": 0.0392558037649694,
+   "verdetto": "RESPINTA",
+   "motivo": "expectancy di verifica -0.011629540720015798 non positiva"
+  }
+ ]
+}

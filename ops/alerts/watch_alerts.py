@@ -39,7 +39,7 @@ UNITS = ["fabbrica-tick.timer", "hermes-gateway.service", "denaro-node-mc2.servi
 DISCO_MAX_PCT = 90.0
 MONITOR_FERMO_S = 1800  # il cron canary gira ogni 10': oltre 30' = monitor fermo
 CACCIA_STATO = Path("/home/sergio/money/prove/caccia_continua/stato.json")
-CACCIA_FERMA_S = 2700  # la caccia (S4) gira ogni 10': oltre 45' senza un giro = ferma
+CACCIA_FERMA_S = 1500  # la caccia (S4) gira ogni 5': oltre 25' senza un giro = ferma
 
 
 def docker_stati() -> dict:
@@ -73,7 +73,7 @@ def unit_stato(unit: str) -> str:
 
 
 def caccia_stato(percorso: Path = CACCIA_STATO, adesso: float | None = None) -> tuple[bool, str]:
-    """(problema, dettaglio) sulla liveness della caccia continua (S4, cron */10 su mc2).
+    """(problema, dettaglio) sulla liveness della caccia continua (S4, cron */5 su mc2).
 
     Ferma = stato assente (cron mai partito / stato cancellato) oppure nessun giro da
     oltre `CACCIA_FERMA_S`. Spazio esaurito = fine corsa dichiarata, non un guasto.

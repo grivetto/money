@@ -16,7 +16,7 @@ passano dal cancello (spec -> misura -> cancello).
 Uso:   .venv/bin/python scripts/caccia_continua.py [--batch 96] [--fine 2026-10-07]
        .venv/bin/python scripts/caccia_continua.py --prova        # nessuna scrittura
        .venv/bin/python scripts/caccia_continua.py --mostra-stato
-Cron:  */10 su mc2 (flock). Stato: prove/caccia_continua/ (runtime, fuori git).
+Cron:  */5 su mc2 (flock). Stato: prove/caccia_continua/ (runtime, fuori git).
 """
 from __future__ import annotations
 

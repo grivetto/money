@@ -1,4 +1,4 @@
-# crontab mc2 — pulito 2026-09-25 (aggiornato 2026-10-08: + S4 caccia continua ogni 10')
+# crontab mc2 — pulito 2026-09-25 (aggiornato 2026-10-10: S4 caccia continua ogni 5')
 # Fix: path canonici /home/sergio/alpha-omega-trading (prima metà righe puntavano a ~/denaro/*)
 # zabbix_fleet/ds_heartbeat/backup/moa: invariati
 # DISABLED 2026-09-25 (push a host inesistenti; copertura via push_metrics/zabbix_bots): * * * * * /usr/bin/python3 /home/sergio/zabbix_monitoring/zabbix_fleet.py >> /home/sergio/zabbix_monitoring/monitor.log 2>&1
@@ -21,7 +21,7 @@
 */5 * * * * cd /home/sergio/money && mkdir -p logs && /usr/bin/flock -n /tmp/cruscotto.lock /home/sergio/money/.venv/bin/python scripts/cruscotto.py >> logs/cruscotto.log 2>&1
 # Loop ricerca money — scansione giornaliera (auto, 05:15 UTC)
 15 5 * * * cd /home/sergio/money && .venv/bin/python scripts/scansione_giornaliera.py >> logs/scansione_loop.log 2>&1
-# S4 — caccia continua: ricerca edge nuovi ogni 10' (auto; dichiarazione in src/money/ricerca/caccia_continua.py)
-*/10 * * * * cd /home/sergio/money && /usr/bin/flock -n /tmp/caccia_continua.lock /home/sergio/money/.venv/bin/python scripts/caccia_continua.py >> logs/caccia_continua.log 2>&1
+# S4 — caccia continua: ricerca edge nuovi ogni 5' (auto; dichiarazione in src/money/ricerca/caccia_continua.py)
+*/5 * * * * cd /home/sergio/money && /usr/bin/flock -n /tmp/caccia_continua.lock /home/sergio/money/.venv/bin/python scripts/caccia_continua.py >> logs/caccia_continua.log 2>&1
 # Operai di sviluppo (A0 · DSH · agy · opencode) — collector Zabbix, ogni minuto (auto; heartbeat dev.collector.heartbeat)
 * * * * * cd /home/sergio/money && /usr/bin/flock -n /tmp/dev_platform.lock /home/sergio/money/.venv/bin/python ops/zabbix/dev_platform.py >> logs/dev_platform.log 2>&1
