@@ -65,6 +65,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from money.costi import get_tariffa  # noqa: E402
 from money.dati import Scarica  # noqa: E402
+from money.esecuzione import promozione as PR  # noqa: E402
 from money.ricerca import scansione as S  # noqa: E402
 from scansione import SLIPPAGE_PER_LATO, TARIFFA, carica_universo  # noqa: E402
 
@@ -149,6 +150,10 @@ def main() -> int:
     ap.add_argument("--cumulativi", type=int, default=0,
                     help="tentativi storici cumulativi da aggiungere al conteggio DSR")
     ap.add_argument("--estensione", default="", help="modulo con stato_fn per famiglie nuove")
+    ap.add_argument("--promuovi", action="store_true",
+                    help="se una selezione e' PROMOSSA, scrive un PromotionArtifact (sblocca il capitale)")
+    ap.add_argument("--capitale", type=float, default=100.0,
+                    help="capitale massimo che la promozione autorizza (default 100 EUR)")
     ap.add_argument("--json", action="store_true", help="stampa solo il risultato JSON")
     a = ap.parse_args()
 
@@ -248,7 +253,41 @@ def main() -> int:
         p = OUT_DIR / f"{datetime.now(timezone.utc):%Y%m%dT%H%M%S}-{slug}.json"
         p.write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
         print(f"  artefatto: {p.relative_to(RADICE)}")
+
+    # --- lo sblocco del capitale: SOLO via PromotionArtifact, e SOLO su PROMOSSA --------
+    # Il capitale di validazione (~100 EUR) NON si arma per "testare l'infra": si arma solo
+    # quando un'ipotesi supera il cancello E il meccanismo e' coerente su piu' simboli.
+    if a.promuovi:
+        promosse = [e for e in esiti if e["verdetto"] == "PROMOSSA"]
+        if not promosse:
+            print("  [promozione] NESSUNA selezione PROMOSSA: il capitale resta congelato.")
+            return 0
+        # la migliore promossa, ma solo se il meccanismo e' coerente cross-simbolo
+        migliore = max(promosse, key=lambda e: e["oos"].get("expectancy") or 0.0)
+        coerenti = {c["config"]: c for c in consistenza}
+        mc = coerenti.get(migliore["config"], {})
+        if mc.get("verdetto_meccanismo") != "COERENTE":
+            print(f"  [promozione] RIFIUTATA: il meccanismo {migliore['config']} non e' "
+                  f"coerente cross-simbolo ({mc.get('quota_positiva')} positivi). "
+                  "Una selezione su un simbolo fortunato non basta.")
+            return 0
+        art = PR.crea(
+            strategy_id=_slug(migliore["config"]), nome=str(ip.get("nome")),
+            capitale_max_eur=float(a.capitale),
+            n_tentativi_ipotesi=res["meta"]["n_trials_valutabili"],
+            n_tentativi_cumulativi=max(n_eff, res["meta"]["n_trials_valutabili"]),
+            dsr=float(migliore["dsr"]), costi={"tariffa": TARIFFA, "slippage_lato": slippage},
+            metriche={"oos": migliore["oos"], "train": migliore["train"],
+                      "simbolo": migliore["simbolo"], "config": migliore["config"]})
+        pp = PR.scrivi(art, RADICE / "prove" / "promozioni")
+        print(f"  [promozione] ARTEFATTO SCRITTO: {pp.relative_to(RADICE)}")
+        print(f"  [promozione] capitale autorizzato {art.capitale_max_eur:.0f} EUR, "
+              f"scade {art.scade[:10]}, DS R {art.dsr:.4f}, N cumulativo {art.n_tentativi_cumulativi}")
     return 0
+
+
+def _slug(testo: str) -> str:
+    return "".join(c if (c.isalnum() or c in "-_") else "_" for c in testo)[:48]
 
 
 def _f(x) -> str:
