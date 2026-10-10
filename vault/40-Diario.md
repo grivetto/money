@@ -54,3 +54,6 @@
 - **omarchy post-ricostruzione, servizi ricostituiti**: `dsh-web.service` :5080 (fix della unit rimasta a :3080 nel repo), `opencode.service`, `antigravity-cli-daemon` (agy, linger on), docker + agent-zero `unless-stopped`; smoke: PONG su DSH headless, opencode, agy.
 - **Trovato e corretto su omarchy**: un opencode stantio 1.18.35 (mise) mascherava il v2.0.24 ufficiale via PATH (errore sul db v2) → rimosso da mise, `~/.local/bin/opencode` → symlink al binario ufficiale.
 - **Landing**: nuovo sfondo a tema trading (`TRADING_2026-10-08.html/.jpg`), overlay alleggerito a due strati — candele/curva/ticker visibili e testo leggibile; live su web.grivetto.eu.
+
+## 2026-10-10 — S4 raddoppiata; priorità ricerca edge
+- **S4 «caccia continua»: cadenza raddoppiata** (direttiva proprietario: «diamo priorità alla ricerca di edge buoni e validi, raddoppia il cron»): da `*/10` a `*/5` su mc2 (~288 giri/giorno, ~46.000 config/giorno a lotto 160); watchdog liveness 45'→25'; metodo/DSR/spazio invariati. Stato: 315 giri, 316k valutabili, 5.214 papabili, 0 candidati; saturazione stimata ~2–3 giorni.
