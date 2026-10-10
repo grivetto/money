@@ -70,8 +70,15 @@ JSON_ROUTES = {"/api/infra.json", "/infra.json", "/api/infra", "/infra", "/api/d
 # La scheda scommessa legge il file scritto dal cron (tools/scommessa.py su
 # MARCODG1); il server lo serve senza cache: se manca -> 404 "nessun dato".
 SCOMMESSA_ROUTES = {"/scommessa.json", "/api/scommessa.json"}
-# favicon a tema gioco (dado neon), servita come file statico
-FAVICON_ROUTES = {"/favicon.svg", "/favicon.ico", "/favicon.png"}
+# favicon a tema trading (candele neon) — ogni estensione serve il file corretto
+FAVICON_MAP = {
+    "/favicon.svg":     ("favicon.svg",     "image/svg+xml"),
+    "/favicon.ico":     ("favicon.ico",     "image/x-icon"),
+    "/favicon.png":     ("favicon.png",     "image/png"),
+    "/favicon-192.png": ("favicon-192.png", "image/png"),
+}
+FAVICON_ROUTES = set(FAVICON_MAP.keys())  # retrocompatibilità
+FAVICON_CACHE_BUST = "v=trade"  # per forzare il refresh nei browser
 
 
 def log(msg: str) -> None:
@@ -308,14 +315,15 @@ class DashboardHandler(BaseHTTPRequestHandler):
     # ---------- HTTP ----------
     def do_GET(self) -> None:  # noqa: N802
         path = self.path.split("?", 1)[0].rstrip("/") or "/"
-        if path in FAVICON_ROUTES:
-            _fav = Path(self.html_dir) / "favicon.svg"
+        _fav = FAVICON_MAP.get(path)
+        if _fav is not None:
+            _fpath = Path(self.html_dir) / _fav[0]
             try:
-                self._send(200, _fav.read_bytes(), "image/svg+xml",
+                self._send(200, _fpath.read_bytes(), _fav[1],
                            {"Cache-Control": "public, max-age=86400"})
             except OSError as _exc:
                 log("favicon non leggibile: %s" % _exc)
-                self._send(404, b"", "image/svg+xml")
+                self._send(404, b"", _fav[1])
             return
         _asset = ASSET_ROUTES.get(path)
         if _asset is not None:
@@ -338,14 +346,15 @@ class DashboardHandler(BaseHTTPRequestHandler):
 
     def do_HEAD(self) -> None:  # noqa: N802
         path = self.path.split("?", 1)[0].rstrip("/") or "/"
-        if path in FAVICON_ROUTES:
-            _fav = Path(self.html_dir) / "favicon.svg"
+        _fav = FAVICON_MAP.get(path)
+        if _fav is not None:
+            _fpath = Path(self.html_dir) / _fav[0]
             try:
-                self._send(200, _fav.read_bytes(), "image/svg+xml",
+                self._send(200, _fpath.read_bytes(), _fav[1],
                            {"Cache-Control": "public, max-age=86400"})
             except OSError as _exc:
                 log("favicon non leggibile: %s" % _exc)
-                self._send(404, b"", "image/svg+xml")
+                self._send(404, b"", _fav[1])
             return
         _asset = ASSET_ROUTES.get(path)
         if _asset is not None:
