@@ -65,3 +65,9 @@
 - **Favicon trading su denaro.grivetto.eu**: nuova `favicon.svg` (candele neon + trend) — prima era 404. Live e verificata.
 - **Grafana**: link «Dashboard Money» aggiornato → `denaro.grivetto.eu/dashboard` (la root è la landing).
 - Verifiche post-deploy: `denaro.grivetto.eu/` = landing trading · `/dashboard` = Neon Grid · `/favicon.svg` 200 · `/api/infra.json` 200 · `web.grivetto.eu/` = squadra dev · sfondo squadra 200. Screenshot in `report/landing_2026-10-11/`.
+
+## 2026-10-11 (notte) — «Il sito mostra solo 120 €»: buco di lettura (terzo comparto), guardie equity
+- **Segnalazione proprietario** («denaro.grivetto.eu mostra solo 120€?»): NO, non era corretto. Dopo lo spostamento di ~1.061 € in Simple Earn, l'aggregator leggeva solo trading+funding: equity mostrata ~120 vs **~1.100 reali**; stesso buco nell'exporter (Grafana main=20,14) e quindi su Zabbix/trend. Fondi sempre al sicuro: buco di LETTURA (comparto savings), non di capitale.
+- **Fix (3 nodi + sito, verificato)**: aggregator mc2+MARCODG1 e `denaro2/exporter.py` (mc2/MARCODG1/nuvola) sommano **trading+funding+savings** (`privateGetFinanceSavingsBalance`, retry, flag `savings_ok`; nuovo gauge `denaro_equity_real_partial`); `okx_ops.py saldi` allineato; trend ricostruito (36 punti interpolati, backup `.bak-20261011`); patch exporter versionata in `ops/tools/patch_exporter_equity_savings.py`.
+- **Verifica**: `denaro.grivetto.eu/dashboard` = **1.100,30 €** (hero + breakdown per conto); Zabbix `project.equity` = 1.100,3; Prometheus `main` = 1.100,17; 0 problemi attivi su Zabbix/Prometheus.
+- **Guardie anti-ricaduta**: trigger Zabbix «Money: equity crollo (>30% vs media 24h)» (id 26304) + modo `watch_alerts.py equity` (*/10 su mc2: crollo <70% del max 24h, letture per-conto incomplete, total assente; anti-spam 6h) + 6 test (`tests/test_watch_alerts_equity.py`). Lezione in skill: **i comparti OKX sono TRE**.

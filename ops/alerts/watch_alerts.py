@@ -8,12 +8,15 @@ Modalità:
   bots     — salute bot dal payload aggregatore: regressioni running->giù con rientro,
              nodi non raggiungibili dall'aggregatore.
   flotta   — fleet_integrity sui nodi remoti (MARCODG1, nuvola): allarme se compaiono ALLARMI.
-  digest   — riepilogo giornaliero (sempre inviato): capitale, flotta, canary.
+  equity   — capitale dal payload master: allarme se sotto il 70% del massimo delle ultime
+             24h (classe «1.100→120»: comparto non letto) o se le letture per-conto sono rotte.
+  digest   — riepilogo giornaliero (sempre inviato): capitale (main + totale), flotta, canary.
   selftest — invia allarme di prova + rientro (verifica end-to-end della catena).
 
 Cron (mc2):
   */5   watch_alerts.py check
   */10  watch_alerts.py bots
+  */10  watch_alerts.py equity
   */15  watch_alerts.py carry
   */30  watch_alerts.py flotta
   0 9   watch_alerts.py digest
@@ -279,6 +282,74 @@ def check_bots() -> int:
     return cambi
 
 
+EQUITY_STATO = Path.home() / ".denaro_alerts" / "equity_24h.json"
+EQUITY_SOGLIA = 0.70  # allarme se l'equity scende sotto il 70% del massimo delle ultime 24h
+
+
+def check_equity() -> int:
+    """Guardia capitale (lezione 11/10/26: ~1.100 € mostrati come ~120 € per ~40').
+
+    1) letture per-conto: saldo non letto (`ok=False`) o comparto Simple Earn saltato
+       (`savings_ok=False`) = capitale sottostimato in vista;
+    2) crollo: equity sotto il 70% del massimo delle ultime 24h (storico locale).
+    """
+    try:
+        d = _fetch_infra()
+    except Exception:  # noqa: BLE001
+        return 0  # aggregatore non leggibile: già coperto da bots:check
+    cambi = 0
+
+    rotti = []
+    for nome, v in (d.get("equity_breakdown") or {}).items():
+        if isinstance(v, dict) and v.get("ok") is False:
+            rotti.append(f"{nome} (saldi non letti)")
+    for nome, b in (d.get("balances") or {}).items():
+        if isinstance(b, dict) and b.get("savings_ok") is False:
+            rotti.append(f"{nome} (Simple Earn non letto)")
+    cambi += gestisci("equity:letture", bool(rotti),
+                      "⚠️ equity: letture per-conto incomplete — " + "; ".join(rotti)[:220]
+                      + " (capitale sottostimato in vista)",
+                      "✅ equity: letture per-conto di nuovo complete")
+
+    eq = d.get("total_equity")
+    if not isinstance(eq, (int, float)) or eq <= 0:
+        cambi += gestisci("equity:valore", True,
+                          "⚠️ equity: total_equity assente o non valido nel payload",
+                          "✅ equity: total_equity di nuovo presente")
+        return cambi
+    cambi += gestisci("equity:valore", False, "",
+                      "✅ equity: total_equity di nuovo presente")
+
+    ora = time.time()
+    punti: list[list[float]] = []
+    try:
+        grezzo = json.loads(EQUITY_STATO.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001
+        grezzo = []
+    for x in grezzo if isinstance(grezzo, list) else []:
+        try:
+            t, v = float(x[0]), float(x[1])
+        except Exception:  # noqa: BLE001
+            continue
+        if ora - t <= 86400:
+            punti.append([t, v])
+    punti.append([ora, float(eq)])
+    massimo = max(v for _, v in punti)
+    problema = float(eq) < massimo * EQUITY_SOGLIA
+    cambi += gestisci(
+        "equity:crollo", problema,
+        f"⚠️ equity progetto in crollo: {float(eq):.0f}€ vs max 24h {massimo:.0f}€ "
+        "— se non è un prelievo volontario, verificare comparti/letture (payload /api/infra.json)",
+        f"✅ equity rientrata: {float(eq):.0f}€ vs max 24h {massimo:.0f}€",
+        intervallo_s=21600)  # 6h: un crollo vero non deve spammare ogni ora
+    try:
+        EQUITY_STATO.parent.mkdir(parents=True, exist_ok=True)
+        EQUITY_STATO.write_text(json.dumps(punti[-200:]), encoding="utf-8")
+    except Exception:  # noqa: BLE001
+        pass
+    return cambi
+
+
 def check_flotta() -> int:
     """fleet_integrity sui nodi remoti: allarme al canale se compare un ALLARME."""
     tool = Path(__file__).resolve().parent.parent / "tools" / "fleet_integrity.py"
@@ -349,12 +420,14 @@ def main(argv: list[str]) -> int:
         cambi = check_bots()
     elif mode == "flotta":
         cambi = check_flotta()
+    elif mode == "equity":
+        cambi = check_equity()
     elif mode == "digest":
         return digest()
     elif mode == "selftest":
         return selftest()
     else:
-        print("modi: check | carry | digest | selftest")
+        print("modi: check | carry | bots | flotta | equity | digest | selftest")
         return 2
     print(f"{mode}: {cambi} messaggi inviati")
     return 0
