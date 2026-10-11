@@ -27,6 +27,7 @@ from dataclasses import asdict, dataclass
 from typing import Any, Dict, List, Optional
 
 from ..costi import get_tariffa
+from .. import rischio as rischio_gate
 from . import rischio, stato as modulo_stato
 from .invio import Gamba, invia_gamba
 from .preflight import preflight
@@ -172,14 +173,35 @@ class Esecutore:
     # --- i controlli prima dell'esistenza dell'ordine -------------------------------------
 
     def _controlli_rischio(self, st: modulo_stato.Stato, nozionale: float,
-                           equity: float) -> None:
+                           equity: float, side: str) -> None:
         for nome, verdetto in (
             ("rischio_per_trade", rischio.rischio_per_trade(nozionale, equity)),
             ("stop_giornaliero", rischio.stop_giornaliero(st.pnl_giorno, st.equity_picco or equity)),
-            ("drawdown", rischio.drawdown_massimo(equity, st.equity_picco or equity)),
         ):
             if not verdetto.ok:
                 raise Rifiutato(f"{nome}: {verdetto.motivo}")
+        # Drawdown >= 10%: only-close. Si chiude (sell), non si apre (buy).
+        dd = rischio.drawdown_massimo(equity, st.equity_picco or equity)
+        if not dd.ok and side == "buy":
+            raise Rifiutato(f"only-close: {dd.motivo}")
+
+    def _gate_pre_trade(self, ordine: OrdineCostruito, equity: float,
+                        prezzo_stop: Optional[float]) -> None:
+        """Il cancello: verifica_pre_trade con stop ATR obbligatorio. Fail-closed.
+
+        Uno stop assente o dal lato sbagliato non e' un dettaglio: e' un ordine
+        che non deve esistere. `verifica_pre_trade` e' l'unico punto che ammette
+        o rifiuta, e qui viene chiamato su OGNI percorso (dry e live).
+        """
+        if prezzo_stop is None:
+            raise Rifiutato("operazione senza stop ATR: non ammissibile (verifica_pre_trade)")
+        verdetto = rischio_gate.verifica_pre_trade(
+            equity=equity, simbolo=ordine.symbol, lato=ordine.side,
+            prezzo=ordine.prezzo_riferimento, quantita=ordine.qty,
+            prezzo_stop=prezzo_stop,
+        )
+        if not verdetto.ok:
+            raise Rifiutato("gate pre-trade: " + "; ".join(verdetto.motivi))
 
     # --- recovery: pendenti riconciliati con l'exchange PRIMA di nuovi invii ---------------
 
@@ -225,7 +247,8 @@ class Esecutore:
     # --- esecuzione ------------------------------------------------------------------------
 
     def esegui(self, ordine: OrdineCostruito, *, equity: float,
-               exchange: Any = None, prezzo_mercato: Optional[float] = None) -> Dict[str, Any]:
+               exchange: Any = None, prezzo_mercato: Optional[float] = None,
+               prezzo_stop: Optional[float] = None) -> Dict[str, Any]:
         """Dry: registra e restituisce il payload. Live: recovery + preflight + invio
         idempotente, tutto sotto lock esclusivo (un solo writer per stato)."""
         if rischio.kill_switch_attivo(self.kill_path):
@@ -233,7 +256,8 @@ class Esecutore:
         with modulo_stato.lock_esclusivo(self.stato_path):
             st = modulo_stato.carica(self.stato_path, fail_closed=self.live)
             st.aggiorna_picco(equity)
-            self._controlli_rischio(st, ordine.nozionale_eur, equity)
+            self._controlli_rischio(st, ordine.nozionale_eur, equity, ordine.side)
+            self._gate_pre_trade(ordine, equity, prezzo_stop)
 
             ex = exchange or self.exchange
             if not self.live:

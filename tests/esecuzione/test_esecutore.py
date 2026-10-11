@@ -168,7 +168,7 @@ def test_intent_id_obbligatorio(ambiente):
 def test_dry_run_non_tocca_exchange_e_registra(ambiente):
     e = ez.Esecutore(exchange=ExchangeCheEsplode(), **ambiente_arg(ambiente))
     o = e.costruisci("BTC/EUR", "buy", 2.0, 80000.0, 0.00001, 1.0, intent_id="t1")
-    r = e.esegui(o, equity=100.0, exchange=ExchangeCheEsplode())
+    r = e.esegui(o, equity=100.0, exchange=ExchangeCheEsplode(), prezzo_stop=76000.0)
     assert r["etichetta"] == ez.ETICHETTA_DRY and r["esito"] == "registrato_dry_run"
     st = carica(ambiente["stato_path"])
     assert o.cl_ord_id in st.ordini and st.ordini[o.cl_ord_id]["live"] is False
@@ -229,7 +229,7 @@ def test_live_invia_e_registra_inviato(live):
     ex = ExchangeFinto()
     e = ez.Esecutore(live=True, promozione_path=live["promozione"], **ambiente_arg(live))
     o = e.costruisci("BTC/EUR", "buy", 2.0, 80000.0, 0.00001, 1.0, intent_id="i1")
-    r = e.esegui(o, equity=1000.0, exchange=ex)
+    r = e.esegui(o, equity=1000.0, exchange=ex, prezzo_stop=76000.0)
     assert r["esito"] == "inviato"
     st = carica(live["stato_path"])
     assert st.ordini[o.cl_ord_id]["stato"] == "inviato"
@@ -248,7 +248,7 @@ def test_restart_riconcilia_l_ordine_arrivato(live):
                        "stato": "intent", "ts": 0.0, "live": True}}))
     ex.ordini[o1.cl_ord_id] = {"id": "ex-1", "status": "closed", "clOrdId": o1.cl_ord_id}
     o2 = e.costruisci("BTC/EUR", "sell", 2.0, 80000.0, 0.00001, 1.0, intent_id="i2")
-    e.esegui(o2, equity=1000.0, exchange=ex)
+    e.esegui(o2, equity=1000.0, exchange=ex, prezzo_stop=84000.0)
     st = carica(live["stato_path"])
     assert st.ordini[o1.cl_ord_id]["stato"] == "riconciliato"
     assert st.ordini[o2.cl_ord_id]["stato"] == "inviato"
@@ -262,7 +262,7 @@ def test_restart_segna_assente_l_ordine_mai_arrivato(live):
         o1.cl_ord_id: {"symbol": "BTC/EUR", "side": "buy", "qty": o1.qty,
                        "stato": "intent", "ts": 0.0, "live": True}}))
     o2 = e.costruisci("BTC/EUR", "buy", 2.0, 80000.0, 0.00001, 1.0, intent_id="i2")
-    e.esegui(o2, equity=1000.0, exchange=ex)
+    e.esegui(o2, equity=1000.0, exchange=ex, prezzo_stop=76000.0)
     st = carica(live["stato_path"])
     assert st.ordini[o1.cl_ord_id]["stato"] == "assente_su_exchange"
 
@@ -276,5 +276,40 @@ def test_recovery_con_rete_giu_blocca_i_nuovi_invii(live):
                        "stato": "inviato", "ts": 0.0, "live": True}}))
     o2 = e.costruisci("BTC/EUR", "buy", 2.0, 80000.0, 0.00001, 1.0, intent_id="i2")
     with pytest.raises(ez.Rifiutato, match="recovery"):
-        e.esegui(o2, equity=1000.0, exchange=ex)
+        e.esegui(o2, equity=1000.0, exchange=ex, prezzo_stop=76000.0)
     assert ex.invii == []  # nessun nuovo ordine e' partito
+
+
+# --- gate pre-trade: stop ATR obbligatorio, only-close, fail-closed ----------------------
+
+def test_gate_rifiuta_ordine_senza_stop(ambiente):
+    e = ez.Esecutore(**ambiente_arg(ambiente))
+    o = e.costruisci("BTC/EUR", "buy", 2.0, 80000.0, 0.00001, 1.0, intent_id="t1")
+    with pytest.raises(ez.Rifiutato, match="senza stop ATR"):
+        e.esegui(o, equity=100.0)
+
+
+def test_gate_rifiuta_stop_dal_lato_sbagliato(ambiente):
+    e = ez.Esecutore(**ambiente_arg(ambiente))
+    o = e.costruisci("BTC/EUR", "buy", 2.0, 80000.0, 0.00001, 1.0, intent_id="t1")
+    with pytest.raises(ez.Rifiutato, match="non sotto l'ingresso"):
+        e.esegui(o, equity=100.0, prezzo_stop=84000.0)  # stop sopra l'ingresso per un buy
+
+
+def test_gate_rifiuta_equity_non_osservata(ambiente):
+    e = ez.Esecutore(**ambiente_arg(ambiente))
+    o = e.costruisci("BTC/EUR", "buy", 2.0, 80000.0, 0.00001, 1.0, intent_id="t1")
+    with pytest.raises(ez.Rifiutato, match="equity"):
+        e.esegui(o, equity=0.0, prezzo_stop=76000.0)
+
+
+def test_only_close_a_10_percento_drawdown(ambiente):
+    e = ez.Esecutore(**ambiente_arg(ambiente))
+    salva(ambiente["stato_path"], Stato(equity_picco=1000.0))
+    o_buy = e.costruisci("BTC/EUR", "buy", 2.0, 80000.0, 0.00001, 1.0, intent_id="buy1")
+    with pytest.raises(ez.Rifiutato, match="only-close"):
+        e.esegui(o_buy, equity=890.0, prezzo_stop=76000.0)
+    # la chiusura (sell) resta ammessa anche in drawdown
+    o_sell = e.costruisci("BTC/EUR", "sell", 2.0, 80000.0, 0.00001, 1.0, intent_id="sell1")
+    r = e.esegui(o_sell, equity=890.0, prezzo_stop=84000.0)
+    assert r["esito"] == "registrato_dry_run"
