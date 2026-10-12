@@ -83,7 +83,12 @@ solo in-sample/in-regime non e' negoziabile.
 delle altre: walk-forward genuino, sensibilita' ai parametri, confronto con buy&hold.
 
 Consuntivo delle arene testate (tutte con dati reali, tutte bocciate):
-1. Candele 1d, 20 famiglie, 5+ anni, 2 fee -> 0 candidati (sr0 0.41)
+1. Candele, 20 famiglie, 5+ anni, 59 simboli, **tutti i timeframe**:
+   - 1d -> 0 candidati (sr0 0.42)
+   - 4h -> 0 candidati (sr0 1.08)
+   - 1h -> 0 candidati (sr0 1.21)
+   Su timeframe piu' fini la soglia DSR sale e la fee pesa di piu': il collo di
+   bottiglia non e' la risoluzione temporale.
 2. Order-flow a 1 minuto, 30M tick -> 85-350x sotto i costi
 3. Market making simulato, 48k fill -> perdita sistematica (t fino a -94)
 4. Basis cross-venue, 39 simboli -> rumore/sotto soglia
