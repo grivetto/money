@@ -11,6 +11,14 @@ Subcomandi (default sola lettura; le scritture richiedono --execute):
   status [--quiet]    stato posizione + funding + riconciliazione + PnL stimato
   close               chiude entrambe le gambe (perp reduceOnly + sell spot) [--execute]
 
+CANCELLO PRE-TRADE (obbligatorio, dal 2026-10-12)
+-------------------------------------------------
+Ogni invio di apertura passa dal gate unico `money.esecuzione.cancello` con stop ATR
+OBBLIGATORIO: senza ATR calcolabile, o se il rischio eccede i limiti del mandato,
+l'ordine NON parte. L'equity e' quella riconciliata dall'aggregatore. Le CHIUSURE
+(close/unwind) non passano dal gate di apertura — sono riduzione di rischio — ma
+restano soggette al kill switch a file. Le aperture no: kill switch attivo = ferie.
+
 Sicurezze: chiavi mai stampate; LIMIT (mai market); clOrdId idempotenti; poll di fill;
 fill parziale gestito e registrato; stato in canary_state.json; eventi in canary_events.jsonl.
 """
@@ -28,7 +36,9 @@ DIR = Path(__file__).resolve().parent
 STATE = DIR / "canary_state.json"
 EVENTS = DIR / "canary_events.jsonl"
 
+from money.esecuzione.cancello import gate_pre_trade
 from money.esecuzione.invio import Gamba, invia_gamba
+from money.rischio import stop_da_atr
 
 INST = "DOGE-USD_UM_XPERP-310404"
 SYM_PER = "DOGE/USD:USD-310404"
@@ -38,6 +48,15 @@ Q_SPOT = 110.0         # DOGE lato spot (~10,4 USDC a DOGE≈0,095)
 N_CT = 11              # contratti perp (110 DOGE)
 LEVER = "1"
 MGN = "isolated"
+
+#: Kill switch a FILE (regola del progetto): esiste = niente aperture. Le chiusure
+#: restano possibili — il kill switch ordina di chiudere, non di restare scoperti.
+KILL = DIR / "MONEY_KILL_SWITCH"
+#: Equity riconciliata del progetto: la stessa fonte di dashboard e Zabbix.
+AGG_EQUITY_URL = "http://127.0.0.1:8912/api/infra.json"
+#: ATR per lo stop: barre giornaliere x 14 — uno stop di carry si misura in giorni, non in ore.
+ATR_TIMEFRAME = "1D"
+ATR_PERIODI = 14
 
 
 def leggi_env(path):
@@ -96,6 +115,72 @@ def evento(ev, **kw):
     with open(EVENTS, "a", encoding="utf-8") as f:
         f.write(json.dumps(riga, ensure_ascii=False) + "\n")
     print("EVENT:", ev, json.dumps(kw, ensure_ascii=False)[:220])
+
+
+# --- cancello pre-trade: stop ATR OBBLIGATORIO, equity riconciliata -----------------------
+
+def kill_attivo():
+    """Kill switch a file. Blocca le APERTURE, non le chiusure: chiudere riduce il rischio."""
+    return KILL.exists()
+
+
+def equity_totale(url=AGG_EQUITY_URL):
+    """Equity riconciliata del progetto, dall'aggregatore (stessa fonte di dashboard/Zabbix).
+
+    Fail-closed: senza equity il cancello non e' applicabile e l'ordine non parte. Un
+    default inventato sarebbe il modo di far passare un ordine su un conto di cui non
+    si conosce il valore.
+    """
+    import urllib.request
+    try:
+        with urllib.request.urlopen(url, timeout=5) as r:  # predefinito cosi' in test
+            d = json.loads(r.read().decode())
+        e = float(d.get("total_equity"))
+    except Exception as exc:
+        sys.exit(f"EQUITY NON OTTENIBILE ({exc.__class__.__name__}: {exc}) — "
+                 "cancello non applicabile, nessun ordine")
+    if not e > 0:
+        sys.exit(f"EQUITY non positiva ({e}) — cancello non applicabile, nessun ordine")
+    return e
+
+
+def atr_ultimo(ex, symbol, n=ATR_PERIODI, timeframe=ATR_TIMEFRAME):
+    """True Range medio delle ultime n barre. `None` se il dato non c'e': mai inventato."""
+    try:
+        o = ex.fetch_ohlcv(symbol, timeframe, limit=n + 2)
+    except Exception:
+        return None
+    if not o or len(o) < n + 1:
+        return None
+    trs = []
+    for i in range(1, len(o)):
+        hi, lo, prev_c = float(o[i][2]), float(o[i][3]), float(o[i - 1][4])
+        trs.append(max(hi - lo, abs(hi - prev_c), abs(lo - prev_c)))
+    ultimi = trs[-n:]
+    return (sum(ultimi) / len(ultimi)) if ultimi else None
+
+
+def cancello(ex, symbol, side, quantita, prezzo, *, leva=1.0):
+    """Il cancello PRIMA di ogni invio di APERTURA. Aborta (SystemExit) se rifiutato.
+
+    Stop ATR obbligatorio: se l'ATR non e' calcolabile non si invia — non si assume uno
+    stop. L'equity e' quella riconciliata del progetto (`equity_totale`). Un ordine senza
+    stop, o oltre i limiti di rischio del mandato, non esiste. Registra l'esito.
+    """
+    eq = equity_totale()
+    a = atr_ultimo(ex, symbol)
+    if a is None or not a > 0:
+        evento("cancello_no_atr", symbol=symbol, side=side)
+        sys.exit(f"CANCELLO: ATR non disponibile per {symbol} — nessun ordine")
+    stop = stop_da_atr(prezzo, a, side)
+    d = gate_pre_trade(equity=eq, simbolo=symbol, lato=side, prezzo=prezzo,
+                       quantita=quantita, prezzo_stop=stop, leva=leva)
+    evento("cancello", symbol=symbol, side=side, qty=quantita, prezzo=prezzo,
+           atr=a, stop=stop, equity=eq, ok=d.ok, motivi=list(d.motivi))
+    if not d.ok:
+        sys.exit("CANCELLO RIFIUTA: " + "; ".join(d.motivi))
+    print(f"CANCELLO OK: {symbol} {side} qty {quantita} stop {stop:.8g} (ATR {a:.8g})")
+    return d
 
 
 def salva_state(st):
@@ -254,6 +339,8 @@ def main():
         if not flag("--execute"):
             print("[DRY] nessun ordine inviato")
             return
+        if kill_attivo():
+            sys.exit(f"KILL SWITCH attivo ({KILL}): nessuna conversione")
         cid = cid_stabile("c1cv", f"convert|{usdc_amt}")
         o = invia_gamba(ex, Gamba("USDC/EUR", "buy", usdc_amt, float(px), cid))
         oo, esito = attesa_fill(ex, o["id"], "USDC/EUR", 45)
@@ -274,6 +361,8 @@ def main():
         if not flag("--execute"):
             print("[DRY] open non eseguito")
             return
+        if kill_attivo():
+            sys.exit(f"KILL SWITCH attivo ({KILL}): nessuna apertura")
         # leva 1x isolated (fallback cross registrato)
         try:
             r = ex.privatePostAccountSetLeverage({"instId": INST, "lever": LEVER, "mgnMode": MGN})
@@ -288,6 +377,7 @@ def main():
         t_s = ex.fetch_ticker(SYM_SPOT)
         px1 = ex.price_to_precision(SYM_SPOT, float(t_s["ask"]) * 1.002)
         mid1 = float(t_s["last"])
+        cancello(ex, SYM_SPOT, "buy", Q_SPOT, float(px1))
         seme_s1 = intento(st, "intent_s1", f"{SYM_SPOT}|buy|{Q_SPOT}|{ds}")
         cid = cid_stabile("c1s", seme_s1)
         o1 = invia_gamba(ex, Gamba(SYM_SPOT, "buy", Q_SPOT, float(px1), cid))
@@ -307,6 +397,7 @@ def main():
             residuo = Q_SPOT - filled_prev
             t_s = ex.fetch_ticker(SYM_SPOT)
             px1b = ex.price_to_precision(SYM_SPOT, float(t_s["ask"]) * 1.004)
+            cancello(ex, SYM_SPOT, "buy", residuo, float(px1b))
             seme_s2 = intento(st, "intent_s2", f"{seme_s1}|reprice")
             o1b = invia_gamba(ex, Gamba(SYM_SPOT, "buy", residuo, float(px1b), cid_stabile("c1s", seme_s2)))
             oo1b, es1 = attesa_fill(ex, o1b["id"], SYM_SPOT, 45)
@@ -329,6 +420,7 @@ def main():
         t_p = ex.fetch_ticker(SYM_PER)
         px2 = ex.price_to_precision(SYM_PER, float(t_p["bid"]) * 0.998)
         mid2 = float(t_p["last"])
+        cancello(ex, SYM_PER, "sell", float(ct) * CT_VAL, float(px2), leva=float(LEVER))
         seme_p1 = intento(st, "intent_p1", f"{SYM_PER}|sell|{ct}|{ds}")
         o2 = invia_gamba(ex, Gamba(SYM_PER, "sell", float(ct), float(px2),
                                    cid_stabile("c1p", seme_p1), td_mode=MGN))
@@ -340,6 +432,7 @@ def main():
                 pass
             t_p = ex.fetch_ticker(SYM_PER)
             px2b = ex.price_to_precision(SYM_PER, float(t_p["bid"]) * 0.996)
+            cancello(ex, SYM_PER, "sell", float(ct) * CT_VAL, float(px2b), leva=float(LEVER))
             seme_p2 = intento(st, "intent_p2", f"{seme_p1}|reprice")
             o2b = invia_gamba(ex, Gamba(SYM_PER, "sell", float(ct), float(px2b),
                                         cid_stabile("c1p", seme_p2), td_mode=MGN))

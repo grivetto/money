@@ -27,8 +27,8 @@ from dataclasses import asdict, dataclass
 from typing import Any, Dict, List, Optional
 
 from ..costi import get_tariffa
-from .. import rischio as rischio_gate
 from . import rischio, stato as modulo_stato
+from .cancello import gate_pre_trade as _gate_unico
 from .invio import Gamba, invia_gamba
 from .preflight import preflight
 
@@ -190,18 +190,16 @@ class Esecutore:
         """Il cancello: verifica_pre_trade con stop ATR obbligatorio. Fail-closed.
 
         Uno stop assente o dal lato sbagliato non e' un dettaglio: e' un ordine
-        che non deve esistere. `verifica_pre_trade` e' l'unico punto che ammette
-        o rifiuta, e qui viene chiamato su OGNI percorso (dry e live).
+        che non deve esistere. Il cancello e' UNO (`cancello.gate_pre_trade`),
+        condiviso col canary: se una via lo aggira, non e' piu' un cancello.
         """
-        if prezzo_stop is None:
-            raise Rifiutato("operazione senza stop ATR: non ammissibile (verifica_pre_trade)")
-        verdetto = rischio_gate.verifica_pre_trade(
+        decisione = _gate_unico(
             equity=equity, simbolo=ordine.symbol, lato=ordine.side,
             prezzo=ordine.prezzo_riferimento, quantita=ordine.qty,
             prezzo_stop=prezzo_stop,
         )
-        if not verdetto.ok:
-            raise Rifiutato("gate pre-trade: " + "; ".join(verdetto.motivi))
+        if not decisione.ok:
+            raise Rifiutato("gate pre-trade: " + "; ".join(decisione.motivi))
 
     # --- recovery: pendenti riconciliati con l'exchange PRIMA di nuovi invii ---------------
 
