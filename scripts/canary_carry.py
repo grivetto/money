@@ -55,7 +55,8 @@ KILL = DIR / "MONEY_KILL_SWITCH"
 #: Equity riconciliata del progetto: la stessa fonte di dashboard e Zabbix.
 AGG_EQUITY_URL = "http://127.0.0.1:8912/api/infra.json"
 #: ATR per lo stop: barre giornaliere x 14 — uno stop di carry si misura in giorni, non in ore.
-ATR_TIMEFRAME = "1D"
+#: Nota: ccxt/OKX vuole "1d" (minuscolo); "1D" solleva NotSupported.
+ATR_TIMEFRAME = "1d"
 ATR_PERIODI = 14
 
 
