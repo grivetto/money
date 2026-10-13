@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>AGENTI — sala operai · Denaro</title>
+<link rel="icon" href="/favicon.svg"/>
+<style>
+:root{
+  --bg:#05070f; --panel:#0a1020; --line:rgba(0,243,255,.14);
+  --dim:#5a6a9e; --cyan:#00f3ff; --green:#39ff88; --red:#ff3b5c;
+  --yellow:#ffd23f; --txt:#cfe3ff;
+}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--txt);background:radial-gradient(1200px 600px at 70% -10%,#0a1430 0%,var(--bg) 55%);
+  font-family:"Segoe UI",system-ui,-apple-system,sans-serif}
+.wrap{max-width:1200px;margin:0 auto;padding:26px 20px 40px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:22px;letter-spacing:6px;margin:0;color:#fff}
+.sub{font-size:10px;letter-spacing:3px;color:var(--dim);margin-top:4px}
+.pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:11px;letter-spacing:1px}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;background:var(--dim);flex:0 0 auto}
+.dot.up{background:var(--green);box-shadow:0 0 8px var(--green)}
+.dot.down{background:var(--red);box-shadow:0 0 8px var(--red)}
+.dot.unk{background:var(--yellow);box-shadow:0 0 6px var(--yellow)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 20px}
+.chip{border:1px solid var(--line);border-radius:6px;padding:5px 10px;font-size:11px;letter-spacing:1px;color:var(--txt)}
+.chip b{color:#fff}
+.chip .ko{color:var(--red)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.node{background:linear-gradient(180deg,#0a1020,#070c18);border:1px solid var(--line);border-radius:10px;padding:14px 14px 8px}
+.node.off{opacity:.55;border-color:rgba(255,59,92,.35)}
+.node h2{margin:0 0 2px;font-size:13px;letter-spacing:3px;color:#fff;text-transform:uppercase}
+.node .host{font-size:10px;color:var(--dim);letter-spacing:1px;margin-bottom:8px}
+.row{display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px dashed rgba(90,106,158,.18);font-size:12px}
+.row:first-of-type{border-top:none}
+.row .nome{min-width:86px;color:#dfe9ff}
+.row .det{color:var(--dim);font-size:10.5px;letter-spacing:.3px;flex:1;text-align:right}
+.row a{color:var(--cyan);text-decoration:none;font-size:11px;white-space:nowrap}
+footer{margin-top:26px;color:var(--dim);font-size:11px;letter-spacing:1px;text-align:center;line-height:1.9}
+a.back{color:var(--cyan);text-decoration:none}
+.stale{color:var(--yellow)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>AGENTI</h1>
+      <div class="sub">SALA OPERAI — HERMES · AGENT ZERO · OPENCODE · AGY · DSH WEB</div>
+    </div>
+    <div style="text-align:right">
+      <div class="pill"><span class="dot" id="pdot"></span><span id="psum">…</span></div>
+      <div class="sub" id="pts" style="margin-top:6px">—</div>
+    </div>
+  </header>
+
+  <div class="chips" id="chips"></div>
+  <div class="grid" id="grid"><div class="node off" style="padding:16px">caricamento…</div></div>
+
+  <footer>
+    read-only · raccolta ogni minuto (cron su mc2) · niente ordini, niente chiavi<br/>
+    <a class="back" href="/dashboard">◂ dashboard denaro</a> &nbsp;·&nbsp;
+    <a class="back" href="https://zab.grivetto.eu/zabbix.php?action=latest.view" target="_blank" rel="noopener">zabbix ▸</a>
+  </footer>
+</div>
+
+<script>
+"use strict";
+// ── i 5 nodi e chi ci gira ──────────────────────────────────────────────
+const NODI = [
+  {id:"mc2",      label:"mc2",      host:"192.168.1.99 · LAN",      operai:["hermes","a0","dsh","opencode","agy"], ip:"192.168.1.99",  porte:{a0:50080, dsh:4080}},
+  {id:"omarchy",  label:"omarchy",  host:"192.168.1.98 · LAN",      operai:["hermes","a0","dsh","opencode","agy"], ip:"192.168.1.98",  porte:{a0:50080, dsh:5080}},
+  {id:"win",      label:"win",      host:"100.76.22.119 · tailscale",operai:["a0","dsh"],                          ip:"100.76.22.119", porte:{a0:50080, dsh:3080}},
+  {id:"nuvola",   label:"nuvola",   host:"87.106.3.15 · VPS",       operai:["opencode","agy"],                    ip:"87.106.3.15",   porte:{}},
+  {id:"marcodg1", label:"marcodg1", host:"87.106.222.123 · VPS",    operai:["opencode","agy"],                    ip:"87.106.222.123",porte:{}},
+];
+const STRUMENTI = {
+  hermes:  {nome:"Hermes",     link:null},
+  a0:      {nome:"Agent Zero", link:(n)=> "http://" + n.ip + ":" + n.porte.a0 + "/"},
+  dsh:     {nome:"DSH web",    link:(n)=> "http://" + n.ip + ":" + n.porte.dsh + "/"},
+  opencode:{nome:"opencode",   link:null},
+  agy:     {nome:"agy",        link:null},
+};
+const NOMI_STRUMENTO = {hermes:"HERMES", a0:"A0", dsh:"DSH", opencode:"OPENCODE", agy:"AGY"};
+
+function esc(s){return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+const $ = (id) => document.getElementById(id);
+
+async function carica(){
+  try{
+    const r = await fetch("/api/agenti.json", {cache:"no-store"});
+    if(!r.ok) throw new Error("http " + r.status);
+    render(await r.json());
+  }catch(e){
+    $("pdot").className = "dot down";
+    $("psum").textContent = "PANNELLO CIECO — " + e.message;
+  }
+}
+
+function render(d){
+  const nodi = d.nodi || {};
+  const r = d.riepilogo || {};
+
+  // ── pill riepilogo + freschezza dato ──
+  const giuN = r.giu || 0, ignN = r.ignoti || 0;
+  $("pdot").className = "dot " + (giuN ? "down" : (ignN ? "unk" : "up"));
+  $("psum").textContent = (r.su ?? "?") + " / " + (r.attesi ?? "?") + " operai su" + (giuN ? " · " + giuN + " GIÙ" : "") + (ignN ? " · " + ignN + " ignoti" : "");
+
+  const eta = d.generated_at ? Math.max(0, Math.round(Date.now()/1000 - d.generated_at)) : null;
+  const iso = (d.generated_at_iso || "").replace("T"," ").replace("Z","");
+  $("pts").innerHTML = eta === null ? "—" :
+    ("dati: " + esc(iso) + " UTC · " + eta + "s fa") +
+    (eta > 180 ? ' · <span class="stale">⚠ DATI FERMI (cron?)</span>' : "");
+
+  // ── chips per strumento ──
+  const per = r.per_strumento || {};
+  $("chips").innerHTML = Object.keys(NOMI_STRUMENTO).map(k => {
+    const v = per[k]; if(!v) return "";
+    const att = (v.su|0) + (v.giu|0);
+    const ko = v.giu ? ' <span class="ko">(' + v.giu + ' giù)</span>' : "";
+    return '<span class="chip"><b>' + NOMI_STRUMENTO[k] + "</b> " + (v.su|0) + "/" + att + ko + "</span>";
+  }).join("");
+
+  // ── card per nodo ──
+  $("grid").innerHTML = NODI.map(n => {
+    const nd = nodi[n.id] || {ok:false, operai:{}};
+    const off = !nd.ok;
+    const righe = n.operai.map(wk => {
+      const st = STRUMENTI[wk];
+      const v = (nd.operai || {})[wk] || {up:null, dettaglio:"nodo non raggiungibile"};
+      const cls = v.up === true ? "up" : (v.up === false ? "down" : "unk");
+      let link = "";
+      if(st.link && v.up === true && n.porte[wk]) link = ' <a href="' + st.link(n) + '" target="_blank" rel="noopener" title="raggiungibile dalla rete di casa">apri ▸</a>';
+      return '<div class="row"><span class="dot ' + cls + '"></span><span class="nome">' + st.nome + '</span><span class="det">' + esc(v.dettaglio) + "</span>" + link + "</div>";
+    }).join("");
+    return '<div class="node' + (off ? " off" : "") + '"><h2>' + esc(n.label) + "</h2>" +
+           '<div class="host">' + esc(n.host) + (off ? " · NODO NON RAGGIUNGIBILE" : "") + "</div>" + righe + "</div>";
+  }).join("");
+}
+
+setInterval(carica, 30000);
+carica();
+</script>
+</body>
+</html>

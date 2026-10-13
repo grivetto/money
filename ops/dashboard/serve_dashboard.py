@@ -26,6 +26,8 @@ Cosa fa adesso:
   GET /infra.json       -> alias di /api/infra.json
   GET /scommessa.json   -> dato della scommessa asimmetrica (spec DSH 19/09)
   GET /api/dsh.json     -> stato del bridge DSH/Stella
+  GET /agenti           -> pannello «Agenti» (agenti.html, no-store): operai su tutti i nodi
+  GET /api/agenti.json  -> stato operai (Hermes/A0/opencode/agy/DSH) dal file agenti.json
   GET /healthz          -> stato del servizio in JSON
 
 Configurazione (env var, override da riga di comando):
@@ -70,6 +72,10 @@ JSON_ROUTES = {"/api/infra.json", "/infra.json", "/api/infra", "/infra", "/api/d
 # La scheda scommessa legge il file scritto dal cron (tools/scommessa.py su
 # MARCODG1); il server lo serve senza cache: se manca -> 404 "nessun dato".
 SCOMMESSA_ROUTES = {"/scommessa.json", "/api/scommessa.json"}
+# Pannello agenti: pagina + JSON scritto dal cron su mc2 (ops/agents/agents_status.py,
+# copiato qui ogni minuto; su MARCODG1 arriva via scp dal cron di mc2).
+AGENTI_ROUTES = {"/agenti"}
+AGENTI_JSON_ROUTES = {"/api/agenti.json", "/agenti.json"}
 # favicon a tema trading (candele neon) — ogni estensione serve il file corretto
 FAVICON_MAP = {
     "/favicon.svg":     ("favicon.svg",     "image/svg+xml"),
@@ -312,6 +318,32 @@ class DashboardHandler(BaseHTTPRequestHandler):
             return
         self._send(200, body, "application/json; charset=utf-8", head_only=head_only)
 
+    def _serve_agenti_json(self, head_only: bool = False) -> None:
+        """Serve /api/agenti.json — stato operai dal file scritto dal cron (mc2 -> qui).
+
+        Se il file manca: 404 {"error":"nessun dato"}; la pagina dichiara
+        «DATI FERMI» oltre i 3 minuti.
+        """
+        path = Path(self.html_dir) / "agenti.json"
+        try:
+            body = path.read_bytes()
+            json.loads(body.decode("utf-8", "replace"))  # JSON valido o niente
+        except FileNotFoundError:
+            self._send(404, b'{"error":"nessun dato"}',
+                       "application/json; charset=utf-8", head_only=head_only)
+            return
+        except Exception as exc:
+            log("agenti.json illeggibile (%s): %s" % (path, exc))
+            self._send(500, json.dumps({"error": "agenti illeggibile"}).encode(),
+                       "application/json; charset=utf-8", head_only=head_only)
+            return
+        self._send(200, body, "application/json; charset=utf-8", head_only=head_only)
+
+    def _serve_agenti(self, head_only: bool = False) -> None:
+        """Serve /agenti — pannello «Agenti» (agenti.html)."""
+        self._serve_file(Path(self.html_dir) / "agenti.html", "text/html; charset=utf-8",
+                         head_only=head_only)
+
     # ---------- HTTP ----------
     def do_GET(self) -> None:  # noqa: N802
         path = self.path.split("?", 1)[0].rstrip("/") or "/"
@@ -333,6 +365,10 @@ class DashboardHandler(BaseHTTPRequestHandler):
             self._serve_landing()
         elif path in DASHBOARD_ROUTES:
             self._serve_html()
+        elif path in AGENTI_ROUTES:
+            self._serve_agenti()
+        elif path in AGENTI_JSON_ROUTES:
+            self._serve_agenti_json()
         elif path in SCOMMESSA_ROUTES:
             self._serve_scommessa()
         elif path in {"/api/dsh.json", "/dsh.json"}:
@@ -364,6 +400,10 @@ class DashboardHandler(BaseHTTPRequestHandler):
             self._serve_landing(head_only=True)
         elif path in DASHBOARD_ROUTES:
             self._serve_html(head_only=True)
+        elif path in AGENTI_ROUTES:
+            self._serve_agenti(head_only=True)
+        elif path in AGENTI_JSON_ROUTES:
+            self._serve_agenti_json(head_only=True)
         elif path in SCOMMESSA_ROUTES:
             self._serve_scommessa(head_only=True)
         elif path in {r.rstrip("/") or "/" for r in JSON_ROUTES}:
