@@ -27,3 +27,4 @@ logs/
 # segreti banco (casa unica money, 2026-10-06)
 config/.env_banco
 !config/.env_banco.example
+prove/funding_watch/
