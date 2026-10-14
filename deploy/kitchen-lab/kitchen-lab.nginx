@@ -1,0 +1,58 @@
+# Kitchen Lab — mc2.tail1b5252.ts.net (Tailscale HTTPS)
+# Creato 2026-10-14. Certificato: /etc/nginx/ssl/mc2.tail1b5252.ts.net.{crt,key}
+# Rinnovo automatico: /etc/cron.d/kitchen-lab -> /usr/local/bin/kitchen-lab-cert.sh
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name mc2.tail1b5252.ts.net;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name mc2.tail1b5252.ts.net;
+
+    ssl_certificate     /etc/nginx/ssl/mc2.tail1b5252.ts.net.crt;
+    ssl_certificate_key /etc/nginx/ssl/mc2.tail1b5252.ts.net.key;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    root /var/www/kitchen-lab;
+    index index.html;
+
+    # Stato live della home (rigenerato ogni minuto dal cron)
+    location = /status.json {
+        add_header Cache-Control "no-store";
+    }
+
+    # Servizi serviti sotto lo stesso host
+    location /denaro/ {
+        alias /var/www/denaro/;
+        index index.html;
+    }
+    location = /denaro/stats.json {
+        alias /tmp/denaro_stats.json;
+    }
+
+    location /risto/ {
+        alias /var/www/risto/;
+        index index.html;
+    }
+    location /lumen/ {
+        alias /var/www/risto/;
+        index index.html;
+    }
+
+    location /zabbix/ {
+        proxy_pass http://127.0.0.1:1080/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+    location = /zabbix { return 301 /zabbix/; }
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}

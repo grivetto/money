@@ -1,0 +1,5 @@
+# Kitchen Lab — mc2.tail1b5252.ts.net
+# status.json per la home: ogni minuto (utente sergio)
+* * * * * sergio /usr/bin/python3 /opt/kitchen-lab/status.py >/dev/null 2>>/var/log/kitchen-lab-status.log
+# rinnovo certificato TLS Tailscale (se mancano <30 giorni) + reload nginx: ogni giorno alle 04:17
+17 4 * * * root /usr/local/bin/kitchen-lab-cert.sh >>/var/log/kitchen-lab-cert.log 2>&1
