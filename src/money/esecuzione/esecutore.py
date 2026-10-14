@@ -172,17 +172,28 @@ class Esecutore:
 
     # --- i controlli prima dell'esistenza dell'ordine -------------------------------------
 
-    def _controlli_rischio(self, st: modulo_stato.Stato, nozionale: float,
-                           equity: float, side: str) -> None:
-        for nome, verdetto in (
-            ("rischio_per_trade", rischio.rischio_per_trade(nozionale, equity)),
-            ("stop_giornaliero", rischio.stop_giornaliero(st.pnl_giorno, st.equity_picco or equity)),
-        ):
-            if not verdetto.ok:
-                raise Rifiutato(f"{nome}: {verdetto.motivo}")
+    def _controlli_rischio(self, st: modulo_stato.Stato, ordine: OrdineCostruito,
+                           equity: float, prezzo_stop: Optional[float]) -> None:
+        # La distanza dello stop trasforma il nozionale in rischio (audit #4: prima si
+        # confrontava il NOZIONALE col 2% dell'equity — blocco fittizio a ~22 EUR su
+        # un conto da ~1.100). Senza prezzo_stop la distanza resta None e il rischio NON
+        # viene controllato qui: la PRESENZA dello stop e' di pertinenza del cancello
+        # pre-trade (chiamato subito dopo), che rifiuta con il suo messaggio canonico.
+        # Un solo owner per decisione: qui il merito (rischio <= tetto), li' la presenza.
+        distanza = None
+        if prezzo_stop is not None and ordine.prezzo_riferimento > 0 and prezzo_stop > 0:
+            distanza = rischio.distanza_stop_relativa(ordine.prezzo_riferimento, prezzo_stop)
+        if distanza is not None:
+            verdetto_rischio = rischio.rischio_per_trade(
+                ordine.nozionale_eur, equity, distanza)
+            if not verdetto_rischio.ok:
+                raise Rifiutato(f"rischio_per_trade: {verdetto_rischio.motivo}")
+        verdetto_giorno = rischio.stop_giornaliero(st.pnl_giorno, st.equity_picco or equity)
+        if not verdetto_giorno.ok:
+            raise Rifiutato(f"stop_giornaliero: {verdetto_giorno.motivo}")
         # Drawdown >= 10%: only-close. Si chiude (sell), non si apre (buy).
         dd = rischio.drawdown_massimo(equity, st.equity_picco or equity)
-        if not dd.ok and side == "buy":
+        if not dd.ok and ordine.side == "buy":
             raise Rifiutato(f"only-close: {dd.motivo}")
 
     def _gate_pre_trade(self, ordine: OrdineCostruito, equity: float,
@@ -254,7 +265,7 @@ class Esecutore:
         with modulo_stato.lock_esclusivo(self.stato_path):
             st = modulo_stato.carica(self.stato_path, fail_closed=self.live)
             st.aggiorna_picco(equity)
-            self._controlli_rischio(st, ordine.nozionale_eur, equity, ordine.side)
+            self._controlli_rischio(st, ordine, equity, prezzo_stop)
             self._gate_pre_trade(ordine, equity, prezzo_stop)
 
             ex = exchange or self.exchange

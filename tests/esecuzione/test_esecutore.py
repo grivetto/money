@@ -200,10 +200,20 @@ def test_kill_switch_ferma_tutto_anche_il_dry(ambiente):
 
 
 def test_rischio_per_trade_blocca_ordine_grosso(ambiente):
+    """Con lo stop al 5%, 50 EUR rischiano 2,48 EUR = 2,48% dell'equity: oltre il mandato."""
     e = ez.Esecutore(**ambiente_arg(ambiente))
-    o = e.costruisci("BTC/EUR", "buy", 5.0, 80000.0, 0.00001, 1.0, intent_id="t1")  # 5% di 100
+    o = e.costruisci("BTC/EUR", "buy", 50.0, 80000.0, 0.00001, 1.0, intent_id="t1")
     with pytest.raises(ez.Rifiutato, match="rischio_per_trade"):
-        e.esegui(o, equity=100.0)
+        e.esegui(o, equity=100.0, prezzo_stop=76000.0)
+
+
+def test_rischio_per_trade_non_blocca_il_nozionale_sano(ambiente):
+    """Regressione audit #4 (blocco fittizio ~22 EUR): 4 EUR con stop al 5% rischiano
+    0,20 EUR = 0,2% dell'equity — passano il controllo di rischio E il cancello."""
+    e = ez.Esecutore(**ambiente_arg(ambiente))
+    o = e.costruisci("BTC/EUR", "buy", 4.0, 80000.0, 0.00001, 1.0, intent_id="t1")
+    r = e.esegui(o, equity=100.0, prezzo_stop=76000.0)
+    assert r["esito"] == "registrato_dry_run"
 
 
 # --- live: stato corrotto, lock, recovery (revisione Manus 06/10) ------------------------
