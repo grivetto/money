@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""dev_platform.py — «Operai di sviluppo» (A0 · DSH · agy · opencode) su Zabbix.
+"""dev_platform.py — «Operai di sviluppo» (Hermes · A0 · DSH · agy · opencode) su Zabbix.
 
 Un unico host Zabbix `dev-platform` (gruppo Money) con item trapper + trigger per gli
 operai di sviluppo sui nodi mc2 · omarchy · nuvola · MARCODG1 · win. Il collector gira
@@ -37,6 +37,8 @@ CIECHI_MAX = 3  # giri consecutivi di check non eseguibile prima di dichiarare g
 
 #: Gli operai monitorati: chiave item -> (nome, nodo, strumento)
 OPERAIO_ITEMS = (
+    ("dev.hermes.mc2", "Hermes su mc2", "mc2", "hermes"),
+    ("dev.hermes.omarchy", "Hermes su omarchy", "omarchy", "hermes"),
     ("dev.a0.mc2", "A0 su mc2", "mc2", "a0"),
     ("dev.a0.omarchy", "A0 su omarchy", "omarchy", "a0"),
     ("dev.a0.win", "A0 su win", "win", "a0"),
@@ -60,8 +62,8 @@ ITEM_EXTRA = (
 
 #: Nodi Linux: alias ssh (None = locale su mc2), porta dsh-web, quali operai ha
 NODI = {
-    "mc2": {"alias": None, "porta_dsh": 4080, "dsh": True, "a0": True},
-    "omarchy": {"alias": "omarchy", "porta_dsh": 5080, "dsh": True, "a0": True},
+    "mc2": {"alias": None, "porta_dsh": 4080, "dsh": True, "a0": True, "hermes": True},
+    "omarchy": {"alias": "omarchy", "porta_dsh": 5080, "dsh": True, "a0": True, "hermes": True},
     "nuvola": {"alias": "nuvola", "porta_dsh": None, "dsh": False, "a0": False},
     "marcodg1": {"alias": "MARCODG1", "porta_dsh": None, "dsh": False, "a0": False},
 }
@@ -90,6 +92,9 @@ def rpc(method, params, auth=None):
 
 def _snippet(cfg: dict) -> str:
     righe = []
+    if cfg.get("hermes"):
+        righe.append("echo hermes=$(XDG_RUNTIME_DIR=/run/user/$(id -u) "
+                     "systemctl --user is-active hermes-gateway 2>/dev/null)")
     if cfg.get("a0"):
         righe.append("echo a0=$( (docker inspect agent-zero --format '{{.State.Status}}' "
                      "2>/dev/null || sudo -n docker inspect agent-zero --format "
@@ -161,7 +166,7 @@ def valuta(nodo: str, lett: dict | None) -> dict:
     """Letture grezze -> {strumento: True/False/None} (None = non osservabile)."""
     fuori = {}
     if lett is None:
-        return {s: None for s in ("a0", "dsh", "opencode", "agy")}
+        return {s: None for s in ("hermes", "a0", "dsh", "opencode", "agy")}
     if nodo == "win":
         fuori["dsh"] = 1 if ":3080" in lett.get("dsh_win", "") else 0
         stato_a0 = lett.get("a0_win", "")
@@ -184,6 +189,9 @@ def valuta(nodo: str, lett: dict | None) -> dict:
             fuori["dsh"] = None
         else:
             fuori["dsh"] = 1 if (dsh == "active" and http in ("200", "401", "302")) else 0
+    hm = lett.get("hermes", "")
+    if "hermes" in lett:
+        fuori["hermes"] = 1 if hm == "active" else (0 if hm else None)
     op, porta = lett.get("opencode", ""), lett.get("opencode_port", "")
     if not op:
         fuori["opencode"] = None
@@ -264,7 +272,7 @@ def ensure_triggers(auth, hostid: str) -> int:
 # --- giro ------------------------------------------------------------------------------
 
 def raccogli_tutto() -> dict:
-    """{chiave_item: True/False/None} per i 14 operai (None = non osservabile)."""
+    """{chiave_item: True/False/None} per i 16 operai (None = non osservabile)."""
     esiti = {}
     for nodo, cfg in NODI.items():
         lett = raccogli_nodo_linux(nodo, cfg)
