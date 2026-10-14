@@ -28,3 +28,6 @@ logs/
 config/.env_banco
 !config/.env_banco.example
 prove/funding_watch/
+
+# pannello agenti: JSON generato dal cron (ops/agents/agents_status.py) — non versionare
+ops/dashboard/agenti.json
