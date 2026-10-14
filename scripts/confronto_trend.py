@@ -136,7 +136,7 @@ def main() -> int:
             if sh(s2) > sh(s1):
                 conteggio["mvrv"] += 1
 
-    print(f"\n=== SINTESI (sharpe OOS) ===")
+    print("\n=== SINTESI (sharpe OOS) ===")
     print(f"  asset testati: {conteggio['tot']}")
     print(f"  SMA200 batte B&H: {conteggio['sma200']}/{conteggio['tot']}")
     print(f"  MVRV-mom batte SMA200: {conteggio['mvrv']}/{conteggio['tot']}")
