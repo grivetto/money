@@ -1,0 +1,62 @@
+{
+ "DOGEUSDT|top-|r|": {
+  "slippage_buy_bps": 5.221014995843154,
+  "slippage_sell_bps": -3.4186689509563273,
+  "rt_bps": 1.8023460448868267,
+  "buy_p75_bps": 17.06595283648582,
+  "sell_p75_bps": 18.92081281810315,
+  "spread10s_med_bps": 0.5545274393320896,
+  "allin_rt_okx": 0.0019802346044886826,
+  "n": 10
+ },
+ "DOGEUSDT|cadute": {
+  "slippage_buy_bps": 1.4232226223076516,
+  "slippage_sell_bps": 3.7502123974647583,
+  "rt_bps": 5.17343501977241,
+  "buy_p75_bps": 9.25890989070921,
+  "sell_p75_bps": 19.09805761227956,
+  "spread10s_med_bps": 0.4233349811352798,
+  "allin_rt_okx": 0.002317343501977241,
+  "n": 10
+ },
+ "DOGEUSDT|controllo (ore normali)": {
+  "slippage_buy_bps": 1.4255026249654357,
+  "slippage_sell_bps": -0.6609092076870215,
+  "rt_bps": 0.7645934172784141,
+  "buy_p75_bps": 3.711334545623557,
+  "sell_p75_bps": 6.396412427660536,
+  "spread10s_med_bps": 0.7224127315524118,
+  "allin_rt_okx": 0.0018764593417278414,
+  "n": 12
+ },
+ "SOLUSDT|top-|r|": {
+  "slippage_buy_bps": 3.507650430447651,
+  "slippage_sell_bps": -0.35493136777309253,
+  "rt_bps": 3.1527190626745583,
+  "buy_p75_bps": 8.174802167739692,
+  "sell_p75_bps": 6.4631403993462015,
+  "spread10s_med_bps": 0.46524112917408245,
+  "allin_rt_okx": 0.0021152719062674558,
+  "n": 10
+ },
+ "SOLUSDT|cadute": {
+  "slippage_buy_bps": 5.858058243979336,
+  "slippage_sell_bps": -2.6736364083301822,
+  "rt_bps": 3.184421835649154,
+  "buy_p75_bps": 7.729788634667778,
+  "sell_p75_bps": 1.4833586301074564,
+  "spread10s_med_bps": 0.4397797008204803,
+  "allin_rt_okx": 0.0021184421835649153,
+  "n": 10
+ },
+ "SOLUSDT|controllo (ore normali)": {
+  "slippage_buy_bps": -1.2060055500551226,
+  "slippage_sell_bps": 3.098636073647909,
+  "rt_bps": 1.8926305235927865,
+  "buy_p75_bps": 1.740498999382445,
+  "sell_p75_bps": 6.134238166003447,
+  "spread10s_med_bps": 0.5339231148688349,
+  "allin_rt_okx": 0.0019892630523592786,
+  "n": 12
+ }
+}
