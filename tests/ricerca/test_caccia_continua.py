@@ -122,8 +122,9 @@ def test_valuta_candidati_promozione_declassamento_ripromozione():
     acc_basso = C.Accumulo(n=1000, somma=0.0, somma2=10.0)      # varianza = 0.01
     acc_alto = C.Accumulo(n=1_000_000, somma=0.0, somma2=90000.0)  # varianza = 0.09
 
-    # il DSR della caccia deve coincidere con la formula diretta
-    atteso = sharpe_deflazionato(1.0, 60, 1000, 0.01)["dsr"]
+    # il DSR della caccia deve coincidere con la formula diretta — sulla finestra di
+    # ADDESTRAMENTO (fix del 13/10: Sharpe, numerosita' e varianza sulla STESSA finestra)
+    atteso = sharpe_deflazionato(0.6, 100, 1000, 0.01)["dsr"]
     assert C.dsr_di(sel, acc_basso) == pytest.approx(atteso)
     assert atteso >= 0.95, "il caso di prova deve passare col conteggio basso"
 

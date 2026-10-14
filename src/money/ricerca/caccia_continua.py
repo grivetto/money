@@ -15,8 +15,10 @@ La correzione per selezione multipla (DSR, Bailey & Lopez de Prado) usa i tentat
 CUMULATIVI della caccia: ogni tentativo valutabile mai fatto qui (n_train >= 30) entra nel
 conteggio e nella varianza, e i candidati sono RICONTROLLATI a ogni giro — se il conteggio
 sale e il DSR scende sotto soglia, il candidato viene DECLASSATO (e lo si dice, mai in
-silenzio). Le scansioni precedenti tengono i loro conteggi negli artefatti: la caccia ha
-il PROPRIO registro cumulativo, dichiarato qui e non riusato.
+silenzio). Il DSR si applica alla finestra di ADDESTRAMENTO (dove la selezione avviene e
+dove vive la varianza accumulata): la verifica resta un cancello separato — n, expectancy,
+t — mai deflazionata. Le scansioni precedenti tengono i loro conteggi negli artefatti: la
+caccia ha il PROPRIO registro cumulativo, dichiarato qui e non riusato.
 
 Criterio candidato (identico alle scansioni): n(verifica) >= 30, exp > 0, t > 0, DSR >= 0.95.
 
@@ -247,12 +249,19 @@ def papabile(sel: Optional[dict], *, min_op: int = S.MIN_OP) -> bool:
 
 
 def dsr_di(sel: dict, accumulo: Accumulo) -> Optional[float]:
-    """DSR della selezione col conteggio cumulativo corrente; None se non calcolabile."""
-    oos = sel.get("oos") or {}
-    n_oos = int(oos.get("n") or 0)
-    if n_oos < 2 or oos.get("sharpe") is None or accumulo.n < 2:
+    """DSR della selezione col conteggio cumulativo corrente; None se non calcolabile.
+
+    Stessa convenzione delle scansioni (fix del giudice statistico, 13/10): la deflazione
+    si applica alla finestra di ADDESTRAMENTO — dove la selezione e' avvenuta e dove vive
+    la varianza dei tentativi accumulata in `accumulo`. Sharpe osservato, numerosita' e
+    varianza sulla STESSA finestra; la verifica (n ~ 30-40 operazioni) non viene
+    deflazionata: era il bug che rendeva il filtro impossibile da passare per chiunque.
+    """
+    train = sel.get("train") or {}
+    n_train = int(train.get("n") or 0)
+    if n_train < 2 or train.get("sharpe") is None or accumulo.n < 2:
         return None
-    return sharpe_deflazionato(float(oos["sharpe"]), n_oos, accumulo.n,
+    return sharpe_deflazionato(float(train["sharpe"]), n_train, accumulo.n,
                                accumulo.varianza)["dsr"]
 
 

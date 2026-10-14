@@ -111,7 +111,8 @@ def report(results: dict) -> str:
                  f"{'ver n':>6} {'exp ve':>8} {'t ve':>6} {'DSR':>6}")
     for s in results["selezioni"]:
         tr, ve = s["train"], s["oos"]
-        dsr = (s.get("dsr_oos") or {}).get("dsr") if isinstance(s.get("dsr_oos"), dict) else None
+        dsr_raw = s.get("dsr_selezione")
+        dsr = dsr_raw.get("dsr") if isinstance(dsr_raw, dict) else None
         righe.append(f"  {s['chiave']:<44} {s['simbolo']:<10} {tr['n']:>7} "
                      f"{_p(tr['expectancy']):>8} {ve['n']:>6} {_p(ve['expectancy']):>8} "
                      f"{_n3(ve['t_stat']):>6} {_n3(dsr) if dsr is not None else 'n/d':>6}")

@@ -32,7 +32,7 @@ def _sel(*, n_oos=50, exp_oos=0.01, t_oos=2.0, dsr=0.98, n_train=80, exp_train=0
         "chiave": "famiglia(x=1)", "simbolo": "BTC/USDT",
         "train": {"n": n_train, "expectancy": exp_train},
         "oos": {"n": n_oos, "expectancy": exp_oos, "t_stat": t_oos},
-        "dsr_oos": dsr,
+        "dsr_selezione": dsr,
     }
 
 
@@ -62,10 +62,11 @@ def test_respinta_dsr_sotto_soglia():
 
 
 def test_dsr_normalizzato_da_dict_o_float():
-    """Il motore espone `dsr_oos` in due forme: entrambe devono funzionare."""
-    assert IPV._dsr_valore({"dsr_oos": 0.9}) == 0.9
-    assert IPV._dsr_valore({"dsr_oos": {"dsr": 0.8}}) == 0.8
-    assert IPV._dsr_valore({"dsr_oos": None}) is None
+    """Chiave corrente (`dsr_selezione`) in due forme + fallback sui vecchi artefatti."""
+    assert IPV._dsr_valore({"dsr_selezione": 0.9}) == 0.9
+    assert IPV._dsr_valore({"dsr_selezione": {"dsr": 0.8}}) == 0.8
+    assert IPV._dsr_valore({"dsr_selezione": None}) is None
+    assert IPV._dsr_valore({"dsr_oos": 0.85}) == 0.85   # pre-fix: sola lettura cronologia
 
 
 def test_valida_rifiuta_ipotesi_incompleta():

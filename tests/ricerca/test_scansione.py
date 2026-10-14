@@ -84,13 +84,13 @@ def test_il_futuro_non_cambia_i_trade_passati():
 def test_soglie_di_sopravvivenza():
     """Il filtro dei candidati: n, expectancy, t e DSR — ognuno puo' escludere da solo."""
     base = {"chiave": "X", "simbolo": "S", "train": {}, "oos": {"n": 40, "expectancy": 0.01,
-            "t_stat": 1.5}, "dsr_oos": {"dsr": 0.97}}
+            "t_stat": 1.5}, "dsr_selezione": {"dsr": 0.97}}
     assert len(S.seleziona_sopravvissuti([base])) == 1
     no_n = {**base, "oos": {**base["oos"], "n": 10}}
     no_exp = {**base, "oos": {**base["oos"], "expectancy": -0.001}}
     no_t = {**base, "oos": {**base["oos"], "t_stat": -0.2}}
-    no_dsr = {**base, "dsr_oos": {"dsr": 0.90}}
-    nessun_dsr = {**base, "dsr_oos": None}
+    no_dsr = {**base, "dsr_selezione": {"dsr": 0.90}}
+    nessun_dsr = {**base, "dsr_selezione": None}
     for s in (no_n, no_exp, no_t, no_dsr, nessun_dsr):
         assert S.seleziona_sopravvissuti([s]) == []
 

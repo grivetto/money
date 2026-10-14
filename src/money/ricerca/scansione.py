@@ -55,7 +55,7 @@ CONFINE_ADDESTRAMENTO = "2024-06-01"
 #: della catena: sotto 30 il cancello direbbe "insufficiente").
 MIN_OP = 30
 
-#: Soglia di sopravvivenza sullo Sharpe deflazionato misurato in verifica.
+#: Soglia di sopravvivenza sul DSR della SELEZIONE (finestra di addestramento, fix 13/10).
 SOGLIA_DSR = 0.95
 
 
@@ -333,11 +333,14 @@ def dividi(trades: Sequence[Trade], confine_ms: int):
 
 def seleziona_sopravvissuti(selezioni: Sequence[dict], *, min_op: int = MIN_OP,
                             soglia_dsr: float = SOGLIA_DSR) -> List[dict]:
-    """Le selezioni che sopravvivono alla verifica: n, expectancy, t e DSR oltre soglia.
+    """Le selezioni che sopravvivono: verifica onesta + DSR della selezione oltre soglia.
 
-    Il filtro e' volutamente CONSERVATIVO e dichiarato in un posto solo: numerosita' minima,
-    expectancy netta positiva, t-statistic positivo e Sharpe deflazionato >= soglia. Un
-    candidato che non passa qui NON e' "archiviato": semplicemente non ha superato lo
+    Il filtro e' volutamente CONSERVATIVO e dichiarato in un posto solo, su DUE finestre:
+    - VERIFICA (mai vista dalla selezione): numerosita' minima, expectancy netta positiva,
+      t-statistic positivo;
+    - SELEZIONE (addestramento): Sharpe deflazionato dal conteggio dei tentativi — il DSR
+      misura la selezione multipla, che e' avvenuta in addestramento (fix del 13/10).
+    Un candidato che non passa qui NON e' "archiviato": semplicemente non ha superato lo
     screening e non viene proposto.
     """
     fuori: List[dict] = []
@@ -349,7 +352,8 @@ def seleziona_sopravvissuti(selezioni: Sequence[dict], *, min_op: int = MIN_OP,
             continue
         if not ((mo.get("t_stat") or 0.0) > 0.0):
             continue
-        dsr = (s.get("dsr_oos") or {}).get("dsr") if isinstance(s.get("dsr_oos"), dict) else None
+        dsr_raw = s.get("dsr_selezione")
+        dsr = dsr_raw.get("dsr") if isinstance(dsr_raw, dict) else None
         if dsr is None or dsr < soglia_dsr:
             continue
         fuori.append(s)
@@ -382,20 +386,28 @@ def seleziona_e_correggi(trials: Sequence[dict], *, min_op: int = MIN_OP,
     # VALUTABILI (n_train >= min_op): un tentativo con 3 operazioni non e' una stima dello
     # Sharpe, e' rumore che la convenzione del progetto dichiara "insufficiente" — includerlo
     # gonfia arbitrariamente il benchmark E[max SR] e rende il filtro non discriminante.
-    # Il totale delle prove fatte resta nel meta, dichiarato. La varianza viene dai tentativi
-    # in ADDESTRAMENTO (la finestra dove la selezione avviene); il DSR della selezione usa
-    # invece lo Sharpe e la numerosita' della finestra di VERIFICA.
+    # Il totale delle prove fatte resta nel meta, dichiarato.
+    #
+    # DOVE si applica il DSR (fix del 13/10 — bug del giudice statistico): al track record
+    # della finestra dove la selezione e' AVVENUTA, cioe' l'ADDESTRAMENTO. Sharpe osservato,
+    # numerosita' e varianza dei tentativi stanno tutti sulla stessa finestra: e' la
+    # condizione per cui la formula di Bailey & Lopez de Prado misura il processo di
+    # selezione. Applicarlo alla verifica era matematicamente insensato: n_oos ~ 30-40
+    # contro N ~ 3e5 richiedeva un t-stat per operazione di ~4,7 (Sharpe annualizzato ~4,8):
+    # un filtro che nessuna strategia reale puo' passare. La verifica resta un cancello
+    # SEPARATO e onesto (`seleziona_sopravvissuti`: n, expectancy, t) — mai deflazionata
+    # col conteggio dei tentativi, che non sono avvenuti li'.
     valutabili = [t for t in trials if (t["train"]["n"] or 0) >= min_op
                   and t["train"]["sharpe"] is not None]
     n_tentativi = len(valutabili)
     sharpe_train = [t["train"]["sharpe"] for t in valutabili]
     var_sharpe = varianza_da_tentativi(sharpe_train) if len(sharpe_train) >= 2 else 0.0
     for s in selezioni:
-        mo = s["oos"]
+        tr = s["train"]
         dsr = None
-        if (mo["n"] or 0) >= 2 and mo["sharpe"] is not None and n_tentativi >= 2:
-            dsr = sharpe_deflazionato(mo["sharpe"], int(mo["n"]), n_tentativi, var_sharpe)
-        s["dsr_oos"] = dsr
+        if (tr["n"] or 0) >= 2 and tr["sharpe"] is not None and n_tentativi >= 2:
+            dsr = sharpe_deflazionato(tr["sharpe"], int(tr["n"]), n_tentativi, var_sharpe)
+        s["dsr_selezione"] = dsr
         s["n_tentativi"] = n_tentativi
 
     candidati = seleziona_sopravvissuti(selezioni, min_op=min_op, soglia_dsr=soglia_dsr)

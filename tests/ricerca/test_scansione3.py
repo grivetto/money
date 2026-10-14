@@ -143,7 +143,7 @@ def test_caccia_end_to_end_e_unione_dei_tentativi():
         assert c["oos"]["n"] >= 3
         assert c["oos"]["expectancy"] > 0.0
         assert c["oos"]["t_stat"] > 0.0
-        assert c["dsr_oos"]["dsr"] >= 0.95
+        assert c["dsr_selezione"]["dsr"] >= 0.95
     # le config raffinate sono dello stadio 1 e i vicini portano chiavi nuove
     assert set(res["meta"]["raffinate"]) <= {S3.chiave_config(c) for c in griglia}
     chiavi_unione = {(t["chiave"], t["simbolo"]) for t in res["trials"]}

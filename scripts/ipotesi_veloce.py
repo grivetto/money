@@ -117,9 +117,17 @@ def valida(ip: dict, famiglie_extra: tuple = ()) -> None:
 
 
 def _dsr_valore(sel: dict):
-    """Il motore espone `dsr_oos` a volte come float, a volte come dict {"dsr": ...}.
-    Normalizzo qui, in un punto solo."""
-    raw = sel.get("dsr_oos")
+    """Il DSR della selezione, normalizzato a float in un punto solo.
+
+    Chiave corrente: `dsr_selezione` (DSR sulla finestra di addestramento — fix del
+    giudice statistico, 13/10). Gli artefatti precedenti al fix usavano `dsr_oos` (DSR
+    mal calcolato sulla verifica): si legge ancora, per non rompere la visualizzazione
+    della cronologia; i risultati freschi portano sempre `dsr_selezione`.
+    Il valore puo' arrivare come float o come dict {"dsr": ...}: entrambe le forme.
+    """
+    raw = sel.get("dsr_selezione")
+    if raw is None:
+        raw = sel.get("dsr_oos")
     if isinstance(raw, dict):
         return raw.get("dsr")
     return raw
