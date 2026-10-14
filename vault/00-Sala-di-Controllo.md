@@ -1,39 +1,38 @@
 # 🎛️ Sala di Controllo — Denaro
 
-> Aggiornato: **2026-10-07** — [hermes]
+> Aggiornato: **2026-10-14** — [hermes]
 
 ## Stato in una riga
-Ricerca: **nessuna promossa**, ma il filone funding carry ha i primi candidati descrittivi solidi (S2) e il canary C1 in validazione (review **15/10**).
-Capitale: **≈1.100 €** su OKX, **zero bot live**, nessun ordine reale senza autorizzazione.
+Ricerca: **filone esplorativo chiuso** (6 arene × 59 simboli / 5+ anni → 0 edge validato); carry misurato (non batte l'Earn); canary C1 in validazione (review **15/10**); audit interno chiuso — piano E1–E4 in corso.
+Capitale: **≈1.100 €** su OKX; **zero bot live** fuori dal canary C1 (size minima); nessun ordine reale senza autorizzazione.
 
 ## Soldi
 | Dove | Importo | Note |
 |---|---|---|
-| OKX main (funding) | ≈1.100 € | +1.000 € depositati il 03/10 (SEPA, verificato) |
+| OKX main (funding + Simple Earn) | ≈1.100 € | +1.000 € depositati il 03/10 (SEPA, verificato) |
 | Sub-account | dust | mc2sub1 / marcosub1 / nuvolasub1 |
 | **Totale flotta** | **≈1.100 €** | live: https://denaro.grivetto.eu (dashboard su /dashboard) |
 
 ## Ricerca — dove siamo
 | Nodo | Stato | Risultato in una riga |
 |---|---|---|
-| P1 chandelier ATR | ❌ archiviata | lo stop in uscita peggiora tutto |
-| P2 vol targeting | ❌ archiviata (30/09) | il sizing riduce il DD seriale ma NON il DD di portafoglio |
-| P3 filtro SMA200 | ❌ archiviata | 6/8 ma DD 45,5% e t 1,58 |
-| P5 Donchian esteso | ❌ archiviata | l'edge non regge l'allargamento |
-| P10/P14 momentum | ❌ chiuso | P10 insufficiente; P14 archiviato su universo ampio |
-| P13 cointegrazione | ❌ archiviata | 0 coppie passanti |
-| **S1 scansione** (loop notturno) | 🔄 in corsa | 512 tentativi/giorno, 0 candidati; watchlist: rsi2-XRP, mom_abs |
-| **S2 funding scan** | 🔎 descrittivi | 7 candidati lato short (DOGE/LINK/ADA ~+6% ann.); da pre-registrare |
-| **S3 caccia adattiva** | ✅ eseguita 07/10 | 1.760 + 6.902 tentativi, **0 candidati** |
-| **P4 funding carry** | ⏳ spec pronta | bozza self-contained (gate JEV ok), da chiudere in coda |
+| P1–P6, P10–P14 (trend / momentum / vol / pairs) | ❌ archiviate | nessun edge oltre il pedaggio |
+| Microstruttura (order-flow, MM, spread) | ❌ chiusa 12/10 | 0 edge su tick reali; dati tick Bybit (5+ anni) riusabili |
+| On-chain / sentiment | ❌ bocciati 12/10 | walk-forward negativo |
+| Multi-timeframe (1d/4h/1h) | ❌ completo 13/10 | 0 candidati |
+| P4 funding carry | ❌ misurata 08/10 | non batte l'Earn a rischio comparabile; ri-misura quando la storia >180 g |
+| S4 caccia continua | 🔄 in cron (*/5) | satura (316k tentativi, 0 candidati); resta come guardia |
+| Watchlist S1 (rsi2-XRP, mom_abs) | ⏸ | descrittivi, mai promossi |
+| **C1 canary carry DOGE** | 🔄 in validazione | delta-neutral dal 01/10; nel cancello (gate unico + stop ATR + kill switch); review **15/10** |
 
 ## Il traguardo
 Prima promozione al cancello = **DD ≤ 25% + t ≥ 1,65 + expectancy ≥ 3× pedaggio**.
 Poi, in fila: dry-run esecuzione → banco a secco → live con size minima. Dettagli in [[10-Pipeline-di-Ricerca]].
 
 ## Prossime mosse
-1. **C1 canary (review 15/10)**: delta-neutral DOGE aperto; check funding normalizzato — review con dati OKX reali.
-2. **P4 spec**: bozza pronta (supera gate JEV) → scrivere in `coda_catena/`, chiudere i 2 job fabbrica.
-3. **Flotta in auto-start**: opencode + agy su tutti i nodi (fatto 07/10) — verificare tenuta al prossimo reboot.
+1. **Review C1 (15/10)**: dati OKX reali; decisione sul carry.
+2. **Piano E1–E4** (audit 13/10): chiudere le 11 lacune; i fix della notte 13→14 sono già atterrati.
+3. **Kaggle TPU** (free AI per la flotta): in coda per lo slot; quando live, URL+key su mc2 (`~/kaggle-tpu-lab`). Skill `kaggle-free-ai-server`.
+4. **Carry**: ri-misura con soglia netta 8% quando la storia supera ~180 giorni.
 
 Chi fa cosa: [[20-Squadra]].

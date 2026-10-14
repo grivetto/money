@@ -71,3 +71,23 @@
 - **Fix (3 nodi + sito, verificato)**: aggregator mc2+MARCODG1 e `denaro2/exporter.py` (mc2/MARCODG1/nuvola) sommano **trading+funding+savings** (`privateGetFinanceSavingsBalance`, retry, flag `savings_ok`; nuovo gauge `denaro_equity_real_partial`); `okx_ops.py saldi` allineato; trend ricostruito (36 punti interpolati, backup `.bak-20261011`); patch exporter versionata in `ops/tools/patch_exporter_equity_savings.py`.
 - **Verifica**: `denaro.grivetto.eu/dashboard` = **1.100,30 €** (hero + breakdown per conto); Zabbix `project.equity` = 1.100,3; Prometheus `main` = 1.100,17; 0 problemi attivi su Zabbix/Prometheus.
 - **Guardie anti-ricaduta**: trigger Zabbix «Money: equity crollo (>30% vs media 24h)» (id 26304) + modo `watch_alerts.py equity` (*/10 su mc2: crollo <70% del max 24h, letture per-conto incomplete, total assente; anti-spam 6h) + 6 test (`tests/test_watch_alerts_equity.py`). Lezione in skill: **i comparti OKX sono TRE**.
+
+## 2026-10-12 — Ricerca: chiusi microstruttura, on-chain e sentiment; carry misurato; canary nel cancello
+- **Microstruttura chiusa** (spread reale Bybit+Bitvavo, order-flow multi-giorno, simulatore di market making su tick reali): esito negativo; i dati tick Bybit (5+ anni) restano riusabili.
+- **On-chain e sentiment**: nuova classe di dati testata e bocciata dal walk-forward.
+- **Multi-timeframe** (1d/4h/1h): 0 candidati su tutti i timeframe.
+- **Carry funding delta-neutral misurato su 96 g (netto fee)**: non batte l'Earn a rischio comparabile → carry solo regime-dipendente (a soglie), mai always-on.
+- **Canary C1 nel cancello**: gate unico fail-closed + stop ATR obbligatorio (su 1d) + kill switch — stesso percorso dell'Esecutore.
+- Bilancio del filone esplorativo: **6 arene × 59 simboli su 5+ anni → 0 edge validato**; nessuna promozione forzata.
+
+## 2026-10-13 — Audit senza pietà; sorveglianza funding; RDP di omarchy
+- **Audit del progetto (13/10)**: 11 lacune + piano E1–E4 per chiuderle — doc in repo; prima di qualunque scala si sistemano le fondamenta.
+- **funding_watch X-Perp**: sorveglianza read-only degli X-Perp (i 60 più liquidi) con soglia e alert Telegram (cooldown 6h; 8 test; cron orario su mc2) — dice QUANDO il carry torna conveniente. Verificata end-to-end.
+- **omarchy**: RDP riparato end-to-end (xrdp + xorgxrdp 0.10.5 + Xfce4 → sessione X11 su :10) — procedura in skill `omarchy-rdp`.
+
+## 2026-10-14 — Fix audit atterrati; pannello agenti; KDE di omarchy; Kaggle TPU in coda
+- **Fix della notte 13→14**: banco a secco legge anche Simple Earn; cancello (via la doppia sottrazione del pedaggio); giudice statistico (DSR sulla finestra di selezione); fix #4 audit (rischio misurato sullo STOP) + doc di stato fix.
+- **Pannello agenti** read-only (Hermes/A0/opencode/agy/DSH su 5 nodi) → `/agenti` in dashboard + `/api/agenti.json`; **dev_platform** estesa (Hermes ×2, 16 operai) + trigger Zabbix «Operaio giù».
+- **omarchy / KDE**: sistemati Welcome Center e il ripristino-sessione che riapriva le Impostazioni a ogni login (`ksmserverrc` → `loginMode=emptySession`).
+- **Kaggle free AI (account sgrivett)**: abilitato (telefono + Persona) — TPU v5e-8 20 h/sett + GPU 30 h/sett; kernel `qwen38-tpu-serve` (kaggle-tpu-lab; Qwen3.8-27B bf16; endpoint OpenAI-compatibile) **in coda per uno slot TPU** (carenza piattaforma; l'attesa non consuma quota). Quando parte: URL+key su mc2 (`~/kaggle-tpu-lab`) — skill `kaggle-free-ai-server`.
+- **JEV**: gate verificato live (ping 14/10 → jev-1.13.0); in attesa di spec attive in coda (ultimo giro reale 08/10).

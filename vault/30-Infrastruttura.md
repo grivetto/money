@@ -6,16 +6,17 @@
 | **mc2** | regia + ricerca | Hermes, fabbrica ×100 (master 3 s), bridge/canali, Zabbix «Money», A0-mc2, **DSH-mc2 (dsh-web :4080 + headless)**, opencode, agy — **tutti in auto-start (07/10)** |
 | **MARCODG1** | lato exchange + web | banco a secco (5 min, DRY-RUN), aggregatore :8912, dashboard/landing, Grafana, **canary C1 live**, worker fabbrica, opencode + agy (auto-start) |
 | **nuvola** | appoggio | health, exporter, zabbix-agent + tunnel, worker fabbrica, opencode + agy (auto-start) |
-| **nodo agenti** (Omarchy) | agenti | **DSH-omarchy** (headless + web UI `dsh-web` :5080) + **opencode-omarchy** (v2.0.24) + **agy-omarchy** + A0 (:50080, Docker) — **servizi auto-start, completati 08/10** |
+| **nodo agenti** (Omarchy) | agenti | **DSH-omarchy** (headless + web UI `dsh-web` :5080) + **opencode-omarchy** (v2.0.24) + **agy-omarchy** + A0 (:50080, Docker) — **servizi auto-start, completati 08/10**; RDP riparato 14/10 (xrdp → sessione X11 su :10) |
 | **win** (PC Windows, «andromeda») | agenti Windows | A0-win (:50080, Docker), **DSH-win** (`DSH-Web` :3080, Task Scheduler), opencode — accesso SSH di regia in auto (chiave ed25519) |
 
 ## URL pubblici
 - Dashboard flotta: **https://denaro.grivetto.eu/dashboard** (json: `/api/infra.json`; la root di denaro.grivetto.eu è la landing «il trading»)
 - Sito squadra dev: https://web.grivetto.eu (sfondo: foto squadra `squadra-dev-2026-10-11.jpg`)
 
-## Soldi e chiavi (stato al 29/09)
-- OKX main: ~100,00 € in **funding** — la chiave main risponde solo dall'IP di MARCODG1
+## Soldi e chiavi (stato al 14/10)
+- OKX main: ≈1.100 € (funding + Simple Earn) — la chiave main risponde solo dall'IP di MARCODG1
 - **03/10: deposito owner +1.000 EUR** → equity main ≈1.100 EUR (accredito nel funding wallet, verificato read-only: +1.000,00 esatti). Deploy carry subordinato alla review del 15/10.
+- **C1 canary** (DOGE delta-neutral, size minima): aperto 01/10 su MARCODG1; nel cancello (stop ATR + kill switch); review **15/10**.
 - Sub-account (mc2sub1 / marcosub1 / nuvolasub1): dust
 - **Banco a secco**: attivo su MARCODG1 — ciclo automatico ogni 5 min, solo DRY-RUN, tripwire a 100,00 €
 
