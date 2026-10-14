@@ -1,0 +1,143 @@
+{
+ "ts": "2026-10-10T09:50:27Z",
+ "ipotesi": "candidati-hermes-2",
+ "autore": "hermes",
+ "finestre": {
+  "inizio": "2020-10-01",
+  "confine": "2024-06-01",
+  "fine": "2026-10-08"
+ },
+ "stress_slippage": 1.0,
+ "tariffa": "okx_eea_con_perp",
+ "n_config": 6,
+ "n_trials_valutabili": 29,
+ "n_tentativi_dsr": 29,
+ "candidati": 0,
+ "selezioni": [
+  {
+   "config": "capitolazione(disc=2,soglia=0.06,tieni=3,v_mult=1.5,v_n=10)",
+   "simbolo": "LINK/USDT",
+   "train": {
+    "n": 36,
+    "expectancy": 0.0222909233005517,
+    "t_stat": 0.9923319961327992,
+    "profit_factor": 1.8895526321094582,
+    "win_rate": 0.5277777777777778,
+    "sharpe": 0.1653886660221332,
+    "somma": 0.8024732388198612
+   },
+   "oos": {
+    "n": 26,
+    "expectancy": 0.014355263970883297,
+    "t_stat": 0.7675338125860541,
+    "profit_factor": 1.5323965260013597,
+    "win_rate": 0.46153846153846156,
+    "sharpe": 0.1505257649122522,
+    "somma": 0.37323686324296573
+   },
+   "dsr": 0.3240596263534685,
+   "verdetto": "RESPINTA",
+   "motivo": "verifica con 26 operazioni < 30 (campione insufficiente)"
+  },
+  {
+   "config": "capitolazione(disc=3,soglia=0.08,tieni=5,v_mult=1.5,v_n=10)",
+   "simbolo": "DOT/USDT",
+   "train": {
+    "n": 33,
+    "expectancy": 0.03970265318898978,
+    "t_stat": 1.032696176985755,
+    "profit_factor": 2.2780575247140487,
+    "win_rate": 0.45454545454545453,
+    "sharpe": 0.17976932980409072,
+    "somma": 1.3101875552366626
+   },
+   "oos": {
+    "n": 21,
+    "expectancy": 0.005724164388195667,
+    "t_stat": 0.3369037992355388,
+    "profit_factor": 1.1914257910747854,
+    "win_rate": 0.6190476190476191,
+    "sharpe": 0.07351843628166962,
+    "somma": 0.12020745215210901
+   },
+   "dsr": 0.22546347953314966,
+   "verdetto": "RESPINTA",
+   "motivo": "verifica con 21 operazioni < 30 (campione insufficiente)"
+  },
+  {
+   "config": "vol_confirmata(L=10,v_mult=1.5,v_n=10)",
+   "simbolo": "SOL/USDT",
+   "train": {
+    "n": 31,
+    "expectancy": 0.28496151308692885,
+    "t_stat": 1.897615109650173,
+    "profit_factor": 6.9988253035856545,
+    "win_rate": 0.5483870967741935,
+    "sharpe": 0.3408217348992909,
+    "somma": 8.833806905694795
+   },
+   "oos": {
+    "n": 26,
+    "expectancy": -0.0018836730577502557,
+    "t_stat": -0.09161945538387872,
+    "profit_factor": 0.9475739275689864,
+    "win_rate": 0.5384615384615384,
+    "sharpe": -0.017968053493351586,
+    "somma": -0.04897549950150665
+   },
+   "dsr": 0.09657473889277429,
+   "verdetto": "RESPINTA",
+   "motivo": "verifica con 26 operazioni < 30 (campione insufficiente)"
+  },
+  {
+   "config": "vol_confirmata(L=20,v_mult=1.5,v_n=10)",
+   "simbolo": "DOGE/USDT",
+   "train": {
+    "n": 33,
+    "expectancy": 0.21533865125720322,
+    "t_stat": 1.4527060761584083,
+    "profit_factor": 5.775140479027721,
+    "win_rate": 0.36363636363636365,
+    "sharpe": 0.25288366853025523,
+    "somma": 7.106175491487706
+   },
+   "oos": {
+    "n": 19,
+    "expectancy": 0.09190345436243309,
+    "t_stat": 0.6880650060648534,
+    "profit_factor": 2.700369678331392,
+    "win_rate": 0.3684210526315789,
+    "sharpe": 0.15785293831702085,
+    "somma": 1.7461656328862287
+   },
+   "dsr": 0.36086880210070815,
+   "verdetto": "RESPINTA",
+   "motivo": "verifica con 19 operazioni < 30 (campione insufficiente)"
+  },
+  {
+   "config": "vol_regime(look=60,n_in=10,n_out=5,q=0.5,vol_n=10)",
+   "simbolo": "SOL/USDT",
+   "train": {
+    "n": 34,
+    "expectancy": 0.07035099849783776,
+    "t_stat": 1.2795709953933778,
+    "profit_factor": 2.5321303411184988,
+    "win_rate": 0.3235294117647059,
+    "sharpe": 0.21944461529935602,
+    "somma": 2.3919339489264835
+   },
+   "oos": {
+    "n": 24,
+    "expectancy": 0.0061189463571850455,
+    "t_stat": 0.33400493236002854,
+    "profit_factor": 1.206501127906002,
+    "win_rate": 0.4166666666666667,
+    "sharpe": 0.06817847132123993,
+    "somma": 0.1468547125724411
+   },
+   "dsr": 0.20209301506719923,
+   "verdetto": "RESPINTA",
+   "motivo": "verifica con 24 operazioni < 30 (campione insufficiente)"
+  }
+ ]
+}

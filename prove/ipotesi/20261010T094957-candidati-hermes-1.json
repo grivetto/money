@@ -1,0 +1,17 @@
+{
+ "ts": "2026-10-10T09:49:57Z",
+ "ipotesi": "candidati-hermes-1",
+ "autore": "hermes",
+ "finestre": {
+  "inizio": "2020-10-01",
+  "confine": "2024-06-01",
+  "fine": "2026-10-08"
+ },
+ "stress_slippage": 1.0,
+ "tariffa": "okx_eea_con_perp",
+ "n_config": 6,
+ "n_trials_valutabili": 0,
+ "n_tentativi_dsr": 0,
+ "candidati": 0,
+ "selezioni": []
+}

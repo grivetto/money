@@ -1,0 +1,111 @@
+SCANSIONE S3 «caccia adattiva» — due stadi (NON una promozione)
+  stadio 1: 61 configurazioni (griglia estesa)
+  stadio 2: 49 configurazioni (vicini dei migliori)
+  raffinate (top-2/famiglia, su addestramento): donchian(n_in=10,n_out=5), donchian(n_in=20,n_out=10), ema_cross(fast=8,slow=21), macd(fast=12,segnale=9,slow=26), macd(fast=8,segnale=6,slow=17), mom_abs(L=90), mom_abs(L=40), mom_trend(L=60,sma=100), mom_trend(L=20,sma=200), reversion_z(k=1.5,n=10), reversion_z(k=1.0,n=5), rsi2(periodo=4,soglia_in=20.0,soglia_out=70.0), rsi2(periodo=2,soglia_in=5.0,soglia_out=50.0), turn_month(k=4,pos=ultimi), turn_month(k=3,pos=ultimi), weekday(giorno=2), weekday(giorno=3)
+  tentativi totali : 1760 (valutabili 1144 — il DSR conta l'UNIONE)
+  finestre         : addestramento fino al 2024-06-01; verifica 2024-06-01 -> fine storia
+  costi            : okx_eea (conto OKX EEA con X-Perps aperti (KYC + appropriateness assessment)) | giro misto 0.1800% | slippage 0.04%/lato
+  soglie           : min op (verifica) 30, DSR >= 0.95
+
+SELEZIONI (una per configurazione: miglior simbolo in ADDESTRAMENTO)
+  configurazione                                   simbolo    train n   exp tr  ver n   exp ve   t ve    DSR
+  donchian(n_in=10,n_out=5)                        AVAX/USDT       46  +18,99%     35   +0,57%  0,220  0,004
+  donchian(n_in=20,n_out=10)                       BTC/USDT        30   +5,79%     17   +3,23%  1,001  0,165
+  donchian(n_in=20,n_out=5)                        AVAX/USDT       34  +19,63%     21   +0,50%  0,153  0,021
+  ema_cross(fast=4,slow=21)                        AVAX/USDT       36  +35,51%     29   -0,27% -0,103  0,004
+  ema_cross(fast=8,slow=13)                        AVAX/USDT       32  +36,10%     27   -0,92% -0,348  0,002
+  ema_cross(fast=8,slow=21)                        SOL/USDT        32  +70,97%     19   +1,53%  0,380  0,044
+  ema_cross(fast=8,slow=29)                        TRX/USDT        31   +7,72%     22   +4,31%  0,978  0,101
+  macd(fast=10,segnale=6,slow=17)                  AVAX/USDT       63  +14,86%     45   -0,18% -0,107  0,000
+  macd(fast=10,segnale=9,slow=26)                  AVAX/USDT       38  +22,18%     34   -0,01% -0,005  0,002
+  macd(fast=12,segnale=11,slow=26)                 SOL/USDT        42  +23,22%     27   +0,47%  0,188  0,010
+  macd(fast=12,segnale=7,slow=26)                  AVAX/USDT       39  +22,44%     36   -0,23% -0,082  0,001
+  macd(fast=12,segnale=9,slow=22)                  AVAX/USDT       36  +23,09%     34   +0,03%  0,008  0,002
+  macd(fast=12,segnale=9,slow=26)                  AVAX/USDT       34  +25,06%     32   -0,49% -0,157  0,002
+  macd(fast=12,segnale=9,slow=30)                  AVAX/USDT       36  +22,10%     32   -1,15% -0,367  0,001
+  macd(fast=14,segnale=9,slow=26)                  SOL/USDT        43  +22,48%     26   +0,93%  0,357  0,018
+  macd(fast=5,segnale=5,slow=13)                   AVAX/USDT       89   +9,48%     70   -1,50% -1,278  0,000
+  macd(fast=6,segnale=6,slow=17)                   AVAX/USDT       77  +11,17%     55   -0,18% -0,119  0,000
+  macd(fast=8,segnale=4,slow=17)                   AVAX/USDT       80  +11,19%     57   -0,45% -0,294  0,000
+  macd(fast=8,segnale=6,slow=13)                   AVAX/USDT       70  +12,52%     50   +0,08%  0,050  0,000
+  macd(fast=8,segnale=6,slow=17)                   AVAX/USDT       69  +13,15%     45   -0,09% -0,050  0,000
+  macd(fast=8,segnale=6,slow=21)                   AVAX/USDT       64  +14,64%     47   -0,27% -0,164  0,000
+  macd(fast=8,segnale=8,slow=17)                   AVAX/USDT       61  +15,34%     42   +0,13%  0,074  0,001
+  mom_abs(L=10)                                    AVAX/USDT       81  +12,38%     65   -0,24% -0,172  0,000
+  mom_abs(L=100)                                   BCH/USDT        33   +0,90%     16   -1,42% -0,552  0,008
+  mom_abs(L=120)                                   LINK/USDT       35   +0,07%      9   +1,51%  0,314  0,138
+  mom_abs(L=180)                                   UNI/USDT        37   -3,57%     14   -5,72% -0,645  0,009
+  mom_abs(L=20)                                    AVAX/USDT       49  +23,86%     55   -0,67% -0,490  0,000
+  mom_abs(L=250)                                   LINK/USDT       31   +0,04%     29   -3,67% -1,838  0,000
+  mom_abs(L=30)                                    DOGE/USDT       44  +51,86%     39   +2,78%  0,464  0,005
+  mom_abs(L=40)                                    DOGE/USDT       42  +58,05%     35   +3,14%  0,553  0,011
+  mom_abs(L=5)                                     AVAX/USDT      131   +5,85%     98   -0,89% -0,881  0,000
+  mom_abs(L=50)                                    DOGE/USDT       32  +63,04%     22   +5,08%  0,636  0,053
+  mom_abs(L=60)                                    DOGE/USDT       44  +42,04%     15   +9,28%  0,609  0,108
+  mom_abs(L=80)                                    DOGE/USDT       33 +147,02%     18   +7,20%  0,784  0,106
+  mom_abs(L=90)                                    DOGE/USDT       31 +125,29%     22   +0,54%  0,102  0,016
+  mom_trend(L=10,sma=200)                          SOL/USDT        40  +17,61%     30   +0,14%  0,079  0,005
+  mom_trend(L=120,sma=200)                         LINK/USDT       30   -1,79%     11   -0,92% -0,227  0,039
+  mom_trend(L=20,sma=175)                          DOGE/USDT       33  +17,69%     17  +10,04%  0,754  0,111
+  mom_trend(L=20,sma=200)                          SOL/USDT        34  +15,55%     19   +0,66%  0,234  0,032
+  mom_trend(L=20,sma=225)                          SOL/USDT        35  +14,66%     21   -0,32% -0,122  0,010
+  mom_trend(L=30,sma=200)                          AVAX/USDT       37   +4,78%     11   -0,19% -0,048  0,055
+  mom_trend(L=50,sma=100)                          TRX/USDT        33   +4,26%     19   +5,27%  1,419  0,248
+  mom_trend(L=60,sma=100)                          SOL/USDT        32  +36,98%     23   -1,60% -0,633  0,002
+  mom_trend(L=60,sma=125)                          DOGE/USDT       33   +9,89%     18   +4,21%  0,383  0,050
+  mom_trend(L=60,sma=200)                          LINK/USDT       42   -3,31%      6  +24,50%  1,670  0,650
+  mom_trend(L=60,sma=75)                           DOGE/USDT       36  +57,22%     15   +7,18%  0,534  0,095
+  mom_trend(L=70,sma=100)                          SOL/USDT        30  +44,04%     24   +1,42%  0,586  0,038
+  reversion_z(k=0.75,n=5)                          DOGE/USDT      132   +2,26%     94   -0,25% -0,351  0,000
+  reversion_z(k=1.0,n=10)                          DOGE/USDT       67   +5,80%     46   -0,73% -0,566  0,000
+  reversion_z(k=1.0,n=5)                           DOGE/USDT      115   +2,63%     77   -0,64% -0,750  0,000
+  reversion_z(k=1.25,n=10)                         DOGE/USDT       56   +6,28%     38   -0,37% -0,250  0,001
+  reversion_z(k=1.25,n=5)                          DOGE/USDT       91   +4,28%     65   -0,85% -0,883  0,000
+  reversion_z(k=1.5,n=10)                          DOGE/USDT       48   +7,94%     31   -0,15% -0,086  0,003
+  reversion_z(k=1.5,n=15)                          DOGE/USDT       35  +10,44%     26   -0,54% -0,297  0,003
+  reversion_z(k=1.5,n=5)                           DOGE/USDT       67   +6,87%     46   +0,27%  0,245  0,001
+  reversion_z(k=1.75,n=10)                         DOGE/USDT       38   +9,61%     27   +0,47%  0,269  0,013
+  rsi2(periodo=2,soglia_in=10.0,soglia_out=50.0)   DOGE/USDT       67   +5,90%     51   +0,00%  0,005  0,000
+  rsi2(periodo=2,soglia_in=10.0,soglia_out=55.0)   DOGE/USDT       65   +6,17%     48   -0,50% -0,501  0,000
+  rsi2(periodo=2,soglia_in=15.0,soglia_out=60.0)   DOGE/USDT       86   +5,32%     60   +0,23%  0,227  0,000
+  rsi2(periodo=2,soglia_in=20.0,soglia_out=60.0)   DOGE/USDT      103   +3,96%     76   -0,15% -0,171  0,000
+  rsi2(periodo=2,soglia_in=5.0,soglia_out=45.0)    DOGE/USDT       43   +9,29%     30   -0,02% -0,014  0,004
+  rsi2(periodo=2,soglia_in=5.0,soglia_out=50.0)    DOGE/USDT       43   +9,42%     30   +0,19%  0,156  0,006
+  rsi2(periodo=2,soglia_in=5.0,soglia_out=55.0)    DOGE/USDT       42   +9,36%     29   -0,35% -0,286  0,002
+  rsi2(periodo=3,soglia_in=10.0,soglia_out=55.0)   ETC/USDT        30   +2,29%     20   +1,51%  0,842  0,096
+  rsi2(periodo=3,soglia_in=15.0,soglia_out=65.0)   DOGE/USDT       36   +9,09%     27   -0,83% -0,508  0,001
+  rsi2(periodo=3,soglia_in=20.0,soglia_out=65.0)   DOGE/USDT       44   +7,55%     35   -0,63% -0,441  0,001
+  rsi2(periodo=3,soglia_in=20.0,soglia_out=70.0)   DOGE/USDT       42   +8,68%     32   -0,78% -0,447  0,001
+  rsi2(periodo=4,soglia_in=20.0,soglia_out=65.0)   DOGE/USDT       30  +11,60%     21   -1,35% -0,555  0,003
+  rsi2(periodo=4,soglia_in=20.0,soglia_out=70.0)   DOGE/USDT       30  +13,20%     19   -2,01% -0,683  0,003
+  rsi2(periodo=4,soglia_in=25.0,soglia_out=70.0)   DOGE/USDT       35  +12,14%     24   -1,92% -0,757  0,001
+  turn_month(k=1,pos=primi)                        BCH/USDT        44   +1,05%     29   +0,00%  0,000  0,005
+  turn_month(k=1,pos=ultimi)                       SOL/USDT        43   +2,31%     29   -1,46% -2,387  0,000
+  turn_month(k=2,pos=primi)                        SOL/USDT        44   +2,03%     29   -0,37% -0,312  0,002
+  turn_month(k=2,pos=ultimi)                       DOGE/USDT       44   +3,75%     28   -1,92% -1,977  0,000
+  turn_month(k=3,pos=primi)                        DOGE/USDT       44   +4,23%     29   -0,18% -0,116  0,003
+  turn_month(k=3,pos=ultimi)                       SOL/USDT        44   +4,71%     28   -2,59% -2,516  0,000
+  turn_month(k=4,pos=primi)                        DOGE/USDT       44   +4,04%     29   -1,31% -0,708  0,001
+  turn_month(k=4,pos=ultimi)                       SOL/USDT        44   +7,05%     28   -3,91% -3,379  0,000
+  turn_month(k=5,pos=ultimi)                       DOGE/USDT       44  +14,36%     28   -3,13% -2,113  0,000
+  weekday(giorno=0)                                AVAX/USDT      191   +0,03%    123   -0,35% -0,937  0,000
+  weekday(giorno=1)                                AVAX/USDT      191   +0,60%    123   -0,07% -0,176  0,000
+  weekday(giorno=2)                                DOGE/USDT      191   +2,39%    123   -1,15% -2,824  0,000
+  weekday(giorno=3)                                DOGE/USDT      192   +0,76%    122   +0,44%  0,964  0,000
+  weekday(giorno=4)                                DOGE/USDT      191   +0,72%    123   +0,29%  0,890  0,000
+  weekday(giorno=5)                                SOL/USDT       191   +0,51%    123   -0,09% -0,243  0,000
+  weekday(giorno=6)                                XRP/USDT       191   +0,45%    123   +0,28%  0,699  0,000
+
+CANDIDATI: nessuno. (Esito onesto: unione dei tentativi contata, DSR applicato — nessuna configurazione dimostra un edge robusto in verifica.)
+
+TOP 10 per expectancy di VERIFICA (descrittivo, non promozionale):
+  donchian(n_in=10,n_out=5)                        XLM/USDT   exp +10,46% n 37 t 0,939
+  macd(fast=12,segnale=9,slow=30)                  XLM/USDT   exp +10,02% n 32 t 0,806
+  macd(fast=12,segnale=7,slow=26)                  XLM/USDT   exp +10,01% n 37 t 0,887
+  mom_abs(L=20)                                    XLM/USDT   exp +9,92% n 36 t 0,999
+  macd(fast=14,segnale=9,slow=26)                  XLM/USDT   exp +9,84% n 32 t 0,791
+  mom_trend(L=10,sma=200)                          XRP/USDT   exp +9,73% n 31 t 0,892
+  macd(fast=12,segnale=11,slow=26)                 XLM/USDT   exp +9,56% n 31 t 0,789
+  macd(fast=14,segnale=9,slow=26)                  XRP/USDT   exp +9,56% n 30 t 0,816
+  macd(fast=8,segnale=8,slow=17)                   XRP/USDT   exp +9,47% n 38 t 1,059
+  macd(fast=12,segnale=9,slow=26)                  XLM/USDT   exp +9,40% n 35 t 0,826
