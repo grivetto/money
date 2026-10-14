@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Money — banco di prova a secco (implementa docs/02_banco_di_prova_a_secco.md).
 
-Legge il conto (trading + funding, entrambi), calcola l'equity in EUR, applica
-la guardia di capitale, calcola l'ordine che SAREBBE inviato e riconcilia.
+Legge il conto (trading + funding + Simple Earn/savings: TUTTI i comparti),
+calcola l'equity in EUR, applica la guardia di capitale, calcola l'ordine che
+SAREBBE inviato e riconcilia. Un comparto illeggibile e' un errore di misura
+(rc=1): il banco non giudica su un dato parziale.
 **Nessun ordine viene inviato**: nel codice l'invio e' assente, non disattivato
 da un flag — `deploy/tests/test_no_order_calls.py` lo verifica staticamente e
 la CI esegue il test a ogni push.
@@ -82,6 +84,29 @@ def saldi_nonzero(bilancio: Dict[str, Any]) -> Dict[str, float]:
     return out
 
 
+def saldi_savings(risposta: Dict[str, Any]) -> Dict[str, float]:
+    """{ccy: amt} dalle posizioni Simple Earn (privateGetFinanceSavingsBalance).
+
+    La risposta e' `{"code": "0", "data": [{"ccy": "USDC", "amt": "1206.99", ...}]}`.
+    Dal 12/10 i fondi a rendita stanno qui e ne' trading ne' funding li vedono: senza
+    questa gamba l'equity e' incompleta (bug visto dal vivo il 13/10: il banco leggeva
+    22 EUR su un conto da ~1.100). Qualsiasi forma inattesa produce un dizionario vuoto,
+    mai un numero inventato; il chiamante decide se l'insieme dei comparti letti basta.
+    """
+    out: Dict[str, float] = {}
+    for voce in ((risposta or {}).get("data") or []):
+        if not isinstance(voce, dict):
+            continue
+        try:
+            amt = float(voce.get("amt") or 0.0)
+        except (TypeError, ValueError):
+            continue
+        ccy = str(voce.get("ccy") or "")
+        if ccy and amt > 0:
+            out[ccy] = out.get(ccy, 0.0) + amt
+    return out
+
+
 def calcola_equity(saldi: Dict[str, float],
                    prezzo_eur: Callable[[str], Optional[float]]
                    ) -> Tuple[float, Dict[str, Any]]:
@@ -148,12 +173,14 @@ def formatta_metrica(*, esito: str, equity_eur: float, equity_trading: float,
                      nozionale_eur: float, quantita: float, symbol: str,
                      pedaggio_pct: float, tariffa_nome: str, chiave_perm: str,
                      chiave_solo_lettura: str, ordini_aperti: int,
-                     riconciliazione_quadra: str, timestamp: str) -> str:
+                     riconciliazione_quadra: str, timestamp: str,
+                     equity_savings: float = 0.0) -> str:
     """Una riga per esecuzione: e' l'item che Zabbix/aggregatore possono leggere."""
     return (
         f"METRICA banco_esito={esito} equity_eur={equity_eur:.4f} "
         f"equity_trading_eur={equity_trading:.4f} "
         f"equity_funding_eur={equity_funding:.4f} "
+        f"equity_savings_eur={equity_savings:.4f} "
         f"capitale_dichiarato={capitale_dichiarato:.4f} "
         f"nozionale_eur={nozionale_eur:.4f} qty={quantita} symbol={symbol} "
         f"pedaggio_assunto_pct={pedaggio_pct:.3f} tariffa={tariffa_nome} "
@@ -321,12 +348,34 @@ def _esegui(root: str, config_path: str) -> int:
                  "invio (test statico in deploy/tests), ma la spec vuole una chiave "
                  "dedicata Read: crearla e sostituirla in config/.env_banco")
 
-        # 1. SALDO REALE: trading E funding (il bonifico atterra sul funding)
+        # 1. SALDO REALE: trading E funding E savings (il bonifico atterra sul funding;
+        #    dal 12/10 i fondi a rendita stanno in Simple Earn e solo qui si vedono)
         _log("STEP 1: fetch_balance trading + funding")
         saldi_t = saldi_nonzero(ex.fetch_balance({"type": "trading"}))
         saldi_f = saldi_nonzero(ex.fetch_balance({"type": "funding"}))
         _log(f"  trading: {json.dumps(saldi_t, ensure_ascii=False)}")
         _log(f"  funding: {json.dumps(saldi_f, ensure_ascii=False)}")
+
+        # 1b. SIMPLE EARN (savings): ne' trading ne' funding li vedono. Senza questa gamba
+        #     l'equity e' incompleta e la guardia di capitale giudica su un dato parziale
+        #     (bug visto dal vivo il 13/10: banco a 22 EUR su un conto da ~1.100, rc=2).
+        #     Un comparto illeggibile NON produce un giudizio: rc=1 (errore di misura),
+        #     mai un PASS o un NON_FINANZIATO costruiti su numeri incompleti.
+        _log("STEP 1b: saldi Simple Earn (savings)")
+        saldi_s: Dict[str, float] = {}
+        errore_sav: Optional[str] = None
+        for _tentativo in range(2):
+            try:
+                saldi_s = saldi_savings(ex.privateGetFinanceSavingsBalance({}))
+                errore_sav = None
+                break
+            except Exception as exc:  # noqa: BLE001
+                errore_sav = f"{exc.__class__.__name__}: {exc}"
+        if errore_sav is not None:
+            _log(f"ERRORE: saldi savings non leggibili ({errore_sav}): senza questa gamba "
+                 "l'equity sarebbe incompleta — il banco non giudica su un dato parziale")
+            return 1
+        _log(f"  savings: {json.dumps(saldi_s, ensure_ascii=False)}")
 
         # 2. EQUITY IN EUR (trading e funding separati, poi totale)
         _log("STEP 2: calcolo equity in EUR")
@@ -353,12 +402,15 @@ def _esegui(root: str, config_path: str) -> int:
 
         equity_t, dettaglio_t = calcola_equity(saldi_t, prezzo_eur)
         equity_f, dettaglio_f = calcola_equity(saldi_f, prezzo_eur)
-        equity = equity_t + equity_f
+        equity_s, dettaglio_s = calcola_equity(saldi_s, prezzo_eur)
+        equity = equity_t + equity_f + equity_s
         _log(f"  equity_trading={equity_t:.4f} equity_funding={equity_f:.4f} "
-             f"equity_totale={equity:.4f}")
+             f"equity_savings={equity_s:.4f} equity_totale={equity:.4f}")
         _log(f"  dettaglio trading: {json.dumps(dettaglio_t, ensure_ascii=False)}")
         _log(f"  dettaglio funding: {json.dumps(dettaglio_f, ensure_ascii=False)}")
-        senza_prezzo = [c for c, d in list(dettaglio_t.items()) + list(dettaglio_f.items())
+        _log(f"  dettaglio savings: {json.dumps(dettaglio_s, ensure_ascii=False)}")
+        senza_prezzo = [c for c, d in (list(dettaglio_t.items()) + list(dettaglio_f.items())
+                                       + list(dettaglio_s.items()))
                         if d.get("tipo") == "crypto" and d.get("prezzo_eur") is None]
         if senza_prezzo:
             _log(f"ERRORE DATI: asset senza prezzo EUR ne' via USDT {senza_prezzo}: "
@@ -373,7 +425,8 @@ def _esegui(root: str, config_path: str) -> int:
             esito_metrico = guardia["esito"]
             riga = _emetti_metrica(root, esito_metrico, equity, equity_t, equity_f,
                                    capitale, 0.0, 0.0, symbol, permessi, solo_lettura,
-                                   0, "n/d", saldi_t, saldi_f, None, None)
+                                   0, "n/d", saldi_t, saldi_f, None, None,
+                                   equity_s=equity_s, saldi_s=saldi_s)
             _log(riga)
             return 2
         _log(f"  PASS: equity {equity:.4f} >= capitale_dichiarato {capitale:.4f}")
@@ -408,7 +461,8 @@ def _esegui(root: str, config_path: str) -> int:
             esito_metrico = "NON_FATTIBILE"
             riga = _emetti_metrica(root, esito_metrico, equity, equity_t, equity_f,
                                    capitale, nozionale_eff, qty, symbol, permessi,
-                                   solo_lettura, 0, "n/d", saldi_t, saldi_f, fatt, None)
+                                   solo_lettura, 0, "n/d", saldi_t, saldi_f, fatt, None,
+                                   equity_s=equity_s, saldi_s=saldi_s)
             _log(riga)
             return 2
 
@@ -452,7 +506,8 @@ def _esegui(root: str, config_path: str) -> int:
                                capitale, nozionale_eff, qty, symbol, permessi,
                                solo_lettura,
                                len(aperti) if aperti is not None else -1,
-                               quadra, saldi_t, saldi_f, fatt, ordine)
+                               quadra, saldi_t, saldi_f, fatt, ordine,
+                               equity_s=equity_s, saldi_s=saldi_s)
         _log(riga)
         return 0
 
@@ -483,7 +538,9 @@ def _emetti_metrica(root: str, esito: str, equity: float, equity_t: float,
                     symbol: str, permessi: str, solo_lettura: bool, ordini_aperti: int,
                     quadra: str, saldi_t: Dict[str, float], saldi_f: Dict[str, float],
                     fatt: Optional[Dict[str, Any]],
-                    ordine: Optional[Dict[str, Any]]) -> str:
+                    ordine: Optional[Dict[str, Any]],
+                    equity_s: float = 0.0,
+                    saldi_s: Optional[Dict[str, float]] = None) -> str:
     pedaggio_pct, tariffa_nome = _pedaggio()
     ts = _ts()
     riga = formatta_metrica(
@@ -493,17 +550,20 @@ def _emetti_metrica(root: str, esito: str, equity: float, equity_t: float,
         pedaggio_pct=pedaggio_pct, tariffa_nome=tariffa_nome,
         chiave_perm=permessi,
         chiave_solo_lettura="si" if solo_lettura else ("no" if permessi else "n/d"),
-        ordini_aperti=ordini_aperti, riconciliazione_quadra=quadra, timestamp=ts)
+        ordini_aperti=ordini_aperti, riconciliazione_quadra=quadra, timestamp=ts,
+        equity_savings=equity_s)
     dati = {"nome": "banco_secco", "timestamp": ts, "esito": esito,
             "equity_eur": round(equity, 6),
             "equity_trading_eur": round(equity_t, 6),
             "equity_funding_eur": round(equity_f, 6),
+            "equity_savings_eur": round(equity_s, 6),
             "capitale_dichiarato": capitale, "nozionale_eur": round(nozionale, 6),
             "qty": qty, "symbol": symbol, "tariffa": tariffa_nome,
             "pedaggio_assunto_pct": pedaggio_pct,
             "chiave_perm": permessi or "n/d",
             "chiave_solo_lettura": "si" if solo_lettura else ("no" if permessi else "n/d"),
             "saldi_trading": saldi_t, "saldi_funding": saldi_f,
+            "saldi_savings": saldi_s or {},
             "ordini_aperti": ordini_aperti, "riconciliazione_quadra": quadra,
             "fattibilita": (fatt or {}).get("motivo", "") or (fatt or {}).get("ok"),
             "ordine_dry_run": ordine,
@@ -556,6 +616,25 @@ def _self_test() -> int:
     ok(m.startswith("METRICA ") and "banco_esito=PASS" in m
        and "equity_funding_eur=26.0030" in m and "riconciliazione_quadra=si" in m,
        "riga metrica con tutti i campi di §6")
+
+    sv = saldi_savings({"code": "0", "data": [
+        {"ccy": "USDC", "amt": "1206.99"}, {"ccy": "BTC", "amt": "0"},
+        {"ccy": "DOGE", "amt": "12.5"}]})
+    ok(sv == {"USDC": 1206.99, "DOGE": 12.5},
+       "savings: mappa ccy->amt, scarta gli zero")
+    ok(saldi_savings({}) == {} and saldi_savings({"data": None}) == {},
+       "savings: risposta vuota o nulla -> nessun saldo, mai un numero inventato")
+    ok(saldi_savings({"data": [{"ccy": "USDC", "amt": "boh"}, None, "x", {}]}) == {},
+       "savings: voci malformate saltate, non esplode")
+    m_sav = formatta_metrica(esito="PASS", equity_eur=1099.0, equity_trading=20.0,
+                             equity_funding=2.0, capitale_dichiarato=100.0,
+                             nozionale_eur=6.5, quantita=0.00007, symbol="BTC/EUR",
+                             pedaggio_pct=0.550, tariffa_nome=TARIFFA_ASSUNTA,
+                             chiave_perm="read_only", chiave_solo_lettura="si",
+                             ordini_aperti=0, riconciliazione_quadra="si",
+                             timestamp="2026-01-01T00:00:00Z", equity_savings=1077.0)
+    ok("equity_savings_eur=1077.0000" in m_sav and "equity_eur=1099.0000" in m_sav,
+       "riga metrica: la gamba savings e' dichiarata (bug 13/10: mancava)")
 
     falliti = [n for okk, n in casi if not okk]
     if falliti:
