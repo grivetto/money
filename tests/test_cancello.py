@@ -160,24 +160,23 @@ def test_troppo_poche_operazioni_e_insufficiente():
 def test_rendimento_tutto_in_un_blocco_e_archiviato():
     """Il difetto del progetto precedente: 1 blocco su 3 faceva tutto il rendimento.
 
-    Blocchi 1 e 2 rendono lo 0,2% per operazione, il blocco 3 il 2%: togliendo il blocco
-    migliore l'expectancy **netta** diventa negativa (0,2% lordo meno 0,55% di pedaggio).
-    L'edge non e' distribuito — e' un evento con una data — e il verdetto deve essere
-    "archiviato" **con quel motivo**, in cifre.
+    La serie e' **gia' netta** (fee e slippage pagati a monte, come da contratto di
+    `Esito`): blocco 1 a +1,45%, blocchi 2-3 a -0,35%. Togliendo il blocco migliore
+    l'expectancy netta resta negativa (-0,35%): l'edge non e' distribuito — e' un evento
+    con una data — e il verdetto deve essere "archiviato" **con quel motivo**, in cifre.
     """
-    ritorni = serie_a_blocchi([0.020, 0.002, 0.002])
+    ritorni = serie_a_blocchi([0.0145, -0.0035, -0.0035])
     e = esito("tutto nel primo blocco", ritorni, esposizione_media=0.5,
               max_drawdown=0.10, giorni_osservati=300.0)
 
     sc = scomponi_per_regime(e, n_blocchi=3)
     assert sc.blocchi and len(sc.blocchi) == 3
-    # `expectancy_per_blocco` e' LORDO (la serie come e' arrivata): 2,0% e 0,2%. La
-    # decisione e' invece netta: togliendo il blocco migliore resta 0,2% - 0,55% = -0,35%,
-    # cioe' una perdita. Il punto: 0,2% lordo NON e' un edge con un pedaggio di 0,55%, ed e'
-    # esattamente l'errore che questo criterio esiste per intercettare.
-    assert sc.expectancy_per_blocco == pytest.approx((0.020, 0.002, 0.002), abs=1e-12)
+    # `expectancy_per_blocco` sono le medie dei blocchi, nette come la serie: +1,45% e -0,35%.
+    # La decisione: tolto il blocco migliore resta -0,35% <= 0, cioe' una perdita. Il pedaggio
+    # NON viene ri-sottratto qui (e' gia' dentro la serie): il criterio 6 lo conta una volta sola.
+    assert sc.expectancy_per_blocco == pytest.approx((0.0145, -0.0035, -0.0035), abs=1e-12)
     assert sc.migliore == 0
-    assert sc.expectancy_senza_migliore == pytest.approx(0.002 - 0.0055, abs=1e-12)
+    assert sc.expectancy_senza_migliore == pytest.approx(-0.0035, abs=1e-12)
     assert sc.dipende_da_un_solo_blocco is True
     assert bool(sc) is False
     assert "tolto quello l'expectancy" in sc.motivo
@@ -188,36 +187,35 @@ def test_rendimento_tutto_in_un_blocco_e_archiviato():
     testo = " ".join(v.motivi)
     assert "indipendenza_dai_blocchi" in testo
     assert "blocco 1/3" in testo
-    assert "+2,00% lordo (+1,45% netto)" in testo, testo   # il blocco migliore, in cifre
-    assert "<= 0" in testo              # e quella che resta togliendolo
+    assert "+1,45%" in testo, testo          # il blocco migliore, in cifre
+    assert "-0,35%" in testo, testo          # e quella che resta togliendolo
+    assert "<= 0" in testo
 
 
 def test_blocco_dominante_resiste_al_pedaggio_piu_basso():
-    """Il pedaggio piu' basso **non** salva un edge concentrato in un solo blocco.
+    """Un edge concentrato in un solo blocco resta concentrato: la serie e' netta.
 
-    E' il test che impedisce di leggere il criterio 8 come una formalita': con i blocchi a
-    8% / 0,5% / 0,5% la concentrazione e' reale, e la strategia e' **buona in media**:
-    expectancy netta +3,00%, t 9,85, drawdown 10%, 2.250 EUR/anno attesi. Passa TUTTI gli
-    altri criteri.
+    Serie **netta** (il pedaggio e' gia' pagato a monte): blocco 1 a +7,45%, blocchi 2-3 a
+    -0,05%. La strategia e' buona in media (netto +2,45%/operazione, che passa il criterio 6:
+    2,45% >= 3 x 0,55% = 1,65%) ma tolto il blocco migliore resta -0,05%: l'edge e' un
+    evento con una data.
 
-    E' il caso puro del criterio 8, ed e' deliberato che sia cosi': se anche il pedaggio
+    E' il caso puro del criterio 8, ed e' deliberato che sia cosi': se anche il criterio 6
     fallisse, non si potrebbe piu' distinguere quale dei due criteri abbia rifiutato la
-    strategia. Qui e' **solo** la concentrazione a condannarla — blocco 1 a +8% lordo, blocchi
-    2 e 3 allo 0,5% lordo che, meno 0,55% di pedaggio, valgono -0,05% netto.
+    strategia. Qui e' **solo** la concentrazione a condannarla.
     """
-    ritorni = serie_a_blocchi([0.080, 0.005, 0.005])
+    ritorni = serie_a_blocchi([0.0745, -0.0005, -0.0005])
     e = esito("concentrato ma buono in media", ritorni, tariffa=TARIFFA_CARA,
               esposizione_media=0.25, max_drawdown=0.10, giorni_osservati=365.0)
 
     sc = scomponi_per_regime(e, n_blocchi=3)
     assert sc.migliore == 0
     assert sc.dipende_da_un_solo_blocco is True
-    # il blocco migliore vale +8,00% LORDO (+7,45% netto), ma senza di esso restano i due
-    # blocchi allo 0,5% lordo, che al netto del pedaggio rendono -0,05%: una perdita.
-    # E' il punto esatto in cui "0,5% lordo" smette di essere un edge con un pedaggio di
-    # 0,55%: non serve un'opinione, serve la sottrazione.
+    # il blocco migliore vale +7,45%, ma senza di esso restano i due blocchi a -0,05%: una
+    # perdita. La sottrazione del pedaggio avviene UNA volta sola, a monte (serie netta);
+    # il verdetto non la ripete.
     assert sc.expectancy_senza_migliore < 0
-    assert sc.expectancy_senza_migliore == pytest.approx(0.005 - 0.0055, abs=1e-12)
+    assert sc.expectancy_senza_migliore == pytest.approx(-0.0005, abs=1e-12)
 
     v = giudica(e, n_blocchi_regime=3)
     assert v.esito == "archiviato"
@@ -225,6 +223,24 @@ def test_blocco_dominante_resiste_al_pedaggio_piu_basso():
     assert v.statistiche["criteri_falliti"] == ("indipendenza_dai_blocchi",), str(v)
     assert v.statistiche["expectancy"] > 0.0165      # il criterio 6 passerebbe
     assert v.statistiche["ic_bootstrap"][0] > 0.0    # l'edge e' statisticamente reale
+
+
+def test_la_serie_e_netta_il_pedaggio_non_si_sottrae_due_volte():
+    """Regressione: il criterio 8 non ri-sottrae il pedaggio da una serie gia' netta.
+
+    Blocchi netti identici e positivi (+0,20% ciascuno): senza il blocco migliore restano
+    +0,20% > 0, quindi la concentrazione NON c'e' e il criterio 8 passa. Con una seconda
+    sottrazione del pedaggio (0,55%) il residuo diventerebbe -0,35% e la strategia verrebbe
+    archiviata per un costo contato due volte — il bug trovato nell'audit del 13/10.
+    """
+    ritorni = serie_a_blocchi([0.002, 0.002, 0.002])
+    e = esito("netto piatto", ritorni, giorni_osservati=300.0)
+    sc = scomponi_per_regime(e, n_blocchi=3)
+    assert sc.dipende_da_un_solo_blocco is False
+    assert sc.expectancy_senza_migliore == pytest.approx(0.002, abs=1e-12)
+    v = giudica(e, n_blocchi_regime=3)
+    criteri = v.statistiche.get("criteri")
+    assert isinstance(criteri, dict) and criteri.get("indipendenza_dai_blocchi") is True
 
 
 def test_scomposizione_con_bricole_esplicite():

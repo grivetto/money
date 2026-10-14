@@ -346,18 +346,15 @@ def _da_tagli(ritorni: Sequence[float], tagli: Sequence[int]) -> Optional[list]:
 class Scomposizione:
     """L'expectancy blocco per blocco, e cosa resta se si toglie il blocco migliore.
 
-    **Tutti i valori di questa struttura sono LORDI**, cioe' senza applicare il pedaggio:
-    sono la fotografia della serie che il chiamante ha passato. La decisione economica
-    (criterio 8) usa invece le stesse grandezze **al netto del pedaggio**, calcolate dalla
-    funzione condivisa `_blocchi_netti`: un blocco che rende 0,30% lordo con un pedaggio di
-    0,55% non e' un edge, e' una perdita, e il verdetto deve dirlo. Tenere separate le due
-    letture evita l'errore opposto: mostrare numeri "netti" senza dire quale pedaggio e'
-    stato applicato, che e' come il progetto precedente si raccontava le favole.
+    La serie di `Esito.ritorni_netti` e' **netta per contratto** (fee e slippage gia'
+    pagati): i valori qui sotto sono le medie dei blocchi cosi' come arrivate — nette — e
+    il pedaggio NON viene ri-sottratto (sarebbe lo stesso costo contato due volte: entra
+    nel verdetto una volta sola, nel criterio 6, che lo confronta con l'expectancy netta).
 
-    `dipende_da_un_solo_blocco` e' il criterio 8: se togliendo il blocco migliore l'expectancy
-    **netta** diventa negativa, l'edge non e' distribuito — e' un evento con una data. Il
-    progetto precedente aveva tutto il rendimento in 1 blocco su 3 e nessuno se n'era accorto
-    perche' nessuno aveva mai guardato la serie divisa per tempo.
+    `dipende_da_un_solo_blocco` e' il criterio 8: se togliendo il blocco migliore
+    l'expectancy netta dei blocchi restanti e' <= 0, l'edge non e' distribuito — e' un
+    evento con una data. Il progetto precedente aveva tutto il rendimento in 1 blocco su 3
+    e nessuno se n'era accorto perche' nessuno aveva mai guardato la serie divisa per tempo.
     """
 
     blocchi: Tuple[Tuple[float, ...], ...]
@@ -376,18 +373,23 @@ class Scomposizione:
 
 def _blocchi_netti(esito: Esito, n_blocchi: int,
                    bricole: Optional[Sequence[int]]) -> Tuple[list, list, int, Optional[float]]:
-    """I blocchi contigui e le loro expectancy **al netto del pedaggio dichiarato**.
+    """I blocchi contigui e le loro expectancy **nette**, in media per blocco.
 
-    Ritorna `(blocchi, expectancy_netta_per_blocco, indice_migliore, expectancy_netta_senza_migliore)`.
+    La serie di `Esito.ritorni_netti` e' **gia' al netto di fee e slippage** per contratto
+    (vedi `Esito`): qui il pedaggio NON si sottrae di nuovo. Sottrarlo contava lo stesso
+    costo due volte e archiviava strategie che, tolto il blocco migliore, restavano
+    positive. Il pedaggio entra nel verdetto **una volta sola**, nel criterio 6, che lo
+    confronta con l'expectancy netta.
+
+    Ritorna `(blocchi, expectancy_per_blocco, indice_migliore, expectancy_senza_migliore)`.
 
     Perche' una funzione condivisa: il criterio 8 e la funzione pubblica `scomponi_per_regime`
-    devono dividere la serie **allo stesso modo** e applicare lo **stesso** pedaggio. Nel
-    progetto precedente dashboard e validatore calcolavano lo stesso indicatore con due
-    formule diverse, e nessuno sapeva quale delle due avesse deciso. Qui la partizione e il
-    pedaggio vivono in un posto solo.
+    devono dividere la serie **allo stesso modo**. Nel progetto precedente dashboard e
+    validatore calcolavano lo stesso indicatore con due formule diverse, e nessuno sapeva
+    quale delle due avesse deciso. Qui la partizione vive in un posto solo.
 
-    Al netto del pedaggio si usa la **media** del blocco (pedaggio per operazione pagato su
-    ogni operazione), non la somma: e' l'unica grandezza confrontabile con il criterio 6.
+    Si usa la **media** del blocco (l'unica grandezza confrontabile col criterio 6), non la
+    somma.
     """
     vuoto = ([], [], -1, None)
     if esito.n_operazioni != len(esito.ritorni_netti) or not esito.ritorni_netti:
@@ -395,11 +397,10 @@ def _blocchi_netti(esito: Esito, n_blocchi: int,
     blocchi = _partizione(esito, bricole or (), n_blocchi)
     if not blocchi:
         return vuoto
-    pedaggio = esito.pedaggio_per_operazione
-    exp_netta = [math.fsum(b) / len(b) - pedaggio for b in blocchi]
+    exp_netta = [math.fsum(b) / len(b) for b in blocchi]
     migliore = max(range(len(blocchi)), key=lambda i: exp_netta[i])
     restanti = [r for i, b in enumerate(blocchi) if i != migliore for r in b]
-    senza = (math.fsum(restanti) / len(restanti) - pedaggio) if restanti else None
+    senza = (math.fsum(restanti) / len(restanti)) if restanti else None
     return (blocchi, exp_netta, migliore, senza)
 
 
@@ -419,10 +420,10 @@ def scomponi_per_regime(esito: Esito, n_blocchi: int = 3,
                 numero dichiarato non e' giudicabile, e la funzione lo dichiara invece di
                 indovinare.
 
-    I valori riportati nella `Scomposizione` sono **lordi** (la serie cosi' com'e'), mentre
-    la decisione `dipende_da_un_solo_blocco` e il `motivo` sono espressi **al netto del
-    pedaggio**: e' l'unica lettura economicamente sensata, perche' un blocco che rende meno
-    del pedaggio non e' un edge anche se il suo numero lordo e' positivo.
+    I valori riportati nella `Scomposizione` sono quelli della serie cosi' com'e' — **netta**
+    per contratto — e la decisione `dipende_da_un_solo_blocco` verifica che, tolto il blocco
+    migliore, l'expectancy dei restanti resti > 0. Il pedaggio non viene ri-sottratto qui:
+    e' gia' dentro la serie (pagato a monte) e il criterio 6 lo confronta una volta sola.
 
     Nota di onesta' intellettuale: la divisione uniforme in blocchi e' una scelta, e
     cambiando `n_blocchi` l'esito del criterio puo' cambiare (con blocchi piu' piccoli
@@ -436,26 +437,25 @@ def scomponi_per_regime(esito: Esito, n_blocchi: int = 3,
     blocchi, exp_netta, migliore, senza = _blocchi_netti(esito, n_blocchi, bricole)
     if not blocchi or migliore < 0:
         return vuota
-    exp_lorda = tuple(math.fsum(b) / len(b) for b in blocchi)
+    exp_blocchi = tuple(exp_netta)
     n = tuple(len(b) for b in blocchi)
     dipende = senza is not None and senza <= 0.0
     etichetta = f"blocco {migliore + 1}/{len(blocchi)}"
     if senza is None:
         motivo = ("un solo blocco: l'expectancy senza il blocco migliore non esiste, "
                   "quindi la dipendenza da un singolo blocco non e' verificabile")
-        return Scomposizione(tuple(blocchi), exp_lorda, n, migliore, exp_lorda[migliore],
+        return Scomposizione(tuple(blocchi), exp_blocchi, n, migliore, exp_blocchi[migliore],
                              None, False, motivo)
     if dipende:
         motivo = (f"expectancy concentrata in un solo blocco: {etichetta} vale "
-                  f"{_segnato_perc(exp_lorda[migliore])} lordo ({_segnato_perc(exp_netta[migliore])} "
-                  f"netto) su {n[migliore]} operazioni, ma tolto quello l'expectancy netta e' "
-                  f"{_segnato_perc(senza)} <= 0: l'edge e' un evento con una data, non una "
-                  f"proprieta' della strategia")
+                  f"{_segnato_perc(exp_blocchi[migliore])} su {n[migliore]} operazioni, "
+                  f"ma tolto quello l'expectancy resta {_segnato_perc(senza)} <= 0: l'edge "
+                  f"e' un evento con una data, non una proprieta' della strategia")
     else:
         motivo = (f"expectancy distribuita: {etichetta} e' il migliore a "
-                  f"{_segnato_perc(exp_lorda[migliore])} lordo, e senza di esso resta "
-                  f"{_segnato_perc(senza)} netto > 0")
-    return Scomposizione(tuple(blocchi), exp_lorda, n, migliore, exp_lorda[migliore],
+                  f"{_segnato_perc(exp_blocchi[migliore])}, e senza di esso resta "
+                  f"{_segnato_perc(senza)} > 0")
+    return Scomposizione(tuple(blocchi), exp_blocchi, n, migliore, exp_blocchi[migliore],
                          senza, dipende, motivo)
 
 
@@ -703,10 +703,10 @@ def _criteri() -> Tuple[Criterio, ...]:
         return ok, motivo, {"eur_anno": eur, "soglia_eur": soglia}
 
     def c_blocchi(esito: Esito, s: dict, opt: dict) -> Tuple[bool, str, dict]:
-        # La decisione usa le expectancy **nette** (`_blocchi_netti`), non quelle della
-        # `Scomposizione` che sono lorde: un blocco che rende 0,30% con un pedaggio di 0,55%
-        # non e' un edge. `Scomposizione.dipende_da_un_solo_blocco` e' calcolato dalla stessa
-        # funzione condivisa, quindi le due letture non possono divergere.
+        # La decisione usa le stesse expectation dei blocchi della `Scomposizione` (serie
+        # gia' netta: il pedaggio NON si ri-sottrae — conteggio doppio). La funzione
+        # condivisa `_blocchi_netti` calcola entrambe le letture, quindi non possono
+        # divergere.
         blocchi, exp_netta, migliore, senza = _blocchi_netti(
             esito, opt["n_blocchi"], opt["bricole"])
         if not blocchi or migliore < 0:
