@@ -1,6 +1,6 @@
 # Costi reali di esecuzione nelle cascate — tick Bybit (DOGE, SOL)
 
-Generato da `scripts/tick_costi_cascata.py` il 2026-10-14 22:47:58 UTC.
+Generato da `scripts/tick_costi_cascata.py` il 2026-10-14 22:56:54 UTC.
 
 ## Perimetro e limiti (dichiarati)
 
@@ -335,5 +335,58 @@ slippage_buy_120s misurato. Eventi di caduta (il caso del backtest).
 
 **Verdetto automatico**: il costo all-in piu' alto misurato e' 0.232%, sotto l'assunto di 0.26%. Il costo assunto regge.
 
-Lettura a mano (dai numeri sopra) — vedi sezione successiva se presente.
+## 7. Lettura e verdetto
+
+_Sezione scritta a mano sul run completo del 2026-10-15 (29 giorni di tick); i numeri
+citati sono quelli delle tabelle qui sopra, rigenerabili con lo script._
+
+### 7.1 Copertura: cosa manca (da dire per primo)
+
+Nella finestra tick (2026-09-13 -> 2026-10-11) **non esiste nessun evento della
+definizione E2** (drop 3h <= -5% con volume >= 3x): in questi 29 giorni il mercato non
+ha fatto cascate. L'evento piu' vicino e' **2026-10-08 15:00 UTC**: DOGE -5,14% in UNA
+ora con volume 10x la media 72h (SOL -3,51% nella stessa ora, 7,3x). Quell'ora manca il
+criterio E2 per un soffio e solo sul lato 3h (drop 3h = -4,91%, cioe' 9 bps sopra la
+soglia), non sulla violenza: e' la migliore approssimazione di cascata disponibile.
+Le tabelle sopra misurano quindi il massimo di violenza *disponibile*, non una cascata
+vera. Tutto quanto segue vale per eventi di questa taglia; su una cascata da -15%/-20%
+in un'ora non c'e' nessuna evidenza in questi dati.
+
+### 7.2 Cosa costa davvero comprare al mercato dopo la caduta
+
+1. **Esecuzione immediata** (primo print dopo la chiusura del segnale, ritardo ~0,1 s):
+   prezzo = **+0,0 bps** rispetto alla chiusura d'ora usata dal backtest come
+   riferimento, sia nelle ore violente sia nel controllo. Comprando subito si paga il
+   prezzo che il backtest assume, senza maggiorazione misurabile.
+2. **Esecuzione spalmata su 60-120 s**: +3,0 bps (DOGE) e +4,7 bps (SOL) mediani nelle
+   10 ore di caduta, con punte di +15,6 bps (DOGE) e +9,8 bps (SOL) nell'ora peggiore.
+   Aspettare costa: subito dopo un crollo il mercato rimbalza.
+3. **Pedaggio di attraversamento** (spread efficace da trade): 0,4-0,6 bps mediani,
+   contro un pavimento fisico di 1 passo di prezzo = 1,08 bps (DOGE) e 0,86 bps (SOL);
+   lo stimatore di Roll da' lo stesso ordine di grandezza. Sono **limiti inferiori**:
+   con i soli trade non si puo' misurare lo spread quotato.
+4. **La coda e' il vero problema**: p75 dello slippage round-trip = 28,4 bps (DOGE) e
+   9,2 bps (SOL) nelle ore di caduta, 36,0 bps (DOGE) sulle ore piu' violenti. In un
+   quarto degli eventi si paga 3-7 volte la mediana.
+5. **Dimensione dell'ordine**: fino a 100k$ l'impatto addizionale e' <= 0,2 bps per lato;
+   a 1 M$ ~2 bps per lato. Per il size presumibile del backtest e' irrilevante.
+
+### 7.3 Verdetto sul 0,26% round-trip
+
+- **Caso mediano: REGGE.** 0,18% (fee OKX) + 5,2 bps (DOGE) = **0,232%**; + 3,2 bps
+  (SOL) = **0,212%**. Cioe' 11-19% sotto il costo assunto. Con le sole fee Bybit taker
+  (0,11%) si scende a 0,14-0,16%: il costo assunto e' quasi il doppio del necessario.
+- **Caso coda: NON REGGE.** 0,18% + 28,4 bps = **0,464%** (DOGE cadute); 0,18% + 36,0 bps
+  = **0,540%** (DOGE ore piu' violenti); SOL 0,272%.
+- Il run a 0,26% e' quindi accettabile come caso base per DOGE/SOL, ma **non e' un
+  numero prudente**: va affiancato da uno stress a ~0,50% RT. Se l'edge delle cascate
+  vive solo tra 0,26% e 0,50% RT, e' fragile. In assenza di una cascata vera in finestra
+  tick, e' la coda misurata sulle ore piu' violenti disponibili la migliore stima del
+  costo atteso in condizioni di stress.
+- **Regola operativa che esce dalle misure**: eseguire al primo print, non spalmare.
+  Aspettare 60-120 s costa 3-6 bps mediani e fino a 16 bps nell'ora peggiore.
+
+_Limite residuo da tenere presente: senza order book storico non si puo' escludere che in
+una cascata vera lo spread si allarghi oltre quanto misurato qui; i numeri di questa
+pagina sono un limite inferiore del costo reale in condizioni di stress._
 
