@@ -126,3 +126,14 @@ Smettiamo di cercare incroci di medie mobili su singola candela. Con 500 € di 
 6. **Backtest Pista E1 (`scripts/ricerca_carry_dinamico.py`)**: Simulare la rotazione dinamica `Simple Earn <-> Carry Delta-Neutral` sui dati storici di funding + perp, con costi reali di switch (0,30% round-trip spot+perp) e isteresi.
 7. **Backtest Pista E2 (`scripts/ricerca_cascate_vol.py`)**: Simulare sui 59 simboli Bybit 1h/4h (5 anni) gli eventi estremi di capitolazione/liquidazione con **stop ATR reale a $2,5\times$** e verifica intra-barra su `minimo`/`massimo`.
 8. **Backtest Pista E3 (`scripts/crosssec_neutral.py` v2)**: Correggere la contabilità del turnover (addebitare solo i cambi reali di portafoglio + buffer di isteresi) e rimisurare Momentum e Reversal dollar-neutral su 5 anni.
+
+---
+
+## PARTE 6 — Stato dei Fix (aggiornato 2026-10-14)
+
+- ✅ **Fix 1 — banco a secco** (`deploy/banco/money_banco_secco.py`, commit `9793c13`): legge trading + funding + Simple Earn; un comparto illeggibile = `rc=1` (errore di misura), mai un giudizio su numeri incompleti. Verificato live su MARCODG1: `PASS equity 1099.99 EUR >= 100`, `rc=0` (prima: `rc=2 NON_FINANZIATO` ogni 5 minuti). Nuovo campo `equity_savings_eur` nella riga METRICA e nel JSONL.
+- ✅ **Fix 2 — doppia sottrazione del pedaggio** (`src/money/cancello.py`, commit `4915cb7`): `_blocchi_netti` non ri-sottrae il pedaggio (la serie è già netta per contratto `Esito`): il criterio 8 non archivia più strategie positive senza il blocco migliore. +1 test di regressione; i 2 test che cristallizzavano l'aritmetica vecchia sono stati riscritti.
+- ✅ **Fix 3 — DSR sulla finestra sbagliata** (`src/money/ricerca/scansione.py` + `caccia_continua.py`, commit `bdc44bb`): la deflazione si applica al track record di **addestramento** (dove avviene la selezione), non alla verifica: Sharpe, numerosità e varianza dei tentativi sulla stessa finestra. Chiave rinominata `dsr_selezione` (gli artefatti pre-fix con `dsr_oos` restano leggibili solo per cronologia). La verifica resta un cancello separato non deflazionato (n, expectancy, t). 691 test verdi anche sotto `python -O`, ruff pulito.
+- ⏳ **Fix 4 — unificazione rischio** (`rischio.py` vs `esecuzione/rischio.py`): da fare.
+- ⏳ **Fix 5 — spegnimento rumore** (caccia esaurita, MOSAICO4, working tree): da fare.
+- ⏳ **Fase 2 — ricerca E1–E4**: da fare, ora con il giudice statistico riparato.
