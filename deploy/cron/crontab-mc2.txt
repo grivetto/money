@@ -1,4 +1,4 @@
-# crontab mc2 — pulito 2026-09-25 (aggiornato 2026-10-10: S4 caccia continua ogni 5')
+# crontab mc2 — pulito 2026-09-25 (aggiornato 2026-10-15: S4 caccia FERMATA — esaurita; resto allineato al live)
 # Fix: path canonici /home/sergio/alpha-omega-trading (prima metà righe puntavano a ~/denaro/*)
 # zabbix_fleet/ds_heartbeat/backup/moa: invariati
 # DISABLED 2026-09-25 (push a host inesistenti; copertura via push_metrics/zabbix_bots): * * * * * /usr/bin/python3 /home/sergio/zabbix_monitoring/zabbix_fleet.py >> /home/sergio/zabbix_monitoring/monitor.log 2>&1
@@ -18,10 +18,19 @@
 0 9 * * * /usr/bin/flock -n /tmp/denaro_alerts_digest.lock /home/sergio/money/.venv/bin/python /home/sergio/money/ops/alerts/watch_alerts.py digest >> /home/sergio/money/logs/watch_alerts.log 2>&1
 */30 * * * * /usr/bin/flock -n /tmp/denaro_alerts_flotta.lock /home/sergio/money/.venv/bin/python /home/sergio/money/ops/alerts/watch_alerts.py flotta >> /home/sergio/money/logs/watch_alerts.log 2>&1
 */10 * * * * /usr/bin/flock -n /tmp/denaro_alerts_bots.lock /home/sergio/money/.venv/bin/python /home/sergio/money/ops/alerts/watch_alerts.py bots >> /home/sergio/money/logs/watch_alerts.log 2>&1
+*/10 * * * * /usr/bin/flock -n /tmp/denaro_alerts_equity.lock /home/sergio/money/.venv/bin/python /home/sergio/money/ops/alerts/watch_alerts.py equity >> /home/sergio/money/logs/watch_alerts.log 2>&1
 */5 * * * * cd /home/sergio/money && mkdir -p logs && /usr/bin/flock -n /tmp/cruscotto.lock /home/sergio/money/.venv/bin/python scripts/cruscotto.py >> logs/cruscotto.log 2>&1
 # Loop ricerca money — scansione giornaliera (auto, 05:15 UTC)
 15 5 * * * cd /home/sergio/money && .venv/bin/python scripts/scansione_giornaliera.py >> logs/scansione_loop.log 2>&1
-# S4 — caccia continua: ricerca edge nuovi ogni 5' (auto; dichiarazione in src/money/ricerca/caccia_continua.py)
-*/5 * * * * cd /home/sergio/money && /usr/bin/flock -n /tmp/caccia_continua.lock /home/sergio/money/.venv/bin/python scripts/caccia_continua.py >> logs/caccia_continua.log 2>&1
+# S4 — caccia continua: FERMATA il 2026-10-15 — spazio esaurito il 12/10 (run 1070; 156k viste; 0 candidati).
+# Il tick */5 non produceva piu' nulla («spazio esaurito — niente da fare»). Riattivare SOLO con una nuova
+# dichiarazione dello spazio (S5) in src/money/ricerca/caccia_continua.py, e togliere il commento qui sotto.
+# [15/10/26] FERMATA: */5 * * * * cd /home/sergio/money && /usr/bin/flock -n /tmp/caccia_continua.lock /home/sergio/money/.venv/bin/python scripts/caccia_continua.py >> logs/caccia_continua.log 2>&1
 # Operai di sviluppo (A0 · DSH · agy · opencode) — collector Zabbix, ogni minuto (auto; heartbeat dev.collector.heartbeat)
 * * * * * cd /home/sergio/money && /usr/bin/flock -n /tmp/dev_platform.lock /home/sergio/money/.venv/bin/python ops/zabbix/dev_platform.py >> logs/dev_platform.log 2>&1
+*/5 * * * * cd /home/sergio/money && /usr/bin/python3 scripts/campiona_spread.py >> data/spread/cron.log 2>&1
+# [14/10/26] Sorveglianza funding X-Perp (Hermes): ogni ora, alert Telegram se lordo >= 12%/anno
+7 * * * * cd /home/sergio/money && /usr/bin/flock -n /tmp/denaro_funding_watch.lock /bin/bash -c 'set -a; . /home/sergio/money/.env; set +a; /home/sergio/money/.venv/bin/python scripts/funding_watch.py --alert' >> /home/sergio/money/logs/funding_watch.log 2>&1
+
+# Agenti — pannello /agenti: stato Hermes/A0/opencode/agy/DSH ogni minuto (read-only; ops/agents/agents_status.py) + sync JSON su MARCODG1
+* * * * * cd /home/sergio/money && /usr/bin/flock -n /tmp/agenti_status.lock /home/sergio/money/.venv/bin/python ops/agents/agents_status.py >> logs/agenti_status.log 2>&1 && scp -q -o BatchMode=yes -o ConnectTimeout=10 ops/dashboard/agenti.json MARCODG1:/home/marco/money/ops/dashboard/agenti.json
