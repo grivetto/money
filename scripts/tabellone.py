@@ -179,14 +179,22 @@ def main() -> int:
 
     versato = a.versato if a.versato is not None else fl["netto_eur"]
     esito["versato_eur"] = versato
+    _equity = eq.get("equity")
     if a.versato is not None:
         esito["scarto_versato_eur"] = round(a.versato - fl["netto_eur"], 2)
+    elif _equity is not None and abs(versato) < max(1.0, 0.02 * abs(float(_equity))):
+        # equity visibile ma flussi API ~0: quasi sempre history depositi limitata —
+        # senza --versato il "netto" sarebbe finto (mai guadagni non riconciliati).
+        esito["avviso_versato"] = ("flussi depositi/prelievi API ~0 mentre l'equity e' visibile: "
+                                   "history limitata; passa --versato <EUR> per il netto vero")
 
     # --- fail-closed: il netto esiste SOLO se ogni fonte e' completa ------------------
     # Un totale "best effort" spacciato per verita' e' peggio di nessun totale.
     motivi = []
     if eq.get("equity") is None:
         motivi.append("equity non disponibile (aggregator)")
+    if "avviso_versato" in esito:
+        motivi.append("versato non affidabile (flussi API ~0; passa --versato)")
     if not ok_bills:
         motivi.append("bills troncati (pagina in errore)")
     if not fl["completo"]:
@@ -216,6 +224,8 @@ def main() -> int:
         n = esito["netto_vs_versato_eur"]
         print("  ------------------------------------------------")
         print(f"  NETTO vs VERSATO     : {n:>10,.2f} EUR   {'<-- guadagno' if n > 0 else '<-- perdita'}")
+    elif "motivi_incompletezza" in esito:
+        print(f"  netto vs versato     : n/d — {'; '.join(esito['motivi_incompletezza'])}")
     if "scarto_versato_eur" in esito:
         print(f"  (scarto versato dichiarato vs API: {esito['scarto_versato_eur']:+,.2f})")
     return 0
