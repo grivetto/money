@@ -129,11 +129,11 @@ Smettiamo di cercare incroci di medie mobili su singola candela. Con 500 € di 
 
 ---
 
-## PARTE 6 — Stato dei Fix (aggiornato 2026-10-14)
+## PARTE 6 — Stato dei Fix (aggiornato 2026-10-15)
 
 - ✅ **Fix 1 — banco a secco** (`deploy/banco/money_banco_secco.py`, commit `9793c13`): legge trading + funding + Simple Earn; un comparto illeggibile = `rc=1` (errore di misura), mai un giudizio su numeri incompleti. Verificato live su MARCODG1: `PASS equity 1099.99 EUR >= 100`, `rc=0` (prima: `rc=2 NON_FINANZIATO` ogni 5 minuti). Nuovo campo `equity_savings_eur` nella riga METRICA e nel JSONL.
 - ✅ **Fix 2 — doppia sottrazione del pedaggio** (`src/money/cancello.py`, commit `4915cb7`): `_blocchi_netti` non ri-sottrae il pedaggio (la serie è già netta per contratto `Esito`): il criterio 8 non archivia più strategie positive senza il blocco migliore. +1 test di regressione; i 2 test che cristallizzavano l'aritmetica vecchia sono stati riscritti.
 - ✅ **Fix 3 — DSR sulla finestra sbagliata** (`src/money/ricerca/scansione.py` + `caccia_continua.py`, commit `bdc44bb`): la deflazione si applica al track record di **addestramento** (dove avviene la selezione), non alla verifica: Sharpe, numerosità e varianza dei tentativi sulla stessa finestra. Chiave rinominata `dsr_selezione` (gli artefatti pre-fix con `dsr_oos` restano leggibili solo per cronologia). La verifica resta un cancello separato non deflazionato (n, expectancy, t). 691 test verdi anche sotto `python -O`, ruff pulito.
 - ✅ **Fix 4 — unificazione rischio** (`src/money/esecuzione/rischio.py` + `esecutore.py`): il rischio per operazione si misura **sullo stop** (`nozionale × distanza_stop`), col tetto del mandato (2%); eliminato il blocco fittizio che rifiutava ogni spot oltre ~22 EUR su un conto da ~1.100 (era il 2% confrontato col NOZIONALE). La presenza dello stop resta di pertinenza del cancello unico; qui il merito (rischio ≤ tetto). Sizing operativo di default invariato (0,25%, `ParametriRischio`). +2 regressioni; 695 test verdi anche sotto `python -O`, ruff pulito.
-- ⏳ **Fix 5 — spegnimento rumore** (caccia esaurita, MOSAICO4, working tree): da fare.
-- ⏳ **Fase 2 — ricerca E1–E4**: da fare, ora con il giudice statistico riparato.
+- ✅ **Fix 5 — spegnimento rumore** (15/10): S4 caccia **fermata** (cron `*/5` commentato su mc2 — esaurita dal 12/10, niente più tick a vuoto; si riattiva solo con una nuova dichiarazione); `MOSAICO4_v1.md` **retrofit formato-contratto** (lint **7/7** → job `spec_fix` chiuso dal tick); **working tree ripuliti** (`ops/dashboard/scommessa.json` fuori dal versionamento come `agenti.json`; residui archiviati su MARCODG1).
+- 🔄 **Fase 2 — ricerca E1–E4** (giudice riparato): E1 **NO** (carry dinamico 1,72%/anno vs pavimento Earn 5%), E2 **archiviata** (4/4 alla chiusura spietata), E3 **NO** (0/108 cross-sectional); resta **E4** (whitelist `api.bybit.eu`). Verdetti in `prove/REGISTRO_ESPERIMENTI.md`.

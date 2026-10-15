@@ -99,3 +99,9 @@
 - **Grafana dietro Cloudflare Access** (come Zabbix): app Access «grafana» con policy email (sergio.grivetto@gmail.com + sergio@grivetto.eu); verificata pubblica (302 → login Access).
 - **Kitchen Lab**: link aggiornato a denaro.grivetto.eu/squadra.
 - Note operative: il pubblico è servito da **MARCODG1** (`money-dashboard-marcodg1` :8913, `money-landing-marcodg1` :8914); mc2 ha le copie speculari — dopo un commit, `git pull` + restart del servizio su MARCODG1. Doc completa: `docs/30_siti_e_domini_2026-10-15.md`.
+
+## 2026-10-15 (2) — Fix 5: S4 fermata, MOSAICO4 sbloccata, tree ripulito
+- **S4 «caccia continua» fermata**: esaurita dal 12/10 (run 1070; 156k viste; 0 candidati); il tick */5 scriveva solo «spazio esaurito — niente da fare» e il cron è stato **commentato** su mc2 (canonico `deploy/cron/crontab-mc2.txt` riallineato al live). Riattivare SOLO con una nuova dichiarazione dello spazio (S5). Il watchdog liveness resta: `esaurito` = fine corsa, non allarma.
+- **MOSAICO4_v1 sbloccata**: retrofit formato-contratto (contenuto scientifico invariato) — repo/commit, input/output, criteri, fuori scope, verifica → lint **7/7**; il job `spec_fix` fermo da 4 giorni in fabbrica si è chiuso da solo al tick successivo (job-store: coda 0).
+- **Tree git ripuliti**: `ops/dashboard/scommessa.json` fuori dal versionamento su tutti i nodi (churn rigenerato ogni 10' — stesso trattamento di `agenti.json`); su MARCODG1 archiviati i residui (`C1_review.json/md` simulati del 06/10, `.bak` del dashboard dell'11/10, `canary_state.json` orfano in `scripts/`).
+- Verifiche: spec_lint 7/7 · suite completa verde · `crontab -l` live ≡ canonico · fabbrica job chiuso · `git status` pulito su mc2/MARCODG1/nuvola.

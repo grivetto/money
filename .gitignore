@@ -31,3 +31,6 @@ prove/funding_watch/
 
 # pannello agenti: JSON generato dal cron (ops/agents/agents_status.py) — non versionare
 ops/dashboard/agenti.json
+
+# scommessa asimmetrica: JSON generato dal cron (ops/tools/scommessa.py) — non versionare
+ops/dashboard/scommessa.json
