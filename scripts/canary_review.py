@@ -319,7 +319,7 @@ def calculate_metrics(state_data, event_data, log_data, start_datetime, days, no
 
 def generate_markdown_report(metrics):
     report = "# Canary C1 Review Report\n\n"
-    report += "**Checkpoint Date:** 2026-10-15 (Simulated)\n"
+    report += f"**Checkpoint Date:** {str(metrics['window'].get('last_check') or 'N/D')[:10]}\n"
     report += f"**Generated On:** {datetime.now().isoformat(timespec='minutes')}\n\n"
 
     report += "## Summary Window\n"
