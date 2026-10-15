@@ -91,3 +91,11 @@
 - **omarchy / KDE**: sistemati Welcome Center e il ripristino-sessione che riapriva le Impostazioni a ogni login (`ksmserverrc` → `loginMode=emptySession`).
 - **Kaggle free AI (account sgrivett)**: abilitato (telefono + Persona) — TPU v5e-8 20 h/sett + GPU 30 h/sett; kernel `qwen38-tpu-serve` (kaggle-tpu-lab; Qwen3.8-27B bf16; endpoint OpenAI-compatibile) **in coda per uno slot TPU** (carenza piattaforma; l'attesa non consuma quota). Quando parte: URL+key su mc2 (`~/kaggle-tpu-lab`) — skill `kaggle-free-ai-server`.
 - **JEV**: gate verificato live (ping 14/10 → jev-1.13.0); in attesa di spec attive in coda (ultimo giro reale 08/10).
+
+## 2026-10-15 — Siti: la squadra assorbita in /squadra; doppioni in 301; Grafana dietro Access
+- **Vetrina riorganizzata** (direttiva owner: brand **Denaro**, zero storytelling): la pagina della squadra è ora **denaro.grivetto.eu/squadra** (route in `serve_dashboard.py`, pagina brandizzata, sfondo `squadra-dev-2026-10-11.jpg`); landing e footer linkano `/squadra`.
+- **web.grivetto.eu ritirato**: 301 Cloudflare → denaro.grivetto.eu/squadra (origin: stub di fallback su MARCODG1, backup `index.bak-20261015.html`).
+- **Doppioni legacy**: home.grivetto.eu → 301 denaro.grivetto.eu/ · dashboard.grivetto.eu → 301 denaro.grivetto.eu/dashboard (vhost nginx su mc2 + tunnel cloudflared-home ripuntato).
+- **Grafana dietro Cloudflare Access** (come Zabbix): app Access «grafana» con policy email (sergio.grivetto@gmail.com + sergio@grivetto.eu); verificata pubblica (302 → login Access).
+- **Kitchen Lab**: link aggiornato a denaro.grivetto.eu/squadra.
+- Note operative: il pubblico è servito da **MARCODG1** (`money-dashboard-marcodg1` :8913, `money-landing-marcodg1` :8914); mc2 ha le copie speculari — dopo un commit, `git pull` + restart del servizio su MARCODG1. Doc completa: `docs/30_siti_e_domini_2026-10-15.md`.

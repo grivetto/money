@@ -67,7 +67,7 @@ storia: memoria, non fondazione.
 
 - **Rete**: Tailscale tra i nodi; nessuna porta pubblica per gli agenti; push git **solo via mc2**.
 - **Un bot per conto** (regola dura), capitali isolati per strategia.
-- **Web**: `denaro.grivetto.eu` (dashboard live) e `web.grivetto.eu` (landing) via cloudflared.
+- **Web**: `denaro.grivetto.eu` — vetrina (landing, /dashboard, /agenti, /squadra) via tunnel MARCODG1; `web.grivetto.eu` → 301 a /squadra.
 
 ## 5. La pipeline di ricerca (il cuore del progetto)
 

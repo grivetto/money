@@ -1,7 +1,9 @@
-# Money - Landing (static site, 127.0.0.1:8914, pubblico via Cloudflare web.grivetto.eu)
+# Money - Landing (static site, 127.0.0.1:8914) — [15/10/26] LEGACY: web.grivetto.eu
+# ora risponde 301 (Redirect Rule Cloudflare) verso denaro.grivetto.eu/squadra;
+# questa unit resta come origin di fallback (stub in ~/denaro/landing).
 # Migrato da denaro-landing (2026-10-06). I contenuti restano in ~/denaro/landing (dati).
 [Unit]
-Description=Money - Landing MARCODG1 (static site :8914, web.grivetto.eu)
+Description=Money - Landing MARCODG1 (static site :8914, fallback legacy web.grivetto.eu)
 After=network.target
 
 [Service]

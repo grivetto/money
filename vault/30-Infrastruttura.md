@@ -10,8 +10,10 @@
 | **win** (PC Windows, «andromeda») | agenti Windows | A0-win (:50080, Docker), **DSH-win** (`DSH-Web` :3080, Task Scheduler), opencode — accesso SSH di regia in auto (chiave ed25519) |
 
 ## URL pubblici
-- Dashboard flotta: **https://denaro.grivetto.eu/dashboard** (json: `/api/infra.json`; la root di denaro.grivetto.eu è la landing «il trading»)
-- Sito squadra dev: https://web.grivetto.eu (sfondo: foto squadra `squadra-dev-2026-10-11.jpg`)
+- Progetto: **https://denaro.grivetto.eu** — landing «il trading» (root) · **/dashboard** (flotta live, json: `/api/infra.json`) · **/agenti** · **/squadra** (la squadra dev)
+- Ritirati con 301 (15/10): web.grivetto.eu → /squadra · home.grivetto.eu → / · dashboard.grivetto.eu → /dashboard
+- Strumenti dietro Cloudflare Access: zab.grivetto.eu (Zabbix) · grafana.grivetto.eu (Grafana) · ssh.grivetto.eu (Browser SSH)
+- Lab (solo tailnet): https://mc2.tail1b5252.ts.net (Kitchen Lab)
 
 ## Soldi e chiavi (stato al 14/10)
 - OKX main: ≈1.100 € (funding + Simple Earn) — la chiave main risponde solo dall'IP di MARCODG1

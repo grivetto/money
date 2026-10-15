@@ -3,7 +3,7 @@
 
 Legge il wallet dal vault, interroga la blockchain di Base (RPC pubblico) e i
 prezzi su OKX EEA (endpoint pubblico), e scrive un JSON pulito dove la dashboard
-lo puo' servire: web.grivetto.eu/scommessa.json.
+lo puo' servire: denaro.grivetto.eu/scommessa.json.
 
 Perche' esiste: la dashboard oggi mostra solo la flotta di trading. La scommessa
 da 42 EUR e' l'altro progetto e deve essere visibile quanto l'altro — inclusi il
