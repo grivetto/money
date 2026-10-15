@@ -88,3 +88,32 @@ artifact valido + preflight OK + reconciliation fresh + governor GREEN + break-e
 = ordine ammissibile ;  altrimenti NO_TRADE
 ```
 La decisione è **deterministica**, non un voto. Nessun LLM decide un ordine (§11 doc Suggerimenti).
+
+## Formato-contratto (retrofit 2026-10-15; contenuto scientifico sopra invariato)
+
+- **Obiettivo**: portare il nucleo già implementato (`model`, `economics`, `signal`,
+  `state_machine`) al **simulatore fault-injected** (Fase 1 di §410) e da lì a shadow e canary
+  minimo, con la severità di prova del resto del progetto: fail-closed, nessun percorso live.
+- **Repo/commit**: repo `grivetto/money`, nucleo e spec al commit `5aa92ccf` (09/10/2026);
+  l'avanzamento (simulatore, adapter, reconcile) avanza commit per commit su `main`.
+- **Input**: snapshot economics per hedge group (funding atteso, basis, costi, buffer — §3.4) e
+  serie funding/basis dai dati già in repo; al simulatore si iniettano i guasti. **Output**: esito
+  delle transizioni (§7) + verdetto `apri`/`no-trade` di `economics.valuta` + report dei test in
+  `prove/`.
+- **Test falsificabile**: `tests/mosaico/` — per ogni regola critica un test che DEVE fallire se
+  l'implementazione è assente o sbagliata: con margine netto <= 0 il verdetto atteso e' NO_TRADE
+  (assert); con delta oltre la soglia dura lo stato atteso e' di unwind, mai di hedge; il kill
+  switch porta a `KILL_SWITCHED` da qualunque stato (§7–§8).
+- **Criteri di accettazione**:
+  - [ ] simulatore fault-injected: tutti i casi di guasto di docs/28 coperti, invarianti §302-309
+        verificate a ogni transizione (0 violazioni);
+  - [ ] nessun modulo `mosaico/` tocca la catena di esecuzione live (`esecuzione/invio.py` intatto);
+  - [ ] test verdi anche con `python -O`; ruff pulito.
+- **Fuori scope**: nessun ordine live, nessuna chiave API, nessuna modifica ai moduli della catena
+  di esecuzione; non modificare i parametri §5 (si cambiano solo con una spec v2).
+- **Procedura di verifica**:
+```bash
+.venv/bin/python -m pytest tests/mosaico -q     # ROSSO prima dell'implementazione, VERDE dopo
+.venv/bin/python -m pytest -q                   # suite intera
+.venv/bin/ruff check src/money/mosaico tests/mosaico
+```
