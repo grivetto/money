@@ -1,0 +1,41 @@
+universo: 57 simboli | esclusi: CTC-USDT: scale-break (salto > 3x in 1 barra), ICX-USDT: scale-break (salto > 3x in 1 barra)
+[sanity] H=12 tutti: n=1543 media +0.875% t 4.58
+
+=== TEST 1 — fasce di profondità ===
+  caduta in [-8,-10)%    n=  837 media -0.182% t -0.83
+  caduta in [-10,-12)%   n=  343 media +1.451% t  3.40
+  caduta in [-12,-15)%   n=  211 media +2.441% t  4.38
+  caduta <= -15%         n=  152 media +3.228% t  3.98
+  -> FAIL
+[cap5] n=591 media +1.455% t 4.40
+[filtro BTC>SMA200] n=983 media +1.453% t 6.21
+
+=== TEST 2 — regime (filtro BTC>SMA200) ===
+  2021: n=  98 media +0.555% t  0.83
+  2022: n=  28 media -7.584% t -10.31
+  2023: n= 260 media +1.194% t  4.75
+  2024: n= 377 media +2.049% t  5.13
+  2025: n= 207 media +2.252% t  3.45
+  2026: n=  13 media +2.859% t  1.66
+  OOS filtrato: +1.631% -> FAIL
+
+=== TEST 3 — survivorship (monete morte) ===
+  FTT-USDT: n=42 media -1.220% t -0.66
+  LUNC-USDT: n=61 media -4.589% t -2.03
+  SRM-USDT: n=47 media +2.664% t 2.44
+  USTC-USDT: n=56 media -3.461% t -2.62
+  aggregato (superstiti+morte): n=1749 media +0.544% t 2.72 -> FAIL
+
+=== TEST 4 — DSR (N=18 congelato) ===
+  SR addestramento: griglia 9 + cap 3 + filtro 1 = 13 valori; var=0.007309
+  config promossa: SR train 0.195 su n_train 352
+  DSR: A N=18 0.7524 | B N=18 0.7524 [operativo: 0.7524] | sens. N=13 0.8214 | N=9 0.8869
+  -> FAIL
+
+================ VERDETTO CHIUSURA E2: NON PROMUOVIBILE ✘ ================
+  1_fasce: FAIL
+  2_regime: FAIL
+  3_survivorship: FAIL
+  4_dsr: FAIL
+
+raw json: prove/chiusura_cascate_2026-10-15.json
