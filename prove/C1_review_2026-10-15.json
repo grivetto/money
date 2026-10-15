@@ -1,0 +1,54 @@
+{
+    "window": {
+        "days": 14,
+        "first_check": "2026-10-01T12:00:00+00:00",
+        "last_check": "2026-10-15T09:30:08+00:00",
+        "elapsed_days": 13.9,
+        "recognized_log_cycles": 1146
+    },
+    "funding": {
+        "cumulative": 0.0412,
+        "expected_low": 0.034944,
+        "ratio_percent": 117.9,
+        "source": "log_ultimo_valore",
+        "criterion_pass": "PASS"
+    },
+    "slippage": {
+        "buy": {
+            "avg_bps": "n/d",
+            "count": 0,
+            "criterion_pass": "N/D"
+        },
+        "sell": {
+            "avg_bps": "n/d",
+            "count": 0,
+            "criterion_pass": "N/D"
+        }
+    },
+    "fee": {
+        "observed_total": 0.0,
+        "expected_total": 0.0,
+        "ratio_percent": "n/d",
+        "criterion_pass": "N/D",
+        "observed_scope": "spot-only (la fee perp non è presente negli eventi)",
+        "fee_ccy_assunta": []
+    },
+    "reconciliation": {
+        "max_delta_qty": 0.11,
+        "anomalies_count": 0,
+        "criterion_pass": "PASS"
+    },
+    "events_summary": {
+        "counts_by_type": {
+            "ricostruzione_stato": 1
+        },
+        "abort_unwind_perdita_hedge": []
+    },
+    "checklist": {
+        "reconciliation": "PASS",
+        "slippage": "PASS",
+        "fee": "N/D",
+        "funding": "PASS",
+        "interventions": "PASS"
+    }
+}
