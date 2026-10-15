@@ -28,6 +28,7 @@ Cosa fa adesso:
   GET /api/dsh.json     -> stato del bridge DSH/Stella
   GET /agenti           -> pannello «Agenti» (agenti.html, no-store): operai su tutti i nodi
   GET /api/agenti.json  -> stato operai (Hermes/A0/opencode/agy/DSH) dal file agenti.json
+  GET /squadra          -> pagina «La squadra» (squadra.html, no-store): nodi e agenti del progetto
   GET /healthz          -> stato del servizio in JSON
 
 Configurazione (env var, override da riga di comando):
@@ -64,9 +65,12 @@ from pathlib import Path
 # la landing "il trading" (richiesta owner 11/10/2026, spostata da web.grivetto.eu).
 DASHBOARD_ROUTES = {"/dashboard"}
 LANDING_ROUTES = {"/", "/index.html"}
-# Asset statici serviti dalla stessa dir HTML (sfondo della landing).
+# Pagina «La squadra»: assorbita da web.grivetto.eu (direttiva owner 15/10/2026).
+SQUADRA_ROUTES = {"/squadra"}
+# Asset statici serviti dalla stessa dir HTML (sfondi di landing e squadra).
 ASSET_ROUTES = {
     "/trading-2026-10-08.jpg": ("trading-2026-10-08.jpg", "image/jpeg"),
+    "/squadra-dev-2026-10-11.jpg": ("squadra-dev-2026-10-11.jpg", "image/jpeg"),
 }
 JSON_ROUTES = {"/api/infra.json", "/infra.json", "/api/infra", "/infra", "/api/dsh.json", "/dsh.json"}
 # La scheda scommessa legge il file scritto dal cron (tools/scommessa.py su
@@ -344,6 +348,11 @@ class DashboardHandler(BaseHTTPRequestHandler):
         self._serve_file(Path(self.html_dir) / "agenti.html", "text/html; charset=utf-8",
                          head_only=head_only)
 
+    def _serve_squadra(self, head_only: bool = False) -> None:
+        """Serve /squadra — pagina «La squadra» (squadra.html)."""
+        self._serve_file(Path(self.html_dir) / "squadra.html", "text/html; charset=utf-8",
+                         head_only=head_only)
+
     # ---------- HTTP ----------
     def do_GET(self) -> None:  # noqa: N802
         path = self.path.split("?", 1)[0].rstrip("/") or "/"
@@ -367,6 +376,8 @@ class DashboardHandler(BaseHTTPRequestHandler):
             self._serve_html()
         elif path in AGENTI_ROUTES:
             self._serve_agenti()
+        elif path in SQUADRA_ROUTES:
+            self._serve_squadra()
         elif path in AGENTI_JSON_ROUTES:
             self._serve_agenti_json()
         elif path in SCOMMESSA_ROUTES:
@@ -402,6 +413,8 @@ class DashboardHandler(BaseHTTPRequestHandler):
             self._serve_html(head_only=True)
         elif path in AGENTI_ROUTES:
             self._serve_agenti(head_only=True)
+        elif path in SQUADRA_ROUTES:
+            self._serve_squadra(head_only=True)
         elif path in AGENTI_JSON_ROUTES:
             self._serve_agenti_json(head_only=True)
         elif path in SCOMMESSA_ROUTES:
