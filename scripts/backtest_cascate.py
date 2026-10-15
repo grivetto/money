@@ -300,7 +300,7 @@ def main() -> int:
     (RADICE / "prove" / "cascate_E2_2026-10-14.json").write_text(
         json.dumps({f"{lato}_{h}": val for (lato, h), val in riassunti.items()},
                    indent=1, default=str))
-    print(f"\nraw json: prove/cascate_E2_2026-10-14.json")
+    print("\nraw json: prove/cascate_E2_2026-10-14.json")
     return 0
 
 
