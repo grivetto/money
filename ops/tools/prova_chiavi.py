@@ -7,6 +7,7 @@ Per ogni TRIO KEY/SECRET/PASSPHRASE trovato nei file .env indicati:
 Stampa un esito per riga. I VALORI delle chiavi non vengono MAI stampati.
 
 Uso:  .venv/bin/python3 ops/tools/prova_chiavi.py FILE.env [FILE.env ...] [--host eea.okx.com]
+      cat chiavi.env | ... prova_chiavi.py -   # legge da stdin (per test remoti senza copiare file)
 
 NOTA: le chiavi sono IP-bound — vanno testate da nuvola o MARCODG1.
 mc2 è dietro CGNAT e il suo IP non è (e non può essere) in whitelist: da lì falliscono sempre.
@@ -25,13 +26,9 @@ TUTTI_SUFFISSI = SUFF_KEY + SUFF_SECRET + SUFF_PASS
 TUTTI_SUFFISSI_ORDINATI = tuple(sorted(TUTTI_SUFFISSI, key=len, reverse=True))
 
 
-def leggi_env(path: Path) -> dict[str, str]:
+def leggi_env_testo(testo: str) -> dict[str, str]:
     out: dict[str, str] = {}
-    try:
-        righe = path.read_text(encoding="utf-8").splitlines()
-    except OSError:
-        return out
-    for r in righe:
+    for r in (testo or "").splitlines():
         r = r.strip()
         if not r or r.startswith("#") or "=" not in r:
             continue
@@ -42,6 +39,13 @@ def leggi_env(path: Path) -> dict[str, str]:
         if k:
             out[k] = v
     return out
+
+
+def leggi_env(path: Path) -> dict[str, str]:
+    try:
+        return leggi_env_testo(path.read_text(encoding="utf-8"))
+    except OSError:
+        return {}
 
 
 def strip_suffisso(nome: str) -> str | None:
@@ -121,8 +125,12 @@ def main(argv: list[str] | None = None) -> int:
 
     totale = acc = 0
     for f in args.files:
-        p = Path(f).expanduser()
-        env = leggi_env(p)
+        if f == "-":
+            p = Path("<stdin>")
+            env = leggi_env_testo(sys.stdin.read())
+        else:
+            p = Path(f).expanduser()
+            env = leggi_env(p)
         trios, incompleti = costruisci_trios(env)
         print(f"== {p} == ({len(trios)} set testabili)")
         for t in trios:
