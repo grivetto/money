@@ -1,0 +1,11 @@
+[Unit]
+Description=Money - Veglia flotta: un giro ogni 2 minuti
+After=money-veglia.service
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=2min
+AccuracySec=20s
+
+[Install]
+WantedBy=timers.target

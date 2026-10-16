@@ -6,6 +6,7 @@
 * * * * * cd /home/marco/money && /usr/bin/flock -n /tmp/denaro_snapshot_mcdg1.lock /usr/bin/env HEALTH_DIR=/home/marco/denaro/health NODE_DIR=/home/marco/alpha-omega-trading/node_data /home/marco/money/.venv/bin/python3 /home/marco/money/ops/aggregator/infra_snapshot.py >> /home/marco/money/logs/infra_snapshot.log 2>&1
 # */15 * * * * [sospeso 07/10] mkdir -p /home/marco/denaro2/reports/quality_shadow && cd /home/marco/denaro && DENARO2_SECRETS=/home/marco/denaro/secrets /home/marco/denaro/venv/bin/python -m denaro2.cli quality --symbol BTC/EUR --timeframe 1h --json >> /home/marco/denaro2/reports/quality_shadow/quality_shadow_$(date +\%Y\%m\%d).log 2>&1
 */10 * * * * cd /home/marco/canary && /home/marco/money/.venv/bin/python3 canary_carry.py status --quiet >> /home/marco/canary/canary.log 2>&1
+*/5 * * * * cd /home/marco/money && /home/marco/money/.venv/bin/python3 scripts/genera_carry.py >> /home/marco/money/logs/genera_carry.log 2>&1
 * * * * * /usr/bin/flock -n /tmp/zabbix_bots.lock /usr/bin/python3 /home/marco/money/ops/zabbix/zabbix_bots.py >> /home/marco/denaro/logs/zabbix_bots.log 2>&1
 
 # [09/10/26] tabellone contabile: versato->equity->fee->realizzato (ownership: proprietario)

@@ -1,0 +1,10 @@
+[Unit]
+Description=Money - Radar OKX: un giro ogni 45 minuti
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=45min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

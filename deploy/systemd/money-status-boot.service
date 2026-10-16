@@ -1,0 +1,15 @@
+# Status squadre al riavvio: scrive ~/status_squadre_boot.txt (Trade + Dev).
+# TEMPLATE di deploy: sostituire __REPO__, __USER__ e __HOME__.
+[Unit]
+Description=Money - Status squadre al riavvio (output in __HOME__/status_squadre_boot.txt)
+After=network-online.target tailscaled.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=__USER__
+ExecStart=/bin/bash -c 'sleep 25; __REPO__/deploy/riavvio/status_squadre.sh --boot > __HOME__/status_squadre_boot.txt 2>&1'
+TimeoutStartSec=600
+
+[Install]
+WantedBy=multi-user.target

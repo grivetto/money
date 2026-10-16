@@ -1,0 +1,10 @@
+# Radar opportunità OKX (annunci ufficiali) — unit utente su mc2.
+# TEMPLATE di deploy: sostituire __REPO__.
+[Unit]
+Description=Money - Radar opportunità OKX (annunci ufficiali, sola lettura)
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 __REPO__/ops/radar/radar_okx.py run
+TimeoutStartSec=120

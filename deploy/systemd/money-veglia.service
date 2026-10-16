@@ -1,0 +1,14 @@
+# Veglia flotta Denaro — check meticolosi + auto-riparazione (ogni ~2', vedi money-veglia.timer).
+# TEMPLATE di deploy: sostituire __REPO__, __USER__ e __UID__ (uid dell'utente del nodo).
+[Unit]
+Description=Money - Veglia flotta (check + auto-riparazione)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=__USER__
+Environment=XDG_RUNTIME_DIR=/run/user/__UID__
+ExecStart=/usr/bin/python3 __REPO__/ops/fleet/veglia.py run
+Nice=10
+TimeoutStartSec=240
