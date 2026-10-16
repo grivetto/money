@@ -18,6 +18,9 @@ for c in "$HOME/money" /home/sergio/money /home/marco/money; do
   [ -f "$c/README.md" ] && [ -d "$c/.git" ] && REPO="$c" && break
 done
 
+# su macchine non-money (omarchy/win) l'irraggiungibilita' dei nodi e' attesa: non e' un KO
+fallito() { if [ -n "$REPO" ]; then bad "$1"; else unk "$1 (macchina non-money: atteso)"; fi; }
+
 echo "==================================================================="
 echo " STATUS SQUADRE — $BOX — $(date '+%F %T %Z')"
 if [ -n "$REPO" ]; then
@@ -32,7 +35,7 @@ echo "[SQUADRA TRADE]"
 
 # --- nuvola (nodo paper + monitor) ---
 r=$(remoto nuvola 'for u in denaro-node-nuvola-trade money-health-nuvola denaro-exporter; do printf "unit %s=%s\n" $u $(systemctl is-active $u 2>/dev/null); done; printf "health=%s\n" $(curl -s -o /dev/null -m 6 -w "%{http_code}" http://127.0.0.1:8911/health)')
-if [ -z "$r" ]; then bad "nuvola non raggiungibile via ssh"; else
+if [ -z "$r" ]; then fallito "nuvola non raggiungibile via ssh"; else
   while IFS='=' read -r k v; do
     case "$k" in
       health) [ "$v" = "200" ] && ok "nuvola health :8911 ($v)" || bad "nuvola health :8911 ($v)";;
@@ -43,7 +46,7 @@ fi
 
 # --- MARCODG1 (trading + web) ---
 r=$(remoto MARCODG1 'for u in money-aggregator-marcodg1 money-dashboard-marcodg1 money-health-marcodg1 money-landing-marcodg1 money-watchdog-marcodg1.timer money-banco-secco.timer money-ricerca-raccolta.timer money-ricerca-scansione.timer cloudflared; do printf "unit %s=%s\n" $u $(systemctl is-active $u 2>/dev/null); done; printf "agg=%s\n" $(curl -s -o /dev/null -m 60 -w "%{http_code}" http://127.0.0.1:8912/api/infra.json); now=$(date +%s); for f in /home/marco/denaro/health/infra_snapshot.json /home/marco/money/logs/banco_secco.jsonl /home/marco/canary/canary.log /home/marco/money/data/carry_stato.json; do printf "ago %s=%s\n" $(basename $f) $(( now - $(stat -c %Y $f 2>/dev/null || echo 0) )); done; printf "banco_esito=%s\n" $(tail -1 /home/marco/money/logs/banco_secco.jsonl 2>/dev/null | grep -o "PASS\|FAIL" | head -1)')
-if [ -z "$r" ]; then bad "MARCODG1 non raggiungibile via ssh"; else
+if [ -z "$r" ]; then fallito "MARCODG1 non raggiungibile via ssh"; else
   while IFS='=' read -r k v; do
     case "$k" in
       agg)    [ "$v" = "200" ] && ok "MARCODG1 aggregatore :8912 ($v)" || bad "MARCODG1 aggregatore ($v)";;
