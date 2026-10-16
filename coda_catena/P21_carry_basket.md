@@ -1,5 +1,5 @@
 # P21 — Carry multi-coppia: selezione e pesi del paniere (estensione di C1)
-STATO: DA PRENDERE — pre-registrata 2026-10-16 (hermes); primo dispatch a DSH-omarchy (turno headless 16/10 sera). La misura UFFICIALE la esegue Hermes.
+STATO: FATTA — ARCHIVIATA (2026-10-17). Implementazione DSH-omarchy (handoff P21, hash verificati, 13/13 test); misura UFFICIALE eseguita da Artù 17/10 01:16: NESSUNA configurazione con NETTO addestramento > 0 (criterio di stop). Artefatti: `prove/P21_full_2026-10-17.json`, `prove/P21_smoke_2026-10-17.json`.
 Repo: grivetto/alpha-omega-trading · commit di registrazione: ea7ae01b (file di questa voce: `coda_catena/P21_carry_basket.md`).
 
 ## Obiettivo (verificabile)

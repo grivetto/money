@@ -1,5 +1,5 @@
 # P22 — Carry: gate di regime RARO, giudicato NETTO dei costi di ciclo
-STATO: DA PRENDERE — pre-registrata 2026-10-16 (hermes). Implementazione: primo libero (fabbrica/DSH/opencode); misura ufficiale Hermes.
+STATO: PRESA_DA Merlino 2026-10-17 — implementazione via REQ-MERL-20261017-002 (consegna `mc2:~/hermes_bridge/merlino/handoff/P22/`); misura ufficiale: Artù/Hermes.
 Repo: grivetto/alpha-omega-trading · commit di registrazione: ea7ae01b (file di questa voce: `coda_catena/P22_regime_gate_netto.md`).
 
 ## Obiettivo (verificabile)
