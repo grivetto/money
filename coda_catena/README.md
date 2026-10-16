@@ -39,4 +39,4 @@ STATO DELLA CODA
 - P21_carry_basket.md ........ DA PRENDERE — pre-reg. 16/10: paniere carry con REGOLA (selezione top-k + pesi), netto costi; **dispatch → DSH-omarchy**
 - P22_regime_gate_netto.md ... DA PRENDERE — pre-reg. 16/10: gate regime RARO netto (seguito addendum P12)
 - P23_pedaggio_esecuzione.md . DA PRENDERE — pre-reg. 16/10: pedaggio realizzato sui fill + maker-first (hermes)
-- Piano del fronte: `docs/28_fronte_ricerca_2026-10-16.md`
+- Piano del fronte: `docs/34_fronte_ricerca_2026-10-16.md`
