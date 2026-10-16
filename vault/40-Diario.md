@@ -137,3 +137,9 @@
 - **Radar OKX** (`ops/radar/radar_okx.py`, timer 45' su mc2): annunci ufficiali EEA → TG su Learn&Earn/campagne/airdrop; dedup con baseline silenziosa. Doc onesto: `docs/27_airdrop_e_opportunita_2026-10-16.md` (+ proposta pilota on-chain cappato 50–100 €, in attesa di decisione owner).
 - **Scheda progetto** (`SCHEDA_PROGETTO.md`) riscritta sullo stato reale: squadre Trade/Dev, macchine, servizi, motore economico, metodo, verdetti, vigilanza, runbook. Suite **737 test** verdi (11 nuovi), ruff pulito.
 - Follow-up: unit di boot con `XDG_RUNTIME_DIR` (niente falsi KO delle unit utente al riavvio); ps1 win → tailscale via servizio; status-squadre installato anche su omarchy; tutto deployato e provato (mc2 VERDETTO OK).
+
+## 2026-10-16 (7) — Test chiavi API OKX (owner): tutti i sub funzionano da nuvola e MARCODG1
+- **Eseguito** `ops/tools/prova_chiavi.py` (nuovo, sola lettura, mai valori stampati; stdin per test remoti).
+- **Esito**: `main_okx.env` OK da nuvola e MARCODG1 (uid main 822983321310515677). **Sub `mc2sub1` / `nuvolasub1` / `marcosub1`: TUTTI OK da entrambi gli IP** (uid sub distinti, mainUid = main, saldi trading vuoti). Mappa chiave↔nodo: nuvola → `nuvolasub1` (`.env_nuvola`); mc2 → `mc2sub1` (`.env_mc2`, stessa chiave, verificato); MARCODG1 → main. `marcosub1` valida ma non usata da servizi.
+- **Da mc2 tutto KO per design**: CGNAT → IP non whitelisted (50119 / "IP not in whitelist"). Nota nel tool.
+- **Igiene trovata**: la copia `~/denaro/secrets/main_okx.env` su mc2 è una chiave VECCHIA/morta (50119 anche da IP buono); le copie vive sono su nuvola≡MARCODG1 (identiche, hash verificato). Il vecchio vault `~/.denaro_vault/keys_master.env` (ago) = archivio, tutte morte. Pulizia suggerita, in attesa dell'owner.
