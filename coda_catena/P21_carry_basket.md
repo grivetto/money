@@ -56,3 +56,12 @@ python -m venv .venv && .venv/bin/pip install ccxt pytest numpy
 ```
 ## Riferimenti
 P4 · P12 (+addendum netto) · P19b · C1 (docs/16) · ROADMAP.md D3 · docs/18 (protocollo referee).
+
+## Addendum di chiarimento (2026-10-16, PRIMA di qualsiasi numero — interpretazione ufficiale)
+Contabilità dei costi nella misura: ogni coppia paga C/2 quando ENTRA e C/2 quando ESCE,
+dove C = costo di un ciclo completo apertura+chiusura di UNA coppia (0,40%; stress 0,62%).
+Una sostituzione A->B a un ribilanciamento = C/2 (uscita A) + C/2 (entrata B) = 1xC.
+Apertura del paniere a inizio finestra e chiusura a fine finestra seguono la stessa regola
+(metà per lato). Per le baseline: stessa contabilita' sulla SINGOLA coppia della baseline.
+Ogni altra lettura (es. 2xC per sostituzione) NON e' l'interpretazione ufficiale.
+Nessun nuovo grado di liberta': chiarezza contabile, i numeri restano da fare.
