@@ -20,7 +20,8 @@ produce un motivo **con il numero dentro**, e i motivi si leggono.
 
 GLI OTTO CRITERI (tutti devono passare)
 =======================================
-1. Numerosita'   : almeno `MIN_OPERAZIONI` = 30 operazioni. Sotto, il verdetto e'
+1. Numerosita'   : almeno `MIN_OPERAZIONI` = 30 operazioni e almeno
+                   `MIN_N_EFFETTIVO` = 30 osservazioni effettive. Sotto, il verdetto e'
                    **"insufficiente"**, non "archiviato".
 2. Expectancy    : intervallo di confidenza bootstrap al 90% con estremo inferiore > 0,
                    con seme fisso dichiarato (`SEME_BOOTSTRAP`) e numero di ricampionamenti
@@ -114,6 +115,10 @@ from .costi import Tariffa, get_tariffa, movimento_minimo
 
 #: Sotto questo numero di operazioni non si promuove e non si archivia: non si sa.
 MIN_OPERAZIONI: int = 30
+
+#: Numero minimo di osservazioni indipendenti stimato. Il conteggio grezzo delle operazioni
+#: non basta quando i ritorni sono serialmente correlati o le posizioni si sovrappongono.
+MIN_N_EFFETTIVO: float = 30.0
 
 #: Livello di confidenza dell'intervallo bootstrap sull'expectancy (90%, come richiesto).
 LIVELLO_CONFIDENZA: float = 0.90
@@ -585,11 +590,17 @@ def _criteri() -> Tuple[Criterio, ...]:
     def c_numerosita(esito: Esito, s: dict, opt: dict) -> Tuple[bool, str, dict]:
         n = len(esito.ritorni_netti)
         mn = opt["min_operazioni"]
-        ok = n >= mn
-        motivo = (f"numerosita' {n} operazioni >= {mn} minime" if ok else
-                  f"numerosita' {n} operazioni < {mn} minime: la stima dell'expectancy e' "
-                  f"dominata dal rumore, il verdetto e' 'insufficiente' e non 'archiviato'")
-        return ok, motivo, {"n": n, "min": mn}
+        n_eff = s.get("n_effettivo")
+        mn_eff = opt["min_n_effettivo"]
+        ok_n = n >= mn
+        ok_eff = n_eff is not None and n_eff >= mn_eff
+        ok = ok_n and ok_eff
+        motivo = (f"numerosita' {n} operazioni >= {mn} minime e n_effettivo "
+                  f"{_per(n_eff)} >= {_per(mn_eff)}" if ok else
+                  f"numerosita' {n} operazioni / n_effettivo {_per(n_eff)}: richiesti "
+                  f"{mn} operazioni e almeno {_per(mn_eff)} osservazioni effettive; "
+                  f"il campione indipendente e' insufficiente")
+        return ok, motivo, {"n": n, "min": mn, "n_effettivo": n_eff, "min_n_effettivo": mn_eff}
 
     def c_expectancy(esito: Esito, s: dict, opt: dict) -> Tuple[bool, str, dict]:
         exp = s.get("expectancy")
@@ -710,8 +721,8 @@ def _criteri() -> Tuple[Criterio, ...]:
         blocchi, exp_netta, migliore, senza = _blocchi_netti(
             esito, opt["n_blocchi"], opt["bricole"])
         if not blocchi or migliore < 0:
-            return True, ("scomposizione per regime non valutabile: il criterio 8 non viene "
-                          "applicato, con il motivo sopra"), {}
+            return False, ("scomposizione per regime non valutabile: il criterio 8 "
+                           "fallisce in assenza di una prova di indipendenza"), {}
         ok = senza is not None and senza > 0.0
         sc = opt["scomposizione"]
         return ok, sc.motivo, {
@@ -855,7 +866,8 @@ def giudica(esito: Esito,
     s["scomposizione"] = sc
 
     opt = {
-        "min_operazioni": min_operazioni,
+            "min_operazioni": min_operazioni,
+        "min_n_effettivo": MIN_N_EFFETTIVO,
         "livello": LIVELLO_CONFIDENZA,
         "ricampionamenti": ricampionamenti,
         "seme": seme,
