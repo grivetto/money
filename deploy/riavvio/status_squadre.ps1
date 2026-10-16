@@ -32,12 +32,9 @@ if ($dsh) { OkMsg "DSH-win :3080 in ascolto" }
 else { KoMsg "DSH-win :3080 NON in ascolto (avvio: deploy\dsh-win\dsh-web-launch.ps1)" }
 
 # --- tailscale ---
-$ts = (Get-Command tailscale -ErrorAction SilentlyContinue).Source
-if (-not $ts) { $ts = "C:\Program Files\Tailscale\tailscale.exe" }
-if (Test-Path $ts) {
-  & $ts status *> $null
-  if ($LASTEXITCODE -eq 0) { OkMsg "tailscale: attivo" } else { UnkMsg "tailscale: non attivo" }
-} else { UnkMsg "tailscale: non installato" }
+$svc = Get-Service Tailscale -ErrorAction SilentlyContinue
+if ($svc -and $svc.Status -eq "Running") { OkMsg "tailscale: servizio attivo" }
+else { UnkMsg "tailscale: servizio non attivo" }
 
 Write-Host ""
 Write-Host "[SQUADRA TRADE - impulso dal web]"
