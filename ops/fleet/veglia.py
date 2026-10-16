@@ -86,7 +86,7 @@ PROFILI: dict[str, dict] = {
         "unita_utente": [],
         "http": [
             ("http://127.0.0.1:8911/health", (200,), 15),
-            ("http://127.0.0.1:9100/-/healthy", (200,), 10),
+            ("http://127.0.0.1:9100/metrics", (200,), 10),
         ],
         "docker": [],
         "file": [],
