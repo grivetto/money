@@ -1,0 +1,31 @@
+# Money — Ricerca edge: SCANSIONE dei tre fronti (funding, on-chain, orderflow)
+[Unit]
+Description=Money — Ricerca edge: scansione (funding, on-chain, orderflow)
+Documentation=file:/home/marco/money/deploy/scripts/cron_ricerca_scansione.sh
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/marco/money/deploy/scripts/cron_ricerca_scansione.sh
+WorkingDirectory=/home/marco/money
+User=marco
+Group=marco
+StandardOutput=journal
+StandardError=journal
+
+# Hardening: legge data/, scrive solo prove/ e logs/.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/marco/money/logs /home/marco/money/prove
+CapabilityBoundingSet=
+LockPersonality=true
+MemoryDenyWriteExecute=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=true
+RestrictRealtime=true
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+TimeoutStartSec=1800

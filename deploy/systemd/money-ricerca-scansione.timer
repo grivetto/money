@@ -1,0 +1,24 @@
+# Money — Ricerca edge: SCANSIONE dei tre fronti (funding, on-chain, orderflow)
+#
+# 2026-10-15: creato perche' la scansione non girava mai. Produce evidenza in
+# prove/ — NON promuove nulla: un candidato si pre-registra e passa da
+# money.cancello.
+#
+# Cadenza: ogni 6 ore. Piu' frequente non serve (i dati on-chain sono
+# giornalieri, il funding si aggiorna ogni 8h) e i tre fronti insieme pesano
+# qualche minuto di CPU.
+[Unit]
+Description=Money — Ricerca edge: scansione (funding, on-chain, orderflow)
+Documentation=file:/home/marco/money/deploy/systemd/money-ricerca-scansione.timer
+After=network-online.target
+Wants=network-online.target
+
+[Timer]
+OnBootSec=15min
+OnUnitActiveSec=6h
+AccuracySec=1min
+Persistent=true
+Unit=money-ricerca-scansione.service
+
+[Install]
+WantedBy=timers.target

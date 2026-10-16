@@ -256,6 +256,46 @@ footer { margin-top: 30px; text-align: center; color: var(--dim); font-size: 11p
     </div>
   </div>
 
+
+<!-- RICERCA EDGE (15/10/26): i verdetti degli esperimenti misurati — C1, P15, nodo E,
+     funding scan. Popolata da /api/infra.json → .ricerca (aggregator). -->
+<div class="board" id="board-ricerca">
+  <div class="bd-head">
+    <div class="orb" id="orb-ric"></div>
+    <div>
+      <h2>RICERCA EDGE — VERDETTI MISURATI</h2>
+      <div style="font-size:10px;color:var(--dim);letter-spacing:2px" id="r-nota">—</div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:12px">
+    <div><div class="k">PROMOSSE</div><div class="v" id="r-promosse">—</div></div>
+    <div><div class="k">ARCHIVIATE</div><div class="v" id="r-archiviate">—</div></div>
+    <div><div class="k">REVIEW C1</div><div class="v" id="r-c1">—</div></div>
+    <div><div class="k">FUNDING SCAN</div><div class="v" id="r-funding">—</div></div>
+    <div><div class="k">P15 · MVRV</div><div class="v" id="r-p15">—</div></div>
+    <div><div class="k">NODO E · BASIS</div><div class="v" id="r-basis">—</div></div>
+  </div>
+</div>
+
+
+<!-- CARRY LIVE (16/10/26): DOT+ADA a 90 EUR/gamba, 1x isolated, delta-neutral.
+     Popolata da /api/infra.json -> .carry (aggregator). -->
+<div class="board" id="board-carry">
+  <div class="bd-head">
+    <div class="orb" id="orb-carry"></div>
+    <div>
+      <h2>CARRY LIVE — DELTA-NEUTRAL</h2>
+      <div style="font-size:10px;color:var(--dim);letter-spacing:2px" id="c-nota">—</div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px">
+    <div><div class="k">COPPIE APERTE</div><div class="v" id="c-coppie">—</div></div>
+    <div><div class="k">NOZIONALE</div><div class="v" id="c-noz">—</div></div>
+    <div><div class="k">uPL</div><div class="v" id="c-upl">—</div></div>
+    <div><div class="k">DETTAGLIO</div><div class="v" id="c-dett" style="font-size:11px">—</div></div>
+  </div>
+</div>
+
   <div class="card" style="margin-bottom:18px; border-color:rgba(0,243,255,0.25)">
     <h2><span class="ico">▦</span> OFFICINA PAPER — FORWARD TEST (SIMULATO)</h2>
     <div id="flotta"></div>
@@ -412,6 +452,8 @@ async function load() {
     const d = await r.json();
     render(d);
     renderBoard(d);
+    renderRicerca(d);
+    renderCarry(d);
   } catch (e) {
     $('sysstatus').textContent = 'SIGNAL LOST';
     $('dot').className = 'pulse warn';
@@ -739,6 +781,76 @@ setInterval(tick, 1000);
 setInterval(boardTick, 1000);
 boardTick();
 tick();
+
+/* ── RICERCA EDGE (15/10/26) ── */
+function renderRicerca(d) {
+  const r = (d && d.ricerca) || {};
+  if (!r.ok) {
+    const el = $('r-nota');
+    if (el) el.textContent = r.error ? ('stato ricerca: ' + r.error) : 'in attesa…';
+    return;
+  }
+  const set = (id, val) => { const e = $(id); if (e) e.textContent = val; };
+
+  set('r-promosse', (r.promosse ?? 'n/d'));
+  set('r-archiviate', (r.archiviate ?? 'n/d'));
+
+  const rc = r.review_c1 || {};
+  const tf = rc.checklist || {};
+  const pass = Object.values(tf).filter(v => v === 'PASS').length;
+  const tot = Object.keys(tf).length;
+  set('r-c1', tot ? (pass + '/' + tot) : 'n/d');
+
+  const fs = r.funding_scan || {};
+  if (fs.disponibile && fs.miglior_netto != null) {
+    const pct = (fs.miglior_netto * 100).toFixed(1) + '%';
+    set('r-funding', (fs.miglior || '?') + ' ' + pct);
+  } else set('r-funding', 'n/d');
+
+  const p15 = r.p15_mvrv || {};
+  set('r-p15', p15.verdetto || (p15.disponibile ? 'n/d' : 'non misurata'));
+
+  const be = r.nodo_e_basis || {};
+  set('r-basis', be.verdetto || (be.disponibile ? 'n/d' : 'non misurato'));
+
+  const el = $('r-nota');
+  if (el) {
+    const eta = (typeof r.age_s === 'number') ? Math.round(r.age_s / 60) + "' fa" : '—';
+    el.textContent = 'aggiornato ' + eta +
+      ' · C1 = canary carry DOGE (review PASS) · il carry funding è l\'unico filone vivo';
+  }
+}
+
+
+/* ── CARRY LIVE (16/10/26) ── */
+function renderCarry(d) {
+  const c = (d && d.carry) || {};
+  const orb = $('orb-carry');
+  if (!c.ok) {
+    const e = $('c-nota');
+    if (e) e.textContent = c.error ? ('stato carry: ' + c.error) : 'in attesa…';
+    if (orb) orb.className = 'orb bad';
+    return;
+  }
+  const stale = (typeof c.age_s === 'number' && c.age_s > 3600);
+  if (orb) orb.className = 'orb' + (stale ? ' bad' : '');
+  const set = (id, v) => { const e = $(id); if (e) e.textContent = v; };
+  set('c-coppie', (c.coppie_aperte ?? 'n/d'));
+  set('c-noz', (c.nozionale_totale_eur != null ? (c.nozionale_totale_eur + ' €') : 'n/d'));
+  const upl = c.upl_totale;
+  set('c-upl', (upl != null ? (upl >= 0 ? '+' : '') + upl.toFixed(4) : 'n/d'));
+  const cp = c.coppie || {};
+  const righe = Object.keys(cp).map(n => {
+    const v = cp[n] || {};
+    const dl = (v.delta != null) ? v.delta.toFixed(4) : '?';
+    return n + ' ' + (v.aperta ? '●' : '○') + ' lev' + (v.leva || '?') + ' Δ' + dl;
+  });
+  set('c-dett', righe.join(' · ') || 'n/d');
+  const n = $('c-nota');
+  if (n) n.textContent = 'aggiornato ' + Math.round((c.age_s || 0) / 60) + "' fa"
+    + ' · funding carry ~5-7%/anno · leva 1x';
+}
+
 </script>
 </body>
 </html>

@@ -1,0 +1,31 @@
+# Money — Ricerca edge: RACCOLTA dati (funding, on-chain, tick Bybit)
+[Unit]
+Description=Money — Ricerca edge: raccolta dati (funding, on-chain, tick)
+Documentation=file:/home/marco/money/deploy/scripts/cron_ricerca_raccolta.sh
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/marco/money/deploy/scripts/cron_ricerca_raccolta.sh
+WorkingDirectory=/home/marco/money
+User=marco
+Group=marco
+StandardOutput=journal
+StandardError=journal
+
+# Hardening: sola lettura su tutto tranne logs/ e data/ (dove scrive).
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/marco/money/logs /home/marco/money/data
+CapabilityBoundingSet=
+LockPersonality=true
+MemoryDenyWriteExecute=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=true
+RestrictRealtime=true
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+TimeoutStartSec=900

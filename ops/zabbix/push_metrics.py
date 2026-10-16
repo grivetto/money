@@ -463,6 +463,74 @@ PAPER_WATCH = {
 }
 
 
+
+# Ricerca edge (15/10/26): i numeri degli esperimenti misurati (C1, P15, nodo E,
+# funding scan) letti da data/ricerca_stato.json — scritto da scripts/genera_ricerca.py.
+# Nessun ordine, sola lettura. `promosse` e' l'headline onesta del progetto.
+RICERCA_STATO = Path("/home/marco/money/data/ricerca_stato.json")
+
+
+def push_ricerca(data):
+    """Metriche della ricerca: verdetti e stato del canary in Zabbix."""
+    try:
+        r = json.loads(RICERCA_STATO.read_text())
+    except Exception:
+        return
+    c1 = r.get("canary_c1") or {}
+    rc1 = r.get("review_c1") or {}
+    fs = r.get("funding_scan") or {}
+    be = r.get("nodo_e_basis") or {}
+
+    # promosse / archiviate: il contatore che dice dove sta il progetto
+    data.append({"host": "mc2", "key": "ricerca.promosse", "value": int(r.get("promosse") or 0)})
+    data.append({"host": "mc2", "key": "ricerca.archiviate", "value": int(r.get("archiviate") or 0)})
+
+    # C1 canary: upl/funding/delta sono gia' in push_novita (host MARCODG1);
+    # qui aggiungiamo l'esito della review formale (frazione di criteri passati)
+    crit = (rc1.get("checklist") or {})
+    if isinstance(crit, dict) and crit:
+        passati = sum(1 for v in crit.values() if v == "PASS")
+        data.append({"host": "MARCODG1", "key": "canary.review_pass", "value": passati})
+        data.append({"host": "MARCODG1", "key": "canary.review_tot", "value": len(crit)})
+
+    # funding scan: il miglior netto annualizzato trovato (frazione)
+    if fs.get("disponibile"):
+        mn = fs.get("miglior_netto")
+        data.append({"host": "mc2", "key": "ricerca.funding_scan.n", "value": int(fs.get("n_simboli") or 0)})
+        data.append({"host": "mc2", "key": "ricerca.funding_scan.candidati", "value": int(fs.get("candidati") or 0)})
+        if mn is not None:
+            data.append({"host": "mc2", "key": "ricerca.funding_scan.miglior_netto",
+                         "value": round(float(mn), 6)})
+
+    # nodo E (basis a scadenza): expectancy netta conservativa
+    if be.get("disponibile") and be.get("exp_conservativa") is not None:
+        data.append({"host": "mc2", "key": "ricerca.basis.exp_conservativa",
+                     "value": round(float(be["exp_conservativa"]), 6)})
+        data.append({"host": "mc2", "key": "ricerca.basis.contango",
+                     "value": round(float(be.get("frazione_contango") or 0), 4)})
+
+
+# Carry multi-coppia (16/10/26): DOT+ADA a 90 EUR/gamba, 1x isolated.
+# Stato in data/carry_stato.json (scritto da scripts/genera_carry.py).
+CARRY_STATO = Path("/home/marco/money/data/carry_stato.json")
+
+
+def push_carry(data):
+    """Metriche del carry multi-coppia: coppie aperte, nozionale, uPL."""
+    try:
+        c = json.loads(CARRY_STATO.read_text())
+    except Exception:
+        return
+    data.append({"host": "MARCODG1", "key": "carry.coppie_aperte",
+                 "value": int(c.get("coppie_aperte") or 0)})
+    data.append({"host": "MARCODG1", "key": "carry.nozionale_eur",
+                 "value": round(float(c.get("nozionale_totale_eur") or 0), 2)})
+    data.append({"host": "MARCODG1", "key": "carry.upl",
+                 "value": round(float(c.get("upl_totale") or 0), 4)})
+    for nome, v in (c.get("coppie") or {}).items():
+        data.append({"host": "MARCODG1", "key": f"carry.{nome.lower()}.delta",
+                     "value": round(float(v.get("delta") or 0), 6)})
+
 def push_flotta_paper(data):
     now = time.time()
     for host, cfg in PAPER_WATCH.items():
@@ -538,6 +606,8 @@ def main():
 
     # ── 8. [01/10] Canary C1 · Raccolta P8 · Fabbrica ×20 ──
     push_novita(data)
+    push_ricerca(data)
+    push_carry(data)
 
     # ── 8b. [01/10] Flotta paper (officina): heartbeat per nodo ──
     push_flotta_paper(data)

@@ -365,6 +365,19 @@ def fetch_remote_okx_balance(ssh_target, ssh_port, remote_env, remote_python="/u
 
 
 _EUR_FIAT = {"EUR"}
+
+#: Valute "derivate" che valgono quanto il sottostante (1:1).
+#: OKX consegna gli acquisti di ETH come BETH (Beacon ETH / staking) in alcune
+#: regioni: senza questo alias il BETH non ha un mercato EUR/USDT diretto,
+#: finisce in `unpriced` e NON entra nell'equity (patrimonio sottostimato).
+#: Trovato il 2026-10-16: 0,00203 BETH (4,95 USDC) non contati.
+_ALIAS_VALUTA = {
+    "BETH": "ETH",      # Beacon ETH
+    "STETH": "ETH",     # Lido staked ETH
+    "WSTETH": "ETH",    # wrapped staked ETH
+    "CBBTC": "BTC",     # Coinbase wrapped BTC
+    "WBTC": "BTC",      # wrapped BTC
+}
 _EUR_STABLES = {"USDC", "USDT", "USD", "DAI", "TUSD", "BUSD", "USDE"}
 _rate_cache = {}
 _RATE_TTL = 60.0
@@ -374,6 +387,8 @@ def fetch_eur_rate(cur, _depth=0):
     """Quanto vale 1 unita' della valuta indicata in EUR (cache 60s)."""
     if cur in _EUR_FIAT:
         return 1.0
+    if cur in _ALIAS_VALUTA:
+        return fetch_eur_rate(_ALIAS_VALUTA[cur], _depth + 1)
     now = time.time()
     hit = _rate_cache.get(cur)
     if hit and now - hit[0] < _RATE_TTL:
@@ -881,6 +896,51 @@ def collect_canary():
     }
 
 
+
+RICERCA_STATO = Path("/home/marco/money/data/ricerca_stato.json")
+
+
+def collect_ricerca():
+    """[15/10] Stato della ricerca edge — per la dashboard.
+
+    Legge il riepilogo scritto da scripts/genera_ricerca.py (verdetti C1/P15/E,
+    funding scan, contatore promosse/archiviate). Nessun numero inventato: se il
+    file manca, errore onesto.
+    """
+    try:
+        r = json.loads(RICERCA_STATO.read_text())
+        age = int(time.time() - RICERCA_STATO.stat().st_mtime)
+    except Exception as exc:
+        return {"ok": False, "error": "stato ricerca non leggibile: " + exc.__class__.__name__}
+    return {
+        "ok": True,
+        "age_s": age,
+        "generato_il": r.get("generato_il"),
+        "promosse": r.get("promosse"),
+        "archiviate": r.get("archiviate"),
+        "review_c1": r.get("review_c1") or {},
+        "funding_scan": r.get("funding_scan") or {},
+        "p15_mvrv": r.get("p15_mvrv") or {},
+        "nodo_e_basis": r.get("nodo_e_basis") or {},
+    }
+
+
+CARRY_STATO = Path("/home/marco/money/data/carry_stato.json")
+
+
+def collect_carry():
+    """Stato del carry multi-coppia (DOT+ADA, 16/10) per la dashboard."""
+    try:
+        c = json.loads(CARRY_STATO.read_text())
+        age = int(time.time() - CARRY_STATO.stat().st_mtime)
+    except Exception as exc:
+        return {"ok": False, "error": "stato carry non leggibile: " + exc.__class__.__name__}
+    return {"ok": True, "age_s": age,
+            "coppie_aperte": c.get("coppie_aperte"),
+            "nozionale_totale_eur": c.get("nozionale_totale_eur"),
+            "upl_totale": c.get("upl_totale"),
+            "coppie": c.get("coppie") or {}}
+
 def collect_services():
     """Stato dei servizi Denaro per macchina (systemctl is-active)."""
     out = {}
@@ -1154,6 +1214,8 @@ def collect():
         }
     data["node_totals"] = node_totals
     data["canary"] = collect_canary()
+    data["ricerca"] = collect_ricerca()
+    data["carry"] = collect_carry()
     data["services"] = collect_services()
     data["trend"] = read_trend()[-240:]
     return data

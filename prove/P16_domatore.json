@@ -1,0 +1,39 @@
+{
+  "risultati": {
+    "A_solo_sizing": {
+      "n": 141,
+      "expectancy_netta": 0.033322298340478555,
+      "t_stat": 0.6717026929302147,
+      "profit_factor": 1.2954126925927738,
+      "dd_portafoglio": 0.9177874659216112,
+      "equity_finale": 1055.227367135009,
+      "rendimento_totale": 4.276136835675045,
+      "bloccate": 0,
+      "copertura_pedaggio": 11.900820835885199
+    },
+    "B_sizing_voltarget": {
+      "n": 141,
+      "expectancy_netta": 0.033322298340478555,
+      "t_stat": 0.6717026929302147,
+      "profit_factor": 1.2954126925927738,
+      "dd_portafoglio": 0.763262951377349,
+      "equity_finale": 2796.4376815660044,
+      "rendimento_totale": 12.982188407830021,
+      "bloccate": 0,
+      "copertura_pedaggio": 11.900820835885199
+    },
+    "C_sizing_vt_governatore": {
+      "n": 56,
+      "expectancy_netta": 0.03672284257098309,
+      "t_stat": 0.5320177220378841,
+      "profit_factor": 1.3690499404495007,
+      "dd_portafoglio": 0.41487192283249585,
+      "equity_finale": 321.2564761067377,
+      "rendimento_totale": 0.6062823805336885,
+      "bloccate": 85,
+      "copertura_pedaggio": 13.115300918208247
+    }
+  },
+  "config": "breakout 20g | uscita sma200",
+  "costi": 0.0028
+}

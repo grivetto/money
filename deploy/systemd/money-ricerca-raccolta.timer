@@ -1,0 +1,23 @@
+# Money — Ricerca edge: RACCOLTA dati (funding, on-chain, tick Bybit)
+#
+# 2026-10-15: creato perche' la ricerca di edge era ferma (i tre fronti
+# non-prezzo avevano gli script ma nessun cron). Questo timer alimenta i dati;
+# la scansione e' un timer separato (money-ricerca-scansione.timer).
+#
+# Cadenza: ogni ora. Il funding si aggiorna ogni 8h, l'on-chain e' giornaliero:
+# orario e' piu' che sufficiente e il costo e' trascurabile (sola lettura).
+[Unit]
+Description=Money — Ricerca edge: raccolta dati (funding, on-chain, tick)
+Documentation=file:/home/marco/money/deploy/systemd/money-ricerca-raccolta.timer
+After=network-online.target
+Wants=network-online.target
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=1h
+AccuracySec=1min
+Persistent=true
+Unit=money-ricerca-raccolta.service
+
+[Install]
+WantedBy=timers.target

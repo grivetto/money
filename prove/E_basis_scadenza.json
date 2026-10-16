@@ -1,0 +1,69 @@
+{
+  "contratti": 25,
+  "strumenti_listino": 154,
+  "risultati": {
+    "conservativo/unificato": {
+      "n": 111,
+      "exp": -0.013797391441966953,
+      "mediano_annuo": -0.0033595155709342565,
+      "frazione_contango": 0.5405405405405406,
+      "sopra_benchmark": 0.0,
+      "n_contratti": 25,
+      "max_dd": 0.7884450373012647
+    },
+    "ottimista/unificato": {
+      "n": 111,
+      "exp": -0.006717391441966952,
+      "mediano_annuo": -0.001869204152249135,
+      "frazione_contango": 0.5405405405405406,
+      "sopra_benchmark": 0.0,
+      "n_contratti": 25,
+      "max_dd": 0.5854189513871506
+    },
+    "conservativo/separato": {
+      "n": 111,
+      "exp": -0.021077391441966953,
+      "mediano_annuo": -0.0024459630911188002,
+      "frazione_contango": 0.5405405405405406,
+      "sopra_benchmark": 0.0,
+      "n_contratti": 25,
+      "max_dd": 0.9070655414523087
+    },
+    "ottimista/separato": {
+      "n": 111,
+      "exp": -0.010857391441966954,
+      "mediano_annuo": -0.0013703287197231835,
+      "frazione_contango": 0.5405405405405406,
+      "sopra_benchmark": 0.0,
+      "n_contratti": 25,
+      "max_dd": 0.7180035641697033
+    }
+  },
+  "contratti_usati": [
+    "AAVE-USD_UM_XPERP-310704",
+    "ACT-USD_UM_XPERP-310704",
+    "ADA-USD_UM_XPERP-310404",
+    "AEON-USD_UM_XPERP-310801",
+    "AGLD-USD_UM_XPERP-310926",
+    "AI-USD_UM_XPERP-310704",
+    "ALGO-USD_UM_XPERP-310711",
+    "ALLO-USD_UM_XPERP-310718",
+    "APE-USD_UM_XPERP-311003",
+    "APT-USD_UM_XPERP-310815",
+    "AR-USD_UM_XPERP-310926",
+    "ARB-USD_UM_XPERP-310815",
+    "ASTER-USD_UM_XPERP-310829",
+    "ATOM-USD_UM_XPERP-310912",
+    "AVAX-USD_UM_XPERP-310530",
+    "AVNT-USD_UM_XPERP-310815",
+    "AXS-USD_UM_XPERP-311010",
+    "BASED-USD_UM_XPERP-310704",
+    "BCH-USD_UM_XPERP-310530",
+    "BICO-USD_UM_XPERP-310704",
+    "BIO-USD_UM_XPERP-310808",
+    "BLUR-USD_UM_XPERP-311017",
+    "BNB-USD_UM_XPERP-310523",
+    "BONK-USD_UM_XPERP-310725",
+    "BTC-USD-261030"
+  ]
+}
