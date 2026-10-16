@@ -36,7 +36,7 @@ STATO DELLA CODA
 ---
 
 ## Aggiornamento 2026-10-16 — onda S5 (fronte funding/esecuzione; pre-registrate, lint 7/7)
-- P21_carry_basket.md ........ DA PRENDERE — pre-reg. 16/10: paniere carry con REGOLA (selezione top-k + pesi), netto costi; **dispatch → DSH-omarchy**
-- P22_regime_gate_netto.md ... DA PRENDERE — pre-reg. 16/10: gate regime RARO netto (seguito addendum P12)
+- P21_carry_basket.md ........ FATTA 17/10 — ARCHIVIATA (misura ufficiale Artù: nessuna config con netto train>0; top-k perde vs DOGE-solo; implementazione DSH-omarchy)
+- P22_regime_gate_netto.md ... FATTA 17/10 — ARCHIVIATA (implementazione Merlino; misura ufficiale Artù: ogni trigger delta<=0 su 10/10 a 0,40% e 0,62%; T3 mai avvenuto; timing del carry chiuso, sempre-on)
 - P23_pedaggio_esecuzione.md . DA PRENDERE — pre-reg. 16/10: pedaggio realizzato sui fill + maker-first (hermes)
 - Piano del fronte: `docs/34_fronte_ricerca_2026-10-16.md`

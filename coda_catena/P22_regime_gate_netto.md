@@ -1,5 +1,5 @@
 # P22 — Carry: gate di regime RARO, giudicato NETTO dei costi di ciclo
-STATO: PRESA_DA Merlino 2026-10-17 — implementazione via REQ-MERL-20261017-002 (consegna `mc2:~/hermes_bridge/merlino/handoff/P22/`); misura ufficiale: Artù/Hermes.
+STATO: FATTA — ARCHIVIATA (2026-10-17). Implementazione Merlino (REQ-002, hash OK, 13/13 test rieseguiti da Artù); misura UFFICIALE di Artù 17/10: ogni trigger delta<=0 su 10/10 simboli a entrambi i costi; T3 mai avvenuto. Verdetto: il timing del carry e' chiuso, sempre-on. Artefatti: `prove/P22_full_2026-10-17.json`.
 Repo: grivetto/alpha-omega-trading · commit di registrazione: ea7ae01b (file di questa voce: `coda_catena/P22_regime_gate_netto.md`).
 
 ## Obiettivo (verificabile)

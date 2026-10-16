@@ -1,0 +1,3703 @@
+{
+  "req": "REQ-MERL-20261017-002",
+  "spec": "coda_catena/P22_regime_gate_netto.md",
+  "modalita": "full",
+  "fonte_dati": "ccxt_okx_eea_usdt_swap",
+  "hostname": "eea.okx.com",
+  "generato_utc": "2026-10-16T23:28:33Z",
+  "griglia": {
+    "trigger": [
+      "T1",
+      "T2",
+      "T3"
+    ],
+    "finestre_trigger_giorni": {
+      "T1": 7,
+      "T2": 14
+    },
+    "soglia_breadth": 0.2,
+    "costi_per_transizione": [
+      0.004,
+      0.0062
+    ],
+    "apertura": "entrambi i rami aprono al primo evento e pagano C: il delta gated - always-on isola il puro effetto del gate",
+    "rientro": "evento successivo alla condizione, eseguito solo se il trigger resta spento (una transizione per volta, niente rientri ottimistici)",
+    "costo_per_transizione_intero": "lettura letterale della spec: OGNI transizione paga C intero (episodio uscita+rientro = 2C)",
+    "soglia_campione_corto_giorni": 120
+  },
+  "campionamento": {
+    "n_eventi_unione": 286,
+    "per_simbolo": {
+      "DOGE": 286,
+      "LTC": 286,
+      "ADA": 286,
+      "XRP": 286,
+      "LINK": 286,
+      "BTC": 286,
+      "ETH": 286,
+      "SOL": 286,
+      "DOT": 286,
+      "AVAX": 286
+    },
+    "primo_ts": 1783958400000,
+    "ultimo_ts": 1792166400000,
+    "primo_utc": "2026-07-13 16:00 UTC",
+    "ultimo_utc": "2026-10-16 16:00 UTC",
+    "giorni_campione": 95.0,
+    "campione_corto": true,
+    "nota_campione_corto": "CAMPIONE CORTO: profondita' ccxt OKX EEA ~3 mesi; generalizzazione temporale = rischio principe."
+  },
+  "diagnostica_dati": {
+    "DOGE": "ok n=286",
+    "LTC": "ok n=286",
+    "ADA": "ok n=286",
+    "XRP": "ok n=286",
+    "LINK": "ok n=286",
+    "BTC": "ok n=286",
+    "ETH": "ok n=286",
+    "SOL": "ok n=286",
+    "DOT": "ok n=286",
+    "AVAX": "ok n=286"
+  },
+  "simboli_campione_corto_spec": [
+    "DOT",
+    "AVAX"
+  ],
+  "split_meta_ts": 1788062400000,
+  "split_meta_utc": "2026-08-30 04:00 UTC",
+  "risultati": {
+    "DOGE": {
+      "T1": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.01838693,
+              "costo": 0.004,
+              "netto": 0.01438693,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00016418,
+              "netto_meta1": 0.00528678,
+              "netto_meta2": 0.00910014,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.05527609,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01838693,
+              "costo": 0.004,
+              "netto": 0.01438693,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00016418,
+              "netto_meta1": 0.00528678,
+              "netto_meta2": 0.00910014,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.05527609,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.01838693,
+              "costo": 0.0062,
+              "netto": 0.01218693,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00016418,
+              "netto_meta1": 0.00308678,
+              "netto_meta2": 0.00910014,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.04682346,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01838693,
+              "costo": 0.0062,
+              "netto": 0.01218693,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00016418,
+              "netto_meta1": 0.00308678,
+              "netto_meta2": 0.00910014,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.04682346,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          }
+        }
+      },
+      "T2": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.01838693,
+              "costo": 0.004,
+              "netto": 0.01438693,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00016418,
+              "netto_meta1": 0.00528678,
+              "netto_meta2": 0.00910014,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.05527609,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01838693,
+              "costo": 0.004,
+              "netto": 0.01438693,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00016418,
+              "netto_meta1": 0.00528678,
+              "netto_meta2": 0.00910014,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.05527609,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.01838693,
+              "costo": 0.0062,
+              "netto": 0.01218693,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00016418,
+              "netto_meta1": 0.00308678,
+              "netto_meta2": 0.00910014,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.04682346,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01838693,
+              "costo": 0.0062,
+              "netto": 0.01218693,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00016418,
+              "netto_meta1": 0.00308678,
+              "netto_meta2": 0.00910014,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.04682346,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          }
+        }
+      },
+      "T3": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.01838693,
+              "costo": 0.004,
+              "netto": 0.01438693,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00016418,
+              "netto_meta1": 0.00528678,
+              "netto_meta2": 0.00910014,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.05527609,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01838693,
+              "costo": 0.004,
+              "netto": 0.01438693,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00016418,
+              "netto_meta1": 0.00528678,
+              "netto_meta2": 0.00910014,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.05527609,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.01838693,
+              "costo": 0.0062,
+              "netto": 0.01218693,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00016418,
+              "netto_meta1": 0.00308678,
+              "netto_meta2": 0.00910014,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.04682346,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01838693,
+              "costo": 0.0062,
+              "netto": 0.01218693,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00016418,
+              "netto_meta1": 0.00308678,
+              "netto_meta2": 0.00910014,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.04682346,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          }
+        }
+      }
+    },
+    "LTC": {
+      "T1": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.01748986,
+              "costo": 0.004,
+              "netto": 0.01348986,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00024368,
+              "netto_meta1": 0.00503162,
+              "netto_meta2": 0.00845825,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.05182947,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01748986,
+              "costo": 0.004,
+              "netto": 0.01348986,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00024368,
+              "netto_meta1": 0.00503162,
+              "netto_meta2": 0.00845825,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.05182947,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.01748986,
+              "costo": 0.0062,
+              "netto": 0.01128986,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00024368,
+              "netto_meta1": 0.00283162,
+              "netto_meta2": 0.00845825,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.04337683,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01748986,
+              "costo": 0.0062,
+              "netto": 0.01128986,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00024368,
+              "netto_meta1": 0.00283162,
+              "netto_meta2": 0.00845825,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.04337683,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          }
+        }
+      },
+      "T2": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.01748986,
+              "costo": 0.004,
+              "netto": 0.01348986,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00024368,
+              "netto_meta1": 0.00503162,
+              "netto_meta2": 0.00845825,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.05182947,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01748986,
+              "costo": 0.004,
+              "netto": 0.01348986,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00024368,
+              "netto_meta1": 0.00503162,
+              "netto_meta2": 0.00845825,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.05182947,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.01748986,
+              "costo": 0.0062,
+              "netto": 0.01128986,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00024368,
+              "netto_meta1": 0.00283162,
+              "netto_meta2": 0.00845825,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.04337683,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01748986,
+              "costo": 0.0062,
+              "netto": 0.01128986,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00024368,
+              "netto_meta1": 0.00283162,
+              "netto_meta2": 0.00845825,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.04337683,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          }
+        }
+      },
+      "T3": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.01748986,
+              "costo": 0.004,
+              "netto": 0.01348986,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00024368,
+              "netto_meta1": 0.00503162,
+              "netto_meta2": 0.00845825,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.05182947,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01748986,
+              "costo": 0.004,
+              "netto": 0.01348986,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00024368,
+              "netto_meta1": 0.00503162,
+              "netto_meta2": 0.00845825,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.05182947,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.01748986,
+              "costo": 0.0062,
+              "netto": 0.01128986,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00024368,
+              "netto_meta1": 0.00283162,
+              "netto_meta2": 0.00845825,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.04337683,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01748986,
+              "costo": 0.0062,
+              "netto": 0.01128986,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00024368,
+              "netto_meta1": 0.00283162,
+              "netto_meta2": 0.00845825,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.04337683,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          }
+        }
+      }
+    },
+    "ADA": {
+      "T1": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          },
+          {
+            "ts": 1785024000000,
+            "tipo": "uscita",
+            "ts_utc": "2026-07-26 00:00 UTC"
+          },
+          {
+            "ts": 1785600000000,
+            "tipo": "rientro",
+            "ts_utc": "2026-08-01 16:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.01415099,
+              "costo": 0.012,
+              "netto": 0.00215099,
+              "n_transizioni": 3,
+              "n_aperture": 1,
+              "n_uscite": 1,
+              "n_rientri": 1,
+              "n_eventi": 286,
+              "n_eventi_catturati": 266,
+              "n_eventi_flat": 20,
+              "quota_periodi_flat": 0.06993007,
+              "maxdd_flusso": 0.00865233,
+              "netto_meta1": -0.00664111,
+              "netto_meta2": 0.0087921,
+              "episodi_per_anno": 3.84210526,
+              "netto_annualizzato": 0.00826433,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01449261,
+              "costo": 0.004,
+              "netto": 0.01049261,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00150479,
+              "netto_meta1": 0.00170051,
+              "netto_meta2": 0.0087921,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.04031372,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": -0.00834162,
+            "delta_netto_annualizzato": -0.0320494,
+            "meta1_delta_netto": -0.00834162,
+            "meta1_delta_annualizzato": -0.06409879,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": -1,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": false
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.01415099,
+              "costo": 0.0186,
+              "netto": -0.00444901,
+              "n_transizioni": 3,
+              "n_aperture": 1,
+              "n_uscite": 1,
+              "n_rientri": 1,
+              "n_eventi": 286,
+              "n_eventi_catturati": 266,
+              "n_eventi_flat": 20,
+              "quota_periodi_flat": 0.06993007,
+              "maxdd_flusso": 0.01305233,
+              "netto_meta1": -0.01324111,
+              "netto_meta2": 0.0087921,
+              "episodi_per_anno": 3.84210526,
+              "netto_annualizzato": -0.01709357,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01449261,
+              "costo": 0.0062,
+              "netto": 0.00829261,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00150479,
+              "netto_meta1": -0.00049949,
+              "netto_meta2": 0.0087921,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.03186109,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": -0.01274162,
+            "delta_netto_annualizzato": -0.04895466,
+            "meta1_delta_netto": -0.01274162,
+            "meta1_delta_annualizzato": -0.09790932,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": -1,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": false
+          }
+        }
+      },
+      "T2": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          },
+          {
+            "ts": 1785225600000,
+            "tipo": "uscita",
+            "ts_utc": "2026-07-28 08:00 UTC"
+          },
+          {
+            "ts": 1785542400000,
+            "tipo": "rientro",
+            "ts_utc": "2026-08-01 00:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.01375567,
+              "costo": 0.012,
+              "netto": 0.00175567,
+              "n_transizioni": 3,
+              "n_aperture": 1,
+              "n_uscite": 1,
+              "n_rientri": 1,
+              "n_eventi": 286,
+              "n_eventi_catturati": 275,
+              "n_eventi_flat": 11,
+              "quota_periodi_flat": 0.03846154,
+              "maxdd_flusso": 0.00924765,
+              "netto_meta1": -0.00703643,
+              "netto_meta2": 0.0087921,
+              "episodi_per_anno": 3.84210526,
+              "netto_annualizzato": 0.00674548,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01449261,
+              "costo": 0.004,
+              "netto": 0.01049261,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00150479,
+              "netto_meta1": 0.00170051,
+              "netto_meta2": 0.0087921,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.04031372,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": -0.00873694,
+            "delta_netto_annualizzato": -0.03356824,
+            "meta1_delta_netto": -0.00873694,
+            "meta1_delta_annualizzato": -0.06713648,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": -1,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": false
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.01375567,
+              "costo": 0.0186,
+              "netto": -0.00484433,
+              "n_transizioni": 3,
+              "n_aperture": 1,
+              "n_uscite": 1,
+              "n_rientri": 1,
+              "n_eventi": 286,
+              "n_eventi_catturati": 275,
+              "n_eventi_flat": 11,
+              "quota_periodi_flat": 0.03846154,
+              "maxdd_flusso": 0.01364765,
+              "netto_meta1": -0.01363643,
+              "netto_meta2": 0.0087921,
+              "episodi_per_anno": 3.84210526,
+              "netto_annualizzato": -0.01861241,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01449261,
+              "costo": 0.0062,
+              "netto": 0.00829261,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00150479,
+              "netto_meta1": -0.00049949,
+              "netto_meta2": 0.0087921,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.03186109,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": -0.01313694,
+            "delta_netto_annualizzato": -0.0504735,
+            "meta1_delta_netto": -0.01313694,
+            "meta1_delta_annualizzato": -0.10094701,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": -1,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": false
+          }
+        }
+      },
+      "T3": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.01449261,
+              "costo": 0.004,
+              "netto": 0.01049261,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00150479,
+              "netto_meta1": 0.00170051,
+              "netto_meta2": 0.0087921,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.04031372,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01449261,
+              "costo": 0.004,
+              "netto": 0.01049261,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00150479,
+              "netto_meta1": 0.00170051,
+              "netto_meta2": 0.0087921,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.04031372,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.01449261,
+              "costo": 0.0062,
+              "netto": 0.00829261,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00150479,
+              "netto_meta1": -0.00049949,
+              "netto_meta2": 0.0087921,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.03186109,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01449261,
+              "costo": 0.0062,
+              "netto": 0.00829261,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00150479,
+              "netto_meta1": -0.00049949,
+              "netto_meta2": 0.0087921,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.03186109,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          }
+        }
+      }
+    },
+    "XRP": {
+      "T1": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          },
+          {
+            "ts": 1784044800000,
+            "tipo": "uscita",
+            "ts_utc": "2026-07-14 16:00 UTC"
+          },
+          {
+            "ts": 1784102400000,
+            "tipo": "rientro",
+            "ts_utc": "2026-07-15 08:00 UTC"
+          },
+          {
+            "ts": 1785628800000,
+            "tipo": "uscita",
+            "ts_utc": "2026-08-02 00:00 UTC"
+          },
+          {
+            "ts": 1785744000000,
+            "tipo": "rientro",
+            "ts_utc": "2026-08-03 08:00 UTC"
+          },
+          {
+            "ts": 1791936000000,
+            "tipo": "uscita",
+            "ts_utc": "2026-10-14 00:00 UTC"
+          },
+          {
+            "ts": 1792137600000,
+            "tipo": "rientro",
+            "ts_utc": "2026-10-16 08:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.01206451,
+              "costo": 0.028,
+              "netto": -0.01593549,
+              "n_transizioni": 7,
+              "n_aperture": 1,
+              "n_uscite": 3,
+              "n_rientri": 3,
+              "n_eventi": 286,
+              "n_eventi_catturati": 273,
+              "n_eventi_flat": 13,
+              "quota_periodi_flat": 0.04545455,
+              "maxdd_flusso": 0.01488708,
+              "netto_meta1": -0.01463483,
+              "netto_meta2": -0.00130066,
+              "episodi_per_anno": 11.52631579,
+              "netto_annualizzato": -0.06122582,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.0125335,
+              "costo": 0.004,
+              "netto": 0.0085335,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00034141,
+              "netto_meta1": 0.00166307,
+              "netto_meta2": 0.00687042,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.03278659,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": -0.02446898,
+            "delta_netto_annualizzato": -0.09401241,
+            "meta1_delta_netto": -0.0162979,
+            "meta1_delta_annualizzato": -0.12523649,
+            "meta2_delta_netto": -0.00817108,
+            "meta2_delta_annualizzato": -0.06278833,
+            "segno_meta1": -1,
+            "segno_meta2": -1,
+            "stabilita_segno_concorde": true
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.01206451,
+              "costo": 0.0434,
+              "netto": -0.03133549,
+              "n_transizioni": 7,
+              "n_aperture": 1,
+              "n_uscite": 3,
+              "n_rientri": 3,
+              "n_eventi": 286,
+              "n_eventi_catturati": 273,
+              "n_eventi_flat": 13,
+              "quota_periodi_flat": 0.04545455,
+              "maxdd_flusso": 0.02522362,
+              "netto_meta1": -0.02563483,
+              "netto_meta2": -0.00570066,
+              "episodi_per_anno": 11.52631579,
+              "netto_annualizzato": -0.12039425,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.0125335,
+              "costo": 0.0062,
+              "netto": 0.0063335,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00034141,
+              "netto_meta1": -0.00053693,
+              "netto_meta2": 0.00687042,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.02433395,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": -0.03766898,
+            "delta_netto_annualizzato": -0.1447282,
+            "meta1_delta_netto": -0.0250979,
+            "meta1_delta_annualizzato": -0.19285754,
+            "meta2_delta_netto": -0.01257108,
+            "meta2_delta_annualizzato": -0.09659886,
+            "segno_meta1": -1,
+            "segno_meta2": -1,
+            "stabilita_segno_concorde": true
+          }
+        }
+      },
+      "T2": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          },
+          {
+            "ts": 1784044800000,
+            "tipo": "uscita",
+            "ts_utc": "2026-07-14 16:00 UTC"
+          },
+          {
+            "ts": 1784102400000,
+            "tipo": "rientro",
+            "ts_utc": "2026-07-15 08:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.01239421,
+              "costo": 0.012,
+              "netto": 0.00039421,
+              "n_transizioni": 3,
+              "n_aperture": 1,
+              "n_uscite": 1,
+              "n_rientri": 1,
+              "n_eventi": 286,
+              "n_eventi_catturati": 284,
+              "n_eventi_flat": 2,
+              "quota_periodi_flat": 0.00699301,
+              "maxdd_flusso": 0.00795222,
+              "netto_meta1": -0.00647621,
+              "netto_meta2": 0.00687042,
+              "episodi_per_anno": 3.84210526,
+              "netto_annualizzato": 0.00151461,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.0125335,
+              "costo": 0.004,
+              "netto": 0.0085335,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00034141,
+              "netto_meta1": 0.00166307,
+              "netto_meta2": 0.00687042,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.03278659,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": -0.00813928,
+            "delta_netto_annualizzato": -0.03127198,
+            "meta1_delta_netto": -0.00813928,
+            "meta1_delta_annualizzato": -0.06254396,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": -1,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": false
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.01239421,
+              "costo": 0.0186,
+              "netto": -0.00620579,
+              "n_transizioni": 3,
+              "n_aperture": 1,
+              "n_uscite": 1,
+              "n_rientri": 1,
+              "n_eventi": 286,
+              "n_eventi_catturati": 284,
+              "n_eventi_flat": 2,
+              "quota_periodi_flat": 0.00699301,
+              "maxdd_flusso": 0.01235222,
+              "netto_meta1": -0.01307621,
+              "netto_meta2": 0.00687042,
+              "episodi_per_anno": 3.84210526,
+              "netto_annualizzato": -0.02384329,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.0125335,
+              "costo": 0.0062,
+              "netto": 0.0063335,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00034141,
+              "netto_meta1": -0.00053693,
+              "netto_meta2": 0.00687042,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.02433395,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": -0.01253928,
+            "delta_netto_annualizzato": -0.04817724,
+            "meta1_delta_netto": -0.01253928,
+            "meta1_delta_annualizzato": -0.09635449,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": -1,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": false
+          }
+        }
+      },
+      "T3": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.0125335,
+              "costo": 0.004,
+              "netto": 0.0085335,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00034141,
+              "netto_meta1": 0.00166307,
+              "netto_meta2": 0.00687042,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.03278659,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.0125335,
+              "costo": 0.004,
+              "netto": 0.0085335,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00034141,
+              "netto_meta1": 0.00166307,
+              "netto_meta2": 0.00687042,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.03278659,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.0125335,
+              "costo": 0.0062,
+              "netto": 0.0063335,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00034141,
+              "netto_meta1": -0.00053693,
+              "netto_meta2": 0.00687042,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.02433395,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.0125335,
+              "costo": 0.0062,
+              "netto": 0.0063335,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00034141,
+              "netto_meta1": -0.00053693,
+              "netto_meta2": 0.00687042,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.02433395,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          }
+        }
+      }
+    },
+    "LINK": {
+      "T1": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          },
+          {
+            "ts": 1792022400000,
+            "tipo": "uscita",
+            "ts_utc": "2026-10-15 00:00 UTC"
+          },
+          {
+            "ts": 1792166400000,
+            "tipo": "rientro",
+            "ts_utc": "2026-10-16 16:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.01553488,
+              "costo": 0.012,
+              "netto": 0.00353488,
+              "n_transizioni": 3,
+              "n_aperture": 1,
+              "n_uscite": 1,
+              "n_rientri": 1,
+              "n_eventi": 286,
+              "n_eventi_catturati": 281,
+              "n_eventi_flat": 5,
+              "quota_periodi_flat": 0.01748252,
+              "maxdd_flusso": 0.00806886,
+              "netto_meta1": 0.00468492,
+              "netto_meta2": -0.00115005,
+              "episodi_per_anno": 3.84210526,
+              "netto_annualizzato": 0.01358137,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01577144,
+              "costo": 0.004,
+              "netto": 0.01177144,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00023104,
+              "netto_meta1": 0.00468492,
+              "netto_meta2": 0.00708652,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.04522712,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": -0.00823656,
+            "delta_netto_annualizzato": -0.03164575,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": -0.00823656,
+            "meta2_delta_annualizzato": -0.0632915,
+            "segno_meta1": 0,
+            "segno_meta2": -1,
+            "stabilita_segno_concorde": false
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.01553488,
+              "costo": 0.0186,
+              "netto": -0.00306512,
+              "n_transizioni": 3,
+              "n_aperture": 1,
+              "n_uscite": 1,
+              "n_rientri": 1,
+              "n_eventi": 286,
+              "n_eventi_catturati": 281,
+              "n_eventi_flat": 5,
+              "quota_periodi_flat": 0.01748252,
+              "maxdd_flusso": 0.01246886,
+              "netto_meta1": 0.00248492,
+              "netto_meta2": -0.00555005,
+              "episodi_per_anno": 3.84210526,
+              "netto_annualizzato": -0.01177652,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01577144,
+              "costo": 0.0062,
+              "netto": 0.00957144,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00023104,
+              "netto_meta1": 0.00248492,
+              "netto_meta2": 0.00708652,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.03677449,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": -0.01263656,
+            "delta_netto_annualizzato": -0.04855101,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": -0.01263656,
+            "meta2_delta_annualizzato": -0.09710203,
+            "segno_meta1": 0,
+            "segno_meta2": -1,
+            "stabilita_segno_concorde": false
+          }
+        }
+      },
+      "T2": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.01577144,
+              "costo": 0.004,
+              "netto": 0.01177144,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00023104,
+              "netto_meta1": 0.00468492,
+              "netto_meta2": 0.00708652,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.04522712,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01577144,
+              "costo": 0.004,
+              "netto": 0.01177144,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00023104,
+              "netto_meta1": 0.00468492,
+              "netto_meta2": 0.00708652,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.04522712,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.01577144,
+              "costo": 0.0062,
+              "netto": 0.00957144,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00023104,
+              "netto_meta1": 0.00248492,
+              "netto_meta2": 0.00708652,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.03677449,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01577144,
+              "costo": 0.0062,
+              "netto": 0.00957144,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00023104,
+              "netto_meta1": 0.00248492,
+              "netto_meta2": 0.00708652,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.03677449,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          }
+        }
+      },
+      "T3": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.01577144,
+              "costo": 0.004,
+              "netto": 0.01177144,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00023104,
+              "netto_meta1": 0.00468492,
+              "netto_meta2": 0.00708652,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.04522712,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01577144,
+              "costo": 0.004,
+              "netto": 0.01177144,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00023104,
+              "netto_meta1": 0.00468492,
+              "netto_meta2": 0.00708652,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.04522712,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.01577144,
+              "costo": 0.0062,
+              "netto": 0.00957144,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00023104,
+              "netto_meta1": 0.00248492,
+              "netto_meta2": 0.00708652,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.03677449,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01577144,
+              "costo": 0.0062,
+              "netto": 0.00957144,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00023104,
+              "netto_meta1": 0.00248492,
+              "netto_meta2": 0.00708652,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.03677449,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          }
+        }
+      }
+    },
+    "BTC": {
+      "T1": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.01379383,
+              "costo": 0.004,
+              "netto": 0.00979383,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 4.797e-05,
+              "netto_meta1": 0.00350278,
+              "netto_meta2": 0.00629105,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.03762894,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01379383,
+              "costo": 0.004,
+              "netto": 0.00979383,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 4.797e-05,
+              "netto_meta1": 0.00350278,
+              "netto_meta2": 0.00629105,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.03762894,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.01379383,
+              "costo": 0.0062,
+              "netto": 0.00759383,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 4.797e-05,
+              "netto_meta1": 0.00130278,
+              "netto_meta2": 0.00629105,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.02917631,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01379383,
+              "costo": 0.0062,
+              "netto": 0.00759383,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 4.797e-05,
+              "netto_meta1": 0.00130278,
+              "netto_meta2": 0.00629105,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.02917631,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          }
+        }
+      },
+      "T2": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.01379383,
+              "costo": 0.004,
+              "netto": 0.00979383,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 4.797e-05,
+              "netto_meta1": 0.00350278,
+              "netto_meta2": 0.00629105,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.03762894,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01379383,
+              "costo": 0.004,
+              "netto": 0.00979383,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 4.797e-05,
+              "netto_meta1": 0.00350278,
+              "netto_meta2": 0.00629105,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.03762894,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.01379383,
+              "costo": 0.0062,
+              "netto": 0.00759383,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 4.797e-05,
+              "netto_meta1": 0.00130278,
+              "netto_meta2": 0.00629105,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.02917631,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01379383,
+              "costo": 0.0062,
+              "netto": 0.00759383,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 4.797e-05,
+              "netto_meta1": 0.00130278,
+              "netto_meta2": 0.00629105,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.02917631,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          }
+        }
+      },
+      "T3": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.01379383,
+              "costo": 0.004,
+              "netto": 0.00979383,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 4.797e-05,
+              "netto_meta1": 0.00350278,
+              "netto_meta2": 0.00629105,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.03762894,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01379383,
+              "costo": 0.004,
+              "netto": 0.00979383,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 4.797e-05,
+              "netto_meta1": 0.00350278,
+              "netto_meta2": 0.00629105,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.03762894,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.01379383,
+              "costo": 0.0062,
+              "netto": 0.00759383,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 4.797e-05,
+              "netto_meta1": 0.00130278,
+              "netto_meta2": 0.00629105,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.02917631,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01379383,
+              "costo": 0.0062,
+              "netto": 0.00759383,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 4.797e-05,
+              "netto_meta1": 0.00130278,
+              "netto_meta2": 0.00629105,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.02917631,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          }
+        }
+      }
+    },
+    "ETH": {
+      "T1": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          },
+          {
+            "ts": 1783987200000,
+            "tipo": "uscita",
+            "ts_utc": "2026-07-14 00:00 UTC"
+          },
+          {
+            "ts": 1784044800000,
+            "tipo": "rientro",
+            "ts_utc": "2026-07-14 16:00 UTC"
+          },
+          {
+            "ts": 1784880000000,
+            "tipo": "uscita",
+            "ts_utc": "2026-07-24 08:00 UTC"
+          },
+          {
+            "ts": 1785024000000,
+            "tipo": "rientro",
+            "ts_utc": "2026-07-26 00:00 UTC"
+          },
+          {
+            "ts": 1791964800000,
+            "tipo": "uscita",
+            "ts_utc": "2026-10-14 08:00 UTC"
+          },
+          {
+            "ts": 1792080000000,
+            "tipo": "rientro",
+            "ts_utc": "2026-10-15 16:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.01054215,
+              "costo": 0.028,
+              "netto": -0.01745785,
+              "n_transizioni": 7,
+              "n_aperture": 1,
+              "n_uscite": 3,
+              "n_rientri": 3,
+              "n_eventi": 286,
+              "n_eventi_catturati": 275,
+              "n_eventi_flat": 11,
+              "quota_periodi_flat": 0.03846154,
+              "maxdd_flusso": 0.01563863,
+              "netto_meta1": -0.01469996,
+              "netto_meta2": -0.00275789,
+              "episodi_per_anno": 11.52631579,
+              "netto_annualizzato": -0.06707489,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01082319,
+              "costo": 0.004,
+              "netto": 0.00682319,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.0002203,
+              "netto_meta1": 0.00142196,
+              "netto_meta2": 0.00540123,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.0262154,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": -0.02428103,
+            "delta_netto_annualizzato": -0.09329029,
+            "meta1_delta_netto": -0.01612191,
+            "meta1_delta_annualizzato": -0.12388418,
+            "meta2_delta_netto": -0.00815912,
+            "meta2_delta_annualizzato": -0.06269639,
+            "segno_meta1": -1,
+            "segno_meta2": -1,
+            "stabilita_segno_concorde": true
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.01054215,
+              "costo": 0.0434,
+              "netto": -0.03285785,
+              "n_transizioni": 7,
+              "n_aperture": 1,
+              "n_uscite": 3,
+              "n_rientri": 3,
+              "n_eventi": 286,
+              "n_eventi_catturati": 275,
+              "n_eventi_flat": 11,
+              "quota_periodi_flat": 0.03846154,
+              "maxdd_flusso": 0.02675829,
+              "netto_meta1": -0.02569996,
+              "netto_meta2": -0.00715789,
+              "episodi_per_anno": 11.52631579,
+              "netto_annualizzato": -0.12624331,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01082319,
+              "costo": 0.0062,
+              "netto": 0.00462319,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.0002203,
+              "netto_meta1": -0.00077804,
+              "netto_meta2": 0.00540123,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.01776276,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": -0.03748103,
+            "delta_netto_annualizzato": -0.14400608,
+            "meta1_delta_netto": -0.02492191,
+            "meta1_delta_annualizzato": -0.19150524,
+            "meta2_delta_netto": -0.01255912,
+            "meta2_delta_annualizzato": -0.09650692,
+            "segno_meta1": -1,
+            "segno_meta2": -1,
+            "stabilita_segno_concorde": true
+          }
+        }
+      },
+      "T2": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          },
+          {
+            "ts": 1783987200000,
+            "tipo": "uscita",
+            "ts_utc": "2026-07-14 00:00 UTC"
+          },
+          {
+            "ts": 1784044800000,
+            "tipo": "rientro",
+            "ts_utc": "2026-07-14 16:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.0108103,
+              "costo": 0.012,
+              "netto": -0.0011897,
+              "n_transizioni": 3,
+              "n_aperture": 1,
+              "n_uscite": 1,
+              "n_rientri": 1,
+              "n_eventi": 286,
+              "n_eventi_catturati": 284,
+              "n_eventi_flat": 2,
+              "quota_periodi_flat": 0.00699301,
+              "maxdd_flusso": 0.00795613,
+              "netto_meta1": -0.00659093,
+              "netto_meta2": 0.00540123,
+              "episodi_per_anno": 3.84210526,
+              "netto_annualizzato": -0.00457096,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01082319,
+              "costo": 0.004,
+              "netto": 0.00682319,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.0002203,
+              "netto_meta1": 0.00142196,
+              "netto_meta2": 0.00540123,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.0262154,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": -0.00801289,
+            "delta_netto_annualizzato": -0.03078635,
+            "meta1_delta_netto": -0.00801289,
+            "meta1_delta_annualizzato": -0.0615727,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": -1,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": false
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.0108103,
+              "costo": 0.0186,
+              "netto": -0.0077897,
+              "n_transizioni": 3,
+              "n_aperture": 1,
+              "n_uscite": 1,
+              "n_rientri": 1,
+              "n_eventi": 286,
+              "n_eventi_catturati": 284,
+              "n_eventi_flat": 2,
+              "quota_periodi_flat": 0.00699301,
+              "maxdd_flusso": 0.01235613,
+              "netto_meta1": -0.01319093,
+              "netto_meta2": 0.00540123,
+              "episodi_per_anno": 3.84210526,
+              "netto_annualizzato": -0.02992885,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01082319,
+              "costo": 0.0062,
+              "netto": 0.00462319,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.0002203,
+              "netto_meta1": -0.00077804,
+              "netto_meta2": 0.00540123,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.01776276,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": -0.01241289,
+            "delta_netto_annualizzato": -0.04769161,
+            "meta1_delta_netto": -0.01241289,
+            "meta1_delta_annualizzato": -0.09538323,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": -1,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": false
+          }
+        }
+      },
+      "T3": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.01082319,
+              "costo": 0.004,
+              "netto": 0.00682319,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.0002203,
+              "netto_meta1": 0.00142196,
+              "netto_meta2": 0.00540123,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.0262154,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01082319,
+              "costo": 0.004,
+              "netto": 0.00682319,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.0002203,
+              "netto_meta1": 0.00142196,
+              "netto_meta2": 0.00540123,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.0262154,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.01082319,
+              "costo": 0.0062,
+              "netto": 0.00462319,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.0002203,
+              "netto_meta1": -0.00077804,
+              "netto_meta2": 0.00540123,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.01776276,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01082319,
+              "costo": 0.0062,
+              "netto": 0.00462319,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.0002203,
+              "netto_meta1": -0.00077804,
+              "netto_meta2": 0.00540123,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.01776276,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          }
+        }
+      }
+    },
+    "SOL": {
+      "T1": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          },
+          {
+            "ts": 1785369600000,
+            "tipo": "uscita",
+            "ts_utc": "2026-07-30 00:00 UTC"
+          },
+          {
+            "ts": 1785513600000,
+            "tipo": "rientro",
+            "ts_utc": "2026-07-31 16:00 UTC"
+          },
+          {
+            "ts": 1788307200000,
+            "tipo": "uscita",
+            "ts_utc": "2026-09-02 00:00 UTC"
+          },
+          {
+            "ts": 1789286400000,
+            "tipo": "rientro",
+            "ts_utc": "2026-09-13 08:00 UTC"
+          },
+          {
+            "ts": 1789372800000,
+            "tipo": "uscita",
+            "ts_utc": "2026-09-14 08:00 UTC"
+          },
+          {
+            "ts": 1789430400000,
+            "tipo": "rientro",
+            "ts_utc": "2026-09-15 00:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.0082436,
+              "costo": 0.028,
+              "netto": -0.0197564,
+              "n_transizioni": 7,
+              "n_aperture": 1,
+              "n_uscite": 3,
+              "n_rientri": 3,
+              "n_eventi": 286,
+              "n_eventi_catturati": 245,
+              "n_eventi_flat": 41,
+              "quota_periodi_flat": 0.14335664,
+              "maxdd_flusso": 0.02026073,
+              "netto_meta1": -0.00703811,
+              "netto_meta2": -0.01271829,
+              "episodi_per_anno": 11.52631579,
+              "netto_annualizzato": -0.07590617,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.00842538,
+              "costo": 0.004,
+              "netto": 0.00442538,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00075913,
+              "netto_meta1": 0.00106951,
+              "netto_meta2": 0.00335587,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.01700279,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": -0.02418178,
+            "delta_netto_annualizzato": -0.09290896,
+            "meta1_delta_netto": -0.00810763,
+            "meta1_delta_annualizzato": -0.06230072,
+            "meta2_delta_netto": -0.01607415,
+            "meta2_delta_annualizzato": -0.12351719,
+            "segno_meta1": -1,
+            "segno_meta2": -1,
+            "stabilita_segno_concorde": true
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.0082436,
+              "costo": 0.0434,
+              "netto": -0.0351564,
+              "n_transizioni": 7,
+              "n_aperture": 1,
+              "n_uscite": 3,
+              "n_rientri": 3,
+              "n_eventi": 286,
+              "n_eventi_catturati": 245,
+              "n_eventi_flat": 41,
+              "quota_periodi_flat": 0.14335664,
+              "maxdd_flusso": 0.03346073,
+              "netto_meta1": -0.01363811,
+              "netto_meta2": -0.02151829,
+              "episodi_per_anno": 11.52631579,
+              "netto_annualizzato": -0.13507459,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.00842538,
+              "costo": 0.0062,
+              "netto": 0.00222538,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00075913,
+              "netto_meta1": -0.00113049,
+              "netto_meta2": 0.00335587,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.00855015,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": -0.03738178,
+            "delta_netto_annualizzato": -0.14362474,
+            "meta1_delta_netto": -0.01250763,
+            "meta1_delta_annualizzato": -0.09611125,
+            "meta2_delta_netto": -0.02487415,
+            "meta2_delta_annualizzato": -0.19113824,
+            "segno_meta1": -1,
+            "segno_meta2": -1,
+            "stabilita_segno_concorde": true
+          }
+        }
+      },
+      "T2": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          },
+          {
+            "ts": 1788912000000,
+            "tipo": "uscita",
+            "ts_utc": "2026-09-09 00:00 UTC"
+          },
+          {
+            "ts": 1789459200000,
+            "tipo": "rientro",
+            "ts_utc": "2026-09-15 08:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.00814892,
+              "costo": 0.012,
+              "netto": -0.00385108,
+              "n_transizioni": 3,
+              "n_aperture": 1,
+              "n_uscite": 1,
+              "n_rientri": 1,
+              "n_eventi": 286,
+              "n_eventi_catturati": 267,
+              "n_eventi_flat": 19,
+              "quota_periodi_flat": 0.06643357,
+              "maxdd_flusso": 0.00856397,
+              "netto_meta1": 0.00106951,
+              "netto_meta2": -0.0049206,
+              "episodi_per_anno": 3.84210526,
+              "netto_annualizzato": -0.01479627,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.00842538,
+              "costo": 0.004,
+              "netto": 0.00442538,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00075913,
+              "netto_meta1": 0.00106951,
+              "netto_meta2": 0.00335587,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.01700279,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": -0.00827647,
+            "delta_netto_annualizzato": -0.03179906,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": -0.00827647,
+            "meta2_delta_annualizzato": -0.06359812,
+            "segno_meta1": 0,
+            "segno_meta2": -1,
+            "stabilita_segno_concorde": false
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.00814892,
+              "costo": 0.0186,
+              "netto": -0.01045108,
+              "n_transizioni": 3,
+              "n_aperture": 1,
+              "n_uscite": 1,
+              "n_rientri": 1,
+              "n_eventi": 286,
+              "n_eventi_catturati": 267,
+              "n_eventi_flat": 19,
+              "quota_periodi_flat": 0.06643357,
+              "maxdd_flusso": 0.01296397,
+              "netto_meta1": -0.00113049,
+              "netto_meta2": -0.0093206,
+              "episodi_per_anno": 3.84210526,
+              "netto_annualizzato": -0.04015417,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.00842538,
+              "costo": 0.0062,
+              "netto": 0.00222538,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00075913,
+              "netto_meta1": -0.00113049,
+              "netto_meta2": 0.00335587,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.00855015,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": -0.01267647,
+            "delta_netto_annualizzato": -0.04870432,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": -0.01267647,
+            "meta2_delta_annualizzato": -0.09740864,
+            "segno_meta1": 0,
+            "segno_meta2": -1,
+            "stabilita_segno_concorde": false
+          }
+        }
+      },
+      "T3": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.00842538,
+              "costo": 0.004,
+              "netto": 0.00442538,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00075913,
+              "netto_meta1": 0.00106951,
+              "netto_meta2": 0.00335587,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.01700279,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.00842538,
+              "costo": 0.004,
+              "netto": 0.00442538,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00075913,
+              "netto_meta1": 0.00106951,
+              "netto_meta2": 0.00335587,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.01700279,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.00842538,
+              "costo": 0.0062,
+              "netto": 0.00222538,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00075913,
+              "netto_meta1": -0.00113049,
+              "netto_meta2": 0.00335587,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.00855015,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.00842538,
+              "costo": 0.0062,
+              "netto": 0.00222538,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00075913,
+              "netto_meta1": -0.00113049,
+              "netto_meta2": 0.00335587,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.00855015,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          }
+        }
+      }
+    },
+    "DOT": {
+      "T1": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          },
+          {
+            "ts": 1784448000000,
+            "tipo": "uscita",
+            "ts_utc": "2026-07-19 08:00 UTC"
+          },
+          {
+            "ts": 1785052800000,
+            "tipo": "rientro",
+            "ts_utc": "2026-07-26 08:00 UTC"
+          },
+          {
+            "ts": 1785254400000,
+            "tipo": "uscita",
+            "ts_utc": "2026-07-28 16:00 UTC"
+          },
+          {
+            "ts": 1785801600000,
+            "tipo": "rientro",
+            "ts_utc": "2026-08-04 00:00 UTC"
+          },
+          {
+            "ts": 1787068800000,
+            "tipo": "uscita",
+            "ts_utc": "2026-08-18 16:00 UTC"
+          },
+          {
+            "ts": 1787212800000,
+            "tipo": "rientro",
+            "ts_utc": "2026-08-20 08:00 UTC"
+          },
+          {
+            "ts": 1789430400000,
+            "tipo": "uscita",
+            "ts_utc": "2026-09-15 00:00 UTC"
+          },
+          {
+            "ts": 1789891200000,
+            "tipo": "rientro",
+            "ts_utc": "2026-09-20 08:00 UTC"
+          },
+          {
+            "ts": 1791446400000,
+            "tipo": "uscita",
+            "ts_utc": "2026-10-08 08:00 UTC"
+          },
+          {
+            "ts": 1791532800000,
+            "tipo": "rientro",
+            "ts_utc": "2026-10-09 08:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.00735474,
+              "costo": 0.044,
+              "netto": -0.03664526,
+              "n_transizioni": 11,
+              "n_aperture": 1,
+              "n_uscite": 5,
+              "n_rientri": 5,
+              "n_eventi": 286,
+              "n_eventi_catturati": 222,
+              "n_eventi_flat": 64,
+              "quota_periodi_flat": 0.22377622,
+              "maxdd_flusso": 0.03437701,
+              "netto_meta1": -0.02535152,
+              "netto_meta2": -0.01129374,
+              "episodi_per_anno": 19.21052632,
+              "netto_annualizzato": -0.14079495,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.00900939,
+              "costo": 0.004,
+              "netto": 0.00500939,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.0011875,
+              "netto_meta1": 2.35e-05,
+              "netto_meta2": 0.00498589,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.01924662,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": -0.04165466,
+            "delta_netto_annualizzato": -0.16004157,
+            "meta1_delta_netto": -0.02537503,
+            "meta1_delta_annualizzato": -0.19498705,
+            "meta2_delta_netto": -0.01627963,
+            "meta2_delta_annualizzato": -0.12509609,
+            "segno_meta1": -1,
+            "segno_meta2": -1,
+            "stabilita_segno_concorde": true
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.00735474,
+              "costo": 0.0682,
+              "netto": -0.06084526,
+              "n_transizioni": 11,
+              "n_aperture": 1,
+              "n_uscite": 5,
+              "n_rientri": 5,
+              "n_eventi": 286,
+              "n_eventi_catturati": 222,
+              "n_eventi_flat": 64,
+              "quota_periodi_flat": 0.22377622,
+              "maxdd_flusso": 0.05637701,
+              "netto_meta1": -0.04075152,
+              "netto_meta2": -0.02009374,
+              "episodi_per_anno": 19.21052632,
+              "netto_annualizzato": -0.2337739,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.00900939,
+              "costo": 0.0062,
+              "netto": 0.00280939,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.0011875,
+              "netto_meta1": -0.0021765,
+              "netto_meta2": 0.00498589,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.01079399,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": -0.06365466,
+            "delta_netto_annualizzato": -0.24456789,
+            "meta1_delta_netto": -0.03857503,
+            "meta1_delta_annualizzato": -0.29641863,
+            "meta2_delta_netto": -0.02507963,
+            "meta2_delta_annualizzato": -0.19271714,
+            "segno_meta1": -1,
+            "segno_meta2": -1,
+            "stabilita_segno_concorde": true
+          }
+        }
+      },
+      "T2": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          },
+          {
+            "ts": 1784448000000,
+            "tipo": "uscita",
+            "ts_utc": "2026-07-19 08:00 UTC"
+          },
+          {
+            "ts": 1784764800000,
+            "tipo": "rientro",
+            "ts_utc": "2026-07-23 00:00 UTC"
+          },
+          {
+            "ts": 1784966400000,
+            "tipo": "uscita",
+            "ts_utc": "2026-07-25 08:00 UTC"
+          },
+          {
+            "ts": 1785024000000,
+            "tipo": "rientro",
+            "ts_utc": "2026-07-26 00:00 UTC"
+          },
+          {
+            "ts": 1785225600000,
+            "tipo": "uscita",
+            "ts_utc": "2026-07-28 08:00 UTC"
+          },
+          {
+            "ts": 1785686400000,
+            "tipo": "rientro",
+            "ts_utc": "2026-08-02 16:00 UTC"
+          },
+          {
+            "ts": 1790236800000,
+            "tipo": "uscita",
+            "ts_utc": "2026-09-24 08:00 UTC"
+          },
+          {
+            "ts": 1790352000000,
+            "tipo": "rientro",
+            "ts_utc": "2026-09-25 16:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.00810919,
+              "costo": 0.036,
+              "netto": -0.02789081,
+              "n_transizioni": 9,
+              "n_aperture": 1,
+              "n_uscite": 4,
+              "n_rientri": 4,
+              "n_eventi": 286,
+              "n_eventi_catturati": 253,
+              "n_eventi_flat": 33,
+              "quota_periodi_flat": 0.11538462,
+              "maxdd_flusso": 0.02684006,
+              "netto_meta1": -0.02451792,
+              "netto_meta2": -0.00337289,
+              "episodi_per_anno": 15.36842105,
+              "netto_annualizzato": -0.10715943,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.00900939,
+              "costo": 0.004,
+              "netto": 0.00500939,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.0011875,
+              "netto_meta1": 2.35e-05,
+              "netto_meta2": 0.00498589,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.01924662,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": -0.0329002,
+            "delta_netto_annualizzato": -0.12640605,
+            "meta1_delta_netto": -0.02454142,
+            "meta1_delta_annualizzato": -0.18858144,
+            "meta2_delta_netto": -0.00835878,
+            "meta2_delta_annualizzato": -0.06423065,
+            "segno_meta1": -1,
+            "segno_meta2": -1,
+            "stabilita_segno_concorde": true
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.00810919,
+              "costo": 0.0558,
+              "netto": -0.04769081,
+              "n_transizioni": 9,
+              "n_aperture": 1,
+              "n_uscite": 4,
+              "n_rientri": 4,
+              "n_eventi": 286,
+              "n_eventi_catturati": 253,
+              "n_eventi_flat": 33,
+              "quota_periodi_flat": 0.11538462,
+              "maxdd_flusso": 0.04444006,
+              "netto_meta1": -0.03991792,
+              "netto_meta2": -0.00777289,
+              "episodi_per_anno": 15.36842105,
+              "netto_annualizzato": -0.18323311,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.00900939,
+              "costo": 0.0062,
+              "netto": 0.00280939,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.0011875,
+              "netto_meta1": -0.0021765,
+              "netto_meta2": 0.00498589,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.01079399,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": -0.0505002,
+            "delta_netto_annualizzato": -0.1940271,
+            "meta1_delta_netto": -0.03774142,
+            "meta1_delta_annualizzato": -0.29001302,
+            "meta2_delta_netto": -0.01275878,
+            "meta2_delta_annualizzato": -0.09804118,
+            "segno_meta1": -1,
+            "segno_meta2": -1,
+            "stabilita_segno_concorde": true
+          }
+        }
+      },
+      "T3": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.00900939,
+              "costo": 0.004,
+              "netto": 0.00500939,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.0011875,
+              "netto_meta1": 2.35e-05,
+              "netto_meta2": 0.00498589,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.01924662,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.00900939,
+              "costo": 0.004,
+              "netto": 0.00500939,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.0011875,
+              "netto_meta1": 2.35e-05,
+              "netto_meta2": 0.00498589,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.01924662,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.00900939,
+              "costo": 0.0062,
+              "netto": 0.00280939,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.0011875,
+              "netto_meta1": -0.0021765,
+              "netto_meta2": 0.00498589,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.01079399,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.00900939,
+              "costo": 0.0062,
+              "netto": 0.00280939,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.0011875,
+              "netto_meta1": -0.0021765,
+              "netto_meta2": 0.00498589,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.01079399,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          }
+        }
+      }
+    },
+    "AVAX": {
+      "T1": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          },
+          {
+            "ts": 1784937600000,
+            "tipo": "uscita",
+            "ts_utc": "2026-07-25 00:00 UTC"
+          },
+          {
+            "ts": 1785139200000,
+            "tipo": "rientro",
+            "ts_utc": "2026-07-27 08:00 UTC"
+          },
+          {
+            "ts": 1785283200000,
+            "tipo": "uscita",
+            "ts_utc": "2026-07-29 00:00 UTC"
+          },
+          {
+            "ts": 1785340800000,
+            "tipo": "rientro",
+            "ts_utc": "2026-07-29 16:00 UTC"
+          },
+          {
+            "ts": 1785398400000,
+            "tipo": "uscita",
+            "ts_utc": "2026-07-30 08:00 UTC"
+          },
+          {
+            "ts": 1785456000000,
+            "tipo": "rientro",
+            "ts_utc": "2026-07-31 00:00 UTC"
+          },
+          {
+            "ts": 1787068800000,
+            "tipo": "uscita",
+            "ts_utc": "2026-08-18 16:00 UTC"
+          },
+          {
+            "ts": 1787126400000,
+            "tipo": "rientro",
+            "ts_utc": "2026-08-19 08:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.01064063,
+              "costo": 0.036,
+              "netto": -0.02535937,
+              "n_transizioni": 9,
+              "n_aperture": 1,
+              "n_uscite": 4,
+              "n_rientri": 4,
+              "n_eventi": 286,
+              "n_eventi_catturati": 273,
+              "n_eventi_flat": 13,
+              "quota_periodi_flat": 0.04545455,
+              "maxdd_flusso": 0.03109345,
+              "netto_meta1": -0.031583,
+              "netto_meta2": 0.00622364,
+              "episodi_per_anno": 15.36842105,
+              "netto_annualizzato": -0.09743335,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01116968,
+              "costo": 0.004,
+              "netto": 0.00716968,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00083622,
+              "netto_meta1": 0.00094604,
+              "netto_meta2": 0.00622364,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.02754665,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": -0.03252904,
+            "delta_netto_annualizzato": -0.12498,
+            "meta1_delta_netto": -0.03252904,
+            "meta1_delta_annualizzato": -0.24996,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": -1,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": false
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.01064063,
+              "costo": 0.0558,
+              "netto": -0.04515937,
+              "n_transizioni": 9,
+              "n_aperture": 1,
+              "n_uscite": 4,
+              "n_rientri": 4,
+              "n_eventi": 286,
+              "n_eventi_catturati": 273,
+              "n_eventi_flat": 13,
+              "quota_periodi_flat": 0.04545455,
+              "maxdd_flusso": 0.04869345,
+              "netto_meta1": -0.051383,
+              "netto_meta2": 0.00622364,
+              "episodi_per_anno": 15.36842105,
+              "netto_annualizzato": -0.17350704,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01116968,
+              "costo": 0.0062,
+              "netto": 0.00496968,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00083622,
+              "netto_meta1": -0.00125396,
+              "netto_meta2": 0.00622364,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.01909402,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": -0.05012904,
+            "delta_netto_annualizzato": -0.19260105,
+            "meta1_delta_netto": -0.05012904,
+            "meta1_delta_annualizzato": -0.38520211,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": -1,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": false
+          }
+        }
+      },
+      "T2": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.01116968,
+              "costo": 0.004,
+              "netto": 0.00716968,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00083622,
+              "netto_meta1": 0.00094604,
+              "netto_meta2": 0.00622364,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.02754665,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01116968,
+              "costo": 0.004,
+              "netto": 0.00716968,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00083622,
+              "netto_meta1": 0.00094604,
+              "netto_meta2": 0.00622364,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.02754665,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.01116968,
+              "costo": 0.0062,
+              "netto": 0.00496968,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00083622,
+              "netto_meta1": -0.00125396,
+              "netto_meta2": 0.00622364,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.01909402,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01116968,
+              "costo": 0.0062,
+              "netto": 0.00496968,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00083622,
+              "netto_meta1": -0.00125396,
+              "netto_meta2": 0.00622364,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.01909402,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          }
+        }
+      },
+      "T3": {
+        "transizioni": [
+          {
+            "ts": 1783958400000,
+            "tipo": "apertura",
+            "ts_utc": "2026-07-13 16:00 UTC"
+          }
+        ],
+        "per_costo": {
+          "0.0040": {
+            "gated": {
+              "lordo": 0.01116968,
+              "costo": 0.004,
+              "netto": 0.00716968,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00083622,
+              "netto_meta1": 0.00094604,
+              "netto_meta2": 0.00622364,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.02754665,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01116968,
+              "costo": 0.004,
+              "netto": 0.00716968,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00083622,
+              "netto_meta1": 0.00094604,
+              "netto_meta2": 0.00622364,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.02754665,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          },
+          "0.0062": {
+            "gated": {
+              "lordo": 0.01116968,
+              "costo": 0.0062,
+              "netto": 0.00496968,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00083622,
+              "netto_meta1": -0.00125396,
+              "netto_meta2": 0.00622364,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.01909402,
+              "giorni_meta": 47.5
+            },
+            "alwayson": {
+              "lordo": 0.01116968,
+              "costo": 0.0062,
+              "netto": 0.00496968,
+              "n_transizioni": 1,
+              "n_aperture": 1,
+              "n_uscite": 0,
+              "n_rientri": 0,
+              "n_eventi": 286,
+              "n_eventi_catturati": 286,
+              "n_eventi_flat": 0,
+              "quota_periodi_flat": 0.0,
+              "maxdd_flusso": 0.00083622,
+              "netto_meta1": -0.00125396,
+              "netto_meta2": 0.00622364,
+              "episodi_per_anno": 0.0,
+              "netto_annualizzato": 0.01909402,
+              "giorni_meta": 47.5
+            },
+            "delta_netto": 0.0,
+            "delta_netto_annualizzato": 0.0,
+            "meta1_delta_netto": 0.0,
+            "meta1_delta_annualizzato": 0.0,
+            "meta2_delta_netto": 0.0,
+            "meta2_delta_annualizzato": 0.0,
+            "segno_meta1": 0,
+            "segno_meta2": 0,
+            "stabilita_segno_concorde": true
+          }
+        }
+      }
+    }
+  },
+  "esito": {
+    "valutabile": true,
+    "criteri": "delta<=0 su >=5/10 => trigger archiviato; delta>0 su >=6/10 E stabilita' su >=6/10 => adottabile-su-evidenza; altrimenti descrittiva/insufficiente. Tutti i trigger archiviati => ARCHIVIATA (timing del carry chiuso).",
+    "per_trigger": {
+      "T1": {
+        "per_costo": {
+          "0.0040": {
+            "n_simboli": 10,
+            "delta_positivo": 0,
+            "delta_nonpositivo": 10,
+            "stabili": 7,
+            "esito": "archiviata"
+          },
+          "0.0062": {
+            "n_simboli": 10,
+            "delta_positivo": 0,
+            "delta_nonpositivo": 10,
+            "stabili": 7,
+            "esito": "archiviata"
+          }
+        }
+      },
+      "T2": {
+        "per_costo": {
+          "0.0040": {
+            "n_simboli": 10,
+            "delta_positivo": 0,
+            "delta_nonpositivo": 10,
+            "stabili": 6,
+            "esito": "archiviata"
+          },
+          "0.0062": {
+            "n_simboli": 10,
+            "delta_positivo": 0,
+            "delta_nonpositivo": 10,
+            "stabili": 6,
+            "esito": "archiviata"
+          }
+        }
+      },
+      "T3": {
+        "per_costo": {
+          "0.0040": {
+            "n_simboli": 10,
+            "delta_positivo": 0,
+            "delta_nonpositivo": 10,
+            "stabili": 10,
+            "esito": "archiviata"
+          },
+          "0.0062": {
+            "n_simboli": 10,
+            "delta_positivo": 0,
+            "delta_nonpositivo": 10,
+            "stabili": 10,
+            "esito": "archiviata"
+          }
+        }
+      }
+    },
+    "sintesi": [
+      "ARCHIVIATA: nessun trigger migliora il netto su >=6/10; il timing del carry e' chiuso, sempre-on (spec P22)."
+    ]
+  }
+}
