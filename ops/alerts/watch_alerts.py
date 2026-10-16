@@ -8,9 +8,12 @@ Modalità:
   bots     — salute bot dal payload aggregatore: regressioni running->giù con rientro,
              nodi non raggiungibili dall'aggregatore.
   flotta   — fleet_integrity sui nodi remoti (MARCODG1, nuvola): allarme se compaiono ALLARMI.
-  equity   — capitale dal payload master: allarme se sotto il 70% del massimo delle ultime
-             24h (classe «1.100→120»: comparto non letto) o se le letture per-conto sono rotte.
-  digest   — riepilogo giornaliero (sempre inviato): capitale (main + totale), flotta, canary.
+  equity   — capitale dal payload master: allarme se sotto il 70% del massimo 24h (classe
+             «1.100→120»: comparto non letto), se le letture per-conto sono rotte, o se
+             l'equity scende sotto la soglia fissa SOGLIA_EUR (owner 16/10) — col motivo
+             (cambio vs resto) nel messaggio.
+  digest   — riepilogo giornaliero (sempre inviato): capitale (main), Δ24h/Δ7g con
+             scomposizione cambio-vs-resto (il capitale è in $), flotta, canary.
   selftest — invia allarme di prova + rientro (verifica end-to-end della catena).
 
 Cron (mc2):
@@ -25,6 +28,7 @@ Anti-spam e retry: tools/alert_lib.py (max 1 messaggio/ora per chiave + spool).
 """
 from __future__ import annotations
 
+import datetime
 import json
 import os
 import shutil
@@ -43,6 +47,12 @@ DISCO_MAX_PCT = 90.0
 MONITOR_FERMO_S = 1800  # il cron canary gira ogni 10': oltre 30' = monitor fermo
 CACCIA_STATO = Path("/home/sergio/money/prove/caccia_continua/stato.json")
 CACCIA_FERMA_S = 1500  # S4: girava ogni 5' (cron fermato il 15/10/26, esaurita); oltre 25' senza un giro = ferma
+
+# [16/10/26, decisione owner] Il capitale resta in dollari (USDC + Simple Earn): il
+# numero in € oscilla col cambio. Soglia-campanello: allarme subito sotto questo valore,
+# col motivo (Δ24h scomposto cambio-vs-resto) nel messaggio.
+SOGLIA_EUR = 1090.0
+BANCO_JSONL = "/home/marco/money/logs/banco_secco.jsonl"  # su MARCODG1, letto via ssh
 
 
 def docker_stati() -> dict:
@@ -132,6 +142,87 @@ def _ssh(cmd: str, timeout: int = 40) -> subprocess.CompletedProcess:
     return subprocess.run(
         ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10", "MARCODG1", cmd],
         capture_output=True, text=True, timeout=timeout)
+
+
+def _parse_banco(testo: str) -> list[dict]:
+    """Righe del banco a secco (JSONL): equity + comparti + quantità, per l'attribuzione."""
+    fuori = []
+    for ln in (testo or "").splitlines():
+        ln = ln.strip()
+        if not ln:
+            continue
+        try:
+            d = json.loads(ln)
+        except Exception:  # noqa: BLE001
+            continue
+        if isinstance(d.get("equity_eur"), (int, float)) and d.get("timestamp"):
+            fuori.append(d)
+    return fuori
+
+
+def _ts_di(d: dict) -> float:
+    return datetime.datetime.fromisoformat(str(d["timestamp"]).replace("Z", "+00:00")).timestamp()
+
+
+def _banco_rows(n: int = 600) -> list[dict]:
+    """Ultimi `n` campioni del banco a secco (5') da MARCODG1."""
+    r = _ssh(f"tail -n {int(n)} {BANCO_JSONL}", 90)
+    return _parse_banco(r.stdout or "")
+
+
+def _rate_of(d: dict) -> float | None:
+    """Tasso implicito USDC→EUR del campione (Simple Earn; fallback funding)."""
+    try:
+        sa = d.get("equity_savings_eur")
+        us = (d.get("saldi_savings") or {}).get("USDC")
+        if sa and us:
+            return float(sa) / float(us)
+        fu = d.get("equity_funding_eur")
+        uf = (d.get("saldi_funding") or {}).get("USDC")
+        if fu and uf:
+            return float(fu) / float(uf)
+    except Exception:  # noqa: BLE001
+        pass
+    return None
+
+
+def _esposizione_usd(d: dict, rate: float) -> float | None:
+    """Quanta parte del capitale è in dollari: USDC (3 comparti) + valore cripto."""
+    try:
+        st = d.get("saldi_trading") or {}
+        sf = d.get("saldi_funding") or {}
+        ss = d.get("saldi_savings") or {}
+        usdc = sum(float(x.get("USDC") or 0) for x in (st, sf, ss))
+        cripto_eur = (float(d.get("equity_trading_eur") or 0)
+                      - float(st.get("USDC") or 0) * rate
+                      - float(st.get("EUR") or 0))
+        return usdc + max(cripto_eur, 0.0) / rate
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _attribuzione(rows: list[dict], secondi: float) -> tuple[float, float, float] | None:
+    """(Δequity, effetto cambio, resto) sull'ultimo `secondi` della serie del banco.
+
+    Il capitale è in $: l'effetto cambio = Δtasso × esposizione valutaria media; il
+    resto (fee, funding, resa, marchi) spiega i movimenti non-cambio.
+    """
+    if len(rows) < 2:
+        return None
+    ultimo = rows[-1]
+    t0 = _ts_di(ultimo) - secondi
+    prima = next((d for d in rows if _ts_di(d) >= t0), None)
+    if prima is None or prima is ultimo:
+        return None
+    r0, r1 = _rate_of(prima), _rate_of(ultimo)
+    if not r0 or not r1:
+        return None
+    e0, e1 = _esposizione_usd(prima, r0), _esposizione_usd(ultimo, r1)
+    if not e0 or not e1:
+        return None
+    delta = float(ultimo["equity_eur"]) - float(prima["equity_eur"])
+    cambio = (r1 - r0) * (e0 + e1) / 2.0
+    return delta, cambio, delta - cambio
 
 
 def check_carry() -> int:
@@ -292,7 +383,9 @@ def check_equity() -> int:
 
     1) letture per-conto: saldo non letto (`ok=False`) o comparto Simple Earn saltato
        (`savings_ok=False`) = capitale sottostimato in vista;
-    2) crollo: equity sotto il 70% del massimo delle ultime 24h (storico locale).
+    2) crollo: equity sotto il 70% del massimo delle ultime 24h (storico locale);
+    3) soglia-campanello (owner 16/10): sotto SOGLIA_EUR = allarme col motivo
+       (Δ24h scomposto cambio-vs-resto), così un movimento FX non sembra una perdita.
     """
     try:
         d = _fetch_infra()
@@ -348,6 +441,26 @@ def check_equity() -> int:
         EQUITY_STATO.write_text(json.dumps(punti[-200:]), encoding="utf-8")
     except Exception:  # noqa: BLE001
         pass
+
+    # 3) soglia-campanello (owner 16/10) — attiva solo fuori dal regime di crollo
+    #    (là basta l'allarme crollo); il messaggio porta il motivo: Δ24h scomposto.
+    if not problema:
+        if float(eq) < SOGLIA_EUR:
+            motivo = ""
+            try:
+                attr = _attribuzione(_banco_rows(600), 86400)
+                if attr:
+                    delta24, cambio24, resto24 = attr
+                    motivo = (f" — 24h {delta24:+.1f}€ "
+                              f"(cambio {cambio24:+.1f} · resto {resto24:+.1f})")
+            except Exception:  # noqa: BLE001
+                pass
+            cambi += gestisci("equity:soglia", True,
+                              f"⚠️ equity sotto {SOGLIA_EUR:.0f}€: {float(eq):.2f}€{motivo}",
+                              "", intervallo_s=43200)  # 12h: sotto soglia non deve spammare
+        else:
+            cambi += gestisci("equity:soglia", False, "",
+                              f"✅ equity sopra la soglia {SOGLIA_EUR:.0f}€: {float(eq):.2f}€")
     return cambi
 
 
@@ -379,7 +492,7 @@ def check_flotta() -> int:
                                     "✅ FLEET: nessun allarme sui nodi remoti")
 
 
-def digest() -> int:
+def _componi_digest() -> str:
     righe = ["🫀 Denaro — check giornaliero"]
     try:
         # [07/10] la fonte e' il payload MASTER del nodo (via ssh), non la vista locale
@@ -394,11 +507,26 @@ def digest() -> int:
         righe.append(f"Flotta: {run} running / {len(bots)} voci")
     except Exception as e:  # noqa: BLE001
         righe.append(f"(aggregatore non leggibile: {type(e).__name__})")
+    # [16/10] Δ24h/Δ7g dal banco a secco, scomposti cambio-vs-resto (il capitale è in $:
+    # senza la scomposizione un movimento FX sembra una perdita di trading)
+    try:
+        righe_banco = _banco_rows(2500)
+        for etichetta, secondi in (("24h", 86400), ("7g", 7 * 86400)):
+            attr = _attribuzione(righe_banco, secondi)
+            if attr:
+                delta, cambio, resto = attr
+                righe.append(f"Δ{etichetta}: {delta:+.1f} € (cambio {cambio:+.1f} · resto {resto:+.1f})")
+    except Exception:  # noqa: BLE001
+        pass
     r = _ssh("cd /home/marco/canary && /home/marco/money/.venv/bin/python3 "
              "canary_carry.py status --quiet", 60)
     if r.returncode == 0 and (r.stdout or "").strip():
         righe.append("Canary: " + (r.stdout or "").strip().splitlines()[0][:170])
-    ok = invia_o_spool("\n".join(righe))
+    return "\n".join(righe)
+
+
+def digest() -> int:
+    ok = invia_o_spool(_componi_digest())
     print("digest inviato:", ok)
     return 0 if ok else 1
 
