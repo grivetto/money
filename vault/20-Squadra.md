@@ -1,6 +1,6 @@
 # Squadra e canali
 
-Aggiornata: **07/10/2026** — la squadra ha **11 esecutori + 1 regia, su 4 macchine** + il PC Windows.
+Aggiornata: **17/10/2026** — la squadra ha **12 esecutori + 1 regia, su 4 macchine** + il PC Windows. Il dodicesimo è **Merlino**, l'Hermes dev/quant su omarchy (SOUL: `deploy/merlino/SOUL.md`).
 Tutti gli agenti (opencode + agy) sono in **auto-start con restart automatico** dal 07/10.
 **Nomenclatura ufficiale (dal 03/10): `<tool>-<macchina>`** — es. `A0-win`, `opencode-omarchy`.
 
@@ -9,6 +9,7 @@ Tutti gli agenti (opencode + agy) sono in **auto-start con restart automatico** 
 | Chi | Dove | Ruolo |
 |---|---|---|
 | **Hermes** | mc2 | regia: misura, integra, orchestra; riesegue e verifica ogni consegna |
+| **Merlino** | omarchy | dev/quant — costruisce codice e misure su REQ di Artù; SOUL `deploy/merlino/SOUL.md`; canale `hermes_bridge/merlino/` + api_server→gateway mc2 |
 | **A0-win** | PC (Windows) | operaio — Agent Zero v2.13, Gemini 2.5-flash (:50080) |
 | **A0-mc2** | mc2 (container) | operaio — Agent Zero v2.13, Gemini 2.5-flash (:50080) |
 | **opencode-mc2 / -omarchy / -nuvola / -marcodg1** | 4 nodi | operaio coding free (default `ling-3.1-flash-free`) — **servizio systemd `opencode.service` (auto-start + restart=always su tutti e 4 i nodi, dal 07/10)** |
@@ -22,6 +23,7 @@ Tutti gli agenti (opencode + agy) sono in **auto-start con restart automatico** 
 - **DSH-win** (PC): bacheca `hermes_bridge/dsh/` — `requests.md` (io→DSH) ↔ `results.md` (DSH→io). Protocollo in `PROTOCOLLO_DSH.md`. Mai silenzio: ogni richiesta ha ACK/DONE/FAILED. **Turni**: li dà il proprietario.
 - **DSH-omarchy** (omarchy): canale `hermes_bridge/dsh-mc2/` (requests/results + `handoff/` con MANIFEST sha256). Turni: li do io via ssh.
 - **DSH-mc2** (mc2): nessun canale file — lo comando direttamente (CLI locale / web :4080).
+- **Merlino** (omarchy): bacheca `hermes_bridge/merlino/` (REQ → ACK → handoff con MANIFEST.sha256+READY → riesecuzione e integrazione di Artù) + api_server sul gateway mc2 per DONE/urgenze. Turni: li assegna Artù via `requests.md`. Mai due scrittori su ~/money.
 - **Coda di ricerca**: `money/coda_catena/` — una spec per nodo, presa visibile ("STATO: PRESA_DA …" pushata subito), esiti in `money/prove/`.
 - **Questo vault**: la vista umana del progetto. La verità sta nei file citati.
 - **Dashboard flotta**: https://denaro.grivetto.eu
