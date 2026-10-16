@@ -7,6 +7,9 @@ Per ogni TRIO KEY/SECRET/PASSPHRASE trovato nei file .env indicati:
 Stampa un esito per riga. I VALORI delle chiavi non vengono MAI stampati.
 
 Uso:  .venv/bin/python3 ops/tools/prova_chiavi.py FILE.env [FILE.env ...] [--host eea.okx.com]
+
+NOTA: le chiavi sono IP-bound — vanno testate da nuvola o MARCODG1.
+mc2 è dietro CGNAT e il suo IP non è (e non può essere) in whitelist: da lì falliscono sempre.
 Exit: 0 se almeno un set è stato testato; 2 se non trova set completi.
 """
 from __future__ import annotations
@@ -19,6 +22,7 @@ SUFF_KEY = ("_API_KEY_READ", "_API_KEY", "_KEY_READ", "_KEY")
 SUFF_SECRET = ("_API_SECRET_READ", "_API_SECRET", "_SECRET_KEY", "_SECRET_READ", "_SECRET")
 SUFF_PASS = ("_API_PASSPHRASE", "_PASSPHRASE", "_PASS")
 TUTTI_SUFFISSI = SUFF_KEY + SUFF_SECRET + SUFF_PASS
+TUTTI_SUFFISSI_ORDINATI = tuple(sorted(TUTTI_SUFFISSI, key=len, reverse=True))
 
 
 def leggi_env(path: Path) -> dict[str, str]:
@@ -41,7 +45,7 @@ def leggi_env(path: Path) -> dict[str, str]:
 
 
 def strip_suffisso(nome: str) -> str | None:
-    for s in TUTTI_SUFFISSI:
+    for s in TUTTI_SUFFISSI_ORDINATI:
         if nome.endswith(s):
             return nome[: -len(s)]
     return None
@@ -102,9 +106,10 @@ def provalo(trio: dict, env: dict[str, str], host: str) -> str:
         return f"OK · {tipo} · uid {uid} · mainUid {main} · acctLv {d.get('acctLv')} · saldi: {saldi}"
     except Exception as e:  # noqa: BLE001
         info = e.args[0] if e.args else ""
-        extra = ""
         if isinstance(info, dict):
-            extra = f" · code={info.get('code')} msg={str(info.get('msg'))[:90]}"
+            extra = f" · code={info.get('code')} msg={str(info.get('msg'))[:110]}"
+        else:
+            extra = f" · {str(info)[:150]}"
         return f"KO · {e.__class__.__name__}{extra}"
 
 
