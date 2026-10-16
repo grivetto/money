@@ -1,0 +1,285 @@
+{
+  "risultati": {
+    "okx_eea": {
+      "BTC": {
+        "ok": true,
+        "n": 200,
+        "media_8h": 5.2044215484901005e-05,
+        "annuo": 0.0569884159559666,
+        "stabile": 0.9,
+        "min": -3.0665006641e-05,
+        "max": 0.0001,
+        "affidabile": true
+      },
+      "ETH": {
+        "ok": true,
+        "n": 200,
+        "media_8h": 4.7757257351847003e-05,
+        "annuo": 0.052294196800272474,
+        "stabile": 0.895,
+        "min": -8.45452865286e-05,
+        "max": 0.0001,
+        "affidabile": true
+      },
+      "SOL": {
+        "ok": true,
+        "n": 200,
+        "media_8h": 2.9519415637226503e-05,
+        "annuo": 0.03232376012276302,
+        "stabile": 0.67,
+        "min": -0.0001154589978001,
+        "max": 0.0001,
+        "affidabile": true
+      },
+      "DOGE": {
+        "ok": true,
+        "n": 200,
+        "media_8h": 6.640510317388751e-05,
+        "annuo": 0.07271358797540682,
+        "stabile": 0.915,
+        "min": -9.30543960737e-05,
+        "max": 0.0001,
+        "affidabile": true
+      },
+      "XRP": {
+        "ok": true,
+        "n": 200,
+        "media_8h": 5.2275906459533e-05,
+        "annuo": 0.05724211757318864,
+        "stabile": 0.83,
+        "min": -0.0001011343193784,
+        "max": 0.0001,
+        "affidabile": true
+      },
+      "ADA": {
+        "ok": true,
+        "n": 200,
+        "media_8h": 6.01115488508805e-05,
+        "annuo": 0.06582214599171415,
+        "stabile": 0.83,
+        "min": -0.0002332057292345,
+        "max": 0.0001,
+        "affidabile": true
+      },
+      "DOT": {
+        "ok": true,
+        "n": 200,
+        "media_8h": 3.5602395516126505e-05,
+        "annuo": 0.03898462309015852,
+        "stabile": 0.71,
+        "min": -0.0003387715925003,
+        "max": 0.0001,
+        "affidabile": true
+      },
+      "LINK": {
+        "ok": true,
+        "n": 200,
+        "media_8h": 5.7445889585736e-05,
+        "annuo": 0.06290324909638091,
+        "stabile": 0.845,
+        "min": -0.0001267254850785,
+        "max": 0.0001,
+        "affidabile": true
+      },
+      "AVAX": {
+        "ok": true,
+        "n": 200,
+        "media_8h": 4.1978835205911e-05,
+        "annuo": 0.045966824550472546,
+        "stabile": 0.735,
+        "min": -0.0002151092712947,
+        "max": 0.0001,
+        "affidabile": true
+      },
+      "LTC": {
+        "ok": true,
+        "n": 200,
+        "media_8h": 6.53636125514295e-05,
+        "annuo": 0.07157315574381531,
+        "stabile": 0.89,
+        "min": -8.49987563011e-05,
+        "max": 0.0001,
+        "affidabile": true
+      }
+    },
+    "bybit": {
+      "BTC": {
+        "ok": true,
+        "n": 200,
+        "media_8h": 4.30037e-05,
+        "annuo": 0.047089051500000007,
+        "stabile": 0.9,
+        "min": -4.579e-05,
+        "max": 0.0001,
+        "affidabile": true
+      },
+      "ETH": {
+        "ok": true,
+        "n": 200,
+        "media_8h": 4.096465000000001e-05,
+        "annuo": 0.04485629175000001,
+        "stabile": 0.87,
+        "min": -8.769e-05,
+        "max": 0.0001,
+        "affidabile": true
+      },
+      "SOL": {
+        "ok": true,
+        "n": 200,
+        "media_8h": 2.484675e-05,
+        "annuo": 0.027207191250000002,
+        "stabile": 0.64,
+        "min": -0.00017707,
+        "max": 0.0001,
+        "affidabile": true
+      },
+      "DOGE": {
+        "ok": true,
+        "n": 200,
+        "media_8h": 4.269365e-05,
+        "annuo": 0.046749546749999996,
+        "stabile": 0.8,
+        "min": -0.00013245,
+        "max": 0.0001,
+        "affidabile": true
+      },
+      "XRP": {
+        "ok": true,
+        "n": 200,
+        "media_8h": 3.893665e-05,
+        "annuo": 0.04263563175,
+        "stabile": 0.74,
+        "min": -0.00012654,
+        "max": 0.0001,
+        "affidabile": true
+      },
+      "ADA": {
+        "ok": true,
+        "n": 200,
+        "media_8h": 4.56857e-05,
+        "annuo": 0.0500258415,
+        "stabile": 0.75,
+        "min": -0.0002309,
+        "max": 0.0001,
+        "affidabile": true
+      },
+      "DOT": {
+        "ok": true,
+        "n": 200,
+        "media_8h": 6.202705e-05,
+        "annuo": 0.06791961975,
+        "stabile": 0.825,
+        "min": -0.00022865,
+        "max": 0.0001,
+        "affidabile": true
+      },
+      "LINK": {
+        "ok": true,
+        "n": 200,
+        "media_8h": 4.704925000000001e-05,
+        "annuo": 0.05151892875000001,
+        "stabile": 0.785,
+        "min": -0.0001438,
+        "max": 0.0001,
+        "affidabile": true
+      },
+      "AVAX": {
+        "ok": true,
+        "n": 200,
+        "media_8h": 4.299930000000001e-05,
+        "annuo": 0.04708423350000001,
+        "stabile": 0.76,
+        "min": -0.0001519,
+        "max": 0.0001,
+        "affidabile": true
+      },
+      "LTC": {
+        "ok": true,
+        "n": 200,
+        "media_8h": 4.602325e-05,
+        "annuo": 0.050395458750000004,
+        "stabile": 0.8,
+        "min": -0.00016418,
+        "max": 0.0001,
+        "affidabile": true
+      }
+    }
+  },
+  "confronto": [
+    {
+      "simbolo": "ADA",
+      "okx_eea": 0.06582214599171415,
+      "bybit": 0.0500258415,
+      "delta": -0.015796304491714153,
+      "vince": "okx_eea"
+    },
+    {
+      "simbolo": "AVAX",
+      "okx_eea": 0.045966824550472546,
+      "bybit": 0.04708423350000001,
+      "delta": 0.0011174089495274639,
+      "vince": "bybit"
+    },
+    {
+      "simbolo": "BTC",
+      "okx_eea": 0.0569884159559666,
+      "bybit": 0.047089051500000007,
+      "delta": -0.009899364455966592,
+      "vince": "okx_eea"
+    },
+    {
+      "simbolo": "DOGE",
+      "okx_eea": 0.07271358797540682,
+      "bybit": 0.046749546749999996,
+      "delta": -0.025964041225406825,
+      "vince": "okx_eea"
+    },
+    {
+      "simbolo": "DOT",
+      "okx_eea": 0.03898462309015852,
+      "bybit": 0.06791961975,
+      "delta": 0.02893499665984147,
+      "vince": "bybit"
+    },
+    {
+      "simbolo": "ETH",
+      "okx_eea": 0.052294196800272474,
+      "bybit": 0.04485629175000001,
+      "delta": -0.007437905050272461,
+      "vince": "okx_eea"
+    },
+    {
+      "simbolo": "LINK",
+      "okx_eea": 0.06290324909638091,
+      "bybit": 0.05151892875000001,
+      "delta": -0.0113843203463809,
+      "vince": "okx_eea"
+    },
+    {
+      "simbolo": "LTC",
+      "okx_eea": 0.07157315574381531,
+      "bybit": 0.050395458750000004,
+      "delta": -0.02117769699381531,
+      "vince": "okx_eea"
+    },
+    {
+      "simbolo": "SOL",
+      "okx_eea": 0.03232376012276302,
+      "bybit": 0.027207191250000002,
+      "delta": -0.00511656887276302,
+      "vince": "okx_eea"
+    },
+    {
+      "simbolo": "XRP",
+      "okx_eea": 0.05724211757318864,
+      "bybit": 0.04263563175,
+      "delta": -0.014606485823188638,
+      "vince": "okx_eea"
+    }
+  ],
+  "costo_ciclo": {
+    "okx_eea": 0.0034,
+    "bybit": 0.003
+  },
+  "ts": "2026-10-15T23:48:04Z"
+}

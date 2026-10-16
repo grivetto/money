@@ -1,0 +1,452 @@
+{
+  "risultati": {
+    "bybit": {
+      "ADA": {
+        "funding_8h": 0.0001,
+        "annuo_lordo": 0.10950000000000001,
+        "annuo_netto": 0.10650000000000001,
+        "spot_disponibile": true,
+        "carryabile": true
+      },
+      "AVAX": {
+        "funding_8h": 0.0001,
+        "annuo_lordo": 0.10950000000000001,
+        "annuo_netto": 0.10650000000000001,
+        "spot_disponibile": true,
+        "carryabile": true
+      },
+      "BTC": {
+        "funding_8h": 6.275e-05,
+        "annuo_lordo": 0.06871125,
+        "annuo_netto": 0.06571125,
+        "spot_disponibile": true,
+        "carryabile": true
+      },
+      "DOGE": {
+        "funding_8h": 0.0001,
+        "annuo_lordo": 0.10950000000000001,
+        "annuo_netto": 0.10650000000000001,
+        "spot_disponibile": true,
+        "carryabile": true
+      },
+      "DOT": {
+        "funding_8h": 0.0001,
+        "annuo_lordo": 0.10950000000000001,
+        "annuo_netto": 0.10650000000000001,
+        "spot_disponibile": true,
+        "carryabile": true
+      },
+      "ETH": {
+        "funding_8h": 0.0001,
+        "annuo_lordo": 0.10950000000000001,
+        "annuo_netto": 0.10650000000000001,
+        "spot_disponibile": true,
+        "carryabile": true
+      },
+      "LINK": {
+        "funding_8h": 4.896e-05,
+        "annuo_lordo": 0.0536112,
+        "annuo_netto": 0.050611199999999995,
+        "spot_disponibile": true,
+        "carryabile": true
+      },
+      "LTC": {
+        "funding_8h": 0.0001,
+        "annuo_lordo": 0.10950000000000001,
+        "annuo_netto": 0.10650000000000001,
+        "spot_disponibile": true,
+        "carryabile": true
+      },
+      "SOL": {
+        "funding_8h": 3.509e-05,
+        "annuo_lordo": 0.03842355,
+        "annuo_netto": 0.03542355,
+        "spot_disponibile": true,
+        "carryabile": true
+      },
+      "XRP": {
+        "funding_8h": 0.0001,
+        "annuo_lordo": 0.10950000000000001,
+        "annuo_netto": 0.10650000000000001,
+        "spot_disponibile": true,
+        "carryabile": true
+      }
+    },
+    "binance": {
+      "XRP": {
+        "funding_8h": 0.0001,
+        "annuo_lordo": 0.10950000000000001,
+        "annuo_netto": 0.10670000000000002,
+        "spot_disponibile": true,
+        "carryabile": true
+      },
+      "SOL": {
+        "funding_8h": 4.642e-05,
+        "annuo_lordo": 0.0508299,
+        "annuo_netto": 0.0480299,
+        "spot_disponibile": true,
+        "carryabile": true
+      },
+      "ADA": {
+        "funding_8h": 7.56e-05,
+        "annuo_lordo": 0.082782,
+        "annuo_netto": 0.079982,
+        "spot_disponibile": true,
+        "carryabile": true
+      },
+      "LINK": {
+        "funding_8h": 0.0001,
+        "annuo_lordo": 0.10950000000000001,
+        "annuo_netto": 0.10670000000000002,
+        "spot_disponibile": true,
+        "carryabile": true
+      },
+      "DOT": {
+        "funding_8h": 2.563e-05,
+        "annuo_lordo": 0.028064850000000002,
+        "annuo_netto": 0.025264850000000002,
+        "spot_disponibile": true,
+        "carryabile": true
+      },
+      "DOGE": {
+        "funding_8h": 9.779e-05,
+        "annuo_lordo": 0.10708005,
+        "annuo_netto": 0.10428005,
+        "spot_disponibile": true,
+        "carryabile": true
+      },
+      "ETH": {
+        "funding_8h": 7.173e-05,
+        "annuo_lordo": 0.07854435000000001,
+        "annuo_netto": 0.07574435000000002,
+        "spot_disponibile": true,
+        "carryabile": true
+      },
+      "AVAX": {
+        "funding_8h": 0.0001,
+        "annuo_lordo": 0.10950000000000001,
+        "annuo_netto": 0.10670000000000002,
+        "spot_disponibile": true,
+        "carryabile": true
+      },
+      "LTC": {
+        "funding_8h": 6.578e-05,
+        "annuo_lordo": 0.0720291,
+        "annuo_netto": 0.0692291,
+        "spot_disponibile": true,
+        "carryabile": true
+      },
+      "BTC": {
+        "funding_8h": 4.996e-05,
+        "annuo_lordo": 0.05470620000000001,
+        "annuo_netto": 0.05190620000000001,
+        "spot_disponibile": true,
+        "carryabile": true
+      }
+    },
+    "bitget": {
+      "BTC": {
+        "funding_8h": 2.9e-05,
+        "annuo_lordo": 0.031755,
+        "annuo_netto": 0.028255,
+        "spot_disponibile": true,
+        "carryabile": true
+      },
+      "ETH": {
+        "funding_8h": 6.5e-05,
+        "annuo_lordo": 0.07117499999999999,
+        "annuo_netto": 0.06767499999999999,
+        "spot_disponibile": true,
+        "carryabile": true
+      },
+      "XRP": {
+        "funding_8h": 0.0001,
+        "annuo_lordo": 0.10950000000000001,
+        "annuo_netto": 0.10600000000000001,
+        "spot_disponibile": true,
+        "carryabile": true
+      },
+      "LTC": {
+        "funding_8h": 0.0001,
+        "annuo_lordo": 0.10950000000000001,
+        "annuo_netto": 0.10600000000000001,
+        "spot_disponibile": true,
+        "carryabile": true
+      },
+      "ADA": {
+        "funding_8h": 1.5e-05,
+        "annuo_lordo": 0.016425000000000002,
+        "annuo_netto": 0.012925000000000002,
+        "spot_disponibile": true,
+        "carryabile": true
+      },
+      "LINK": {
+        "funding_8h": 3.5e-05,
+        "annuo_lordo": 0.038325,
+        "annuo_netto": 0.034824999999999995,
+        "spot_disponibile": true,
+        "carryabile": true
+      },
+      "DOT": {
+        "funding_8h": 0.0001,
+        "annuo_lordo": 0.10950000000000001,
+        "annuo_netto": 0.10600000000000001,
+        "spot_disponibile": true,
+        "carryabile": true
+      },
+      "DOGE": {
+        "funding_8h": 0.0001,
+        "annuo_lordo": 0.10950000000000001,
+        "annuo_netto": 0.10600000000000001,
+        "spot_disponibile": true,
+        "carryabile": true
+      },
+      "SOL": {
+        "funding_8h": 7.4e-05,
+        "annuo_lordo": 0.08102999999999999,
+        "annuo_netto": 0.07752999999999999,
+        "spot_disponibile": true,
+        "carryabile": true
+      },
+      "AVAX": {
+        "funding_8h": 0.0001,
+        "annuo_lordo": 0.10950000000000001,
+        "annuo_netto": 0.10600000000000001,
+        "spot_disponibile": true,
+        "carryabile": true
+      }
+    }
+  },
+  "migliori": {
+    "ADA": {
+      "venue": "bybit",
+      "netto": 0.10650000000000001
+    },
+    "AVAX": {
+      "venue": "binance",
+      "netto": 0.10670000000000002
+    },
+    "BTC": {
+      "venue": "bybit",
+      "netto": 0.06571125
+    },
+    "DOGE": {
+      "venue": "bybit",
+      "netto": 0.10650000000000001
+    },
+    "DOT": {
+      "venue": "bybit",
+      "netto": 0.10650000000000001
+    },
+    "ETH": {
+      "venue": "bybit",
+      "netto": 0.10650000000000001
+    },
+    "LINK": {
+      "venue": "binance",
+      "netto": 0.10670000000000002
+    },
+    "LTC": {
+      "venue": "bybit",
+      "netto": 0.10650000000000001
+    },
+    "SOL": {
+      "venue": "bitget",
+      "netto": 0.07752999999999999
+    },
+    "XRP": {
+      "venue": "binance",
+      "netto": 0.10670000000000002
+    }
+  },
+  "classifica": [
+    {
+      "venue": "binance",
+      "simbolo": "XRP",
+      "netto": 0.10670000000000002,
+      "funding_8h": 0.0001
+    },
+    {
+      "venue": "binance",
+      "simbolo": "LINK",
+      "netto": 0.10670000000000002,
+      "funding_8h": 0.0001
+    },
+    {
+      "venue": "binance",
+      "simbolo": "AVAX",
+      "netto": 0.10670000000000002,
+      "funding_8h": 0.0001
+    },
+    {
+      "venue": "bybit",
+      "simbolo": "ADA",
+      "netto": 0.10650000000000001,
+      "funding_8h": 0.0001
+    },
+    {
+      "venue": "bybit",
+      "simbolo": "AVAX",
+      "netto": 0.10650000000000001,
+      "funding_8h": 0.0001
+    },
+    {
+      "venue": "bybit",
+      "simbolo": "DOGE",
+      "netto": 0.10650000000000001,
+      "funding_8h": 0.0001
+    },
+    {
+      "venue": "bybit",
+      "simbolo": "DOT",
+      "netto": 0.10650000000000001,
+      "funding_8h": 0.0001
+    },
+    {
+      "venue": "bybit",
+      "simbolo": "ETH",
+      "netto": 0.10650000000000001,
+      "funding_8h": 0.0001
+    },
+    {
+      "venue": "bybit",
+      "simbolo": "LTC",
+      "netto": 0.10650000000000001,
+      "funding_8h": 0.0001
+    },
+    {
+      "venue": "bybit",
+      "simbolo": "XRP",
+      "netto": 0.10650000000000001,
+      "funding_8h": 0.0001
+    },
+    {
+      "venue": "bitget",
+      "simbolo": "XRP",
+      "netto": 0.10600000000000001,
+      "funding_8h": 0.0001
+    },
+    {
+      "venue": "bitget",
+      "simbolo": "LTC",
+      "netto": 0.10600000000000001,
+      "funding_8h": 0.0001
+    },
+    {
+      "venue": "bitget",
+      "simbolo": "DOT",
+      "netto": 0.10600000000000001,
+      "funding_8h": 0.0001
+    },
+    {
+      "venue": "bitget",
+      "simbolo": "DOGE",
+      "netto": 0.10600000000000001,
+      "funding_8h": 0.0001
+    },
+    {
+      "venue": "bitget",
+      "simbolo": "AVAX",
+      "netto": 0.10600000000000001,
+      "funding_8h": 0.0001
+    },
+    {
+      "venue": "binance",
+      "simbolo": "DOGE",
+      "netto": 0.10428005,
+      "funding_8h": 9.779e-05
+    },
+    {
+      "venue": "binance",
+      "simbolo": "ADA",
+      "netto": 0.079982,
+      "funding_8h": 7.56e-05
+    },
+    {
+      "venue": "bitget",
+      "simbolo": "SOL",
+      "netto": 0.07752999999999999,
+      "funding_8h": 7.4e-05
+    },
+    {
+      "venue": "binance",
+      "simbolo": "ETH",
+      "netto": 0.07574435000000002,
+      "funding_8h": 7.173e-05
+    },
+    {
+      "venue": "binance",
+      "simbolo": "LTC",
+      "netto": 0.0692291,
+      "funding_8h": 6.578e-05
+    },
+    {
+      "venue": "bitget",
+      "simbolo": "ETH",
+      "netto": 0.06767499999999999,
+      "funding_8h": 6.5e-05
+    },
+    {
+      "venue": "bybit",
+      "simbolo": "BTC",
+      "netto": 0.06571125,
+      "funding_8h": 6.275e-05
+    },
+    {
+      "venue": "binance",
+      "simbolo": "BTC",
+      "netto": 0.05190620000000001,
+      "funding_8h": 4.996e-05
+    },
+    {
+      "venue": "bybit",
+      "simbolo": "LINK",
+      "netto": 0.050611199999999995,
+      "funding_8h": 4.896e-05
+    },
+    {
+      "venue": "binance",
+      "simbolo": "SOL",
+      "netto": 0.0480299,
+      "funding_8h": 4.642e-05
+    },
+    {
+      "venue": "bybit",
+      "simbolo": "SOL",
+      "netto": 0.03542355,
+      "funding_8h": 3.509e-05
+    },
+    {
+      "venue": "bitget",
+      "simbolo": "LINK",
+      "netto": 0.034824999999999995,
+      "funding_8h": 3.5e-05
+    },
+    {
+      "venue": "bitget",
+      "simbolo": "BTC",
+      "netto": 0.028255,
+      "funding_8h": 2.9e-05
+    },
+    {
+      "venue": "binance",
+      "simbolo": "DOT",
+      "netto": 0.025264850000000002,
+      "funding_8h": 2.563e-05
+    },
+    {
+      "venue": "bitget",
+      "simbolo": "ADA",
+      "netto": 0.012925000000000002,
+      "funding_8h": 1.5e-05
+    }
+  ],
+  "costo_ciclo": {
+    "okx_eea": 0.0034,
+    "okx": 0.0034,
+    "bybit": 0.003,
+    "binance": 0.0028,
+    "bitget": 0.0035
+  },
+  "ts": "2026-10-15T23:45:34Z"
+}
