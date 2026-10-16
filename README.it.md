@@ -104,9 +104,9 @@ money/cancello.py              8 criteri, 3 verdetti, ogni motivo porta il suo n
 promosso / archiviato / insufficiente          il verdetto e' vincolante
 ```
 
-### Il sistema attorno alla pipeline — aggiornato 2026-10-06 (sera)
+### Il sistema attorno alla pipeline — aggiornato 2026-10-16
 
-![Denaro — foto del sistema, 2026-10-06](FOTO_SISTEMA_2026-10-06.png)
+![Denaro — foto del sistema, 2026-10-16](FOTO_SISTEMA_2026-10-16.png)
 
 ```
                      ┌──────────────────────── mc2 — l'hub ──────────────────────────┐
@@ -136,12 +136,11 @@ promozione/archivio → banco a secco → canary → live a taglia minima. Gli e
 `A0-win`, `DSH-mc2/omarchy/win`, `opencode-mc2/omarchy`, `agy-omarchy` — consegnano a Hermes; il
 **nodo agenti** (Omarchy) ospita `DSH-omarchy` e `opencode-omarchy` come servizi systemd
 (loopback-only, raggiunti via tunnel ssh); niente entra senza review. Visual:
-[`FOTO_SISTEMA_2026-10-06.html`](FOTO_SISTEMA_2026-10-06.html) · [`.png`](FOTO_SISTEMA_2026-10-06.png) ·
-[`FOTO_SQUADRA_2026-10-06.html`](FOTO_SQUADRA_2026-10-06.html) · [`.png`](FOTO_SQUADRA_2026-10-06.png).
-Foto precedenti: [`ARCHITETTURA_2026-09-30.md`](ARCHITETTURA_2026-09-30.md) ·
-[`ARCHITETTURA_2026-10-01.md`](ARCHITETTURA_2026-10-01.md).*
+[`FOTO_SISTEMA_2026-10-16.png`](FOTO_SISTEMA_2026-10-16.png) ·
+[`FOTO_SQUADRA_2026-10-16.png`](FOTO_SQUADRA_2026-10-16.png).
+Architettura: [`ARCHITETTURA_2026-10-16.md`](ARCHITETTURA_2026-10-16.md).*
 
-![La squadra — 2026-10-06](FOTO_SQUADRA_2026-10-06.png)
+![La squadra — 2026-10-16](FOTO_SQUADRA_2026-10-16.png)
 
 ### Le tecnologie usate
 

@@ -104,9 +104,9 @@ money/cancello.py              8 criteria, 3 verdicts, every reason carries its 
 promosso / archiviato / insufficiente          the verdict is binding
 ```
 
-### The system around the pipeline — updated 2026-10-03 (evening)
+### The system around the pipeline — updated 2026-10-16
 
-![Denaro — system snapshot, 03/10/2026](FOTO_SISTEMA_2026-10-03.png)
+![Denaro — system snapshot, 16/10/2026](FOTO_SISTEMA_2026-10-16.png)
 
 ```
                      ┌──────────────────────── mc2 — the hub ────────────────────────┐
@@ -136,12 +136,11 @@ dry bench → canary → minimum-size live. The executors — `A0-mc2`, `A0-win`
 `opencode-mc2/omarchy`, `agy-omarchy` — deliver to Hermes; the **agents node** (Omarchy) hosts
 `DSH-omarchy` and `opencode-omarchy` as systemd services (loopback-only, reached over an ssh
 tunnel); nothing lands without review. Visuals:
-[`FOTO_SISTEMA_2026-10-03.html`](FOTO_SISTEMA_2026-10-03.html) · [`.png`](FOTO_SISTEMA_2026-10-03.png) ·
-[`FOTO_SQUADRA_2026-10-03.html`](FOTO_SQUADRA_2026-10-03.html) · [`.png`](FOTO_SQUADRA_2026-10-03.png).
-Previous snapshots: [`ARCHITETTURA_2026-09-30.md`](ARCHITETTURA_2026-09-30.md) ·
-[`ARCHITETTURA_2026-10-01.md`](ARCHITETTURA_2026-10-01.md).*
+[`FOTO_SISTEMA_2026-10-16.png`](FOTO_SISTEMA_2026-10-16.png) ·
+[`FOTO_SQUADRA_2026-10-16.png`](FOTO_SQUADRA_2026-10-16.png).
+Architecture: [`ARCHITETTURA_2026-10-16.md`](ARCHITETTURA_2026-10-16.md).*
 
-![The squad — 03/10/2026](FOTO_SQUADRA_2026-10-03.png)
+![The squad — 16/10/2026](FOTO_SQUADRA_2026-10-16.png)
 
 ### Core technologies
 

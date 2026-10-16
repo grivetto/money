@@ -22,7 +22,7 @@
 - **Health**: `<sym>_<nodo>_live_paper.json` in `denaro/health/` (scrittura a ogni tick).
 - **Dashboard flotta (wired 01/10)**: le chip della card «OFFICINA PAPER» leggono le chiavi
   `<nodo>:paper:<SYM>` del payload (17/17 attivi); `node_totals` separa live/paper (equity e
-  pnl contano SOLO il live). Aggregator: `PAPER_SOURCES` / `LOCAL_PAPER`. Screenshot: `dash_flotta.png`.
+  pnl contano SOLO il live). Aggregator: `PAPER_SOURCES` / `LOCAL_PAPER`. Screenshot: `FOTO_SISTEMA_2026-10-16.png`.
 - **Zabbix heartbeat (01/10)**: item `flotta.paper_n` (bot freschi <5m) + `flotta.paper_age_s`
   (età del file più vecchio) su MARCODG1/mc2/nuvola, trigger «bot muti» e «flotta ferma»;
   push dal cron `push_metrics.py` (ogni minuto). Unit: `Restart=always` + `StartLimitIntervalSec=0`.

@@ -34,3 +34,6 @@ ops/dashboard/agenti.json
 
 # scommessa asimmetrica: JSON generato dal cron (ops/tools/scommessa.py) — non versionare
 ops/dashboard/scommessa.json
+
+# build artifacts
+*.egg-info/

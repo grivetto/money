@@ -87,13 +87,13 @@ money/cancello.py              8 criteria, 3 verdicts, every reason carries its 
 promosso / archiviato / insufficiente          the verdict is binding
 ```
 
-### El sistema alrededor de la pipeline — actualizado 02/10/2026
+### El sistema alrededor de la pipeline — actualizado 16/10/2026
 
-![Denaro — foto del sistema, 03/10/2026](FOTO_SISTEMA_2026-10-03.png)
+![Denaro — foto del sistema, 16/10/2026](FOTO_SISTEMA_2026-10-16.png)
 
 **Primer bot en vivo del proyecto**: carry C1 (DOGE) en OKX EEA desde el 01/10 — tamaño mínimo, totalmente reconciliado, review el 15/10. Alrededor: los cuatro nodos (mc2 hub · MARCODG1 ops + live · nuvola monitorización · **omarchy agentes**: DSH + OpenCode), la fábrica ×100 (tick 3 s, worker 5 s), los operarios A0-mc2/A0-win (Gemini 2.5), DSH ×3 (mc2/omarchy/win), los ejecutores free OpenCode ×2 + agy-omarchy y el juez advisory JEV.
 
-*Visual: [`FOTO_SISTEMA_2026-10-03.html`](FOTO_SISTEMA_2026-10-03.html) · [`.png`](FOTO_SISTEMA_2026-10-03.png). Fotos anteriores: [`ARCHITETTURA_2026-09-30.md`](ARCHITETTURA_2026-09-30.md) · [`ARCHITETTURA_2026-10-01.md`](ARCHITETTURA_2026-10-01.md).*
+*Visual: [`FOTO_SISTEMA_2026-10-16.png`](FOTO_SISTEMA_2026-10-16.png) · [`FOTO_SQUADRA_2026-10-16.png`](FOTO_SQUADRA_2026-10-16.png). Arquitectura: [`ARCHITETTURA_2026-10-16.md`](ARCHITETTURA_2026-10-16.md).*
 
 ### Tecnologías centrales
 

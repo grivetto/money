@@ -4,7 +4,7 @@ Aggiornata: **07/10/2026** — la squadra ha **11 esecutori + 1 regia, su 4 macc
 Tutti gli agenti (opencode + agy) sono in **auto-start con restart automatico** dal 07/10.
 **Nomenclatura ufficiale (dal 03/10): `<tool>-<macchina>`** — es. `A0-win`, `opencode-omarchy`.
 
-## Chi (foto: `money/FOTO_SQUADRA_2026-10-03.png`)
+## Chi (foto: `money/FOTO_SQUADRA_2026-10-16.png`)
 
 | Chi | Dove | Ruolo |
 |---|---|---|

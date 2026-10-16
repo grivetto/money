@@ -227,7 +227,6 @@ git/log/chat; fail-closed su test e integrazione, fail-open **solo** per il gate
 
 ---
 
-*Fonti interne: `README.md` · `ARCHITETTURA_2026-10-01.md` · `docs/` (01–22) ·
-`prove/REGISTRO_ESPERIMENTI.md` · `fabbrica/STATO.md` · `vault/` (Sala di Controllo) ·
-`BRIEF_MANUS_*` (29–30/09, per la parte fabbrica).*
+*Fonti interne: `README.md` · `ARCHITETTURA_2026-10-16.md` · `docs/` (01–22) ·
+`prove/REGISTRO_ESPERIMENTI.md` · `fabbrica/STATO.md` · `vault/` (Sala di Controllo).*
 *Questo documento aggiorna il quadro d'insieme per l'analisi esterna del 06/10/2026.*
