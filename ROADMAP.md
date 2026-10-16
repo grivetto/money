@@ -116,3 +116,10 @@ rumore). Regole: **1 filone alla volta**, pre-registrato, passaggio dal cancello
 **Effetto delle decisioni** (stimate, su base annua): D1 ≈ +180 € · D2 ≈ +13 € · D3 ≈ +20 €.
 Con tutte e tre: il netto passa da **≈ −28 a ≈ −10 €/mese**; il resto lo fanno i tagli profondi
 (≤6 €/mese) o il capitale (≈2 k€ per il pareggio col solo VPS; ≈3,5 k€ con D1 attuata).
+
+### Risposte del proprietario — registrate 2026-10-17 01:45 CEST (via, Artù)
+
+- **D1: SÌ, entrambi i tagli** — AI ≤10 €/mese + valutazione consolidamento VPS ≤6 €/mese, con rollback e zero interruzioni dei bot.
+- **D2: SÌ, con preflight cifre alla mano** — funding: 211 USDC ≈ 194,16 € → Simple Earn (instant). Trading: eccedenza ≈ 88 € (368,23 − ~180 collaterale carry − 100 riserva) da confermare con dry-run del motore carry PRIMA di qualsiasi bonifico.
+- **D3: SÌ, a step con i gate** — 180 → +100 € solo con gate verdi al momento dell'esecuzione. Lettura 01:40: DOT 4,69 %/anno ✓ e 24 h senza negativi ✓; ADA 5,72 %/anno ✓ ma un punto negativo nelle ultime 24 h (verificare che non sia "inversione continua >24 h" al momento del via); banco PASS ✓. **Nota cap**: carry ≤30 % del capitale ≈ 329 € attuale → il target 400 € richiede aumento di capitale o rinuncia esplicita dell'owner (step fino a 280 € ora, poi valutazione).
+- Esecuzione mossa monetaria: in finestra mattutina, dopo dry-run e test degli strumenti esistenti (regola: zero percorsi non testati sul capitale).
