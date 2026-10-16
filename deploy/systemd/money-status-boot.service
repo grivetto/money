@@ -8,6 +8,7 @@ Wants=network-online.target
 [Service]
 Type=oneshot
 User=__USER__
+Environment=XDG_RUNTIME_DIR=/run/user/__UID__
 ExecStart=/bin/bash -c 'sleep 25; __REPO__/deploy/riavvio/status_squadre.sh --boot > __HOME__/status_squadre_boot.txt 2>&1'
 TimeoutStartSec=600
 

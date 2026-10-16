@@ -63,7 +63,7 @@ fi
 # --- mc2 (ops del denaro: nodo paper + alert) ---
 case "$BOX" in mc2)
   for u in denaro-node-mc2 hermes-gateway; do
-    systemctl --user is-active --quiet "$u" && ok "mc2 (user) $u" || bad "mc2 (user) $u"
+    XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}" systemctl --user is-active --quiet "$u" && ok "mc2 (user) $u" || bad "mc2 (user) $u"
   done
   crontab -l 2>/dev/null | grep -q "watch_alerts.py check" && ok "mc2 cron watch_alerts" || bad "mc2 cron watch_alerts ASSENTE"
   ;;
