@@ -113,3 +113,8 @@
 - **Alert**: `~/.denaro_alerts/sent.log` — ⚠️ hermes-gateway inactive 18:40 + ✅ rientro 18:45 (transitorio del riavvio, comportamento atteso); state/spool puliti. Digest giornaliero regolare.
 - **Siti**: denaro.grivetto.eu 200 (+`/agenti` ok); web.grivetto.eu 301 (atteso). Zabbix web/server/db attivi.
 - **Nota tecnica per la prossima sessione**: le card `mc2:okx:*` nel payload master sono legittime (blocco di completamento che le riempie dai file paper quando il path legacy manca — stesso ts delle card `*:paper:*`). Sul master ci sono **+62 righe NON committate** in `infra_aggregator.py` (alias BETH→ETH per l'equity: +4,95 USDC non contati prima; sezioni `ricerca`/`carry`): committare e riallineare le copie. Residui minori: `node_stale_bots: [mc2:unknown]` (glob generico cattura file non-bot), unit utente `app-pulseaudio@autostart` failed (cosmetico, PipeWire).
+
+## 2026-10-16 (3) — Decisione owner: si resta in $; visibilità sul cambio attivata
+- **Decisione**: capitale in USD (USDC/Earn), niente conversione EUR. Il calo dal picco (1.108,3 → ~1.097) è ~95% cambio $→€ (tasso 0,8997→0,8910 in 2 gg) — fee totali di sempre €1,51, PnL realizzato 0,00, tabellone +28,75 vs versato.
+- **Attivato** (`ops/alerts/watch_alerts.py`): (1) digest 9:00 con **Δ24h/Δ7g scomposti "cambio vs resto"** (serie banco 5' via ssh, `_attribuzione`); (2) **soglia-campanello 1.090 €** nel check equity (ogni 10'), messaggio col motivo; attiva solo fuori dal regime di crollo; anti-spam 12h. Test: `tests/test_watch_alerts_delta.py` + suite 726/726 verde.
+- Nota: Δ7g compare quando la finestra a 7 giorni non copre più il periodo pre-riordino (tasso leggibile solo dal 14/10) — self-heal ~21/10.
