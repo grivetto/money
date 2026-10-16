@@ -654,3 +654,16 @@ def test_n_effettivo_insufficiente_boccia_anche_con_molte_operazioni():
     assert v.statistiche["n_effettivo"] < MIN_N_EFFETTIVO
     assert "numerosita'" in v.statistiche["criteri_falliti"]
     assert v.esito == "archiviato"
+
+
+def test_criterio_8_non_valutabile_fallisce_chiuso():
+    """Fail-closed: se la scomposizione non è valutabile il criterio 8 FALLISCE.
+
+    Prima del 16/10 questo caso risultava "non applicato" (superato di fatto): il modo
+    peggiore di sbagliare, perché assomiglia a una prova di indipendenza superata.
+    """
+    e = esito("partizione impossibile", [0.011, -0.009] * 20)   # 40 ritorni validi
+    v = giudica(e, bricole=[50])   # taglio fuori dalla serie: partizione non formabile
+    assert v.esito == "archiviato"
+    assert "indipendenza_dai_blocchi" in v.statistiche["criteri_falliti"]
+    assert any("non valutabile" in m for m in v.motivi)

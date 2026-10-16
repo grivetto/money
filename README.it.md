@@ -100,7 +100,7 @@ money/dati.py                  Barra, SerieBarre, Scarica, walk-forward con emba
 money/ricerca/                 una ipotesi per file: simula(...) -> Esito
       |                        qui niente puo' promuovere niente da solo
       v
-money/cancello.py              9 criteri, 3 verdetti, ogni motivo porta il suo numero
+money/cancello.py              8 criteri, 3 verdetti, ogni motivo porta il suo numero
       |
       v
 promosso / archiviato / insufficiente          il verdetto e' vincolante
@@ -133,7 +133,7 @@ promosso / archiviato / insufficiente          il verdetto e' vincolante
 ```
 
 *Un solo anello: idea → spec pre-registrata (`coda_catena/` + `REGISTRO`) → esecutore → review
-(test rieseguiti nel repo) → misura (artefatti congelati in `prove/`) → cancello a 9 criteri →
+(test rieseguiti nel repo) → misura (artefatti congelati in `prove/`) → cancello a 8 criteri →
 promozione/archivio → banco a secco → canary → live a taglia minima. Gli esecutori — `A0-mc2`,
 `A0-win`, `DSH-mc2/omarchy/win`, `opencode-mc2/omarchy`, `agy-omarchy` — consegnano a Hermes; il
 **nodo agenti** (Omarchy) ospita `DSH-omarchy` e `opencode-omarchy` come servizi systemd
@@ -181,14 +181,14 @@ possono rischiare il 2% ciascuno.
 
 ---
 
-## 🚦 Il cancello — 9 criteri, 3 verdetti
+## 🚦 Il cancello — 8 criteri, 3 verdetti
 
 Tutti e otto devono passare. Il verdetto è uno di tre, e "insufficiente" è un verdetto vero, non
 una scusa.
 
 | # | Criterio | Soglia |
 | :--- | :--- | :--- |
-| 1 | Numerosità | `>= 30` operazioni, altrimenti **insufficiente** |
+| 1 | Numerosità | `>= 30` operazioni **e** `n_eff >= 30` osservazioni effettive, altrimenti **insufficiente** |
 | 2 | Expectancy | IC bootstrap al 90%, estremo inferiore `> 0`, seme fisso |
 | 3 | t-statistic | `> 1,65` (una coda, 5%) — riportato **sempre**, anche quando fallisce |
 | 4 | Profit factor | `> 1,20` |
@@ -200,6 +200,11 @@ una scusa.
 Il criterio 6 è quello che il progetto precedente non aveva mai avuto. Il criterio 8 esiste perché
 il progetto precedente aveva **tutto il rendimento in un blocco su tre** e nessuno se n'era
 accorto.
+
+Dal 16/10 il criterio 1 richiede anche un **campione effettivo** (`n_eff >= 30`): cento operazioni
+serialmente correlate non sono cento prove indipendenti. E il criterio 8 è **fail-closed**: se la
+scomposizione per regime non è valutabile, il criterio fallisce — non si promuove in assenza di
+una prova di indipendenza.
 
 ---
 
