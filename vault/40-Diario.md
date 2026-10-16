@@ -118,3 +118,9 @@
 - **Decisione**: capitale in USD (USDC/Earn), niente conversione EUR. Il calo dal picco (1.108,3 → ~1.097) è ~95% cambio $→€ (tasso 0,8997→0,8910 in 2 gg) — fee totali di sempre €1,51, PnL realizzato 0,00, tabellone +28,75 vs versato.
 - **Attivato** (`ops/alerts/watch_alerts.py`): (1) digest 9:00 con **Δ24h/Δ7g scomposti "cambio vs resto"** (serie banco 5' via ssh, `_attribuzione`); (2) **soglia-campanello 1.090 €** nel check equity (ogni 10'), messaggio col motivo; attiva solo fuori dal regime di crollo; anti-spam 12h. Test: `tests/test_watch_alerts_delta.py` + suite 726/726 verde.
 - Nota: Δ7g compare quando la finestra a 7 giorni non copre più il periodo pre-riordino (tasso leggibile solo dal 14/10) — self-heal ~21/10.
+
+## 2026-10-16 (4) — Pulizia del repo (owner): una foto per famiglia, aggiornate a oggi
+- **Restano nel root (nuovi, dati live di stasera)**: `FOTO_SISTEMA_2026-10-16.png` · `FOTO_SQUADRA_2026-10-16.png` · `ARCHITETTURA_2026-10-16.md` (equity ≈1.096 € · 13 bot paper / 0 live · 16/16 operai · postboot 49/49).
+- **Rimosse 24 voci datate/duplicate**: FOTO_SISTEMA 01–03/10 ×6 · FOTO_SQUADRA 03–07/10 ×4 · ARCHITETTURA 30/09–01/10 ×4 · dash_*.png ×4 · TRADING_2026-10-08 ×2 · landing_v2.png · BRIEF_MANUS ×2 · copia orfana `squadra-2026-10-07.png` nel kit landing. Recuperabili in git history (commit `2530aad2`) e nel backup `/tmp/denaro_pulizia_backup/` su mc2.
+- **Riferimenti aggiornati**: README ×4 (it/en/es/th), `docs/17`, `SCHEDA_PROGETTO`, `vault/20-Squadra` (+ `.gitignore`: `*.egg-info/`). Regola d'ora: **una sola versione corrente per famiglia nel root**; le storiche si consultano in git.
+- Committati anche gli artefatti di ricerca di stanotte (scansioni S1/S3 + registro, commit `ecafd7ce`). Lasciati apposta: `docs/manus_2026-10-06/` (bundle analisi esterna), `legacy/`, e i non-registrati P20 (market-making Bitvavo — tutti `passa:false`).
