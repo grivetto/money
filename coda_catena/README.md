@@ -32,3 +32,11 @@ STATO DELLA CODA
 - P4_funding_carry.md ....... PARCHEGGIATA (funding EEA = 96gg di storia, verificato da dsh: niente misura)
 - P5_donchian_esteso.md ..... FATTA 28/09 — ARCHIVIATA: l'allargamento non regge (61 coppie; t 1,44; prove/P5_donchian_esteso.*)
 - P6_portafoglio.md ......... DA MATERIALIZZARE — prossimo attacco: concorrenza+correlazione (evidenza P2)
+
+---
+
+## Aggiornamento 2026-10-16 — onda S5 (fronte funding/esecuzione; pre-registrate, lint 7/7)
+- P21_carry_basket.md ........ DA PRENDERE — pre-reg. 16/10: paniere carry con REGOLA (selezione top-k + pesi), netto costi; **dispatch → DSH-omarchy**
+- P22_regime_gate_netto.md ... DA PRENDERE — pre-reg. 16/10: gate regime RARO netto (seguito addendum P12)
+- P23_pedaggio_esecuzione.md . DA PRENDERE — pre-reg. 16/10: pedaggio realizzato sui fill + maker-first (hermes)
+- Piano del fronte: `docs/28_fronte_ricerca_2026-10-16.md`
