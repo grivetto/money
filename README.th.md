@@ -38,15 +38,17 @@
 
 ---
 
-## 📊 สถานะโดยสรุป — 2026-10-03
+## 📊 สถานะโดยสรุป — 2026-10-16
 
 | | |
 | :--- | :--- |
-| **การทดสอบ** | **558 passed**, `ruff` สะอาด, ใน **สองสภาพแวดล้อมที่เป็นอิสระต่อกัน** |
-| **กลยุทธ์ที่วัดแล้ว** | **3** ตระกูล (หนึ่งต่อ node) ทั้งหมดถูกตัดสินที่ต้นทุนจริง |
-| **คำตัดสิน** | **เก็บเข้าคลัง 3** — ไม่มีอะไรถูกเลื่อนขึ้น ดังนั้นไม่มีอะไรอยู่ใน production |
-| **คำสั่งจริงที่ส่งไป** | **0** โดยกลยุทธ์ของ repo นี้ — ที่นี่ไม่มีอะไรเทรดจนกว่าประตูจะเลื่อนขึ้นและเจ้าของจะเติมทุน (canary ตัวจริงติดตามใน `alpha-omega-trading`) |
-| **ทุน** | **~1,100 EUR** ในบัญชี OKX (read-only) — เจ้าของฝากเพิ่ม **+1,000 EUR เมื่อ 03/10** เพื่อขยาย carry (deploy รอรีวิว 15/10); canary จริง (DOGE carry) บนบัญชีหลัก |
+| **การทดสอบ** | **726 passed**, `ruff` สะอาด |
+| **การทดลองที่วัดแล้ว** | ทุกตระกูลคลาสสิก (trend, breakout, rotation, reversal, weekend, capitulation…) + ซีรีส์ P ที่ลงทะเบียนล่วงหน้าถึง P19b — วัดแล้ว 20+ รายการ ทุกคำตัดสินแช่แข็งใน `prove/` |
+| **คำตัดสิน** | **ไม่มีตระกูลใดถูกเลื่อนขึ้น** — เก็บเข้าคลังทั้งหมดที่ต้นทุนจริง (สาย trend ปิดด้วยหลักฐานหลายชิ้น: DD พอร์ตไม่เคยต่ำกว่า 41.5%; เกณฑ์ประตู 25%); **S4 ล่าสัตว์ต่อเนื่องหมดพื้นที่** (316k ความพยายาม, 0 ผู้สมัคร — หยุด 15/10); ผู้รอดชีวิตเพียงหนึ่งเดียวคือ **carry**: รีวิว C1 **PASS** (15/10) → ทำงานจริงบนอีกสองคู่ |
+| **Carry จริง (C1 + DOT+ADA)** | C1 (DOGE, delta-neutral, ตั้งแต่ 01/10): funding **+0.045 USDC** (~118% ของขั้นต่ำที่คาด); **DOT+ADA** (เปิด 15/10 23:00 UTC): notional ≈ **180 EUR**, uPL +0.36 — ขนาดเล็กสุด กระทบยอดครบ |
+| **คำสั่งจริงที่ส่งไป** | เฉพาะสองการทดลองที่**เจ้าของอนุมัติ ขนาดเล็กสุด** ข้างบน — ไม่มีอย่างอื่นเทรด; ประตูต้องเลื่อนขึ้นและเจ้าของต้องอนุญาต |
+| **ทุน** | ≈ **1,096 EUR** ใน OKX (read-only) — trading ≈368 · funding ≈194 · Simple Earn ≈534; คงไว้ใน **USD (USDC/Earn)** ตามการตัดสินใจของเจ้าของ (16/10) — digest รายวันแยกการเคลื่อนไหว € (ค่าเงิน vs ส่วนอื่น) |
+| **ทีม & ops** | **16 ผู้ปฏิบัติ + 1 ผู้กำกับ บน 5 เครื่อง** (`A0` ×3 · `DSH` ×3 · `opencode` ×4 · `agy` ×4 · `Hermes` ×2 — mc2/omarchy/win/nuvola/marcodg1), **13 บอท paper / 0 live**, alert ทำงาน (`@DenaroAlertBot`: digest 9:00 + กระดิ่งทุน 1,090 €), เช็คหลังรีบูต **49/49** |
 | **คอมมิตล่าสุด** | `main` — ดู `git log` สำหรับ head ปัจจุบัน |
 
 Repository: `C:\dev\money` ในเครื่อง, `github.com/grivetto/money` บนรีโมต แพ็กเกจ Python อยู่ใต้
@@ -103,7 +105,7 @@ promosso / archiviato / insufficiente          the verdict is binding
 | การจำลองโดเมน | **`dataclasses`** (`frozen=True`), `enum`, type hints ครบ, ฟังก์ชันบริสุทธิ์ | โมดูลต้นทุนไม่มี I/O: มันโกหกไม่ได้ และทดสอบได้ในระดับมิลลิวินาที |
 | โมเดลต้นทุน | **`money/costi.py`** — เศษส่วน ไม่ใช่เปอร์เซ็นต์ (`0.0035` ไม่ใช่ `0.35`) | เพื่อไม่ให้ความผิดพลาดระดับ 100 เท่าซ่อนอยู่ในการคูณได้ |
 | ประตู | **`money/cancello.py`** — bootstrap CI ที่ 90% ด้วย seed คงที่, t-stat, profit factor, drawdown, toll coverage, economic relevance, block independence | เกณฑ์ที่คุณมองไม่เห็น ย่อมเถียงกันไม่ได้ |
-| การทดสอบ | **pytest >= 8** (558 tests), **ruff >= 0.5** (`line-length = 120`, กฎ `E9`+`F`) | เฉพาะกฎที่จับข้อผิดพลาดจริง: CI ที่ตะโกนตลอดเวลาไม่ได้ปกป้องอะไรเลย |
+| การทดสอบ | **pytest >= 8** (726 tests), **ruff >= 0.5** (`line-length = 120`, กฎ `E9`+`F`) | เฉพาะกฎที่จับข้อผิดพลาดจริง: CI ที่ตะโกนตลอดเวลาไม่ได้ปกป้องอะไรเลย |
 | คอนฟิก / การแพ็กเกจ | **PyYAML >= 6**, **setuptools** (โครงแบบ `src/`) | `pytest` import แพ็กเกจจาก `src/` โดยไม่ต้องติดตั้ง ดังนั้นชุดทดสอบจึงรันได้บน checkout สด |
 | หลักฐาน | **JSON + artifact ข้อความล้วน** ใน `prove/`, การตัดสินใจแบบ Markdown ใน `docs/` | การวัดที่อ่านซ้ำไม่ได้คือความเห็น |
 | การควบคุมเวอร์ชัน | **git**, นักเขียนคนเดียวต่อหนึ่ง path, systemd/cron ที่จะถูกใส่เวอร์ชันใน `deploy/` | `systemd` และ `crontab` ของโปรเจกต์ก่อนหน้าไม่ได้ใส่เวอร์ชัน และนั่นทำให้เกิด outage 10 จาก 12 ครั้ง |
@@ -172,11 +174,11 @@ promosso / archiviato / insufficiente          the verdict is binding
 ## 🧪 การทดสอบ — และการทำซ้ำที่เป็นอิสระ
 
 ```
-558 passed
+726 passed
 ruff check . → All checks passed
 ```
 
-รันใน **สองสภาพแวดล้อม** จาก **clone สะอาด** ของ `origin/main`:
+รันใน **สองสภาพแวดล้อม** จาก **clone สะอาด** ของ `origin/main` (2026-09-25):
 
 | | สภาพแวดล้อม A (ผู้เขียน) | สภาพแวดล้อม B (การทำซ้ำ) |
 | :--- | :--- | :--- |
@@ -251,7 +253,7 @@ money/
 │       ├── griglia_adattiva.py   node B — adaptive grid
 │       └── momento_4h.py         node C — 4-hour momentum
 ├── scripts/                  measurement runners, one per hypothesis, plus independent checks
-├── tests/                    558 offline tests
+├── tests/                    726 offline tests
 ├── docs/                     01 decision · 02 dry-run bench spec · 03 verdicts · 04 reproduction
 ├── prove/                    raw evidence: verdicts, JSON, comparison with prior evidence
 ├── assets/                   banner and architecture diagram
@@ -271,7 +273,7 @@ cd money
 python src/money/costi.py
 
 # the whole suite (offline, no keys, no network)
-python -m pytest tests -q          # 558 passed
+python -m pytest tests -q          # 726 passed
 ruff check .
 
 # re-measure a hypothesis on real OKX EEA bars (no keys needed: public data)

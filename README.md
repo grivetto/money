@@ -38,21 +38,22 @@ foundation to build on.
 
 ---
 
-## 📊 Status at a glance — 2026-10-03
+## 📊 Status at a glance — 2026-10-16
 
-> **TL;DR** — an honest research rig on real money: the gate has archived every strategy family
-> measured so far; one live canary (DOGE funding carry) is inside its validation window; capital
-> ~1,100 EUR, and the carry scale-up deploys only after the 15/10 review.
+> **TL;DR** — an honest research rig on real money: the gate has archived everything measured so
+> far; the carry canary **C1** passed its 14-day review on 15/10 and the carry now runs on two
+> more pairs (DOT+ADA) at minimal size; capital ≈ **1,096 EUR**; the automated search keeps
+> matching **zero candidates** against the DSR bar — the rig does not settle for noise.
 
 | | |
 | :--- | :--- |
-| **Tests** | **558 passed**, `ruff` clean, in **two independent environments** |
-| **Strategies measured** | **3** families (one per node), all judged at real costs — plus the pre-registered P-series experiments (P1–P13), every verdict frozen in `prove/` |
-| **Verdicts** | **3 archived** (strategy families) — the live carry **C1** is in its canary validation window (review 15/10); **P10** (cross-timeframe momentum): *insufficient* (23 trades < 30 — kept, not archived) |
-| **Live canary C1** | DOGE funding carry on OKX EEA, fully reconciled: funding **+0.0076 USDC**, hedge marked **+0.20 USDC**, net ≈ **+0.009 USDC** on day 3/14 — deliberately minimal size |
-| **Real orders sent** | **0** by this repo's strategies — the project's first live bot (carry **C1**, DOGE) runs on OKX EEA and is tracked in `alpha-omega-trading` (`docs/16`) |
-| **Capital** | **~1,100 EUR** across the OKX accounts (verified read-only) — owner deposited **+1,000 EUR on 03/10** for the carry scale-up (deployment gated on the 15/10 review) |
-| **Squad & ops** | **8 executors + 1 director on 3 machines** (`A0-win` · `A0-mc2` · `DSH-mc2/omarchy/win` · `opencode-mc2/omarchy` · `agy-omarchy`; delivered work reviewed by Hermes), alerting live (`@DenaroAlertBot`), post-reboot check 34/34 |
+| **Tests** | **726 passed**, `ruff` clean |
+| **Experiments measured** | every classical family (trend, breakout, rotation, reversal, weekend, capitulation…) plus the pre-registered P-series up to P19b — 20+ measured, every verdict frozen in `prove/` |
+| **Verdicts** | **no family promoted** — all archived at real costs (the trend filone is closed with multiple proofs: portfolio DD never went below 41.5%, gate bar 25%); **S4 continuous hunt exhausted** (316k attempts, 0 candidates — retired 15/10); the only survivor is the **carry**: C1's review **PASSED** (15/10) → live on two more pairs |
+| **Live carry (C1 + DOT+ADA)** | C1 (DOGE, delta-neutral, since 01/10): funding **+0.045 USDC** (~118% of the expected minimum), pair net ≈ +0.05 USDC; **DOT+ADA** (opened 15/10 23:00 UTC): notional ≈ **180 EUR**, uPL +0.36 — minimal size, fully reconciled |
+| **Real orders sent** | only the two **owner-approved, minimal-size** experiments above — nothing else trades; the gate promotes and the owner authorizes |
+| **Capital** | ≈ **1,096 EUR** on OKX (read-only verified) — trading ≈368 · funding ≈194 · Simple Earn ≈534; kept in **USD (USDC/Earn)** by owner decision (16/10) — € swings are decomposed (FX vs the rest) in the daily digest |
+| **Squad & ops** | **16 executors + 1 director on 5 machines** (`A0` ×3 · `DSH` ×3 · `opencode` ×4 · `agy` ×4 · `Hermes` ×2 — mc2/omarchy/win/nuvola/marcodg1; deliveries reviewed by Hermes), **13 paper bots / 0 live**, live alerting (`@DenaroAlertBot`: 9:00 digest + equity bell at 1,090 €), post-reboot check **49/49** |
 | **Last commit** | `main` — see `git log` for the current head |
 
 Repository: `C:\dev\money` locally, `github.com/grivetto/money` remotely. Python package under
@@ -153,7 +154,7 @@ Architecture: [`ARCHITETTURA_2026-10-16.md`](ARCHITETTURA_2026-10-16.md).*
 | Domain modelling | **`dataclasses`** (`frozen=True`), `enum`, full type hints, pure functions | the cost module has no I/O: it cannot lie, and it tests in milliseconds |
 | Cost model | **`money/costi.py`** — fractions, never percentages (`0.0035`, not `0.35`) | so that no factor-of-100 error can hide in a multiplication |
 | Gate | **`money/cancello.py`** — bootstrap CI at 90% with a fixed seed, t-stat, profit factor, drawdown, toll coverage, economic relevance, block independence | a criterion you cannot see cannot be discussed |
-| Tests | **pytest >= 8** (558 tests), **ruff >= 0.5** (`line-length = 120`, rules `E9`+`F`) | only rules that catch real errors: a CI that always shouts protects nothing |
+| Tests | **pytest >= 8** (726 tests), **ruff >= 0.5** (`line-length = 120`, rules `E9`+`F`) | only rules that catch real errors: a CI that always shouts protects nothing |
 | Config / packaging | **PyYAML >= 6**, **setuptools** (`src/` layout) | `pytest` imports the package from `src/` with no installation, so the suite runs on a fresh checkout |
 | Evidence | **JSON + plain-text artifacts** in `prove/`, Markdown decisions in `docs/` | a measurement that cannot be re-read is an opinion |
 | Version control | **git**, one writer per path, systemd/cron to be versioned in `deploy/` | the previous project's `systemd` and `crontab` were unversioned, and that caused 10 of 12 outages |
@@ -223,11 +224,11 @@ minimum order and a quarter per position, **no sensible order exists**.
 ## 🧪 Testing — and the independent reproduction
 
 ```
-558 passed
+726 passed
 ruff check . → All checks passed
 ```
 
-Run in **two environments**, from a **clean clone** of `origin/main`:
+Run in **two environments**, from a **clean clone** of `origin/main` (2026-09-25):
 
 | | environment A (author) | environment B (reproduction) |
 | :--- | :--- | :--- |
@@ -302,7 +303,7 @@ money/
 │       ├── griglia_adattiva.py   node B — adaptive grid
 │       └── momento_4h.py         node C — 4-hour momentum
 ├── scripts/                  measurement runners, one per hypothesis, plus independent checks
-├── tests/                    558 offline tests
+├── tests/                    726 offline tests
 ├── docs/                     01 decision · 02 dry-run bench spec · 03 verdicts · 04 reproduction
 ├── prove/                    raw evidence: verdicts, JSON, comparison with prior evidence
 ├── assets/                   banner and architecture diagram
@@ -322,7 +323,7 @@ cd money
 python src/money/costi.py
 
 # the whole suite (offline, no keys, no network)
-python -m pytest tests -q          # 558 passed
+python -m pytest tests -q          # 726 passed
 ruff check .
 
 # re-measure a hypothesis on real OKX EEA bars (no keys needed: public data)

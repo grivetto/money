@@ -37,21 +37,23 @@ sua storia, come memoria di cosa è stato provato — non come base su cui costr
 
 ---
 
-## 📊 Stato in sintesi — 2026-10-06
+## 📊 Stato in sintesi — 2026-10-16
 
-> **TL;DR** — un rig di ricerca onesto su denaro vero: il cancello ha archiviato tutte le famiglie
-> misurate finora; un canary live (carry DOGE) è dentro la finestra di validazione; capitale
-> ~1.100 EUR, e la scala del carry parte solo dopo la review del 15/10.
+> **TL;DR** — un rig di ricerca onesto su denaro vero: il cancello ha archiviato tutto ciò che è
+> stato misurato finora; il canary carry **C1** ha passato la review dei 14 giorni il 15/10 e il
+> carry ora gira su due coppie in più (DOT+ADA) a taglia minima; capitale ≈ **1.096 EUR**; la
+> ricerca automatica continua a fare **zero candidati** contro la soglia DSR — il rig non si
+> accontenta del rumore.
 
 | | |
 | :--- | :--- |
-| **Test** | **558 passati**, `ruff` pulito, in **due ambienti indipendenti** |
-| **Strategie misurate** | **3** famiglie (una per nodo), tutte giudicate ai costi reali — più gli esperimenti pre-registrati della serie P (P1–P13), ogni verdetto congelato in `prove/` |
-| **Verdetti** | **3 archiviate** (famiglie) — il carry live **C1** è nella finestra di validazione canary (review 15/10); **P10** (momentum cross-timeframe): *insufficiente* (23 operazioni < 30 — conservata, non archiviata) |
-| **Canary C1 live** | carry di funding DOGE su OKX EEA, completamente riconciliato: funding **+0,0076 USDC**, hedge marcato **+0,20 USDC**, netto ≈ **+0,009 USDC** al giorno 3/14 — taglia volutamente minima |
-| **Ordini reali inviati** | **0** dalle strategie di questo repo — il primo bot live del progetto (carry **C1**, DOGE) opera su OKX EEA ed è tracciato in `alpha-omega-trading` (`docs/16`) |
-| **Capitale** | **~1.100 EUR** sui conti OKX (verificati in sola lettura) — l'owner ha depositato **+1.000 EUR il 03/10** per la scala del carry (deploy subordinato alla review del 15/10) |
-| **Squadra & ops** | **8 esecutori + 1 regia su 3 macchine** (`A0-win` · `A0-mc2` · `DSH-mc2/omarchy/win` · `opencode-mc2/omarchy` · `agy-omarchy`; consegne riviste da Hermes), alerting attivo (`@DenaroAlertBot`), check post-riavvio 34/34 |
+| **Test** | **726 passati**, `ruff` pulito |
+| **Esperimenti misurati** | tutte le famiglie classiche (trend, breakout, rotazione, reversal, weekend, capitolazione…) più la serie pre-registrata P fino a P19b — 20+ misurati, ogni verdetto congelato in `prove/` |
+| **Verdetti** | **nessuna famiglia promossa** — tutte archiviate ai costi reali (il filone trend è chiuso con prova multipla: DD di portafoglio mai sotto il 41,5%, soglia cancello 25%); **S4 caccia continua esaurita** (316k tentativi, 0 candidati — fermata il 15/10); l'unico sopravvissuto è il **carry**: review di C1 **PASS** (15/10) → live su due coppie in più |
+| **Carry live (C1 + DOT+ADA)** | C1 (DOGE, delta-neutral, dal 01/10): funding **+0,045 USDC** (~118% del minimo atteso), netto coppia ≈ +0,05 USDC; **DOT+ADA** (aperti il 15/10 23:00 UTC): nozionale ≈ **180 EUR**, uPL +0,36 — taglia minima, tutto riconciliato |
+| **Ordini reali inviati** | solo i due esperimenti **approvati dall'owner e a taglia minima** qui sopra — nient'altro opera; il cancello promuove e l'owner autorizza |
+| **Capitale** | ≈ **1.096 EUR** su OKX (verificato in sola lettura) — trading ≈368 · funding ≈194 · Simple Earn ≈534; resta in **$ (USDC/Earn)** per decisione dell'owner (16/10) — i movimenti in € sono scomposti (cambio vs resto) nel digest giornaliero |
+| **Squadra & ops** | **16 esecutori + 1 regia su 5 macchine** (`A0` ×3 · `DSH` ×3 · `opencode` ×4 · `agy` ×4 · `Hermes` ×2 — mc2/omarchy/win/nuvola/marcodg1; consegne riviste da Hermes), **13 bot paper / 0 live**, alerting attivo (`@DenaroAlertBot`: digest 9:00 + campanello equity a 1.090 €), check post-riavvio **49/49** |
 | **Ultimo commit** | `main` — vedi `git log` per la testa corrente |
 
 Repository: `C:\dev\money` in locale, `github.com/grivetto/money` in remoto. Pacchetto Python sotto
@@ -153,7 +155,7 @@ Architettura: [`ARCHITETTURA_2026-10-16.md`](ARCHITETTURA_2026-10-16.md).*
 | Modellazione del dominio | **`dataclasses`** (`frozen=True`), `enum`, type hints completi, funzioni pure | il modulo dei costi non fa I/O: non può mentire, e si testa in millisecondi |
 | Modello dei costi | **`money/costi.py`** — frazioni, mai percentuali (`0.0035`, non `0.35`) | così nessun errore di fattore 100 può nascondersi in una moltiplicazione |
 | Cancello | **`money/cancello.py`** — IC bootstrap al 90% con seme fisso, t-stat, profit factor, drawdown, copertura del pedaggio, rilevanza economica, indipendenza dai blocchi | un criterio che non vedi non può essere discusso |
-| Test | **pytest >= 8** (558 test), **ruff >= 0.5** (`line-length = 120`, regole `E9`+`F`) | solo regole che intercettano errori reali: una CI che grida sempre non protegge niente |
+| Test | **pytest >= 8** (726 test), **ruff >= 0.5** (`line-length = 120`, regole `E9`+`F`) | solo regole che intercettano errori reali: una CI che grida sempre non protegge niente |
 | Config e pacchetto | **PyYAML >= 6**, **setuptools** (layout `src/`) | `pytest` importa il pacchetto da `src/` senza installazione, così la suite gira su un checkout appena fatto |
 | Prove | **artefatti JSON e testo** in `prove/`, decisioni in Markdown in `docs/` | una misura che non si può rileggere è un'opinione |
 | Controllo di versione | **git**, un solo scrittore per percorso, systemd e cron da versionare in `deploy/` | nel progetto precedente `systemd` e `crontab` non erano versionati, ed è stata la causa di 10 guasti su 12 |
@@ -224,11 +226,11 @@ minimo d'ordine di 1 EUR e un quarto per posizione, **non esiste nessun ordine s
 ## 🧪 Testing — e la riproduzione indipendente
 
 ```
-558 passed
+726 passed
 ruff check . → All checks passed
 ```
 
-Eseguiti in **due ambienti**, da un **clone pulito** di `origin/main`:
+Eseguiti in **due ambienti**, da un **clone pulito** di `origin/main` (2026-09-25):
 
 | | ambiente A (autore) | ambiente B (riproduzione) |
 | :--- | :--- | :--- |
@@ -303,7 +305,7 @@ money/
 │       ├── griglia_adattiva.py   nodo B — griglia adattiva
 │       └── momento_4h.py         nodo C — momento a 4 ore
 ├── scripts/                  runner di misura, uno per ipotesi, piu' le verifiche indipendenti
-├── tests/                    558 test offline
+├── tests/                    726 test offline
 ├── docs/                     01 decisione · 02 specifica del banco a secco · 03 verdetti · 04 riproduzione
 ├── prove/                    prove grezze: verdetti, JSON, confronto con l'evidenza precedente
 ├── assets/                   banner e diagramma di architettura
@@ -323,7 +325,7 @@ cd money
 python src/money/costi.py
 
 # tutta la suite (offline, nessuna chiave, nessuna rete)
-python -m pytest tests -q          # 558 passed
+python -m pytest tests -q          # 726 passed
 ruff check .
 
 # rimisura una ipotesi su barre reali OKX EEA (nessuna chiave: dati pubblici)

@@ -38,15 +38,17 @@ cimiento sobre el que construir.
 
 ---
 
-## 📊 Estado de un vistazo — 2026-10-03
+## 📊 Estado de un vistazo — 2026-10-16
 
 | | |
 | :--- | :--- |
-| **Tests** | **558 passed**, `ruff` limpio, en **dos entornos independientes** |
-| **Estrategias medidas** | **3** familias (una por nodo), todas juzgadas a costes reales |
-| **Veredictos** | **3 archivadas** (familias) — el carry en vivo **C1** está en su ventana de validación canary (review 15/10) |
-| **Órdenes reales enviadas** | **0** por las estrategias de este repo — el primer bot en vivo del proyecto (carry **C1**, DOGE) opera en OKX EEA y se sigue en `alpha-omega-trading` (`docs/16`) |
-| **Capital** | **~1,100 EUR** en las cuentas de OKX (verificado en solo lectura) — el propietario depositó **+1.000 EUR el 03/10** para escalar el carry (despliegue condicionado a la revisión del 15/10); el canary en vivo (carry de DOGE, autorizado) opera en la cuenta principal |
+| **Tests** | **726 passed**, `ruff` limpio |
+| **Experimentos medidos** | todas las familias clásicas (tendencia, breakout, rotación, reversal, weekend, capitulación…) y la serie pre-registrada P hasta P19b — 20+ medidos, cada veredicto congelado en `prove/` |
+| **Veredictos** | **ninguna familia promovida** — todas archivadas a costes reales (el filón tendencia cerrado con prueba múltiple: DD de cartera nunca por debajo del 41,5%; umbral del cancello 25%); **S4 caza continua agotada** (316k intentos, 0 candidatos — detenida el 15/10); la única superviviente es el **carry**: revisión de C1 **PASS** (15/10) → en vivo sobre dos pares más |
+| **Carry en vivo (C1 + DOT+ADA)** | C1 (DOGE, delta-neutral, desde 01/10): funding **+0,045 USDC** (~118% del mínimo esperado); **DOT+ADA** (abiertos el 15/10 23:00 UTC): nocional ≈ **180 EUR**, uPL +0,36 — tamaño mínimo, todo reconciliado |
+| **Órdenes reales enviadas** | solo los dos experimentos **aprobados por el propietario y de tamaño mínimo** de arriba — nada más opera; el cancello promueve y el propietario autoriza |
+| **Capital** | ≈ **1.096 EUR** en OKX (verificado en solo lectura) — trading ≈368 · funding ≈194 · Simple Earn ≈534; se mantiene en **USD (USDC/Earn)** por decisión del propietario (16/10) — el digest diario descompone el movimiento en € (cambio vs resto) |
+| **Equipo & ops** | **16 ejecutores + 1 dirección en 5 máquinas** (`A0` ×3 · `DSH` ×3 · `opencode` ×4 · `agy` ×4 · `Hermes` ×2 — mc2/omarchy/win/nuvola/marcodg1), **13 bots paper / 0 en vivo**, alertas activas (`@DenaroAlertBot`: digest 9:00 + campana de equity 1.090 €), check post-reinicio **49/49** |
 | **Último commit** | `main` — ver `git log` para el head actual |
 
 Repositorio: `C:\dev\money` en local, `github.com/grivetto/money` en remoto. Paquete Python bajo
@@ -106,7 +108,7 @@ promosso / archiviato / insufficiente          the verdict is binding
 | Modelado del dominio | **`dataclasses`** (`frozen=True`), `enum`, type hints completos, funciones puras | el módulo de costes no tiene I/O: no puede mentir, y se testea en milisegundos |
 | Modelo de costes | **`money/costi.py`** — fracciones, nunca porcentajes (`0.0035`, no `0.35`) | para que ningún error de factor 100 pueda esconderse en una multiplicación |
 | Puerta | **`money/cancello.py`** — intervalo de confianza bootstrap al 90% con semilla fija, t-stat, profit factor, drawdown, cobertura del peaje, relevancia económica, independencia de bloques | un criterio que no puedes ver no se puede discutir |
-| Tests | **pytest >= 8** (558 tests), **ruff >= 0.5** (`line-length = 120`, reglas `E9`+`F`) | solo reglas que atrapan errores reales: un CI que grita siempre no protege nada |
+| Tests | **pytest >= 8** (726 tests), **ruff >= 0.5** (`line-length = 120`, reglas `E9`+`F`) | solo reglas que atrapan errores reales: un CI que grita siempre no protege nada |
 | Config / empaquetado | **PyYAML >= 6**, **setuptools** (layout `src/`) | `pytest` importa el paquete desde `src/` sin instalación, así que la suite corre en un checkout fresco |
 | Evidencia | **artefactos JSON + texto plano** en `prove/`, decisiones en Markdown en `docs/` | una medición que no se puede releer es una opinión |
 | Control de versiones | **git**, un escritor por ruta, systemd/cron a versionar en `deploy/` | el `systemd` y el `crontab` del proyecto anterior no estaban versionados, y eso causó 10 de 12 caídas |
@@ -176,11 +178,11 @@ orden mínima de 1 EUR y un cuarto por posición, **no existe ninguna orden sens
 ## 🧪 Testing — y la reproducción independiente
 
 ```
-558 passed
+726 passed
 ruff check . → All checks passed
 ```
 
-Ejecutado en **dos entornos**, desde un **clon limpio** de `origin/main`:
+Ejecutado en **dos entornos**, desde un **clon limpio** de `origin/main` (2026-09-25):
 
 | | entorno A (autor) | entorno B (reproducción) |
 | :--- | :--- | :--- |
@@ -255,7 +257,7 @@ money/
 │       ├── griglia_adattiva.py   node B — adaptive grid
 │       └── momento_4h.py         node C — 4-hour momentum
 ├── scripts/                  measurement runners, one per hypothesis, plus independent checks
-├── tests/                    558 offline tests
+├── tests/                    726 offline tests
 ├── docs/                     01 decision · 02 dry-run bench spec · 03 verdicts · 04 reproduction
 ├── prove/                    raw evidence: verdicts, JSON, comparison with prior evidence
 ├── assets/                   banner and architecture diagram
@@ -275,7 +277,7 @@ cd money
 python src/money/costi.py
 
 # the whole suite (offline, no keys, no network)
-python -m pytest tests -q          # 558 passed
+python -m pytest tests -q          # 726 passed
 ruff check .
 
 # re-measure a hypothesis on real OKX EEA bars (no keys needed: public data)
