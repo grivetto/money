@@ -27,13 +27,21 @@ python -m pip check
 
 Il job ora fallisce se il pacchetto o le dipendenze non sono installabili e controlla esplicitamente la coerenza dell’ambiente Python.
 
-### P1 — assert disattivabili nel codice vivo
+### P1 — numerosità effettiva e assert runtime
 
-L’audit ha trovato tre `assert` nei moduli di ricerca:
+Il cancello richiede ora sia `n >= 30` sia `n_effettivo >= 30`. Il numero grezzo di operazioni
+non è una misura sufficiente quando i ritorni sono serialmente correlati o le posizioni si
+sovrappongono: un campione di 100 operazioni può contenere meno di 30 osservazioni indipendenti.
+
+Il criterio di indipendenza dai blocchi è ora **fail-closed**: se la scomposizione non è
+valutabile, il criterio fallisce invece di essere considerato superato.
+
+L’audit ha inoltre trovato quattro `assert` nei moduli di ricerca:
 
 - chiusura di una posizione in `trend_lungo.py`;
 - invariante della linea MACD in `scansione3.py`;
-- indice di ingresso in `scansione.py`.
+- indice di ingresso in `scansione.py`;
+- allineamento degli indici ADF in `p13_cointegrazione.py`.
 
 La CI esegue anche `python -O -m pytest`, modalità che rimuove gli `assert`. Un’invariante runtime non deve scomparire perché il processo è stato avviato con ottimizzazione.
 
@@ -61,7 +69,10 @@ Il branch non abilita trading live, non modifica chiavi API, non modifica soglie
 1. Aggiungere un job CI con Python 3.11 e 3.12, perché il progetto dichiara `requires-python >= 3.11` ma oggi la CI verifica soltanto Python 3.12.
 2. Generare e conservare un report di coverage per il codice finanziario, senza imporre inizialmente una soglia artificiale che premi quantità invece di qualità.
 3. Aggiungere un controllo CI che verifichi che gli script live richiedano esplicitamente un flag di produzione e non partano mai in live per default.
-4. Rendere esplicita la provenienza della tariffa nel formato degli artefatti di prova, collegando la misura all’hash del commit e alla data di verifica dell’account.
-5. Separare ulteriormente test offline, test con rete pubblica e test con credenziali, con job distinti e credenziali sempre assenti nel job standard.
+4. Integrare PBO/CSCV nel percorso principale che produce i dati di selezione. Il modulo statistico
+   già espone `pbo_cscv`, ma il runner principale non produce ancora un PBO completo e verificabile;
+   non va quindi inserito nell’artefatto con un valore inventato.
+5. Rendere esplicita la provenienza della tariffa nel formato degli artefatti di prova, collegando la misura all’hash del commit e alla data di verifica dell’account.
+6. Separare ulteriormente test offline, test con rete pubblica e test con credenziali, con job distinti e credenziali sempre assenti nel job standard.
 
 Questi interventi richiedono decisioni di compatibilità o accesso agli ambienti operativi e non sono stati inseriti automaticamente nel branch conservativo.

@@ -100,7 +100,7 @@ money/dati.py                  Barra, SerieBarre, Scarica, walk-forward con emba
 money/ricerca/                 una ipotesi per file: simula(...) -> Esito
       |                        qui niente puo' promuovere niente da solo
       v
-money/cancello.py              8 criteri, 3 verdetti, ogni motivo porta il suo numero
+money/cancello.py              9 criteri, 3 verdetti, ogni motivo porta il suo numero
       |
       v
 promosso / archiviato / insufficiente          il verdetto e' vincolante
@@ -133,7 +133,7 @@ promosso / archiviato / insufficiente          il verdetto e' vincolante
 ```
 
 *Un solo anello: idea → spec pre-registrata (`coda_catena/` + `REGISTRO`) → esecutore → review
-(test rieseguiti nel repo) → misura (artefatti congelati in `prove/`) → cancello a 8 criteri →
+(test rieseguiti nel repo) → misura (artefatti congelati in `prove/`) → cancello a 9 criteri →
 promozione/archivio → banco a secco → canary → live a taglia minima. Gli esecutori — `A0-mc2`,
 `A0-win`, `DSH-mc2/omarchy/win`, `opencode-mc2/omarchy`, `agy-omarchy` — consegnano a Hermes; il
 **nodo agenti** (Omarchy) ospita `DSH-omarchy` e `opencode-omarchy` come servizi systemd
@@ -181,7 +181,7 @@ possono rischiare il 2% ciascuno.
 
 ---
 
-## 🚦 Il cancello — 8 criteri, 3 verdetti
+## 🚦 Il cancello — 9 criteri, 3 verdetti
 
 Tutti e otto devono passare. Il verdetto è uno di tre, e "insufficiente" è un verdetto vero, non
 una scusa.

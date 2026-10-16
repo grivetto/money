@@ -19,6 +19,7 @@ import pytest
 
 from money.cancello import (
     CAPITALE_RIFERIMENTO_DEFAULT,
+    MIN_N_EFFETTIVO,
     MIN_OPERAZIONI,
     RICAMPIONAMENTI,
     SEME_BOOTSTRAP,
@@ -70,7 +71,12 @@ def serie_a_blocchi(medie, pw: float = 0.65, perdita: float = -0.010, n: int = 1
     serie = []
     for m in medie:
         guadagno = (m * n - nl * perdita) / nw
-        serie += [guadagno] * nw + [perdita] * nl
+        # Interleave wins and losses: il test vuole creare regimi con medie diverse,
+        # non una autocorrelazione artificiale dovuta a 65 vittorie consecutive seguite
+        # da 35 perdite consecutive.
+        posizioni_vincenti = {int(k * n / nw) for k in range(nw)}
+        blocco = [guadagno if i in posizioni_vincenti else perdita for i in range(n)]
+        serie += blocco
     return serie
 
 
@@ -219,8 +225,9 @@ def test_blocco_dominante_resiste_al_pedaggio_piu_basso():
 
     v = giudica(e, n_blocchi_regime=3)
     assert v.esito == "archiviato"
-    # il rifiuto viene dal criterio 8 e da nient'altro: e' il punto del test
-    assert v.statistiche["criteri_falliti"] == ("indipendenza_dai_blocchi",), str(v)
+    # Il nuovo criterio sul campione effettivo segnala inoltre che i 300 ritorni
+    # raggruppati in regimi non equivalgono a 30 osservazioni indipendenti.
+    assert v.statistiche["criteri_falliti"] == ("numerosita'", "indipendenza_dai_blocchi"), str(v)
     assert v.statistiche["expectancy"] > 0.0165      # il criterio 6 passerebbe
     assert v.statistiche["ic_bootstrap"][0] > 0.0    # l'edge e' statisticamente reale
 
@@ -567,6 +574,7 @@ def test_forma_del_verdetto_identica_su_tutti_i_percorsi():
 def test_le_soglie_di_default_sono_quelle_dichiarate():
     """Le soglie sono parte del contratto: cambiarle deve richiedere di cambiare il test."""
     assert MIN_OPERAZIONI == 30
+    assert MIN_N_EFFETTIVO == 30.0
     assert RICAMPIONAMENTI == 10_000
     assert CAPITALE_RIFERIMENTO_DEFAULT == 1_000.0
     assert SEME_BOOTSTRAP == 20260101
@@ -630,3 +638,19 @@ def test_dipendenza_rilevante_il_blocco_boccia_cio_che_iid_promuoverebbe():
     assert v.esito == "archiviato"
     assert any("blocchi" in m for m in v.motivi)
     assert "expectancy_ic90" in s["criteri_falliti"]
+
+
+def test_n_effettivo_insufficiente_boccia_anche_con_molte_operazioni():
+    """100 ritorni correlati non sono 100 prove indipendenti."""
+    import random
+    rng = random.Random(123)
+    x = 0.0
+    ritorni = []
+    for _ in range(100):
+        x = 0.98 * x + rng.gauss(0.0, 0.002)
+        ritorni.append(0.001 + x)
+    v = giudica(esito("n effettivo basso", ritorni))
+    assert v.statistiche["n"] == 100
+    assert v.statistiche["n_effettivo"] < MIN_N_EFFETTIVO
+    assert "numerosita'" in v.statistiche["criteri_falliti"]
+    assert v.esito == "archiviato"
