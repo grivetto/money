@@ -3,8 +3,8 @@
 <!-- Generato da `scripts/genera_status.py` dal manifest `prove/status_manifest.json`.
      Non modificare a mano: aggiornare il manifest e rigenerare. -->
 
-- **Commit**: `1819a056` (snapshot: 2026-10-06 (sera))
-- **Test offline**: **558** (verificati il 2026-10-06 17:55; `python -m pytest -q (venv, offline)`)
+- **Commit**: `0f67bf7c` (snapshot: 2026-10-06 (sera))
+- **Test offline**: **743** (verificati il 2026-10-17 01:07 CEST; `~/money/.venv/bin/python -m pytest --collect-only -q -> 743 collected; pytest -q -> 743 passed in 18.17s (venv canonico, offline)`)
 - **Qualita'**: ruff pulito, compileall ok (verificati il 2026-10-06)
 - **Fee**: verificate il 2026-10-06 da OKX privateGetAccountTradeFee (conto main, acctLv 2); default `okx_eea_con_perp (maker 0,08% / taker 0,10% / giro misto 0,18%)`
 - **Strategie promosse**: **0** (e' l'headline onesta)
