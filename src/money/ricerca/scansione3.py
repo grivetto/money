@@ -125,7 +125,10 @@ def stato_macd(barre: Sequence[Barra], fast: int, slow: int,
     if i0 is None:
         return [None] * len(c)
     definiti = [x for x in linea[i0:] if x is not None]
-    assert len(definiti) == len(linea) - i0  # dopo i0 la linea e' definita ovunque
+    if len(definiti) != len(linea) - i0:
+        raise RuntimeError(
+            "invariante violata: la linea MACD contiene valori indefiniti dopo il primo valore"
+        )
     sig_emb = _ema(definiti, segnale)
     stato: List[Optional[bool]] = [None] * len(c)
     for k, v in enumerate(sig_emb):

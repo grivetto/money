@@ -140,7 +140,10 @@ def simula(barre: Sequence[Barra], stato: Sequence[Optional[bool]], *,
             dentro = True
             i_in = i + 1
         elif dentro and s is False:
-            assert i_in is not None  # dentro=True implica un ingresso registrato
+            if i_in is None:
+                raise RuntimeError(
+                    "invariante violata: posizione aperta senza indice di ingresso"
+                )
             trades.append(_trade(barre, i_in, i + 1, "stato", tariffa, slippage_per_lato))
             dentro = False
             i_in = None
