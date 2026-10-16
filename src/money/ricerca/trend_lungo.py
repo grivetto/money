@@ -345,7 +345,10 @@ def _simula_simbolo(serie: SerieBarre, *,
 
     def chiudi(i_uscita: int, prezzo_uscita: float, motivo: str, con_slippage: bool) -> None:
         nonlocal i_ing, prezzo_ing, stop, massimo_da_ingresso
-        assert i_ing is not None and prezzo_ing is not None
+        if i_ing is None or prezzo_ing is None:
+            raise RuntimeError(
+                "invariante violata: chiudi() chiamata senza una posizione aperta"
+            )
         lordo = prezzo_uscita / prezzo_ing - 1.0
         sl = slippage_giro if con_slippage else 0.0
         operazioni.append(Operazione(

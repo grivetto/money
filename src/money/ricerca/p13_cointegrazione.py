@@ -156,7 +156,8 @@ def adf_statistica(y: np.ndarray, ritardi: Optional[int] = None) -> Tuple[float,
     colonne = [np.ones(len(yy)), colonne_y_t_meno_1]
     for i in range(1, p + 1):
         colonna_dv = dy[r0 - i:n - 1 - i]  # Δy_{t-i}, stesso asse
-        assert len(colonna_dv) == len(yy), "indice ADF errato"
+        if len(colonna_dv) != len(yy):
+            raise RuntimeError("invariante violata: indice ADF errato")
         colonne.append(colonna_dv)
     X = np.column_stack(colonne)
     theta, *_ = np.linalg.lstsq(X, yy, rcond=None)
