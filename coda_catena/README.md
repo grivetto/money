@@ -31,12 +31,15 @@ STATO DELLA CODA
 - P3_trend_filtro_200g.md ... FATTA 29/09 — ARCHIVIATA (integrata da hermes: 6/8 come Donchian; t 1,58; DD 45,5%)
 - P4_funding_carry.md ....... PARCHEGGIATA (funding EEA = 96gg di storia, verificato da dsh: niente misura)
 - P5_donchian_esteso.md ..... FATTA 28/09 — ARCHIVIATA: l'allargamento non regge (61 coppie; t 1,44; prove/P5_donchian_esteso.*)
-- P6_portafoglio.md ......... DA MATERIALIZZARE — prossimo attacco: concorrenza+correlazione (evidenza P2)
+- P6_portafoglio.md ......... ARCHIVIATA per costruzione (30/09) — nessuna delle 6 config soddisfa (vedi CONCLUSE.md)
 
 ---
 
 ## Aggiornamento 2026-10-16 — onda S5 (fronte funding/esecuzione; pre-registrate, lint 7/7)
 - P21_carry_basket.md ........ FATTA 17/10 — ARCHIVIATA (misura ufficiale Artù: nessuna config con netto train>0; top-k perde vs DOGE-solo; implementazione DSH-omarchy)
 - P22_regime_gate_netto.md ... FATTA 17/10 — ARCHIVIATA (implementazione Merlino; misura ufficiale Artù: ogni trigger delta<=0 su 10/10 a 0,40% e 0,62%; T3 mai avvenuto; timing del carry chiuso, sempre-on)
-- P23_pedaggio_esecuzione.md . DA PRENDERE — pre-reg. 16/10: pedaggio realizzato sui fill + maker-first (hermes)
+- P23_pedaggio_esecuzione.md . IN CORSO (hermes) — M2 (maker-first) consegnato da Merlino 17/10 (REQ-004); M1 (fill reali) di Artù; run ufficiale M2 in esecuzione
 - Piano del fronte: `docs/34_fronte_ricerca_2026-10-16.md`
+
+## Aggiornamento 2026-10-17 — P24 (operativa, tesoreria — NON esperimento)
+- P24_dormienti_earn.md ...... PRESA_DA Merlino 17/10 (REQ-MERL-20261017-005) — harness trasferimento verso Simple Earn (mossa D2, ROADMAP §7); esecuzione reale di Artù dopo preflight, finestra mattutina. Fuori dal gate JEV e dal conteggio tentativi.
