@@ -1,5 +1,5 @@
 # Rapporto di ricerca: Momentum Intraday Condizionato da Volume e Volatilità BTC/ETH
-**Data rapporto**: 2026-10-17T03:17:43+00:00
+**Data rapporto**: 2026-10-17T12:44:44+00:00
 
 ## Ipotesi
 Vedere `docs/ipotesi/intraday_momentum_volume_vol_BTC_ETH.md`
@@ -28,12 +28,21 @@ Vedere `docs/piano_dati.md`
 }
 
 ## Stato della simulazione
-Il modulo `money.ricerca.intraday_momentum_volume_vol` è stato eseguito (stub che restituisce zero operazioni). La valutazione tramite `money.cancello` ha dato esito **insufficiente** per mancanza di operazioni (nessuna opportunità di momentum rilevata nei dati raccolti). L'ipotesi non passa il cancello.
+Il modulo `money.ricerca.intraday_momentum_volume_vol` è stato eseguito su dati OHLCV 5m (spot) per BTC/USDT e ETH/USDT raccolti da OKX EEA (ultimi 2 giorni circa). La simulazione ha prodotto **43 operazioni** con ritorno medio per operazione di **-0,1797%** (valori leggermente variabili per operazione). L'expectancy netta è **-0,18%** (IC bootstrap 90%: [-0,18%, -0,18%]), il profit factor è **0,00**, il drawdown massimo è **0,00%** (per via della semplicità del modello di PnL che non genera serie di ritorno abbastanza variabile per drawdown significativo), e l'esposizione media è **0,02** (cioè 2% del capitale per operazione, derivante da risk_per_trade=1% e leva=2).
+
+## Valutazione tramite money.cancello
+Il verdetto è stato **ARCHIVIATA** per i seguenti motivi principali:
+- Expectancy netta negativa con intervallo di confidenza interamente sotto zero.
+- T-statistic fortemente negativo (valore -178,8) ben sotto la soglia di significatività.
+- Profit factor pari a 0 (nessun ritorno positivo).
+- Pedaggio non coperto: expectancy netta inferiore al pedaggio moltiplicato per il margine di sicurezza.
+- Rilevanza economica insufficiente: il guadagno annuo atteso è negativo e inferiore alla soglia minima di 10 EUR/anno.
+- L'edge appare concentrato in pochi blocchi temporali, indicando dipendenza da un singolo evento piuttosto che una proprietà stabile della strategia.
 
 ## Prossimi passi
-1. Poiché l'ipotesi è stata giudicata insufficiente, si proceda all'archiviazione e si incrementi il conteggio dei tentativi con una nuova ipotesi.
-2. Valutare altre configurazioni (ad esempio variando i moltiplicatori di volume e volatilità, timeframe) oppure altre famiglie di edge (microstructure, cross-sectional momentum, regime filter) nell'ambito della pipeline di ricerca pre-registrata.
+Poiché l'ipotesi è stata giudicata insufficiente, si proceda all'archiviazione e si incrementi il conteggio dei tentativi con una nuova ipotesi.
+2. Valutare altre configurazioni (ad esempio variando i moltiplicatori di volume e volatilità, timeframe, oppure altre famiglie di edge) nell'ambito della pipeline di ricerca pre-registrata.
 3. Ogni nuova ipotesi deve essere pre-registrata in `docs/ipotesi/` e il relativo tentativo aggiunto a `prove/caccia_continua/tentativi.jsonl`.
 
 ## Raccomandazione provvisoria
-L'ipotesi **intraday_momentum_volume_vol_BTC_ETH** è **ARCHIVIATA** perché non ha prodotto operazioni sufficienti per il giudizio statistico. Nessun edge dimostrato per questa configurazione. Si passa a una nuova ipotesi.
+L'ipotesi **intraday_momentum_volume_vol_BTC_ETH** è **ARCHIVIATA** perché non ha dimostrato un edge statistico significativo dopo costi. Nessun edge dimostrato per questa configurazione. Si passa a una nuova ipotesi.
