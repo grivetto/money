@@ -46,3 +46,7 @@ STATO DELLA CODA
 
 ## Aggiornamento 2026-10-18 — P26 (riapertura lane pairs, direttiva owner)
 - P26_cointegrazione_rolling.md ... PRE-REGISTRATA (Artù 18/10) — cointegrazione v2: universo esteso (top 30 perp USDT OKX) + finestre rolling (120/180g, passo 5g); combina le tre varianti ammesse dal verdetto P13. Ultimo giro sulla lane pairs: se fallisce, archiviazione definitiva senza varianti ulteriori. In attesa di coda libera; implementatore da assegnare al via.
+
+## Aggiornamento 2026-10-18 (notte) — E2 + ondata operai
+- E2_significativita.md ...... PRE-REGISTRATA + DISPATCHATA (Artù 18/10) — strumenti bootstrap significatività + Monte Carlo (lezioni Jesse, docs/35); implementa opencode-omarchy (lanciato, verificato attivo 01:10). Voce di manutenzione (fuori dal conteggio tentativi).
+- Ondata operai 18/10: opencode-omarchy → E2 · agy-MARCODG1 → preflight dati tick (salute raccolta, prerequisite della scansione microstruttura ~15/11) · A0-mc2 → dispatch da ricostruire (API CSRF, tool storico non nel repo).
