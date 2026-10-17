@@ -1,9 +1,9 @@
 {
  "meta": {
-  "generato": "2026-10-17T21:54:43.912403+00:00",
+  "generato": "2026-10-17T21:55:09.506119+00:00",
   "raw": "prove/p23_ledger_raw.json",
   "candele": "prove/p23_candele.json",
-  "n_fills_totali": 118,
+  "n_fills_totali": 21,
   "n_fills_rilevanti": 21,
   "nota_proxy": "mid proxy = (open+close)/2 della candela 1m che contiene il cTime dell'ordine; sensibilita' = fillIdxPx (index OKX al fill) riportata a parte ma NON usata nel verdetto: per i perp contiene il basis spot-perp, non lo slippage di esecuzione. Mai close secco, mai best-case.",
   "limiti": "fill pochi e non coprono tutti i regimi; incertezza proxy ~\u00b15bp su 1m; nessuna scrittura su exchange."
