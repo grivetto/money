@@ -46,6 +46,21 @@ Verificare se lo spread di coppie «cointegrate a tratti» su un universo ESTESO
 - Persistenza come correzione strutturale del multiple testing (435 coppie): soglia per-finestra dichiarata (3,5) + severità nella persistenza ≥ 60% + cap 3 coppie.
 - Funding differenziale mai nascosto; scenari tariffa sempre riportati; campione corto dichiarato in ogni output.
 
+## Definizioni (autosufficienza per l'implementatore)
+- **EG due passi**: OLS di log(P_a) su log(P_b) nella finestra; ADF (Augmented Dickey-Fuller) sui residui; `t_rho` = t-stat del coefficiente autorigressivo rho dell'ADF.
+- **half-life** = −ln2 / ln(1 + rho) in giorni (rho dal medesimo ADF).
+- **spread(t)** = log(P_a(t)) − beta·log(P_b(t)); beta = pendenza OLS dell'ultima finestra «viva».
+- **z(t)** = (spread(t) − media_60g(t)) / sd_60g(t), medie/sd calcolate su osservazioni ≤ t.
+- **Finestra «viva»**: |t_rho| ≥ 3,5 E half-life ∈ [5, 90]g.
+- **P_a / P_b**: prezzi di chiusura daily dei due strumenti della coppia (quote USDT).
+
+## Vincoli
+- Ambiente: implementazione in scratch (omarchy/worker) con venv dedicato; letture dal repo canonico via ssh read-only; NESSUNA scrittura in `~/money` (integra Artù).
+- Dati: candele USDT-lungo da `data/` (archivio interno) o ccxt pubblico su `eea.okx.com`; la lista dei 30 perp va dichiarata in output (criterio di selezione + data di estrazione).
+- Librerie: pandas, numpy, statsmodels — nessuna dipendenza nuova non dichiarata; niente ML.
+- Vietato: ordini reali, chiavi exchange, scritture su exchange, modifiche a C1/carry, qualunque variante oltre la griglia dichiarata.
+- Output: solo `prove/P26_pairs_rolling.{txt,json}` + modulo/test/runner/LEGGIMI in handoff.
+
 ## Input / Output
 - **Input**: candele USDT-lungo (archivio interno/ccxt), lista universo 30 perp, questa spec.
 - **Output**: `prove/P26_pairs_rolling.{txt,json}` con screening, episodi, expectancy netta, DD, rotture, verdetto; exit code 0/≠0.
