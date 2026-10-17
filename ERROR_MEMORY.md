@@ -57,3 +57,9 @@ file PRIMA di modificare percorsi che muovono capitale.
 - Causa radice: la flotta legacy non era mai stata spenta davvero; un nodo live dimenticato su un conto e' una collisione di ordini in attesa (regola: MAI due bot sullo stesso conto).
 - Fix: stop+disable su entrambi; verificato zero nodi live su 3 nodi (resta solo il paper su MARCODG1). denaro-node-mc2 resta fermo per scelta.
 - Regola: prima che un conto entri nel perimetro money, il suo nodo legacy deve essere stop+disable. La flotta live riparte SOLO dalla catena cancello -> esecuzione, mai riaccendendo un legacy.
+
+## 2026-10-17 — Cron raccolta funding rotto 8h da WIP non committato
+- Sintomo: `raccogli_funding.py` falliva con `ImportError` (`report_copertura`) a ogni run (12:13, 16:13 CEST); marker `data/raccolta_last_run` fermo dalle 06:13 UTC → `svc.raccolta=0` (allarme "raccolta ferma").
+- Causa radice: un WIP di ricerca non committato aveva riscritto `src/money/raccoglitore_funding.py` rimuovendo `report_copertura`; i cron eseguono il working tree di ~/money, non un commit.
+- Fix: funzione ripristinata dalla HEAD; `basis_pp` corretto (spot X-Perp USD → coppia USDC, prima puntava a un mercato inesistente su OKX EEA); ticker caricati solo se ci sono record nuovi; test aggiornati (+4). Verifica live: scritti=20, errori=0, marker fresco.
+- Regola: il working tree di ~/money su mc2 È la produzione dei cron: una sessione che lo modifica non si chiude finché `pytest tests/` non è verde e le modifiche non sono committate.

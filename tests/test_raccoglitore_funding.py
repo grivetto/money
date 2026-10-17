@@ -7,7 +7,9 @@ Il raccoglitore e' l'unico pezzo del progetto che scrive dati su disco in modo i
 mancano o sono doppi. Questi test bloccano i comportamenti che devono restare veri:
   1. idempotenza: rieseguire con gli stessi dati non duplica righe;
   2. il file resta valido quando l'exchange fallisce (append-only, niente corruzione);
-  3. nel modulo non entra MAI un percorso d'ordine (guardia sul sorgente).
+  3. nel modulo non entra MAI un percorso d'ordine (guardia sul sorgente);
+  4. il basis si calcola dai ticker last (perp vs spot) e per gli X-Perp USD lo spot
+     di riferimento e' la coppia USDC (lo spot USD non esiste su OKX EEA).
 
 Implementazione: task P8 del nastro, consegnata da Agent Zero (v2.13, 2026-09-29) e integrata
 da Hermes dopo review; questi test sono la versione adattata alle convenzioni del repo.
@@ -27,7 +29,9 @@ from conftest import cartella_temporanea
 from money.raccoglitore_funding import (
     _calcola_basis_pp,
     _normalizza_ts,
+    _simbolo_spot,
     raccogli_funding_basis,
+    raccogli_ohlcv,
     report_copertura,
     verifica_niente_ordini_sorgente,
 )
@@ -49,38 +53,66 @@ def niente_rete(monkeypatch):
 class MockExchange:
     """Exchange finto per test - niente rete."""
 
-    def __init__(self, dati_funding=None, dovrebbe_fallire=False, errore=None):
+    def __init__(self, dati_funding=None, dovrebbe_fallire=False, errore=None, tickers=None):
         self.id = "mock_test"
         self._dati = dati_funding or []
         self._dovrebbe_fallire = dovrebbe_fallire
         self._errore = errore or Exception("Errore di rete simulato")
+        self._tickers = tickers or {}
 
     def fetch_funding_rate_history(self, simbolo, since=None, limit=None):
         if self._dovrebbe_fallire:
             raise self._errore
         return self._dati
 
+    def fetch_ticker(self, simbolo):
+        if self._dovrebbe_fallire:
+            raise self._errore
+        if simbolo not in self._tickers:
+            raise ValueError(f"ticker non configurato nel mock: {simbolo}")
+        return {"last": self._tickers[simbolo]}
+
 
 class MockExchangeParziale:
     """Exchange che restituisce dati diversi per simboli diversi."""
 
-    def __init__(self, mapping_dati):
+    def __init__(self, mapping_dati, tickers=None):
         self.id = "mock_parziale"
         self._mapping = mapping_dati
+        self._tickers = tickers or {}
 
     def fetch_funding_rate_history(self, simbolo, since=None, limit=None):
         return self._mapping.get(simbolo, [])
 
+    def fetch_ticker(self, simbolo):
+        if simbolo not in self._tickers:
+            raise ValueError(f"ticker non configurato nel mock: {simbolo}")
+        return {"last": self._tickers[simbolo]}
+
+
+class MockExchangeOHLCV:
+    """Exchange finto per candele OHLCV - niente rete."""
+
+    def __init__(self, candele=None):
+        self.id = "mock_ohlcv"
+        self._candele = candele or []
+
+    def fetch_ohlcv(self, simbolo, timeframe=None, since=None, limit=None):
+        return self._candele
+
 
 def test_a_raccolta_base():
-    """(a) Raccolta base: N righe scritte, campi giusti."""
+    """(a) Raccolta base: N righe scritte, campi giusti, basis dal ticker."""
     output_path = str(cartella_temporanea("p8") / "funding.jsonl")
 
-    mock_exchange = MockExchange(dati_funding=[
-        {"timestamp": 1700000000000, "fundingRate": 0.0001, "markPrice": 50100, "indexPrice": 50000},
-        {"timestamp": 1700003600000, "fundingRate": 0.0002, "markPrice": 50200, "indexPrice": 50050},
-        {"timestamp": 1700007200000, "fundingRate": -0.0001, "markPrice": 49900, "indexPrice": 50000},
-    ])
+    mock_exchange = MockExchange(
+        dati_funding=[
+            {"timestamp": 1700000000000, "fundingRate": 0.0001},
+            {"timestamp": 1700003600000, "fundingRate": 0.0002},
+            {"timestamp": 1700007200000, "fundingRate": -0.0001},
+        ],
+        tickers={"BTC/USDT:USDT": 51000.0, "BTC/USDT": 50000.0},
+    )
 
     risultato = raccogli_funding_basis(
         exchange=mock_exchange,
@@ -110,16 +142,20 @@ def test_a_raccolta_base():
         assert isinstance(r["funding"], float), f"funding non float: {type(r['funding'])}"
         assert isinstance(r["basis_pp"], float), f"basis_pp non float: {type(r['basis_pp'])}"
         assert r["fonte"] == "mock_test", f"Fonte errata: {r['fonte']}"
+        assert abs(r["basis_pp"] - 200.0) < 1e-6, f"basis atteso 200 bp, got {r['basis_pp']}"
 
 
 def test_b_idempotenza():
     """(b) Idempotenza: rieseguire con gli stessi dati non aggiunge righe."""
     output_path = str(cartella_temporanea("p8") / "funding.jsonl")
 
-    mock_exchange = MockExchange(dati_funding=[
-        {"timestamp": 1700000000000, "fundingRate": 0.0001, "markPrice": 50100, "indexPrice": 50000},
-        {"timestamp": 1700003600000, "fundingRate": 0.0002, "markPrice": 50200, "indexPrice": 50050},
-    ])
+    mock_exchange = MockExchange(
+        dati_funding=[
+            {"timestamp": 1700000000000, "fundingRate": 0.0001},
+            {"timestamp": 1700003600000, "fundingRate": 0.0002},
+        ],
+        tickers={"BTC/USDT:USDT": 51000.0, "BTC/USDT": 50000.0},
+    )
 
     risultato1 = raccogli_funding_basis(
         exchange=mock_exchange, simboli=["BTC/USDT:USDT"],
@@ -143,17 +179,24 @@ def test_c_overlap_parziale():
     """(c) Overlap parziale: intervallo sovrapposto -> nessun duplicato."""
     output_path = str(cartella_temporanea("p8") / "funding.jsonl")
 
-    mock_exchange1 = MockExchange(dati_funding=[
-        {"timestamp": 1700000000000, "fundingRate": 0.0001, "markPrice": 50100, "indexPrice": 50000},
-        {"timestamp": 1700003600000, "fundingRate": 0.0002, "markPrice": 50200, "indexPrice": 50050},
-        {"timestamp": 1700007200000, "fundingRate": 0.0003, "markPrice": 50300, "indexPrice": 50100},
-    ])
-    mock_exchange2 = MockExchange(dati_funding=[
-        {"timestamp": 1700003600000, "fundingRate": 0.0002, "markPrice": 50200, "indexPrice": 50050},
-        {"timestamp": 1700007200000, "fundingRate": 0.0003, "markPrice": 50300, "indexPrice": 50100},
-        {"timestamp": 1700010800000, "fundingRate": 0.0004, "markPrice": 50400, "indexPrice": 50150},
-        {"timestamp": 1700014400000, "fundingRate": 0.0005, "markPrice": 50500, "indexPrice": 50200},
-    ])
+    tickers = {"BTC/USDT:USDT": 51000.0, "BTC/USDT": 50000.0}
+    mock_exchange1 = MockExchange(
+        dati_funding=[
+            {"timestamp": 1700000000000, "fundingRate": 0.0001},
+            {"timestamp": 1700003600000, "fundingRate": 0.0002},
+            {"timestamp": 1700007200000, "fundingRate": 0.0003},
+        ],
+        tickers=tickers,
+    )
+    mock_exchange2 = MockExchange(
+        dati_funding=[
+            {"timestamp": 1700003600000, "fundingRate": 0.0002},
+            {"timestamp": 1700007200000, "fundingRate": 0.0003},
+            {"timestamp": 1700010800000, "fundingRate": 0.0004},
+            {"timestamp": 1700014400000, "fundingRate": 0.0005},
+        ],
+        tickers=tickers,
+    )
 
     risultato1 = raccogli_funding_basis(
         exchange=mock_exchange1, simboli=["BTC/USDT:USDT"],
@@ -180,24 +223,31 @@ def test_d_report_copertura():
     """(d) Report copertura date: range richiesto vs righe presenti."""
     output_path = str(cartella_temporanea("p8") / "funding.jsonl")
 
-    mock_exchange = MockExchangeParziale({
-        "BTC/USDT:USDT": [
-            {"timestamp": 1700000000000, "fundingRate": 0.0001, "markPrice": 50100, "indexPrice": 50000},
-            {"timestamp": 1700003600000, "fundingRate": 0.0002, "markPrice": 50200, "indexPrice": 50050},
-            {"timestamp": 1700007200000, "fundingRate": 0.0003, "markPrice": 50300, "indexPrice": 50100},
-            {"timestamp": 1700010800000, "fundingRate": 0.0004, "markPrice": 50400, "indexPrice": 50150},
-        ],
-        "ETH/USDT:USDT": [
-            {"timestamp": 1700000000000, "fundingRate": 0.0001, "markPrice": 3010, "indexPrice": 3000},
-            {"timestamp": 1700003600000, "fundingRate": 0.0002, "markPrice": 3020, "indexPrice": 3005},
-        ],
-    })
+    mock_exchange = MockExchangeParziale(
+        {
+            "BTC/USDT:USDT": [
+                {"timestamp": 1700000000000, "fundingRate": 0.0001},
+                {"timestamp": 1700003600000, "fundingRate": 0.0002},
+                {"timestamp": 1700007200000, "fundingRate": 0.0003},
+                {"timestamp": 1700010800000, "fundingRate": 0.0004},
+            ],
+            "ETH/USDT:USDT": [
+                {"timestamp": 1700000000000, "fundingRate": 0.0001},
+                {"timestamp": 1700003600000, "fundingRate": 0.0002},
+            ],
+        },
+        tickers={
+            "BTC/USDT:USDT": 51000.0, "BTC/USDT": 50000.0,
+            "ETH/USDT:USDT": 3010.0, "ETH/USDT": 3000.0,
+        },
+    )
 
     risultato = raccogli_funding_basis(
         exchange=mock_exchange, simboli=["BTC/USDT:USDT", "ETH/USDT:USDT"],
         data_inizio=1700000000000, data_fine=1700036000000, output_path=output_path,
     )
     assert risultato["scritti"] == 6, f"Attesi 6 scritti, got {risultato['scritti']}"
+    assert risultato["errori"] == [], f"Errori inattesi: {risultato['errori']}"
 
     report = report_copertura(output_path, 1700000000000, 1700036000000)
 
@@ -238,27 +288,107 @@ def test_f_errore_rete():
         assert contenuto == "", f"File non vuoto dopo errore: {contenuto}"
 
 
+def test_g_basis_xperp_spot_usdc():
+    """(g) X-Perp USD-settled: spot di riferimento = BASE/USDC, mai BASE/USD."""
+    output_path = str(cartella_temporanea("p8") / "funding.jsonl")
+
+    mock_exchange = MockExchange(
+        dati_funding=[{"timestamp": 1700000000000, "fundingRate": 0.0001}],
+        tickers={"BTC/USD:USD-310404": 50200.0, "BTC/USDC": 50000.0},
+    )
+
+    risultato = raccogli_funding_basis(
+        exchange=mock_exchange, simboli=["BTC/USD:USD-310404"],
+        data_inizio=1700000000000, data_fine=1700010000000, output_path=output_path,
+    )
+
+    assert risultato["scritti"] == 1, f"Attesi 1 scritto, got {risultato['scritti']}"
+    assert risultato["errori"] == [], f"Errori inattesi: {risultato['errori']}"
+
+    with open(output_path, "r") as f:
+        righe = [json.loads(line) for line in f if line.strip()]
+    assert righe[0]["simbolo"] == "BTC/USD:USD-310404"
+    assert abs(righe[0]["basis_pp"] - 40.0) < 1e-6, f"basis atteso 40 bp, got {righe[0]['basis_pp']}"
+
+
+def test_h_basis_spot_assente():
+    """(h) Spot non quotato: errore esplicito e record scritto con basis 0.0."""
+    output_path = str(cartella_temporanea("p8") / "funding.jsonl")
+
+    mock_exchange = MockExchange(
+        dati_funding=[{"timestamp": 1700000000000, "fundingRate": 0.0001}],
+        tickers={"FOO/USDT:USDT": 1.0},  # manca lo spot FOO/USDT
+    )
+
+    risultato = raccogli_funding_basis(
+        exchange=mock_exchange, simboli=["FOO/USDT:USDT"],
+        data_inizio=1700000000000, data_fine=1700010000000, output_path=output_path,
+    )
+
+    assert risultato["scritti"] == 1, f"Attesi 1 scritto, got {risultato['scritti']}"
+    assert len(risultato["errori"]) == 1, f"Atteso 1 errore, got {risultato['errori']}"
+    assert "ticker" in risultato["errori"][0]
+
+    with open(output_path, "r") as f:
+        righe = [json.loads(line) for line in f if line.strip()]
+    assert righe[0]["basis_pp"] == 0.0
+
+
+def test_i_raccogli_ohlcv():
+    """(i) OHLCV: candele scritte con campi float; rieseguire non duplica."""
+    output_path = str(cartella_temporanea("p8") / "ohlcv.jsonl")
+
+    mock_exchange = MockExchangeOHLCV(candele=[
+        [1700000000000, 100.0, 101.0, 99.0, 100.5, 12.0],
+        [1700003600000, 100.5, 102.0, 100.0, 101.5, 15.0],
+    ])
+
+    r1 = raccogli_ohlcv(
+        exchange=mock_exchange, simboli=["BTC/USDT"], timeframe="1h",
+        data_inizio=1700000000000, data_fine=1700010000000, output_path=output_path,
+    )
+    r2 = raccogli_ohlcv(
+        exchange=mock_exchange, simboli=["BTC/USDT"], timeframe="1h",
+        data_inizio=1700000000000, data_fine=1700010000000, output_path=output_path,
+    )
+
+    assert r1["scritti"] == 2, f"Attesi 2 scritti, got {r1['scritti']}"
+    assert r1["errori"] == [], f"Errori inattesi: {r1['errori']}"
+    assert r2["scritti"] == 0, f"Seconda esecuzione: attesi 0, got {r2['scritti']}"
+    assert r2["duplicati"] == 2, f"Seconda esecuzione: attesi 2 duplicati, got {r2['duplicati']}"
+
+    with open(output_path, "r") as f:
+        righe = [json.loads(line) for line in f if line.strip()]
+    assert len(righe) == 2
+    assert righe[0]["simbolo"] == "BTC/USDT"
+    assert righe[0]["close"] == 100.5
+    assert righe[1]["volume"] == 15.0
+    assert all(isinstance(r["open"], float) for r in righe)
+
+
 def test_extra_multi_simbolo():
     """Test extra: raccolta multi-simbolo simultanea."""
     output_path = str(cartella_temporanea("p8") / "funding.jsonl")
 
-    mock_exchange = MockExchangeParziale({
-        "BTC/USDT:USDT": [
-            {"timestamp": 1700000000000, "fundingRate": 0.0001, "markPrice": 50100, "indexPrice": 50000},
-        ],
-        "ETH/USDT:USDT": [
-            {"timestamp": 1700000000000, "fundingRate": 0.0002, "markPrice": 3010, "indexPrice": 3000},
-        ],
-        "SOL/USDT:USDT": [
-            {"timestamp": 1700000000000, "fundingRate": 0.0003, "markPrice": 101, "indexPrice": 100},
-        ],
-    })
+    mock_exchange = MockExchangeParziale(
+        {
+            "BTC/USDT:USDT": [{"timestamp": 1700000000000, "fundingRate": 0.0001}],
+            "ETH/USDT:USDT": [{"timestamp": 1700000000000, "fundingRate": 0.0002}],
+            "SOL/USDT:USDT": [{"timestamp": 1700000000000, "fundingRate": 0.0003}],
+        },
+        tickers={
+            "BTC/USDT:USDT": 51000.0, "BTC/USDT": 50000.0,
+            "ETH/USDT:USDT": 3010.0, "ETH/USDT": 3000.0,
+            "SOL/USDT:USDT": 101.0, "SOL/USDT": 100.0,
+        },
+    )
 
     risultato = raccogli_funding_basis(
         exchange=mock_exchange, simboli=["BTC/USDT:USDT", "ETH/USDT:USDT", "SOL/USDT:USDT"],
         data_inizio=1700000000000, data_fine=1700010000000, output_path=output_path,
     )
     assert risultato["scritti"] == 3, f"Attesi 3, got {risultato['scritti']}"
+    assert risultato["errori"] == [], f"Errori inattesi: {risultato['errori']}"
 
     with open(output_path, "r") as f:
         righe = [json.loads(line) for line in f if line.strip()]
@@ -285,3 +415,11 @@ def test_extra_calcola_basis():
     assert _calcola_basis_pp(100, 99) == -100.0
     assert _calcola_basis_pp(0, 100) == 0.0
     assert _calcola_basis_pp(100, 100) == 0.0
+
+
+def test_extra_simbolo_spot():
+    """Test helper: spot di riferimento per il basis (X-Perp USD -> coppia USDC)."""
+    assert _simbolo_spot("BTC/USDT:USDT") == "BTC/USDT"
+    assert _simbolo_spot("BTC/USD:USD-310404") == "BTC/USDC"
+    assert _simbolo_spot("DOGE/USD:USD-310404") == "DOGE/USDC"
+    assert _simbolo_spot("BTC/USDC") == "BTC/USDC"

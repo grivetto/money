@@ -42,6 +42,23 @@ def _calcola_basis_pp(spot: float, future: float) -> float:
     return ((future - spot) / spot) * 10000
 
 
+def _simbolo_spot(sym_norm: str) -> str:
+    """Spot di riferimento per il basis di un perpetuo.
+
+    'BTC/USDT:USDT' -> 'BTC/USDT'. Per i perpetui quotati USD (X-Perp, es.
+    'BTC/USD:USD-310404') lo spot 'BTC/USD' non esiste su OKX EEA: si usa la
+    coppia USDC (proxy piu' vicino al dollaro, e' anche la gamba spot usata
+    dal canary carry).
+    """
+    if ':' not in sym_norm:
+        return sym_norm
+    base, resto = sym_norm.split('/', 1)
+    quote = resto.split(':')[0]
+    if quote == 'USD':
+        return f"{base}/USDC"
+    return f"{base}/{quote}"
+
+
 def _carica_esistenti(path: str) -> Dict[Tuple[str, int], Dict[str, Any]]:
     """Carica righe esistenti dal file JSONL per deduplicazione."""
     esistenti: Dict[Tuple[str, int], Dict[str, Any]] = {}
@@ -82,73 +99,98 @@ def raccogli_funding_basis(
 ) -> Dict[str, Any]:
     """
     Raccoglie funding rate e basis per una lista di simboli in un intervallo date.
-    
+
+    Il basis (basis points) è la fotografia del ticker al momento della raccolta:
+    (last_perpetuo - last_spot) / last_spot * 10000. Il perp è `BASE/QUOTE:...` e
+    lo spot di riferimento è derivato da `_simbolo_spot` (X-Perp USD -> coppia USDC).
+    OKX EEA non espone mark/index nello storico funding: per un backfill storico il
+    basis NON è point-in-time, per la raccolta incrementale è la fotografia del run.
+
     Args:
         exchange: Oggetto exchange ccxt (o mock) con metodi fetch_funding_rate_history,
-                  fetch_ohlcv, fetch_ticker.
-        simboli: Lista di simboli (es. ['BTC/USDT:USDT', 'ETH/USDT:USDT']).
+                  fetch_ticker.
+        simboli: Lista di simboli perpetui (es. ['BTC/USDT:USDT', 'BTC/USD:USD-310404']).
         data_inizio: Inizio intervallo (timestamp ms, ISO string, o datetime).
         data_fine: Fine intervallo (timestamp ms, ISO string, o datetime).
         output_path: Percorso file JSONL output (append-only).
-        timeframe: Timeframe per OHLCV (default '1h').
-    
+        timeframe: Timeframe per OHLCV (non utilizzato, mantenuto per compatibilità).
+
     Returns:
         Dict con statistiche: {'scritti': int, 'duplicati': int, 'errori': List[str]}
     """
     ts_inizio = _normalizza_ts(data_inizio)
     ts_fine = _normalizza_ts(data_fine)
-    
+
     esistenti = _carica_esistenti(output_path)
     nuovi_records: List[Dict[str, Any]] = []
     duplicati = 0
     errori: List[str] = []
-    
+
     for simbolo in simboli:
         sym_norm = _normalizza_simbolo(simbolo)
+        spot_symbol = _simbolo_spot(sym_norm)
         try:
             # Funding rate history
             funding_history = exchange.fetch_funding_rate_history(simbolo, since=ts_inizio, limit=1000)
-            
+
+            # Prezzi per il basis: caricati una sola volta per simbolo, e solo se
+            # esiste almeno un record nuovo (nei run in cui tutto e' gia' presente
+            # non si fanno chiamate a vuoto).
+            prezzi_caricati = False
+            perp_last: Any = None
+            spot_last: Any = None
+
             for fr in funding_history:
                 ts = _normalizza_ts(fr.get('timestamp') or fr.get('time'))
                 if ts < ts_inizio or ts > ts_fine:
                     continue
-                
+
                 chiave = (sym_norm, ts)
                 if chiave in esistenti:
                     duplicati += 1
                     continue
-                
+
+                if not prezzi_caricati:
+                    prezzi_caricati = True
+                    try:
+                        ticker_perp = exchange.fetch_ticker(simbolo)
+                        ticker_spot = exchange.fetch_ticker(spot_symbol)
+                        perp_last = ticker_perp.get('last')
+                        spot_last = ticker_spot.get('last')
+                        if perp_last is None or not spot_last:
+                            errori.append(
+                                f"{simbolo}: ticker senza prezzo last (perp={perp_last}, spot={spot_last})"
+                            )
+                    except Exception as e:
+                        errori.append(f"{simbolo}: prezzi ticker - {type(e).__name__}: {e}")
+
+                basis_pp = 0.0
+                if perp_last is not None and spot_last:
+                    basis_pp = _calcola_basis_pp(float(spot_last), float(perp_last))
+
                 funding_rate = fr.get('fundingRate', 0.0)
-                mark_price = fr.get('markPrice')
-                index_price = fr.get('indexPrice')
-                
-                # Calcola basis se abbiamo mark e index price
-                if mark_price is not None and index_price is not None:
-                    basis_pp = _calcola_basis_pp(float(index_price), float(mark_price))
-                else:
-                    basis_pp = 0.0
-                
                 record = {
                     'simbolo': sym_norm,
                     'ts': ts,
                     'funding': float(funding_rate),
                     'basis_pp': round(basis_pp, 4),
+                    'mark_price': None,  # non disponibile tramite questa chiamata
+                    'index_price': None, # non disponibile tramite questa chiamata
                     'fonte': getattr(exchange, 'id', 'unknown')
                 }
                 nuovi_records.append(record)
                 esistenti[chiave] = record
-                
+
         except Exception as e:
             errori.append(f"{simbolo}: {type(e).__name__}: {e}")
-    
+
     scritti = _scrivi_jsonl_append(output_path, nuovi_records)
-    
+
     return {
         'scritti': scritti,
         'duplicati': duplicati,
         'errori': errori
-    }
+}
 
 
 def report_copertura(path: str, data_inizio: Any, data_fine: Any) -> Dict[str, Any]:
@@ -242,3 +284,63 @@ def verifica_niente_ordini_sorgente(path_modulo: str) -> bool:
         return True
     except Exception:
         return False
+def raccogli_ohlcv(
+    exchange: Any,
+    simboli: List[str],
+    timeframe: str,
+    data_inizio: Any,
+    data_fine: Any,
+    output_path: str,
+) -> Dict[str, Any]:
+    """
+    Raccoglie candele OHLCV per una lista di simboli e timeframe in un intervallo date.
+    Args:
+        exchange: Oggetto exchange ccxt (o mock) con metodo fetch_ohlcv.
+        simboli: Lista di simboli (es. ['BTC/USDT', 'ETH/USDT']).
+        timeframe: Timeframe delle candele (es. '5m', '15m', '1h').
+        data_inizio: Inizio intervallo (timestamp ms, ISO string, o datetime).
+        data_fine: Fine intervallo (timestamp ms, ISO string, o datetime).
+        output_path: Percorso file JSONL output (append-only).
+    Returns:
+        Dict con statistiche: {'scritti': int, 'duplicati': int, 'errori': List[str]}
+    """
+    ts_inizio = _normalizza_ts(data_inizio)
+    ts_fine = _normalizza_ts(data_fine)
+    esistenti = _carica_esistenti(output_path)
+    nuovi_records: List[Dict[str, Any]] = []
+    duplicati = 0
+    errori: List[str] = []
+    for simbolo in simboli:
+        sym_norm = _normalizza_simbolo(simbolo)
+        try:
+            # Since fetch_ohlcv returns most recent first? Actually it returns oldest first by default.
+            # We'll fetch since data_inizio.
+            ohlcv = exchange.fetch_ohlcv(simbolo, timeframe=timeframe, since=ts_inizio, limit=1000)
+            for candle in ohlcv:
+                ts, open_, high, low, close, volume = candle
+                if ts < ts_inizio or ts > ts_fine:
+                    continue
+                chiave = (sym_norm, ts)
+                if chiave in esistenti:
+                    duplicati += 1
+                    continue
+                record = {
+                    'simbolo': sym_norm,
+                    'ts': ts,
+                    'open': float(open_),
+                    'high': float(high),
+                    'low': float(low),
+                    'close': float(close),
+                    'volume': float(volume),
+                    'fonte': getattr(exchange, 'id', 'unknown')
+                }
+                nuovi_records.append(record)
+                esistenti[chiave] = record
+        except Exception as e:
+            errori.append(f"{simbolo}: {type(e).__name__}: {e}")
+    scritti = _scrivi_jsonl_append(output_path, nuovi_records)
+    return {
+        'scritti': scritti,
+        'duplicati': duplicati,
+        'errori': errori
+}
