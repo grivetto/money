@@ -1,7 +1,7 @@
 # P25 — KPI settimanali nel digest (FASE 1) — SPEC DI IMPLEMENTAZIONE
 STATO: PRESA_DA Merlino 2026-10-18 (implementazione) — pre-registrata 2026-10-17 (hermes/Artù). REQ-MERL-20261018-006.
 Voce OPERATIVA (osservabilità — ROADMAP §3 FASE 1: «KPI settimanali nel digest: rendita netta (€) · fee · distanza dal break-even»). Non è un esperimento; fuori dal conteggio tentativi.
-Repo: `grivetto/money` · commit di registrazione: `430b6169` (file di questa voce: `coda_catena/P25_kpi_settimanali.md`).
+Repo: `grivetto/money` · commit di registrazione: `084bd5f1` (file di questa voce: `coda_catena/P25_kpi_settimanali.md`).
 
 ## Obiettivo (verificabile)
 Il digest Telegram del **lunedì** include una sezione KPI settimanali:
@@ -20,7 +20,7 @@ Tutto con periodo effettivo dichiarato. Il digest giornaliero resta invariato (l
 - **Output**: testo KPI (stdout; con `--invia` su Telegram via il canale esistente); con `--json` un dict per test/verifica. Nessuna scrittura su exchange, nessun ordine.
 
 ## Criteri di accettazione
-1. `ops/kpi_settimanali.py` + `scripts/raccogli_fee_ledger.py` + test offline (`tests/test_kpi_settimanali.py`, `tests/test_raccogli_fee_ledger.py`): fixture 2 settimane sintetiche con numeri noti (rendita scomposta, fee sommate, mensilizzazione 30/7, break-even), dedupe collector su billId, fee-ledger mancante → «dati insufficienti» (nessuna riga inventata), valuta non convertibile → conteggiata a parte. Output `pytest -q` per esteso.
+1. `ops/kpi_settimanali.py` + `scripts/raccogli_fee_ledger.py` + test offline (`tests/test_kpi_settimanali.py`, `tests/test_raccogli_fee_ledger.py`): fixture 2 settimane sintetiche con numeri noti e **valori attesi calcolati a mano** (rendita scomposta, fee sommate, mensilizzazione 30/7, break-even) — ogni test asserisce il risultato: senza l'implementazione i test falliscono; dedupe collector su billId, fee-ledger mancante → «dati insufficienti» (nessuna riga inventata), valuta non convertibile → conteggiata a parte. Output `pytest -q` per esteso.
 2. Run reale (di Artù): collector sul ledger vero (7-8g) + KPI composto sul banco vero — output allegato come `prove/P25_kpi_<data>.txt`.
 3. `LEGGIMI.md` con: comando cron proposto per il collector (MARCODG1, lunedì 08:50) e per il KPI (mc2, lunedì 09:00, `--settimanale --invia`), comandi esatti di dry-run.
 4. Handoff `merlino/handoff/P25/` con i due moduli, i due test, artefatto smoke, LEGGIMI.md, `MANIFEST.sha256`, `READY` (ultimo).
