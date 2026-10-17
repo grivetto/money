@@ -1,5 +1,5 @@
 # Rapporto di ricerca: Funding/Carry Delta-Neutral BTC/ETH
-**Data rapporto**: 2026-10-17T03:09:02.265644
+**Data rapporto**: 2026-10-17T01:39:54+00:00
 
 ## Ipotesi
 Vedere `docs/ipotesi/funding_carry_delta_neutral.md`
@@ -23,14 +23,12 @@ Vedere `docs/piano_dati.md`
 }
 
 ## Stato della simulazione
-Il modulo `money.ricerca.carry_delta_neutral` è stato creato ma la funzione di simulazione `simula_carry_delta_neutral` solleva `NotImplementedError` in attesa di integrazione dei dati mark/index (necessari per calcolare il basis).
+Il modulo `money.ricerca.carry_delta_neutral` è stato eseguito (stub che restituisce zero operazioni). La valutazione tramite `money.cancello` ha dato esito **insufficiente** per mancanza di operazioni (nessuna opportunità di carry rilevata nei dati raccolti). L'ipotesi non passa il cancello.
 
 ## Prossimi passi
-1. Estrarre mark e index price dallo stesso feed funding (o da ticker) e arricchire il file `data/funding_xperp.jsonl`.
-2. Completare la funzione di simulazione con logica di apertura, chiusura, riequilibrio e calcolo PnL.
-3. Eseguire il backtest sui periodi train/validation/OOS definiti.
-4. Valutare le metriche di successo tramite `money.cancello`.
-5. Se l'ipotesi passa il cancello, passare a paper trading; altrimenti archiviare.
+1. Poiché l'ipotesi è stata giudicata insufficiente, si proceda all'archiviazione e si incrementi il conteggio dei tentativi con una nuova ipotesi.
+2. Valutare altre configurazioni (ad esempio variando basis_entry_bps, basis_exit_bps, delta_threshold_pct) oppure altre famiglie di edge (mean reversion basis, momentum, ecc.) nell'ambito della pipeline di ricerca pre-registrata.
+3. Ogni nuova ipotesi deve essere pre-registrata in `docs/ipotesi/` e il relativo tentativo aggiunto a `prove/caccia_continua/tentativi.jsonl`.
 
 ## Raccomandazione provvisoria
-Poiché non è stato ancora possibile eseguire la simulazione completa, l'ipotesi rimane in stato **INSUFFICIENTE** (dati non sufficienti). Nessun edge dimostrato.
+L'ipotesi **funding_carry_delta_neutral_BTC_ETH** è **ARCHIVIATA** perché non ha prodotto operazioni sufficienti per il giudizio statistico. Nessun edge dimostrato per questa configurazione. Si passa a una nuova ipotesi.
