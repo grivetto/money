@@ -123,3 +123,11 @@ Con tutte e tre: il netto passa da **≈ −28 a ≈ −10 €/mese**; il resto 
 - **D2: SÌ, con preflight cifre alla mano** — funding: 211 USDC ≈ 194,16 € → Simple Earn (instant). Trading: eccedenza ≈ 88 € (368,23 − ~180 collaterale carry − 100 riserva) da confermare con dry-run del motore carry PRIMA di qualsiasi bonifico.
 - **D3: SÌ, a step con i gate** — 180 → +100 € solo con gate verdi al momento dell'esecuzione. Lettura 01:40: DOT 4,69 %/anno ✓ e 24 h senza negativi ✓; ADA 5,72 %/anno ✓ ma un punto negativo nelle ultime 24 h (verificare che non sia "inversione continua >24 h" al momento del via); banco PASS ✓. **Nota cap**: carry ≤30 % del capitale ≈ 329 € attuale → il target 400 € richiede aumento di capitale o rinuncia esplicita dell'owner (step fino a 280 € ora, poi valutazione).
 - Esecuzione mossa monetaria: in finestra mattutina, dopo dry-run e test degli strumenti esistenti (regola: zero percorsi non testati sul capitale).
+
+### Preflight D2 — cifre reali (2026-10-17 22:05 UTC, Artù)
+
+Lette dal banco a secco (21:53 UTC) + posizioni reali (MARCODG1, sola lettura):
+- **D2-a — funding: 211,000041 USDC ≈ 194,18 €** → confermato. Simple Earn instant: si esegue in finestra mattutina con l'harness P24 (REQ-MERL-20261017-005), dry-run prima dell'`--execute`.
+- **D2-b — trading: 368,45 €**, di cui margine isolato perp 178,41 USD (≈164,2 €) + gambe spot DOT/ADA/DOGE ≈174,8 € + USDC libero 32,23 (≈29,7 €) + EUR 1,07. **Eccedenza spostabile reale ≈ 29,7 €, NON ≈88 €**: la stima ROADMAP trattava il trading come liquido, ma è quasi tutto impegnato dal carry (margine + gambe spot). La "riserva 100 €" non esiste come cuscinetto liquido separato: il cuscinetto è il margine isolato stesso. **D2-b: importo reale 1/3 del previsto → non si esegue senza nuova conferma del proprietario** (opzioni: spostare ~20–25 € lasciando la riserva fee, oppure saltare).
+- Chiave main (okx): permessi `read_only,trade`; IP whitelist 87.106.3.15 + 87.106.222.123 → l'esecuzione della mossa gira da MARCODG1 (o nuvola).
+- Simple Earn già attivo: 599,73 USDC (534,00 €).
