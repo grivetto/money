@@ -1,0 +1,51 @@
+{
+ "tipo": "kpi_settimanali",
+ "generato_il": "2026-10-17T22:07:16.446228+00:00",
+ "giorni": 7,
+ "comando": "kpi_settimanali.py --settimanale --banco-file smoke/banco_smoke.jsonl --fee-file smoke/fee_smoke.jsonl --json-out smoke/kpi_smoke.json",
+ "hash_artefatti": {
+  "banco_secco.jsonl": "7db4dea1437fe955513984bbbd0db70c4b81bd6c87a77900511daeb53128d957",
+  "fee_ledger.jsonl": "4225ad6fea8372ccefceb52add2ce5a32583efe91079ebb962aca9345bdf1a4d"
+ },
+ "rendita": {
+  "stato": "ok",
+  "delta_eur": 11.860000000000014,
+  "cambio_eur": 10.010000000000009,
+  "resto_eur": 1.850000000000005,
+  "da": "2026-10-11T09:00:00Z",
+  "a": "2026-10-18T09:00:00Z",
+  "ts_da": 1791709200.0,
+  "ts_a": 1792314000.0,
+  "rate_da": 0.92,
+  "rate_a": 0.93
+ },
+ "periodo_effettivo": {
+  "da": "2026-10-11T09:00:00Z",
+  "a": "2026-10-18T09:00:00Z",
+  "secondi": 604800
+ },
+ "capitale_attuale_eur": 931.86,
+ "fee": {
+  "incluse": 4,
+  "escluse_ccy": 1,
+  "fuori_periodo": 1,
+  "scartate": 0,
+  "rate_usdc_eur": 0.93,
+  "stato": "ok",
+  "somma_eur": 0.8440000000000001
+ },
+ "costi": {
+  "valore_eur_mese": 16.0,
+  "fonte": "ROADMAP D1 (default, AI ≤10 + VPS ≤6): 16.00 €/mese"
+ },
+ "break_even": {
+  "mensilizzata_eur_mese": 7.92857142857145,
+  "costi_eur_mese": 16.0,
+  "distanza_eur_mese": -8.07142857142855,
+  "capitale_attuale_eur": 931.86,
+  "formula": "mensilizzata = resto_7g × 30/7; distanza = mensilizzata − costi mensili; capitale_break_even = costi_mensili ÷ (mensilizzata ÷ capitale attuale)",
+  "limiti": "limite: campione corto (7 giorni), la % realizzata è volatile, stima indicativa",
+  "stato": "ok",
+  "capitale_break_even_eur": 1880.5102702702652
+ }
+}

@@ -1,0 +1,9 @@
+nuove=2 duplicate=0 errori=0
+DRY-RUN: nessuna scrittura su /home/sergio/.hermes/cache/scratch/tmppg6ueuxh/logs/fee_ledger.jsonl
+nuove=1 duplicate=1 errori=0
+DRY-RUN: nessuna scrittura su /home/sergio/.hermes/cache/scratch/tmppg6ueuxh/logs/fee_ledger.jsonl
+nuove=0 duplicate=0 errori=1
+giro1: nuove=2 duplicate=0 errori=0
+dryrun2: nuove=1 duplicate=1 errori=0
+giro3: nuove=0 duplicate=0 errori=1
+file finale, righe: 2

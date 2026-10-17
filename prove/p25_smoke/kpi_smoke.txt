@@ -1,0 +1,13 @@
+📈 Denaro — KPI settimanali (lunedì)
+Periodo effettivo: 2026-10-11T09:00Z → 2026-10-18T09:00Z (7g)
+Rendita netta 7g: +11.86 € (cambio +10.01 € · resto +1.85 €)
+Fee 7g: 0.84 € — 4 voci; escluse 1 voce (valuta non convertibile); 1 fuori finestra
+Break-even:
+  rendita mensilizzata (resto × 30/7): +7.93 €/mese
+  costi mensili: 16.00 €/mese (ROADMAP D1 (default, AI ≤10 + VPS ≤6): 16.00 €/mese)
+  distanza dal break-even: -8.07 €/mese
+  capitale attuale: 931.86 € · capitale break-even stimato: 1,880.51 €
+  formula: mensilizzata = resto_7g × 30/7; distanza = mensilizzata − costi mensili; capitale_break_even = costi_mensili ÷ (mensilizzata ÷ capitale attuale)
+  limite: campione corto (7 giorni), la % realizzata è volatile, stima indicativa
+Regola: ogni riga "dati insufficienti" è un dato assente nelle fonti, mai un numero ipotizzato.
+Comando: kpi_settimanali.py --settimanale --banco-file smoke/banco_smoke.jsonl --fee-file smoke/fee_smoke.jsonl
