@@ -35,3 +35,13 @@ Run reale (SOLO Artù): collector con `.env_banco` da MARCODG1; poi `ops/kpi_set
 
 ## Fuori scope
 - Modifiche al digest giornaliero esistente oltre l'aggiunta della sezione `--settimanale`; nuove chiavi API; scritture su exchange; il track record 60 giorni (voce a sé).
+
+## Addendum fix 2026-10-18 (Artù) — difetto rilevato nel run reale (review)
+
+Il run reale su finestra 10→17/10 produce **rendita 7g +976,04 €** (resto +990,32 €, capitale 1.096 €): è il noto falso «+990 €» del capitale in transito — il banco ha iniziato a leggere tutti i comparti coerentemente solo dal 14/10 (vedi la guardia di `ops/report_mensile.py` righe ~178–221 e la voce di registro del report mensile). Il KPI NON replica quella guardia → numeri NON validi, voce non chiudibile.
+
+**Fix richiesto (REQ-MERL-20261018-007):**
+- portare nel KPI la stessa logica di **sotto-periodo coerente** di `report_mensile.py`: se la finestra 7g attraversa un periodo con comparti non coerenti, la scomposizione cambio-vs-resto si restringe al sotto-periodo coerente;
+- mensilizzazione e break-even usano il sotto-periodo effettivo con nota esplicita («sotto-periodo X,Yg su 7»); se il sotto-periodo < 2g → «dati insufficienti» per rendita e break-even (mai mensilizzare un campione incoerente);
+- **test di regressione col caso reale**: finestra 10→17/10 sul banco vero NON deve produrre il falso +990 € (atteso: sotto-periodo ≈ 14→17/10; coerenza con la voce di registro del report mensile — resto ≈ −0,46 € su 14→16/10, cambio −3,62 €).
+- il resto della voce (fee ledger, collector) resta valido: `nuove=23 duplicate=0 errori=0` sul run reale.
