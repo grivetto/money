@@ -1,5 +1,5 @@
 # P23 — Il pedaggio reale: misura sui NOSTRI fill + studio maker-first
-STATO: PRESA_DA Hermes 2026-10-17 — pre-registrata 2026-10-16 (hermes). M1 (fill reali, chiave read-only) di Hermes; M2 (studio maker-first) DELEGATO a Merlino — REQ-MERL-20261017-004, consegna `handoff/P23-M2/`. Interpretazioni ufficiali: addendum in coda (PRIMA di qualsiasi numero).
+STATO: **FATTA 2026-10-18 (Artù)** — misura ufficiale eseguita (M1 dal ledger read-only; M2 run ufficiale 20 momenti + run di verifica indipendente). **Esito: H1 CONFERMATO (fee reali = tariffa taker esatta, riconciliazione MATCH); H2 NON CONFERMATO su due run → soglie confermate, motore maker-first NON consigliato.** Report: `prove/P23_report.md`. Pre-registrata 2026-10-16 (hermes). M1 (fill reali, chiave read-only) di Hermes; M2 (studio maker-first) DELEGATO a Merlino — REQ-MERL-20261017-004, consegna `handoff/P23-M2/`.
 Repo: grivetto/alpha-omega-trading · commit di registrazione: ea7ae01b (file di questa voce: `coda_catena/P23_pedaggio_esecuzione.md`).
 
 ## Obiettivo (verificabile)

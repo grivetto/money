@@ -1,0 +1,387 @@
+{
+  "etichetta": "STIMA — non misura d'esecuzione (book pubblico, fill proxy)",
+  "fonte_dati": "ccxt pubblico eea.okx.com (book L1 + trade pubblici), sola lettura, zero chiavi, zero ordini",
+  "limite_dichiarato": "fill proxy da trade pubblici senza modellazione di coda: fill-rate primario = LIMITE SUPERIORE; sensibilita' = secondo bound; entrambi riportati",
+  "seed": 42,
+  "regola_momenti": "random.Random(42); 20 gap g_i = base_i + extra_i con base_0=0, base_i=100.0s per i>0, extra_i da campionamento esponenziale normalizzato (Dirichlet uniforme) sul budget 800.0s; momenti = cumsum dei gap (deterministico, O(n))",
+  "t0_run_utc": "2026-10-17T21:45:43.928825+00:00",
+  "momenti_utc": [
+    "2026-10-17T21:46:47.592893+00:00",
+    "2026-10-17T21:48:29.173718+00:00",
+    "2026-10-17T21:50:29.246940+00:00",
+    "2026-10-17T21:52:25.011365+00:00",
+    "2026-10-17T21:55:28.243637+00:00",
+    "2026-10-17T21:58:18.717655+00:00",
+    "2026-10-17T22:02:17.727303+00:00",
+    "2026-10-17T22:04:03.403830+00:00",
+    "2026-10-17T22:06:17.608522+00:00",
+    "2026-10-17T22:07:59.496498+00:00",
+    "2026-10-17T22:09:54.894596+00:00",
+    "2026-10-17T22:12:18.827417+00:00",
+    "2026-10-17T22:14:00.505952+00:00",
+    "2026-10-17T22:15:54.342187+00:00",
+    "2026-10-17T22:18:39.843149+00:00",
+    "2026-10-17T22:21:08.981993+00:00",
+    "2026-10-17T22:23:04.524246+00:00",
+    "2026-10-17T22:25:40.059044+00:00",
+    "2026-10-17T22:29:03.521900+00:00",
+    "2026-10-17T22:30:43.928825+00:00"
+  ],
+  "griglia": {
+    "X_s": [
+      5,
+      15
+    ],
+    "gambe": [
+      [
+        "DOGE/USDT",
+        "spot"
+      ],
+      [
+        "DOGE/USDT:USDT",
+        "swap"
+      ],
+      [
+        "DOT/USDT",
+        "spot"
+      ],
+      [
+        "DOT/USDT:USDT",
+        "swap"
+      ],
+      [
+        "ADA/USDT",
+        "spot"
+      ],
+      [
+        "ADA/USDT:USDT",
+        "swap"
+      ]
+    ]
+  },
+  "tariffe": {
+    "spot": {
+      "maker": 0.0008,
+      "taker": 0.001,
+      "fonte": "money.costi TARIFFE['okx_eea_con_perp'] maker=0.0008 taker=0.0010, verificata 2026-10-06 su conto main acctLv2 (X-Perps attivi), confermata dal fill del canary C1 (0,10% taker)"
+    },
+    "swap": {
+      "maker": 0.0002,
+      "taker": 0.0005,
+      "fonte": "money.costi TARIFFE['okx_eea_swap_lv1'] maker=0.0002 taker=0.0005, verificata 2026-09-25 con privateGetAccountTradeFee (acctLv2)"
+    }
+  },
+  "per_gamba": {
+    "DOGE/USDT": {
+      "mercato": "spot",
+      "tick": 1e-05,
+      "n_momenti": 20,
+      "spread_bp_medio": 1.272064029808151,
+      "trade_saturati": true,
+      "X": {
+        "X5": {
+          "fill_prim_buy": 3,
+          "fill_prim_sell": 7,
+          "fill_sens_buy": 7,
+          "fill_sens_sell": 5,
+          "costo_bp_prim_buy": 10.049766089860963,
+          "costo_bp_prim_sell": 9.267131490979184,
+          "costo_bp_sens_buy": 9.268011587593486,
+          "costo_bp_sens_sell": 9.65877774227343,
+          "fill_prim_buy_rate": 0.15,
+          "fill_prim_sell_rate": 0.35,
+          "fill_sens_buy_rate": 0.35,
+          "fill_sens_sell_rate": 0.25,
+          "risparmio_bp_prim_buy": -0.04976608986096309,
+          "risparmio_bp_prim_sell": 0.7328685090208165,
+          "risparmio_bp_sens_buy": 0.7319884124065137,
+          "risparmio_bp_sens_sell": 0.3412222577265709,
+          "risparmio_ciclo_bp_prim": 0.6831024191598534,
+          "risparmio_ciclo_bp_sens": 1.0732106701330846
+        },
+        "X15": {
+          "fill_prim_buy": 10,
+          "fill_prim_sell": 11,
+          "fill_sens_buy": 12,
+          "fill_sens_sell": 10,
+          "costo_bp_prim_buy": 8.68256900454821,
+          "costo_bp_prim_sell": 8.486299760361195,
+          "costo_bp_sens_buy": 8.291729289888034,
+          "costo_bp_sens_sell": 8.681507630878523,
+          "fill_prim_buy_rate": 0.5,
+          "fill_prim_sell_rate": 0.55,
+          "fill_sens_buy_rate": 0.6,
+          "fill_sens_sell_rate": 0.5,
+          "risparmio_bp_prim_buy": 1.3174309954517902,
+          "risparmio_bp_prim_sell": 1.5137002396388048,
+          "risparmio_bp_sens_buy": 1.7082707101119663,
+          "risparmio_bp_sens_sell": 1.3184923691214774,
+          "risparmio_ciclo_bp_prim": 2.831131235090595,
+          "risparmio_ciclo_bp_sens": 3.0267630792334437
+        }
+      }
+    },
+    "DOGE/USDT:USDT": {
+      "mercato": "swap",
+      "tick": 1e-05,
+      "n_momenti": 20,
+      "spread_bp_medio": 1.272881785752181,
+      "trade_saturati": true,
+      "X": {
+        "X5": {
+          "fill_prim_buy": 6,
+          "fill_prim_sell": 10,
+          "fill_sens_buy": 6,
+          "fill_sens_sell": 4,
+          "costo_bp_prim_buy": 4.163909116269593,
+          "costo_bp_prim_sell": 3.1814177734387385,
+          "costo_bp_sens_buy": 4.163909116269593,
+          "costo_bp_sens_sell": 4.654175329166343,
+          "fill_prim_buy_rate": 0.3,
+          "fill_prim_sell_rate": 0.5,
+          "fill_sens_buy_rate": 0.3,
+          "fill_sens_sell_rate": 0.2,
+          "risparmio_bp_prim_buy": 0.8360908837304066,
+          "risparmio_bp_prim_sell": 1.8185822265612615,
+          "risparmio_bp_sens_buy": 0.8360908837304066,
+          "risparmio_bp_sens_sell": 0.3458246708336574,
+          "risparmio_ciclo_bp_prim": 2.654673110291668,
+          "risparmio_ciclo_bp_sens": 1.181915554564064
+        },
+        "X15": {
+          "fill_prim_buy": 10,
+          "fill_prim_sell": 12,
+          "fill_sens_buy": 12,
+          "fill_sens_sell": 9,
+          "costo_bp_prim_buy": 3.182799155403009,
+          "costo_bp_prim_sell": 2.6906266192028707,
+          "costo_bp_sens_buy": 2.6913978693544025,
+          "costo_bp_sens_sell": 3.4264318611387887,
+          "fill_prim_buy_rate": 0.5,
+          "fill_prim_sell_rate": 0.6,
+          "fill_sens_buy_rate": 0.6,
+          "fill_sens_sell_rate": 0.45,
+          "risparmio_bp_prim_buy": 1.8172008445969912,
+          "risparmio_bp_prim_sell": 2.3093733807971293,
+          "risparmio_bp_sens_buy": 2.3086021306455975,
+          "risparmio_bp_sens_sell": 1.5735681388612113,
+          "risparmio_ciclo_bp_prim": 4.126574225394121,
+          "risparmio_ciclo_bp_sens": 3.8821702695068088
+        }
+      }
+    },
+    "DOT/USDT": {
+      "mercato": "spot",
+      "tick": 0.0001,
+      "n_momenti": 20,
+      "spread_bp_medio": 1.085310115615901,
+      "trade_saturati": true,
+      "X": {
+        "X5": {
+          "fill_prim_buy": 7,
+          "fill_prim_sell": 6,
+          "fill_sens_buy": 8,
+          "fill_sens_sell": 7,
+          "costo_bp_prim_buy": 9.34533347129896,
+          "costo_bp_prim_sell": 9.53552749952588,
+          "costo_bp_sens_buy": 9.177518470620765,
+          "costo_bp_sens_sell": 9.32301417755903,
+          "fill_prim_buy_rate": 0.35,
+          "fill_prim_sell_rate": 0.3,
+          "fill_sens_buy_rate": 0.4,
+          "fill_sens_sell_rate": 0.35,
+          "risparmio_bp_prim_buy": 0.6546665287010391,
+          "risparmio_bp_prim_sell": 0.4644725004741197,
+          "risparmio_bp_sens_buy": 0.8224815293792354,
+          "risparmio_bp_sens_sell": 0.6769858224409706,
+          "risparmio_ciclo_bp_prim": 1.1191390291751588,
+          "risparmio_ciclo_bp_sens": 1.499467351820206
+        },
+        "X15": {
+          "fill_prim_buy": 14,
+          "fill_prim_sell": 10,
+          "fill_sens_buy": 14,
+          "fill_sens_sell": 11,
+          "costo_bp_prim_buy": 8.12554331514684,
+          "costo_bp_prim_sell": 8.8417094733093,
+          "costo_bp_sens_buy": 8.102924065231466,
+          "costo_bp_sens_sell": 8.651501667092917,
+          "fill_prim_buy_rate": 0.7,
+          "fill_prim_sell_rate": 0.5,
+          "fill_sens_buy_rate": 0.7,
+          "fill_sens_sell_rate": 0.55,
+          "risparmio_bp_prim_buy": 1.8744566848531594,
+          "risparmio_bp_prim_sell": 1.1582905266907009,
+          "risparmio_bp_sens_buy": 1.8970759347685338,
+          "risparmio_bp_sens_sell": 1.3484983329070825,
+          "risparmio_ciclo_bp_prim": 3.0327472115438603,
+          "risparmio_ciclo_bp_sens": 3.2455742676756163
+        }
+      }
+    },
+    "DOT/USDT:USDT": {
+      "mercato": "swap",
+      "tick": 0.0001,
+      "n_momenti": 20,
+      "spread_bp_medio": 1.0409751829552514,
+      "trade_saturati": true,
+      "X": {
+        "X5": {
+          "fill_prim_buy": 8,
+          "fill_prim_sell": 10,
+          "fill_sens_buy": 8,
+          "fill_sens_sell": 6,
+          "costo_bp_prim_buy": 3.709067138302578,
+          "costo_bp_prim_sell": 3.2732008459431414,
+          "costo_bp_sens_buy": 3.7542545985552267,
+          "costo_bp_sens_sell": 4.213070800181868,
+          "fill_prim_buy_rate": 0.4,
+          "fill_prim_sell_rate": 0.5,
+          "fill_sens_buy_rate": 0.4,
+          "fill_sens_sell_rate": 0.3,
+          "risparmio_bp_prim_buy": 1.290932861697422,
+          "risparmio_bp_prim_sell": 1.7267991540568586,
+          "risparmio_bp_sens_buy": 1.2457454014447733,
+          "risparmio_bp_sens_sell": 0.7869291998181316,
+          "risparmio_ciclo_bp_prim": 3.0177320157542806,
+          "risparmio_ciclo_bp_sens": 2.032674601262905
+        },
+        "X15": {
+          "fill_prim_buy": 14,
+          "fill_prim_sell": 12,
+          "fill_sens_buy": 14,
+          "fill_sens_sell": 9,
+          "costo_bp_prim_buy": 2.4023784493586144,
+          "costo_bp_prim_sell": 2.837472646467604,
+          "costo_bp_sens_buy": 2.4023784493586144,
+          "costo_bp_sens_sell": 3.559447792396059,
+          "fill_prim_buy_rate": 0.7,
+          "fill_prim_sell_rate": 0.6,
+          "fill_sens_buy_rate": 0.7,
+          "fill_sens_sell_rate": 0.45,
+          "risparmio_bp_prim_buy": 2.5976215506413856,
+          "risparmio_bp_prim_sell": 2.162527353532396,
+          "risparmio_bp_sens_buy": 2.5976215506413856,
+          "risparmio_bp_sens_sell": 1.440552207603941,
+          "risparmio_ciclo_bp_prim": 4.760148904173782,
+          "risparmio_ciclo_bp_sens": 4.0381737582453265
+        }
+      }
+    },
+    "ADA/USDT": {
+      "mercato": "spot",
+      "tick": 0.0001,
+      "n_momenti": 20,
+      "spread_bp_medio": 5.50202926077843,
+      "trade_saturati": true,
+      "X": {
+        "X5": {
+          "fill_prim_buy": 0,
+          "fill_prim_sell": 1,
+          "fill_sens_buy": 0,
+          "fill_sens_sell": 2,
+          "costo_bp_prim_buy": 12.751014630389308,
+          "costo_bp_prim_sell": 12.304354126575863,
+          "costo_bp_sens_buy": 12.751014630389308,
+          "costo_bp_sens_sell": 11.745428013680066,
+          "fill_prim_buy_rate": 0.0,
+          "fill_prim_sell_rate": 0.05,
+          "fill_sens_buy_rate": 0.0,
+          "fill_sens_sell_rate": 0.1,
+          "risparmio_bp_prim_buy": -2.7510146303893084,
+          "risparmio_bp_prim_sell": -2.3043541265758627,
+          "risparmio_bp_sens_buy": -2.7510146303893084,
+          "risparmio_bp_sens_sell": -1.7454280136800655,
+          "risparmio_ciclo_bp_prim": -5.055368756965171,
+          "risparmio_ciclo_bp_sens": -4.496442644069374
+        },
+        "X15": {
+          "fill_prim_buy": 1,
+          "fill_prim_sell": 4,
+          "fill_sens_buy": 2,
+          "fill_sens_sell": 4,
+          "costo_bp_prim_buy": 12.192509357578697,
+          "costo_bp_prim_sell": 10.742110277677504,
+          "costo_bp_sens_buy": 11.748866745894862,
+          "costo_bp_sens_sell": 10.742110277677504,
+          "fill_prim_buy_rate": 0.05,
+          "fill_prim_sell_rate": 0.2,
+          "fill_sens_buy_rate": 0.1,
+          "fill_sens_sell_rate": 0.2,
+          "risparmio_bp_prim_buy": -2.1925093575786967,
+          "risparmio_bp_prim_sell": -0.7421102776775044,
+          "risparmio_bp_sens_buy": -1.748866745894862,
+          "risparmio_bp_sens_sell": -0.7421102776775044,
+          "risparmio_ciclo_bp_prim": -2.934619635256201,
+          "risparmio_ciclo_bp_sens": -2.4909770235723663
+        }
+      }
+    },
+    "ADA/USDT:USDT": {
+      "mercato": "swap",
+      "tick": 0.0001,
+      "n_momenti": 20,
+      "spread_bp_medio": 4.590801082496897,
+      "trade_saturati": true,
+      "X": {
+        "X5": {
+          "fill_prim_buy": 0,
+          "fill_prim_sell": 3,
+          "fill_sens_buy": 0,
+          "fill_sens_sell": 2,
+          "costo_bp_prim_buy": 7.2954005412483225,
+          "costo_bp_prim_sell": 5.810344110127774,
+          "costo_bp_sens_buy": 7.2954005412483225,
+          "costo_bp_sens_sell": 6.303829340262866,
+          "fill_prim_buy_rate": 0.0,
+          "fill_prim_sell_rate": 0.15,
+          "fill_sens_buy_rate": 0.0,
+          "fill_sens_sell_rate": 0.1,
+          "risparmio_bp_prim_buy": -2.2954005412483225,
+          "risparmio_bp_prim_sell": -0.8103441101277742,
+          "risparmio_bp_sens_buy": -2.2954005412483225,
+          "risparmio_bp_sens_sell": -1.3038293402628662,
+          "risparmio_ciclo_bp_prim": -3.1057446513760967,
+          "risparmio_ciclo_bp_sens": -3.5992298815111887
+        },
+        "X15": {
+          "fill_prim_buy": 3,
+          "fill_prim_sell": 6,
+          "fill_sens_buy": 2,
+          "fill_sens_sell": 4,
+          "costo_bp_prim_buy": 5.8139982515578845,
+          "costo_bp_prim_sell": 4.3273501239149565,
+          "costo_bp_sens_buy": 6.3071691506656276,
+          "costo_bp_sens_sell": 5.314320872165971,
+          "fill_prim_buy_rate": 0.15,
+          "fill_prim_sell_rate": 0.3,
+          "fill_sens_buy_rate": 0.1,
+          "fill_sens_sell_rate": 0.2,
+          "risparmio_bp_prim_buy": -0.8139982515578845,
+          "risparmio_bp_prim_sell": 0.6726498760850435,
+          "risparmio_bp_sens_buy": -1.3071691506656276,
+          "risparmio_bp_sens_sell": -0.31432087216597093,
+          "risparmio_ciclo_bp_prim": -0.14134837547284107,
+          "risparmio_ciclo_bp_sens": -1.6214900228315985
+        }
+      }
+    }
+  },
+  "h2": {
+    "risparmio_ciclo_swap_bp_prim_X5": 0.8555534915566173,
+    "risparmio_ciclo_swap_bp_sens_X5": -0.12821324189473993,
+    "risparmio_ciclo_swap_bp_prim_X15": 2.915124918031687,
+    "risparmio_ciclo_swap_bp_sens_X15": 2.099618001640179,
+    "soglia_bp": 5.0,
+    "esito": "H2 NON confermato (stima: nessun bound sopra 5bp)",
+    "esiti_per_bound": {
+      "risparmio_ciclo_swap_bp_prim_X5": "non confermato",
+      "risparmio_ciclo_swap_bp_sens_X5": "non confermato",
+      "risparmio_ciclo_swap_bp_prim_X15": "non confermato",
+      "risparmio_ciclo_swap_bp_sens_X15": "non confermato"
+    }
+  },
+  "smoke": false,
+  "comando": "misura_p23m2.py --out P23_m2.json",
+  "generato_utc": "2026-10-17T22:31:00.004487+00:00"
+}

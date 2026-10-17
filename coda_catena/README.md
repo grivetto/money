@@ -38,7 +38,7 @@ STATO DELLA CODA
 ## Aggiornamento 2026-10-16 — onda S5 (fronte funding/esecuzione; pre-registrate, lint 7/7)
 - P21_carry_basket.md ........ FATTA 17/10 — ARCHIVIATA (misura ufficiale Artù: nessuna config con netto train>0; top-k perde vs DOGE-solo; implementazione DSH-omarchy)
 - P22_regime_gate_netto.md ... FATTA 17/10 — ARCHIVIATA (implementazione Merlino; misura ufficiale Artù: ogni trigger delta<=0 su 10/10 a 0,40% e 0,62%; T3 mai avvenuto; timing del carry chiuso, sempre-on)
-- P23_pedaggio_esecuzione.md . IN CORSO (hermes) — M2 (maker-first) consegnato da Merlino 17/10 (REQ-004); M1 (fill reali) di Artù; run ufficiale M2 in esecuzione
+- P23_pedaggio_esecuzione.md . FATTA 18/10 — CHIUSA (Artù): fee reali = tariffa taker esatta (10/5 bp), riconciliazione MATCH; cicli 15,1–20,8 bp vs C=40 bp → soglie confermate; H2 maker-first non confermato su due run → non si fa. Report `prove/P23_report.md`
 - Piano del fronte: `docs/34_fronte_ricerca_2026-10-16.md`
 
 ## Aggiornamento 2026-10-17 — P24 (operativa, tesoreria — NON esperimento)

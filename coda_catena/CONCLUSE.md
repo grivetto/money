@@ -4,9 +4,9 @@ Le spec elencate qui NON hanno piu' oggetto nel gate di dispatch (JEV + lint) ne
 job-store: esperimenti con verdetto gia' congelato nel registro, oppure voci che non sono
 esperimenti (infrastruttura integrata, milestone di governance).
 
-Il gate vale per le spec **attive**: al 17/10 la sola **P23** (in corso) — P4 e P8 concluse l'08/10
+Il gate vale per le spec **attive**: al 18/10 nessuna voce di ricerca attiva (P23 chiusa) — P4 e P8 concluse l'08/10
 (P4 misurata con verdetto nel registro; P8 infrastruttura integrata, non esperimento);
-P21 e P22 concluse il 17/10 (verdetti nel registro).
+P21 e P22 concluse il 17/10, P23 conclusa il 18/10 (verdetti nel registro).
 Aggiungere/rimuovere voci SOLO quando lo stato nel registro cambia — rimuovere una voce
 riapre gate e fix per quella spec.
 
@@ -26,3 +26,4 @@ riapre gate e fix per quella spec.
 - P8_funding_harvest.md — infrastruttura integrata e attiva (raccolta funding cron 4h, certificato P8B); non è un esperimento
 - P21_carry_basket.md — archiviata (nessuna config con netto addestramento > 0; verdetto nel registro, 17/10)
 - P22_regime_gate_netto.md — archiviata (ogni trigger delta<=0 su 10/10 simboli; timing del carry chiuso, 17/10)
+- P23_pedaggio_esecuzione.md — FATTA 18/10 (fee reali = tariffa taker esatta, riconciliazione MATCH; soglie confermate; maker-first non consigliato; report `prove/P23_report.md`)
