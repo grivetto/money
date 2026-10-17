@@ -43,3 +43,6 @@ STATO DELLA CODA
 
 ## Aggiornamento 2026-10-17 — P24 (operativa, tesoreria — NON esperimento)
 - P24_dormienti_earn.md ...... INTEGRATA (Artù 18/10) — harness `scripts/earn_move.py` consegnato da Merlino (REQ-MERL-20261017-005, 34/34 test rieseguiti) + preflight reale dry-run PASS (purchase 211 USDC funding→savings, zero scritture); esecuzione reale in finestra mattutina 18/10. Fuori dal gate JEV e dal conteggio tentativi.
+
+## Aggiornamento 2026-10-18 — P26 (riapertura lane pairs, direttiva owner)
+- P26_cointegrazione_rolling.md ... PRE-REGISTRATA (Artù 18/10) — cointegrazione v2: universo esteso (top 30 perp USDT OKX) + finestre rolling (120/180g, passo 5g); combina le tre varianti ammesse dal verdetto P13. Ultimo giro sulla lane pairs: se fallisce, archiviazione definitiva senza varianti ulteriori. In attesa di coda libera; implementatore da assegnare al via.
