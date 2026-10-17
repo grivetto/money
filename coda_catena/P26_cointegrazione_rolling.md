@@ -1,7 +1,7 @@
 # P26 — Cointegrazione v2: universo esteso + statistica ROLLING (lane pairs)
 
 STATO: PRE-REGISTRATA 2026-10-18 (Artù) — in attesa di coda libera; implementatore da assegnare al via (primo libero o Merlino). Riapre la lane P13 (archiviata 01/10) con le varianti esplicitamente ammesse dal suo verdetto, su direttiva dell'owner (18/10: pilastro «arbitraggio statistico — test di cointegrazione costanti»).
-Repo: `grivetto/money` · commit di registrazione: `DA_FISSARE` (patch col commit reale subito dopo).
+Repo: `grivetto/money` · commit di registrazione: `3e8e8c19` (file di questa voce: `coda_catena/P26_cointegrazione_rolling.md`).
 
 ## Obiettivo (verificabile)
 Verificare se lo spread di coppie «cointegrate a tratti» su un universo ESTESO è sfruttabile con statistica ROLLING (beta e half-life ricalcolati su finestre mobili), a costi reali. Esiti ammessi: **candidata-su-evidenza** oppure **archiviazione definitiva della lane pairs** (zero revival). Output: per coppia eleggibile — n. episodi, expectancy netta, DD, rotture; verdetto del cancello.
