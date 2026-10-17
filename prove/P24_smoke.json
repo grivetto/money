@@ -1,0 +1,30 @@
+{
+  "ts": "2026-10-17T21:56:40Z",
+  "req": "REQ-MERL-20261017-005",
+  "voce": "P24 mossa D2 — harness Simple Earn (tesoreria, non esperimento)",
+  "modalita": "dry-run MOCK: nessun --env-file, client mock con saldi sintetici dichiarati (funding=500 trading=100 savings=0 per ccy in whitelist). ZERO rete, ZERO chiavi, ZERO chiamate di scrittura possibili.",
+  "esiti": [
+    {
+      "comando": "/home/sergio/merlino-scratch/.venv/bin/python /home/sergio/merlino-scratch/p24/earn_move.py --ccy USDC --amt 10 --fonte funding --max-amt 300",
+      "exit_code": 0,
+      "stdout": "[MOCK] nessun --env-file: client MOCK con saldi sintetici (funding=500 trading=100 savings=0 per ccy in whitelist). Nessun dato reale, nessuna scrittura possibile.\n[MOCK] === PIANO (preflight completato, sola lettura) ===\n[MOCK] saldi letti:   funding=500 trading=100 savings=0 USDC\n[MOCK] passo 1: purchase USDC 10 (il purchase attinge al funding account, doc v5)\n[MOCK] saldi attesi:  funding=490 trading=100 savings=10 USDC\n[MOCK] DRY-RUN: 0 chiamate di scrittura eseguite (solo preflight in lettura).\n",
+      "stderr": ""
+    },
+    {
+      "comando": "/home/sergio/merlino-scratch/.venv/bin/python /home/sergio/merlino-scratch/p24/earn_move.py --ccy USDC --amt 10 --fonte trading --max-amt 300 --min-amt 1 --rate 0.01 --target 5",
+      "exit_code": 0,
+      "stdout": "[MOCK] nessun --env-file: client MOCK con saldi sintetici (funding=500 trading=100 savings=0 per ccy in whitelist). Nessun dato reale, nessuna scrittura possibile.\n[MOCK] === PIANO (preflight completato, sola lettura) ===\n[MOCK] saldi letti:   funding=500 trading=100 savings=0 USDC\n[MOCK] passo 1: transfer 10 USDC trading(18) -> funding(6)\n[MOCK] passo 2: purchase USDC 10 (il purchase attinge al funding account, doc v5)\n[MOCK] saldi attesi:  funding=500 trading=90 savings=10 USDC\n[MOCK] DRY-RUN: 0 chiamate di scrittura eseguite (solo preflight in lettura).\n",
+      "stderr": ""
+    },
+    {
+      "comando": "/home/sergio/merlino-scratch/.venv/bin/python /home/sergio/merlino-scratch/p24/earn_move.py --ccy USDC --amt 10 --fonte funding --max-amt 300 --target 0",
+      "exit_code": 0,
+      "stdout": "[MOCK] nessun --env-file: client MOCK con saldi sintetici (funding=500 trading=100 savings=0 per ccy in whitelist). Nessun dato reale, nessuna scrittura possibile.\n[MOCK] GIA A TARGET: savings USDC = 0 >= target 0 — nessuna scrittura.\n",
+      "stderr": ""
+    }
+  ],
+  "verifiche": {
+    "dry_run_zero_scritture": "la modalita dry-run non raggiunge alcuna POST: asserzione nel test test_dryrun_zero_scritture_anche_se_il_piano_le_prevede (contatore mock == 0); suite completa 34/34 passed.",
+    "fonte_prelievo_da_doc_v5": "purchase attinge al FUNDING account (citazione doc: 'Only the assets in the funding account can be used for saving.'); percio' fonte=trading implica transfer trading(18)->funding(6) PRIMA del purchase."
+  }
+}

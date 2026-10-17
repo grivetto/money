@@ -1,6 +1,5 @@
 # P24 — Dormienti a rendita: trasferimento verso Simple Earn (D2) — SPEC DI IMPLEMENTAZIONE
-STATO: PRESA_DA Merlino 2026-10-17 (implementazione harness) — pre-registrata 2026-10-17 (hermes/Artù). REQ-MERL-20261017-005.
-Voce OPERATIVA (tesoreria — decisione D2 del proprietario, ROADMAP §7 risposte 17/10): **non è un esperimento di ricerca**; non entra nel conteggio dei tentativi né nel gate JEV. L'esecuzione reale è di Artù, in finestra mattutina, dopo preflight cifre — mai di Merlino.
+STATO: **INTEGRATA** (2026-10-18, Artù) — harness consegnato da Merlino (REQ-MERL-20261017-005, DONE 21:58 UTC, 34/34 test rieseguiti nel venv canonico, MANIFEST 5/5) e integrato in `scripts/earn_move.py` + `tests/test_earn_move.py`. **Preflight reale (dry-run col client vero, chiave read-only banco, da MARCODG1): PASS** — piano: purchase 211 USDC dal funding (diretto), saldi attesi funding 0,000041 / savings 810,73 USDC, zero scritture. Esecuzione reale: finestra mattutina 18/10, con chiave main (permessi read_only,trade, IP MARCODG1/nuvola). Voce OPERATIVA (tesoreria — decisione D2, ROADMAP §7): non è un esperimento; fuori dal conteggio tentativi.
 Repo: `grivetto/money` · commit di registrazione: `da28d8a2` (file di questa voce: `coda_catena/P24_dormienti_earn.md`).
 
 ## Obiettivo (verificabile)

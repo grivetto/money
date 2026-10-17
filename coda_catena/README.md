@@ -42,4 +42,4 @@ STATO DELLA CODA
 - Piano del fronte: `docs/34_fronte_ricerca_2026-10-16.md`
 
 ## Aggiornamento 2026-10-17 — P24 (operativa, tesoreria — NON esperimento)
-- P24_dormienti_earn.md ...... PRESA_DA Merlino 17/10 (REQ-MERL-20261017-005) — harness trasferimento verso Simple Earn (mossa D2, ROADMAP §7); esecuzione reale di Artù dopo preflight, finestra mattutina. Fuori dal gate JEV e dal conteggio tentativi.
+- P24_dormienti_earn.md ...... INTEGRATA (Artù 18/10) — harness `scripts/earn_move.py` consegnato da Merlino (REQ-MERL-20261017-005, 34/34 test rieseguiti) + preflight reale dry-run PASS (purchase 211 USDC funding→savings, zero scritture); esecuzione reale in finestra mattutina 18/10. Fuori dal gate JEV e dal conteggio tentativi.
