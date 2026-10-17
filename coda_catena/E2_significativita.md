@@ -1,7 +1,7 @@
 # E2 — Strumenti di significatività (bootstrap) e Monte Carlo — SPEC DI MANUTENZIONE
 
 STATO: PRE-REGISTRATA 2026-10-18 (Artù) — dispatchata a opencode-omarchy (ondata operai 18/10). Voce di MANUTENZIONE del protocollo di ricerca (infrastruttura): NON è un esperimento, fuori dal conteggio tentativi.
-Repo: `grivetto/money` · commit di registrazione: `DA_FISSARE`.
+Repo: `grivetto/money` · commit di registrazione: `cc494875`.
 
 ## Obiettivo (verificabile)
 Implementare due strumenti offline per i verdetti del protocollo di ricerca (lezioni da `docs/35`, framework Jesse — MIT):
