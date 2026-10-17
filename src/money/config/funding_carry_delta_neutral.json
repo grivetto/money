@@ -1,0 +1,13 @@
+{
+  "nome": "funding_carry_delta_neutral_BTC_ETH",
+  "basis_entry_bps": 5.0,
+  "basis_exit_bps": 20.0,
+  "delta_threshold_pct": 10.0,
+  "slippage_per_side": 0.0004,
+  "commission_taker": 0.0005,
+  "commission_maker": 0.0002,
+  "leverage_max": 2.0,
+  "margin_init_pct": 0.05,
+  "min_operazioni_train": 30,
+  "capitale_riferimento_eur": 1000.0
+}

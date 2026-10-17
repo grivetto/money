@@ -1,0 +1,164 @@
+{
+ "tipo": "report_mensile",
+ "mese": "2026-10",
+ "generato_il": "2026-10-17T00:36:38.068728+00:00",
+ "finestra_richiesta": {
+  "da": "2026-10-01T00:00:00Z",
+  "a": "2026-10-31T23:59:59Z"
+ },
+ "comando": "report_mensile.py --mese 2026-10 --banco-ssh MARCODG1:/home/marco/money/logs/banco_secco.jsonl --canary-state-ssh MARCODG1:/home/marco/canary/canary_state.json --carry-multi-ssh MARCODG1:/home/marco/money/data/carry_stato.json --fee-file /home/sergio/money/prove/C1_review_2026-10-15.json --sent-log /home/sergio/.denaro_alerts/sent.log --roadmap /home/sergio/money/ROADMAP.md --scommessa-file /home/sergio/money/ops/dashboard/scommessa.json --json-out /home/sergio/money/prove/report_mensile_2026-10.json --testo-out /home/sergio/money/prove/report_mensile_2026-10.txt",
+ "hash_artefatti": {
+  "banco_secco.jsonl": "5ae9ccecac00fed348e4ac9e30d5e4b7ed00d1daae52f24530f20f3eefbd2c20",
+  "canary_state.json": "01e3fd92922d6f45056c6d8540118be8e990b73039fc161bdff9e711e784af3a",
+  "carry_stato.json": "1e7131849493d54678fa85508b452b978b7178f5f29141cf89b8a853ba25d137",
+  "review_canary.json": "1f0b227782eeeed40dd7798eeccd1700a3a303f66812f2a0d814206d1c8c1e0f",
+  "ROADMAP.md": "5528eff62a4416272bb6928d71ce8663b81d26ad7fcf074c5629d0adbe0d6ee5",
+  "sent.log": "0a1efaf8c8f7730e96035986e386aaf8ae5213e3096cce9457fcb305e18d24da",
+  "scommessa.json": "7a53cb3718b38222cb578db2322a75345be920d883dfe9e3d98c8562223a7a55"
+ },
+ "capitale": {
+  "stato": "ok",
+  "ts": "2026-10-17T00:35:08Z",
+  "esito": "PASS",
+  "chiusura_eur": 1095.283681,
+  "trading_eur": 367.423291,
+  "funding_eur": 194.15749,
+  "savings_eur": 533.7029,
+  "ordini_aperti": 0,
+  "riconciliazione_quadra": "si",
+  "chiave_solo_lettura": "si"
+ },
+ "rendita": {
+  "totale": {
+   "stato": "ok",
+   "delta_eur": -4.847377000000051,
+   "delta_da": "2026-10-06T20:00:31Z",
+   "delta_a": "2026-10-17T00:35:08Z",
+   "scomposizione": {
+    "stato": "ok",
+    "da": "2026-10-14T00:04:31Z",
+    "a": "2026-10-17T00:35:08Z",
+    "cambio_eur": -3.688368592634523,
+    "resto_eur": -1.0179454073654974,
+    "rate_da": 0.8929699996600878,
+    "rate_a": 0.8899599996224756,
+    "nota": "sotto-periodo: scomposizione possibile solo da 2026-10-14 (tasso implicito e copertura dei comparti coerenti); NON spiega il delta dell'intero periodo"
+   }
+  },
+  "comparti": {
+   "trading": {
+    "stato": "ok",
+    "comparto": "trading",
+    "delta_eur": 347.30231200000003,
+    "cambio_eur": -0.6516566877896849,
+    "resto_eur": 347.9539686877897,
+    "da": "2026-10-14T00:04:31Z",
+    "a": "2026-10-17T00:35:08Z",
+    "nota_trasferimento": "variazione USDC (+212.28) compensata dagli altri comparti (-396.36): trasferimento interno, non rendita del comparto"
+   },
+   "funding": {
+    "stato": "ok",
+    "comparto": "funding",
+    "delta_eur": 192.152854,
+    "cambio_eur": -0.3249525996996438,
+    "resto_eur": 192.47780659969965,
+    "da": "2026-10-14T00:04:31Z",
+    "a": "2026-10-17T00:35:08Z",
+    "nota_trasferimento": "variazione USDC (+211.00) compensata dagli altri comparti (-395.08): trasferimento interno, non rendita del comparto"
+   },
+   "savings": {
+    "stato": "ok",
+    "comparto": "savings",
+    "delta_eur": -544.16148,
+    "cambio_eur": -2.7191567774667496,
+    "resto_eur": -541.4423232225332,
+    "da": "2026-10-14T00:04:31Z",
+    "a": "2026-10-17T00:35:08Z",
+    "nota_trasferimento": "variazione USDC (-607.36) compensata dagli altri comparti (+423.28): trasferimento interno, non rendita del comparto"
+   }
+  },
+  "earn": {
+   "stato": "dati insufficienti",
+   "motivo": "variazione USDC dei savings (-607.3624) compensata da trading+funding (+422.6650): trasferimento interno, la rendita da interesse non è separabile senza il ledger dei movimenti"
+  },
+  "carry": {
+   "c1": {
+    "stato": "ok",
+    "funding_usdc": 0.0456280887110909,
+    "da": "2026-10-01T12:00:00+00:00",
+    "a": "2026-10-17T00:30:07+00:00",
+    "inst": "DOGE-USD_UM_XPERP-310404",
+    "nota": "funding cumulato dall'apertura (nel mese)",
+    "eur": 0.04060717381209674
+   },
+   "multi": {
+    "stato": "ok",
+    "nozionale_totale_eur": 179.79,
+    "upl_totale_eur": 0.4414,
+    "coppie_aperte": 2,
+    "coppie": {
+     "DOT": {
+      "nozionale_eur": 89.89500000000001,
+      "upl_eur": -1.7615999999999858,
+      "ts_apri": "2026-10-15T23:00:02+00:00"
+     },
+     "ADA": {
+      "nozionale_eur": 89.89500000000001,
+      "upl_eur": 2.203000000000027,
+      "ts_apri": "2026-10-15T23:00:12+00:00"
+     }
+    },
+    "nota": "uPL mark-to-market, NON realizzato; funding incassato: dati insufficienti (nessun artefatto)"
+   }
+  },
+  "fee": {
+   "stato": "ok",
+   "osservate_eur": 0.0,
+   "scope": "spot-only (la fee perp non è presente negli eventi)",
+   "nota": "N/D"
+  },
+  "nota_netto": "la rendita dal banco è già netta delle fee (equity reale post-fee); la voce fee quantifica dove esiste una fonte"
+ },
+ "costi": {
+  "stato": "dati insufficienti",
+  "motivo": "nessun artefatto con costi reali verificati (--costi-file assente); ROADMAP stima ~31 EUR/mese DA CONFERMARE, non inclusa nel netto"
+ },
+ "netto": {
+  "stato": "dati insufficienti",
+  "motivo": "costi: nessun artefatto con costi reali verificati (--costi-file assente); ROADMAP stima ~31 EUR/mese DA CONFERMARE, non inclusa nel netto",
+  "rendita_netta_senza_costi_eur": -1.0179454073654974
+ },
+ "incidenti": {
+  "stato": "ok",
+  "conteggio": 108,
+  "categorie": {
+   "canary C#: ANOMALIE: funding cum #": 41,
+   "canary C#: exit #": 24,
+   "bots: aggregatore non leggibile (RuntimeError)": 17,
+   "fleet_integrity: output non leggibile (check rotto?)": 15,
+   "MARCODG# irraggiungibile (ssh)": 3,
+   "mc# · unit hermes-gateway.service: inactive": 2,
+   "nodo mc# non raggiungibile dall'aggregatore": 1,
+   "nodo nuvola non raggiungibile dall'aggregatore": 1,
+   "FLOTTA: # bot NON running — marcodg#:paper:ADA/EUR, marcodg#:paper:ALGO/EUR, marcodg#:paper:ARB/EUR, marcodg#:paper:X": 1,
+   "equity: letture per-conto incomplete — OKX mc#sub# (saldi non letti); OKX marcosub# (saldi non letti); OKX nuvolasub#": 1,
+   "FLEET: MARCODG#: # — ESTAB #      #      #:#       #:#": 1,
+   "FLEET: MARCODG#: # — nessun output": 1
+  },
+  "fonte": "~/.denaro_alerts/sent.log"
+ },
+ "decisioni": {
+  "stato": "ok",
+  "aperte": [],
+  "decise": 3,
+  "totale": 3,
+  "fonte": "ROADMAP.md"
+ },
+ "scommessa": {
+  "stato": "ok",
+  "valore_eur": 0.05,
+  "tetto_perdita_eur": 42.0,
+  "fase": "fondazione — wallet finanziato, layer di esecuzione on-chain da scrivere",
+  "rete": "Base"
+ }
+}

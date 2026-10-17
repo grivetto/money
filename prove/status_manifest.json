@@ -1,15 +1,15 @@
 {
   "generato_da": "scripts/genera_status.py",
-  "snapshot": "2026-10-06 (sera)",
+  "snapshot": "2026-10-17",
   "test_offline": {
-    "count": 743,
-    "verificato_il": "2026-10-17 01:07 CEST",
-    "comando": "~/money/.venv/bin/python -m pytest --collect-only -q -> 743 collected; pytest -q -> 743 passed in 18.17s (venv canonico, offline)"
+    "count": 769,
+    "verificato_il": "2026-10-17 02:37 CEST",
+    "comando": "~/money/.venv/bin/python -m pytest --collect-only -q -> 769 collected; pytest -q -> 769 passed in 17.61s (venv canonico, offline)"
   },
   "qualita": {
     "ruff": "pulito",
     "compileall": "ok",
-    "verificato_il": "2026-10-06"
+    "verificato_il": "2026-10-17"
   },
   "fee": {
     "verificato_il": "2026-10-06",
@@ -18,7 +18,7 @@
   },
   "strategie_promosse": 0,
   "esperimento_vivo": "canary C1 — carry DOGE (spot+perp 1x, taglia minima); review 15/10/2026",
-  "capitale_dichiarato_eur": 1100.14,
+  "capitale_dichiarato_eur": 1095.91,
   "capitale_nota": "valore dichiarato dal proprietario, riconciliato read-only; non una prova pubblica",
   "impianti": {
     "fabbrica": "tick 3s (x100), job-store atomico, watchdog anti-silenzio",

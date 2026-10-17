@@ -1,0 +1,49 @@
+📊 Denaro — report mensile 2026-10
+Generato il 2026-10-17T00:36:38Z (comando in calce)
+Finestra richiesta: 2026-10-01T00:00:00Z → 2026-10-31T23:59:59Z
+
+Capitale (ultima lettura 2026-10-17T00:35:08Z): 1,095.28 €
+  trading 367.42 € · funding 194.16 € · Simple Earn 533.70 €
+  banco: esito PASS · ordini aperti 0 · riconciliazione si
+
+Variazione totale (2026-10-06T20:00Z → 2026-10-17T00:35Z): -4.85 € (numeri in €, nessun tasso richiesto)
+Scomposizione cambio-vs-resto (2026-10-14T00:04Z → 2026-10-17T00:35Z):
+  cambio -3.69 € · resto (rendita operativa, già netta di fee) -1.02 €
+  sotto-periodo: scomposizione possibile solo da 2026-10-14 (tasso implicito e copertura dei comparti coerenti); NON spiega il delta dell'intero periodo
+  · Simple Earn: Δ -544.16 € (cambio -2.72 · resto -541.44)
+      ⚠ variazione USDC (-607.36) compensata dagli altri comparti (+423.28): trasferimento interno, non rendita del comparto
+  · funding: Δ +192.15 € (cambio -0.32 · resto +192.48)
+      ⚠ variazione USDC (+211.00) compensata dagli altri comparti (-395.08): trasferimento interno, non rendita del comparto
+  · trading: Δ +347.30 € (cambio -0.65 · resto +347.95)
+      ⚠ variazione USDC (+212.28) compensata dagli altri comparti (-396.36): trasferimento interno, non rendita del comparto
+
+Rendita Earn: dati insufficienti — variazione USDC dei savings (-607.3624) compensata da trading+funding (+422.6650): trasferimento interno, la rendita da interesse non è separabile senza il ledger dei movimenti
+Carry C1 (DOGE-USD_UM_XPERP-310404): funding cumulato +0.0456 USDC = +0.04 €
+  dall'apertura 2026-10-01T12:00 → 2026-10-17T00:30
+Carry multi (2 coppie aperte): nozionale 179.79 € · uPL 0.44 €
+  uPL mark-to-market, NON realizzato; funding incassato: dati insufficienti (nessun artefatto)
+Fee osservate (review canary): 0.00 € [spot-only (la fee perp non è presente negli eventi)]
+la rendita dal banco è già netta delle fee (equity reale post-fee); la voce fee quantifica dove esiste una fonte
+
+Costi fissi: dati insufficienti — nessun artefatto con costi reali verificati (--costi-file assente); ROADMAP stima ~31 EUR/mese DA CONFERMARE, non inclusa nel netto
+Netto del mese: dati insufficienti — costi: nessun artefatto con costi reali verificati (--costi-file assente); ROADMAP stima ~31 EUR/mese DA CONFERMARE, non inclusa nel netto
+  rendita operativa senza costi fissi: -1.02 €
+
+Incidenti (alert ⚠️ inviati nel mese, audit ~/.denaro_alerts/sent.log): 108
+  · ×41  canary C#: ANOMALIE: funding cum #
+  · ×24  canary C#: exit #
+  · ×17  bots: aggregatore non leggibile (RuntimeError)
+  · ×15  fleet_integrity: output non leggibile (check rotto?)
+  · ×3  MARCODG# irraggiungibile (ssh)
+  · ×2  mc# · unit hermes-gateway.service: inactive
+  · ×1  nodo mc# non raggiungibile dall'aggregatore
+  · ×1  nodo nuvola non raggiungibile dall'aggregatore
+  · … e altre 4 categorie (JSON completo)
+
+Decisioni richieste (ROADMAP.md): 0 aperte su 3 voci
+  nessuna decisione aperta
+Scommessa airdrop (Base): valore 0.05 € · tetto perdita 42.00 €
+  fase: fondazione — wallet finanziato, layer di esecuzione on-chain da scrivere
+
+Regola: ogni riga "dati insufficienti" è un dato assente nelle fonti, mai un numero ipotizzato.
+Comando: report_mensile.py --mese 2026-10 --banco-ssh MARCODG1:/home/marco/money/logs/banco_secco.jsonl --canary-state-ssh MARCODG1:/home/marco/canary/canary_state.json --carry-multi-ssh MARCODG1:/home/marco/money/data/carry_stato.json --fee-file /home/sergio/money/prove/C1_review_2026-10-15.json --sent-log /home/sergio/.denaro_alerts/sent.log --roadmap /home/sergio/money/ROADMAP.md --scommessa-file /home/sergio/money/ops/dashboard/scommessa.json --json-out /home/sergio/money/prove/report_mensile_2026-10.json --testo-out /home/sergio/money/prove/report_mensile_2026-10.txt
