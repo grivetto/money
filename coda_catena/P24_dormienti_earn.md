@@ -1,7 +1,7 @@
 # P24 — Dormienti a rendita: trasferimento verso Simple Earn (D2) — SPEC DI IMPLEMENTAZIONE
 STATO: PRESA_DA Merlino 2026-10-17 (implementazione harness) — pre-registrata 2026-10-17 (hermes/Artù). REQ-MERL-20261017-005.
 Voce OPERATIVA (tesoreria — decisione D2 del proprietario, ROADMAP §7 risposte 17/10): **non è un esperimento di ricerca**; non entra nel conteggio dei tentativi né nel gate JEV. L'esecuzione reale è di Artù, in finestra mattutina, dopo preflight cifre — mai di Merlino.
-Repo: `grivetto/money` · commit di registrazione: `2c7b9907` (file di questa voce: `coda_catena/P24_dormienti_earn.md`).
+Repo: `grivetto/money` · commit di registrazione: `da28d8a2` (file di questa voce: `coda_catena/P24_dormienti_earn.md`).
 
 ## Obiettivo (verificabile)
 Implementare l'harness `earn_move.py` che sposta importi **ESPLICITI** da funding/trading verso **Simple Earn** su OKX EEA: dry-run di default, `--execute` per eseguire, con guardie dure, idempotenza e riconciliazione post. Sblocca la mossa D2 («ogni euro dormiente si sveglia») con **zero percorsi non testati sul capitale** (regola di statuto).
@@ -45,6 +45,11 @@ Zero ordini reali, zero chiavi in gioco, zero write su `~/money`.
 - Redeem dal savings; ordini di trading di qualunque tipo; prelievi verso l'esterno; spostamenti impliciti o «tutto il saldo»; modifiche a C1/carry in produzione; qualunque scrittura su `~/money` da parte di Merlino (consegna via handoff).
 
 ## Verifica (riproducibile)
+Comando di verifica (test offline, rieseguiti da Artù nel venv canonico):
+```bash
+python -m pytest test_earn_move.py -q
+python earn_move.py --ccy USDC --amt 10 --fonte funding --max-amt 300   # dry-run mock: piano, zero write
+```
 1. Test offline nel venv di scratch: `python -m pytest test_earn_move.py -q` — poi rieseguiti da Artù nel venv canonico (`cd ~/money && .venv/bin/python -m pytest -q /tmp/p24_review/test_earn_move.py`).
 2. Smoke dry-run con client mock: `python earn_move.py --ccy USDC --amt 10 --fonte funding --max-amt 300` → stampa piano completo, zero chiamate di scrittura (asserzione nel test).
 3. Run reale (SOLO Artù, dopo preflight cifre): dry-run col client vero (read-only) → saldi e piano; poi `--execute` con importo dal preflight; riconciliazione `delta_savings == amt` nella riga di log.
