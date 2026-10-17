@@ -1,0 +1,12 @@
+📈 Denaro — KPI settimanali (lunedì)
+Periodo effettivo: 2026-10-14T00:04Z → 2026-10-17T22:43Z (sotto-periodo coerente 3,9g su 7g richiesti)
+Rendita netta (sotto-periodo 3,9g su 7): -3.70 € (cambio -3.21 € · resto -0.49 €)
+  sotto-periodo coerente 2026-10-14 → 2026-10-17 (3,9g su 7 richiesti): la finestra attraversa un periodo con comparti non coerenti (capitale in transito); la scomposizione NON spiega il delta dell'intera finestra
+Fee 7g: -0.16 € — 13 voci; escluse 7 voci (valuta non convertibile); 3 fuori finestra
+Break-even:
+  dati insufficienti — rendita mensilizzata ≤ 0 o capitale non disponibile: il capitale di break-even non è calcolabile (nessun numero ipotizzato)
+  nota: sotto-periodo 3,9g su 7 richiesti: mensilizzazione sul sotto-periodo effettivo, NON sull'intera finestra
+  formula: mensilizzata = resto × 30/3,9; distanza = mensilizzata − costi mensili; capitale_break_even = costi_mensili ÷ (mensilizzata ÷ capitale attuale)
+  limite: campione corto (7 giorni), la % realizzata è volatile, stima indicativa
+Regola: ogni riga "dati insufficienti" è un dato assente nelle fonti, mai un numero ipotizzato.
+Comando: kpi_settimanali.py --settimanale --json-out prove/P25_kpi_2026-10-18.json

@@ -1,0 +1,66 @@
+{
+ "tipo": "kpi_settimanali",
+ "generato_il": "2026-10-17T22:47:13.174160+00:00",
+ "giorni": 7,
+ "comando": "kpi_settimanali.py --settimanale --json-out prove/P25_kpi_2026-10-18.json",
+ "hash_artefatti": {
+  "banco_secco.jsonl": "c5a1f60a45cfb684020236821a6b6013dd16f70b4eb95a60e4a566d4456985e3",
+  "fee_ledger.jsonl": "36d11320ed5ba6fd5929b31faabac79fdfeb2f5f8b8be171baf62f5943d635d8"
+ },
+ "rendita": {
+  "stato": "ok",
+  "delta_eur": -3.6992619999998624,
+  "cambio_eur": -3.2113206716251264,
+  "resto_eur": -0.487941328374736,
+  "da": "2026-10-14T00:04:31Z",
+  "a": "2026-10-17T22:43:12Z",
+  "ts_da": 1791936271.0,
+  "ts_a": 1792276992.0,
+  "rate_da": 0.8929699996600878,
+  "rate_a": 0.8903500007173274,
+  "sotto_periodo": true,
+  "finestra_richiesta": {
+   "da": "2026-10-10T22:46:30Z",
+   "a": "2026-10-17T22:43:12Z",
+   "ts_da": 1791672390.0,
+   "ts_a": 1792276992.0
+  },
+  "nota": "sotto-periodo coerente 2026-10-14 → 2026-10-17 (3,9g su 7 richiesti): la finestra attraversa un periodo con comparti non coerenti (capitale in transito); la scomposizione NON spiega il delta dell'intera finestra"
+ },
+ "periodo_effettivo": {
+  "da": "2026-10-14T00:04:31Z",
+  "a": "2026-10-17T22:43:12Z",
+  "secondi": 604800,
+  "giorni_effettivi": 3.944,
+  "giorni_richiesti": 7,
+  "sotto_periodo": true,
+  "nota": "sotto-periodo coerente 3,9g su 7 richiesti (finestra 2026-10-10 → 2026-10-17): la scomposizione è ristretta al sotto-periodo e NON spiega il delta dell'intera finestra"
+ },
+ "capitale_attuale_eur": 1096.290733,
+ "fee": {
+  "incluse": 13,
+  "escluse_ccy": 7,
+  "fuori_periodo": 3,
+  "scartate": 0,
+  "rate_usdc_eur": 0.8903500007173274,
+  "stato": "ok",
+  "somma_eur": -0.15778726932284928
+ },
+ "costi": {
+  "valore_eur_mese": 16.0,
+  "fonte": "ROADMAP D1 (default, AI ≤10 + VPS ≤6): 16.00 €/mese"
+ },
+ "break_even": {
+  "mensilizzata_eur_mese": -3.7119635219059455,
+  "giorni_effettivi": 3.9435300925925927,
+  "costi_eur_mese": 16.0,
+  "distanza_eur_mese": -19.711963521905947,
+  "capitale_attuale_eur": 1096.290733,
+  "formula": "mensilizzata = resto × 30/3,9; distanza = mensilizzata − costi mensili; capitale_break_even = costi_mensili ÷ (mensilizzata ÷ capitale attuale)",
+  "limiti": "limite: campione corto (7 giorni), la % realizzata è volatile, stima indicativa",
+  "stato": "dati insufficienti",
+  "capitale_break_even_eur": null,
+  "motivo": "rendita mensilizzata ≤ 0 o capitale non disponibile: il capitale di break-even non è calcolabile (nessun numero ipotizzato)",
+  "nota": "sotto-periodo 3,9g su 7 richiesti: mensilizzazione sul sotto-periodo effettivo, NON sull'intera finestra"
+ }
+}

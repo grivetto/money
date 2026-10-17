@@ -5,6 +5,11 @@ Sezione KPI del digest settimanale:
   1. Rendita netta 7g (€) scomposta cambio-vs-resto — STESSA metodologia di
      ops/alerts/watch_alerts.py::_attribuzione (banco a secco via ssh MARCODG1):
      il capitale è in $, un movimento FX non deve sembrare una perdita.
+     Guardia sotto-periodo coerente (come report_mensile.py): se la finestra
+     attraversa un periodo con comparti non coerenti (capitale in transito,
+     banco che legge tutti i comparti solo da una certa data), la scomposizione
+     si restringe al sotto-periodo coerente e la mensilizzazione usa i giorni
+     effettivi; sotto-periodo < 2g -> rendita e break-even "dati insufficienti".
   2. Fee pagate 7g (€) da logs/fee_ledger.jsonl (collector scripts/raccogli_fee_ledger.py).
      Ledger mancante/vuoto => riga "fee: dati insufficienti", MAI numeri inventati.
      Fee in USDC/USD convertite col tasso EUR implicito del banco; fee in altra
@@ -56,9 +61,11 @@ COSTI_FILE_DEFAULT = "/home/sergio/money/prove/report_costi.json"
 FEE_CCY_EUR = {"EUR"}
 FEE_CCY_USD = {"USDC", "USD"}
 
-FORMULA_BREAKEVEN = ("mensilizzata = resto_7g × 30/7; distanza = mensilizzata − costi mensili; "
+FORMULA_BREAKEVEN = ("mensilizzata = resto × 30/giorni_effettivi; distanza = mensilizzata − costi mensili; "
                      "capitale_break_even = costi_mensili ÷ (mensilizzata ÷ capitale attuale)")
 LIMITI_BREAKEVEN = "limite: campione corto (7 giorni), la % realizzata è volatile, stima indicativa"
+
+GIORNI_MIN_SCOMPOSIZIONE = 2.0  # sotto-periodo coerente < 2g -> rendita/break-even non calcolabili
 
 
 # ---------------------------------------------------------------------------
@@ -126,12 +133,40 @@ def esposizione_usd(d: dict, rate: float) -> float | None:
         return None
 
 
-def attribuzione(rows: list[dict], secondi: float) -> dict | None:
+def _comparti_letti(d: dict) -> frozenset[str]:
+    """Insieme dei comparti presenti nella riga (copertura del banco).
+
+    Stessa semantica di report_mensile._comparti_letti: un comparto è "letto"
+    se equity_<comparto>_eur è presente (non None).
+    """
+    return frozenset(c for c in ("trading", "funding", "savings")
+                     if d.get(f"equity_{c}_eur") is not None)
+
+
+def _fmt_g(giorni: float) -> str:
+    """Giorni leggibili (italiano): intero se intero, altrimenti 1 decimale (3,9)."""
+    v = round(float(giorni), 1)
+    if abs(v - round(v)) < 1e-9:
+        return str(round(v))
+    return f"{v:.1f}".replace(".", ",")
+
+
+def attribuzione(rows: list[dict], secondi: float,
+                 giorni_min: float = GIORNI_MIN_SCOMPOSIZIONE) -> dict | None:
     """(Δequity, effetto cambio, resto) sull'ultimo `secondi` della serie del banco.
 
     Stessa metodologia di watch_alerts._attribuzione: effetto cambio = Δtasso ×
     esposizione valutaria media (inizio+fine)/2; resto = delta − cambio. In più
     dichiara il periodo effettivo (da/a) usato per i numeri.
+
+    Guardia sotto-periodo coerente (stessa logica di report_mensile.attribuzione):
+    la scomposizione richiede tasso implicito USDC→EUR E la stessa copertura di
+    comparti dell'ultima riga su tutti i campioni usati. Se il banco ha iniziato
+    a leggere un comparto a metà finestra (es. savings dal 14/10, capitale in
+    transito prima), la scomposizione si restringe al sotto-periodo coerente,
+    dichiarato con `sotto_periodo`/`nota`, e NON spiega il delta dell'intera
+    finestra. Sotto-periodo coerente < `giorni_min` (default 2g): ritorna
+    {stato: 'dati insufficienti'} — mai numeri su un campione incoerente/corto.
     """
     if len(rows) < 2:
         return None
@@ -140,18 +175,44 @@ def attribuzione(rows: list[dict], secondi: float) -> dict | None:
     prima = next((d for d in rows if _ts_di(d) >= t0), None)
     if prima is None or prima is ultimo:
         return None
-    r0, r1 = rate_implicito(prima), rate_implicito(ultimo)
-    if not r0 or not r1:
+    copertura = _comparti_letti(ultimo)
+    con_rate = [d for d in rows if _ts_di(d) >= t0 and rate_implicito(d)
+                and _comparti_letti(d) == copertura]
+    if len(con_rate) < 2:
         return None
-    e0, e1 = esposizione_usd(prima, r0), esposizione_usd(ultimo, r1)
+    p0, p1 = con_rate[0], con_rate[-1]
+    r0, r1 = rate_implicito(p0), rate_implicito(p1)
+    e0, e1 = esposizione_usd(p0, r0), esposizione_usd(p1, r1)
     if not e0 or not e1:
         return None
-    delta = float(ultimo["equity_eur"]) - float(prima["equity_eur"])
+    delta = float(p1["equity_eur"]) - float(p0["equity_eur"])
     cambio = (r1 - r0) * (e0 + e1) / 2.0
-    return {"delta_eur": delta, "cambio_eur": cambio, "resto_eur": delta - cambio,
-            "da": _iso_di(prima), "a": _iso_di(ultimo),
-            "ts_da": _ts_di(prima), "ts_a": _ts_di(ultimo),
-            "rate_da": r0, "rate_a": r1}
+    out = {"delta_eur": delta, "cambio_eur": cambio, "resto_eur": delta - cambio,
+           "da": _iso_di(p0), "a": _iso_di(p1),
+           "ts_da": _ts_di(p0), "ts_a": _ts_di(p1),
+           "rate_da": r0, "rate_a": r1}
+    giorni_eff = (out["ts_a"] - out["ts_da"]) / 86400.0
+    finestra = {"da": _iso_di(prima), "a": _iso_di(ultimo),
+                "ts_da": _ts_di(prima), "ts_a": _ts_di(ultimo)}
+    if p0 is not prima or p1 is not ultimo:
+        out["sotto_periodo"] = True
+        out["finestra_richiesta"] = finestra
+        out["nota"] = (f"sotto-periodo coerente {_iso_di(p0)[:10]} → "
+                       f"{_iso_di(p1)[:10]} ({_fmt_g(giorni_eff)}g su "
+                       f"{_fmt_g(secondi / 86400.0)} richiesti): la finestra "
+                       f"attraversa un periodo con comparti non coerenti "
+                       f"(capitale in transito); la scomposizione NON spiega il "
+                       f"delta dell'intera finestra")
+    if giorni_eff < giorni_min:
+        return {"stato": INS,
+                "motivo": (f"sotto-periodo coerente {_iso_di(p0)[:10]} → "
+                           f"{_iso_di(p1)[:10]} = {_fmt_g(giorni_eff)}g < "
+                           f"{_fmt_g(giorni_min)}g: rendita e break-even non "
+                           f"calcolabili su un campione così corto (mai "
+                           f"mensilizzare un campione incoerente)"),
+                "sotto_periodo": True,
+                "finestra_richiesta": finestra}
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -267,15 +328,24 @@ def costi_mensili(testo_report_costi: str | None) -> dict:
     return out
 
 
-def break_even(resto_7g_eur: float, capitale_eur: float,
-               costi_eur_mese: float) -> dict:
-    """Distanza dal break-even (mensilizzazione 30/7). Formula e limiti dichiarati."""
-    mensilizzata = resto_7g_eur * 30.0 / 7.0
+def break_even(resto_eur: float, capitale_eur: float,
+               costi_eur_mese: float, giorni: float = GIORNI_DEFAULT) -> dict:
+    """Distanza dal break-even (mensilizzazione 30/giorni). Formula e limiti dichiarati.
+
+    `giorni` = durata effettiva del campione di rendita: 7g di default, oppure i
+    giorni del sotto-periodo coerente quando la finestra attraversa comparti non
+    coerenti (la mensilizzazione NON usa mai l'intera finestra in quel caso).
+    """
+    mensilizzata = resto_eur * 30.0 / float(giorni)
     out = {"mensilizzata_eur_mese": mensilizzata,
+           "giorni_effettivi": float(giorni),
            "costi_eur_mese": costi_eur_mese,
            "distanza_eur_mese": mensilizzata - costi_eur_mese,
            "capitale_attuale_eur": capitale_eur,
-           "formula": FORMULA_BREAKEVEN,
+           "formula": (f"mensilizzata = resto × 30/{_fmt_g(giorni)}; "
+                       f"distanza = mensilizzata − costi mensili; "
+                       f"capitale_break_even = costi_mensili ÷ "
+                       f"(mensilizzata ÷ capitale attuale)"),
            "limiti": LIMITI_BREAKEVEN}
     if capitale_eur and capitale_eur > 0 and mensilizzata > 0:
         out["stato"] = OK
@@ -293,11 +363,34 @@ def break_even(resto_7g_eur: float, capitale_eur: float,
 # 4. Composizione (JSON + testo)
 # ---------------------------------------------------------------------------
 
+def _finestra_fee(rows: list[dict], giorni: int) -> tuple[float, float] | None:
+    """(ts inizio, ts fine) della finestra richiesta sull'ultimo campione del banco.
+
+    Il fee ledger è indipendente dalla copertura dei comparti: le fee si sommano
+    sull'INTERA finestra richiesta, anche quando la scomposizione cambio-vs-resto
+    si restringe al sotto-periodo coerente.
+    """
+    if len(rows) < 2:
+        return None
+    t_a = _ts_di(rows[-1])
+    t_da = t_a - giorni * 86400
+    prima = next((d for d in rows if _ts_di(d) >= t_da), None)
+    if prima is None:
+        return None
+    return _ts_di(prima), t_a
+
+
 def genera_kpi(banco_rows: list[dict], righe_ledger: list[dict] | None,
                costi_testo: str | None = None, giorni: int = GIORNI_DEFAULT,
                comando: str = "", hash_artefatti: dict[str, str] | None = None) -> dict:
     """Assembla il KPI settimanale. Nessun numero viene inventato: dove manca il
-    dato la voce è {stato: 'dati insufficienti', motivo: ...}."""
+    dato la voce è {stato: 'dati insufficienti', motivo: ...}.
+
+    Sotto-periodo coerente: se la finestra attraversa comparti non coerenti, la
+    rendita (scomposizione) si restringe al sotto-periodo e la mensilizzazione
+    usa i giorni effettivi con nota esplicita; sotto-periodo < 2g -> rendita e
+    break-even 'dati insufficienti'.
+    """
     kpi: dict = {"tipo": "kpi_settimanali",
                  "generato_il": datetime.datetime.now(datetime.timezone.utc).isoformat(),
                  "giorni": giorni,
@@ -306,35 +399,65 @@ def genera_kpi(banco_rows: list[dict], righe_ledger: list[dict] | None,
         kpi["hash_artefatti"] = hash_artefatti
 
     attr = attribuzione(banco_rows, giorni * 86400)
-    if attr:
+    giorni_eff = None
+    if attr is not None and attr.get("stato") == INS:
+        # sotto-periodo coerente < 2g: rendita NON calcolabile (mai numeri su un
+        # campione incoerente/corto)
+        kpi["rendita"] = dict(attr)
+        kpi["periodo_effettivo"] = {"stato": INS, "motivo": attr["motivo"]}
+    elif attr is not None:
         kpi["rendita"] = {"stato": OK, **attr}
-        kpi["periodo_effettivo"] = {"da": attr["da"], "a": attr["a"],
-                                    "secondi": giorni * 86400}
+        giorni_eff = (attr["ts_a"] - attr["ts_da"]) / 86400.0
+        per = {"da": attr["da"], "a": attr["a"],
+               "secondi": giorni * 86400,
+               "giorni_effettivi": round(giorni_eff, 3),
+               "giorni_richiesti": giorni}
+        if attr.get("sotto_periodo"):
+            fr = attr.get("finestra_richiesta") or {}
+            per["sotto_periodo"] = True
+            per["nota"] = (f"sotto-periodo coerente {_fmt_g(giorni_eff)}g su "
+                           f"{giorni} richiesti (finestra "
+                           f"{str(fr.get('da', ''))[:10]} → "
+                           f"{str(fr.get('a', ''))[:10]}): la scomposizione è "
+                           f"ristretta al sotto-periodo e NON spiega il delta "
+                           f"dell'intera finestra")
+        kpi["periodo_effettivo"] = per
     else:
         kpi["rendita"] = {"stato": INS,
                           "motivo": ("attribuzione 7g non disponibile: banco con meno "
-                                     "di 2 campioni, senza tasso implicito USDC→EUR o "
-                                     "con esposizione non calcolabile")}
+                                     "di 2 campioni, senza tasso implicito USDC→EUR, "
+                                     "con esposizione non calcolabile o con copertura "
+                                     "dei comparti incoerente su tutta la finestra")}
         kpi["periodo_effettivo"] = {"stato": INS}
 
     ultima = banco_rows[-1] if banco_rows else None
     kpi["capitale_attuale_eur"] = float(ultima["equity_eur"]) if ultima else None
 
     rate = rate_implicito(ultima) if ultima else None
-    if attr:
-        kpi["fee"] = fee_da_ledger(righe_ledger, attr["ts_da"], attr["ts_a"], rate)
+    fin = _finestra_fee(banco_rows, giorni)
+    if fin is not None:
+        kpi["fee"] = fee_da_ledger(righe_ledger, fin[0], fin[1], rate)
     else:
         kpi["fee"] = {"stato": INS,
-                      "motivo": "finestra 7g non determinabile (banco insufficiente)"}
+                      "motivo": f"finestra {giorni}g non determinabile (banco insufficiente)"}
 
     kpi["costi"] = costi_mensili(costi_testo)
-    resto = attr["resto_eur"] if attr else None
+    resto = attr["resto_eur"] if (attr is not None and attr.get("stato") != INS) else None
     cap = kpi["capitale_attuale_eur"]
-    if resto is not None and cap is not None:
-        kpi["break_even"] = break_even(resto, cap, kpi["costi"]["valore_eur_mese"])
+    if resto is not None and cap is not None and giorni_eff is not None:
+        be = break_even(resto, cap, kpi["costi"]["valore_eur_mese"], giorni=giorni_eff)
+        if attr.get("sotto_periodo"):
+            be["nota"] = (f"sotto-periodo {_fmt_g(giorni_eff)}g su {giorni} "
+                          f"richiesti: mensilizzazione sul sotto-periodo "
+                          f"effettivo, NON sull'intera finestra")
+        kpi["break_even"] = be
+    elif attr is not None and attr.get("stato") == INS:
+        kpi["break_even"] = {"stato": INS, "motivo": attr["motivo"],
+                             "formula": FORMULA_BREAKEVEN,
+                             "limiti": LIMITI_BREAKEVEN}
     else:
         kpi["break_even"] = {"stato": INS,
-                             "motivo": "rendita 7g o capitale non disponibili",
+                             "motivo": f"rendita {giorni}g o capitale non disponibili",
                              "formula": FORMULA_BREAKEVEN,
                              "limiti": LIMITI_BREAKEVEN}
     return kpi
@@ -345,12 +468,24 @@ def componi_testo(kpi: dict) -> str:
     righe = ["📈 Denaro — KPI settimanali (lunedì)"]
     per = kpi.get("periodo_effettivo", {})
     if per.get("da"):
-        righe.append(f"Periodo effettivo: {str(per['da'])[:16]}Z → {str(per['a'])[:16]}Z "
-                     f"({kpi.get('giorni', '?')}g)")
+        if per.get("sotto_periodo"):
+            righe.append(f"Periodo effettivo: {str(per['da'])[:16]}Z → {str(per['a'])[:16]}Z "
+                         f"(sotto-periodo coerente {_fmt_g(per.get('giorni_effettivi', 0))}g su "
+                         f"{per.get('giorni_richiesti', kpi.get('giorni', '?'))}g richiesti)")
+        else:
+            righe.append(f"Periodo effettivo: {str(per['da'])[:16]}Z → {str(per['a'])[:16]}Z "
+                         f"({kpi.get('giorni', '?')}g)")
     r = kpi.get("rendita", {})
     if r.get("stato") == OK:
-        righe.append(f"Rendita netta 7g: {r['delta_eur']:+.2f} € "
+        etichetta = "Rendita netta 7g"
+        if r.get("sotto_periodo"):
+            g_eff = (r["ts_a"] - r["ts_da"]) / 86400.0
+            etichetta = (f"Rendita netta (sotto-periodo {_fmt_g(g_eff)}g su "
+                         f"{kpi.get('giorni', '?')})")
+        righe.append(f"{etichetta}: {r['delta_eur']:+.2f} € "
                      f"(cambio {r['cambio_eur']:+.2f} € · resto {r['resto_eur']:+.2f} €)")
+        if r.get("nota"):
+            righe.append(f"  {r['nota']}")
     else:
         righe.append(f"Rendita netta 7g: {INS} — {r.get('motivo', '')}")
     f = kpi.get("fee", {})
@@ -370,7 +505,8 @@ def componi_testo(kpi: dict) -> str:
     c = kpi.get("costi", {})
     righe.append("Break-even:")
     if be.get("stato") == OK:
-        righe.append(f"  rendita mensilizzata (resto × 30/7): "
+        div = _fmt_g(be.get("giorni_effettivi", kpi.get("giorni", 7)))
+        righe.append(f"  rendita mensilizzata (resto × 30/{div}): "
                      f"{be['mensilizzata_eur_mese']:+.2f} €/mese")
         righe.append(f"  costi mensili: {c.get('valore_eur_mese', 0):.2f} €/mese "
                      f"({c.get('fonte', 'n/d')})")
@@ -378,8 +514,12 @@ def componi_testo(kpi: dict) -> str:
         righe.append(f"  capitale attuale: {be['capitale_attuale_eur']:.2f} € · "
                      f"capitale break-even stimato: "
                      f"{be['capitale_break_even_eur']:,.2f} €")
+        if be.get("nota"):
+            righe.append(f"  nota: {be['nota']}")
     else:
         righe.append(f"  {INS} — {be.get('motivo', '')}")
+        if be.get("nota"):
+            righe.append(f"  nota: {be['nota']}")
     righe.append(f"  formula: {be.get('formula', FORMULA_BREAKEVEN)}")
     if be.get("limiti"):
         righe.append(f"  {be['limiti']}")
