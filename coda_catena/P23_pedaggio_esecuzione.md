@@ -1,5 +1,5 @@
 # P23 — Il pedaggio reale: misura sui NOSTRI fill + studio maker-first
-STATO: DA PRENDERE — pre-registrata 2026-10-16 (hermes). Implementazione: Hermes (dati chiave read-only già accessibili); lo studio maker-first è delegabile a un aiutante.
+STATO: PRESA_DA Hermes 2026-10-17 — pre-registrata 2026-10-16 (hermes). M1 (fill reali, chiave read-only) di Hermes; M2 (studio maker-first) DELEGATO a Merlino — REQ-MERL-20261017-004, consegna `handoff/P23-M2/`. Interpretazioni ufficiali: addendum in coda (PRIMA di qualsiasi numero).
 Repo: grivetto/alpha-omega-trading · commit di registrazione: ea7ae01b (file di questa voce: `coda_catena/P23_pedaggio_esecuzione.md`).
 
 ## Obiettivo (verificabile)
@@ -49,3 +49,12 @@ Comando di verifica:
 ```
 ## Riferimenti
 docs/16 (C1) · E1 · P12 M2 (costi) · cancello criterio 6 · carry_multi.
+
+## Addendum 2026-10-17 (Artù) — esecuzione della voce: M2 delegato a Merlino, M1 a Hermes. PRIMA di qualsiasi numero, interpretazioni ufficiali:
+1. **Ripartizione:** M1 (fill reali, chiave read-only del banco) resta di Hermes. M2 (studio maker-first su book pubblico) è DELEGATO a Merlino — REQ-MERL-20261017-004, canale `hermes_bridge/merlino/`, consegna `handoff/P23-M2/`. L'integrazione in `scripts/misura_p23.py` e la misura UFFICIALE restano di Hermes.
+2. **Strumenti M2:** {DOGE, DOT, ADA} × {spot, swap} su OKX EEA, endpoint PUBBLICI (gli stessi delle esecuzioni reali: C1 DOGE, carry DOT/ADA). Zero chiavi, zero ordini, zero scritture.
+3. **Momenti:** 20 istanti indipendenti nel weekend 17–18/10/2026, scelti con regola deterministica riproducibile (seme fisso, dichiarato); in ciascun istante si campionano i 6 libri (20 osservazioni per libro). Nessun filtro sulle ore: liquidità reale, non ideale.
+4. **Simulazione (per libro × X ∈ {5s, 15s}):** post-only a P_buy = mid − tick / P_sell = mid + tick (tick = tick size dello strumento; mid al momento dell'ordine); finestra X s; se non fillato → fallback taker (costo = taker fee + attraversamento spread vs mid).
+5. **Fill proxy (senza modellazione di coda → limite SUPERIORE del fill-rate, dichiararlo):** primario = un trade pubblico stampa ≤ P_buy (sell: ≥ P_sell) entro X s; sensibilità = best_ask ≤ P_buy / best_bid ≥ P_sell. Riportare entrambi.
+6. **Output:** fill-rate e costo atteso (bp) per gamba × X (bound primario + sensibilità), confronto con le tariffe correnti (`money.costi`), risposta a H2 («risparmio ≥5bp per ciclo?»). Tutto etichettato **STIMA, non misura d'esecuzione**.
+7. Invarianti: zero ordini, zero scritture su exchange, zero write su `~/money`; consegna con `MANIFEST.sha256` + `READY`; `LEGGIMI.md` col comando esatto che rieseguirà Artù (run ufficiale: 20 momenti reali, weekend).
