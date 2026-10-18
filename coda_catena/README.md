@@ -49,4 +49,5 @@ STATO DELLA CODA
 
 ## Aggiornamento 2026-10-18 (notte) — E2 + ondata operai
 - E2_significativita.md ...... FATTA 18/10 (Artù) — integrata: `src/money/ricerca/significativita.py` + 14 test (suite 890 verde); fix DD dal valore iniziale (verifica indipendente). Voce di manutenzione (fuori dal conteggio tentativi).
-- Ondata operai 18/10: opencode-omarchy → E2 (consegnata 01:12, integrata) · agy-MARCODG1 → preflight dati tick (consegnato 17/10 23:12, verificato Artù 18/10: 4 file 13–16/10, 1.307.065 trade, 0 null/duplicati, 12 gap>60s; artefatti `prove/preflight_tick_20261018/`) · A0-mc2 → ricognizione on-chain/sentiment (docs/36, integrata 18/10).
+- Ondata operai 18/10: opencode-omarchy → E2 (consegnata 01:12, integrata) + preflight dati P26 (dispatchato 15:51) · agy-MARCODG1 → preflight dati tick (consegnato 17/10 23:12, verificato Artù 18/10: 4 file 13–16/10, 1.307.065 trade, 0 null/duplicati, 12 gap>60s; artefatti `prove/preflight_tick_20261018/`) + **watchdog `tick_watch` installato in cron su MARCODG1 (10:00 giornaliero; artefatti `prove/tick_watch_20261018/`, canonico in `deploy/cron/crontab-marcodg1.txt`)** · A0-mc2 → ricognizione on-chain/sentiment (docs/36, integrata 18/10).
+- P27_d3_scala_carry.md ... IN LAVORAZIONE (Merlino, REQ-011 dispatchata 18/10 13:48; ACK 14:05 — estensione COPPIE LTC/AVAX + test carry_config).

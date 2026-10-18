@@ -1,0 +1,284 @@
+{
+  "run_timestamp_utc": "2026-10-18T13:54:28.527444+00:00",
+  "run_timestamp_epoch": 1792331668.527444,
+  "data_dir": "/home/marco/money/data/tick",
+  "verdict": "OK",
+  "exit_code": 0,
+  "fail_reasons": [],
+  "warn_reasons": [],
+  "rules": {
+    "fail_if_last_file_older_than_hours": 36.0,
+    "fail_if_missing_days_in_between": true,
+    "fail_if_any_file_coverage_lt_hours": 20.0,
+    "fail_if_null_or_empty_gt": 0,
+    "fail_if_duplicate_trdMatchID_gt": 0,
+    "warn_if_total_gaps_gt_60s_gt": 20,
+    "warn_if_yesterday_file_missing": true
+  },
+  "freshness": {
+    "today_utc": "2026-10-18",
+    "yesterday_utc": "2026-10-17",
+    "first_day_covered": "2026-10-13",
+    "last_day_covered": "2026-10-17",
+    "n_files": 5,
+    "missing_days_between_first_and_last": [],
+    "last_file_name": "DOGEUSDT_2026-10-17.csv.gz",
+    "last_file_age_hours": 12.3598,
+    "last_file_age_mtime_hours": 12.3598,
+    "last_file_age_last_ts_hours": 13.9083,
+    "yesterday_file_exists": true
+  },
+  "summary": {
+    "n_files": 5,
+    "total_rows": 1490386,
+    "mean_rows_per_file": 298077.2,
+    "median_rows_per_file": 274967,
+    "min_coverage_hours": 23.998197,
+    "mean_coverage_hours": 23.999204,
+    "total_null_or_empty_values": 0,
+    "total_duplicate_trdMatchID": 0,
+    "total_gaps_gt_60s": 20,
+    "overall_max_gap_s": 111.3704
+  },
+  "files": [
+    {
+      "file": "DOGEUSDT_2026-10-13.csv.gz",
+      "path": "/home/marco/money/data/tick/DOGEUSDT_2026-10-13.csv.gz",
+      "date": "2026-10-13",
+      "size_bytes": 10336149,
+      "mtime_epoch": 1792099833.6895385,
+      "mtime_iso_utc": "2026-10-15T21:30:33.689538+00:00",
+      "n_rows": 274967,
+      "first_ts": 1791849600.6456,
+      "last_ts": 1791935998.7849,
+      "first_ts_iso_utc": "2026-10-13T00:00:00.645600+00:00",
+      "last_ts_iso_utc": "2026-10-13T23:59:58.784900+00:00",
+      "coverage_hours": 23.99948313885265,
+      "null_or_empty_values": 0,
+      "duplicate_trdMatchID": 0,
+      "gaps_gt_60s": 10,
+      "max_gap_s": 111.37039995193481,
+      "gaps_gt_60s_details": [
+        {
+          "from_ts": 1791925132.1813,
+          "to_ts": 1791925205.1108,
+          "from_iso_utc": "2026-10-13T20:58:52.181300+00:00",
+          "to_iso_utc": "2026-10-13T21:00:05.110800+00:00",
+          "gap_seconds": 72.9295
+        },
+        {
+          "from_ts": 1791926232.8041,
+          "to_ts": 1791926294.2028,
+          "from_iso_utc": "2026-10-13T21:17:12.804100+00:00",
+          "to_iso_utc": "2026-10-13T21:18:14.202800+00:00",
+          "gap_seconds": 61.3987
+        },
+        {
+          "from_ts": 1791927373.28,
+          "to_ts": 1791927437.775,
+          "from_iso_utc": "2026-10-13T21:36:13.280000+00:00",
+          "to_iso_utc": "2026-10-13T21:37:17.775000+00:00",
+          "gap_seconds": 64.495
+        },
+        {
+          "from_ts": 1791928536.7787,
+          "to_ts": 1791928597.336,
+          "from_iso_utc": "2026-10-13T21:55:36.778700+00:00",
+          "to_iso_utc": "2026-10-13T21:56:37.336000+00:00",
+          "gap_seconds": 60.5573
+        },
+        {
+          "from_ts": 1791932139.0712,
+          "to_ts": 1791932220.5132,
+          "from_iso_utc": "2026-10-13T22:55:39.071200+00:00",
+          "to_iso_utc": "2026-10-13T22:57:00.513200+00:00",
+          "gap_seconds": 81.442
+        },
+        {
+          "from_ts": 1791934608.938,
+          "to_ts": 1791934674.499,
+          "from_iso_utc": "2026-10-13T23:36:48.938000+00:00",
+          "to_iso_utc": "2026-10-13T23:37:54.499000+00:00",
+          "gap_seconds": 65.561
+        },
+        {
+          "from_ts": 1791935062.0391,
+          "to_ts": 1791935123.1388,
+          "from_iso_utc": "2026-10-13T23:44:22.039100+00:00",
+          "to_iso_utc": "2026-10-13T23:45:23.138800+00:00",
+          "gap_seconds": 61.0997
+        },
+        {
+          "from_ts": 1791935279.8753,
+          "to_ts": 1791935391.2457,
+          "from_iso_utc": "2026-10-13T23:47:59.875300+00:00",
+          "to_iso_utc": "2026-10-13T23:49:51.245700+00:00",
+          "gap_seconds": 111.3704
+        },
+        {
+          "from_ts": 1791935561.1927,
+          "to_ts": 1791935624.6574,
+          "from_iso_utc": "2026-10-13T23:52:41.192700+00:00",
+          "to_iso_utc": "2026-10-13T23:53:44.657400+00:00",
+          "gap_seconds": 63.4647
+        },
+        {
+          "from_ts": 1791935791.3566,
+          "to_ts": 1791935855.5047,
+          "from_iso_utc": "2026-10-13T23:56:31.356600+00:00",
+          "to_iso_utc": "2026-10-13T23:57:35.504700+00:00",
+          "gap_seconds": 64.1481
+        }
+      ]
+    },
+    {
+      "file": "DOGEUSDT_2026-10-14.csv.gz",
+      "path": "/home/marco/money/data/tick/DOGEUSDT_2026-10-14.csv.gz",
+      "date": "2026-10-14",
+      "size_bytes": 11341756,
+      "mtime_epoch": 1792099833.2525253,
+      "mtime_iso_utc": "2026-10-15T21:30:33.252525+00:00",
+      "n_rows": 301376,
+      "first_ts": 1791936000.5486,
+      "last_ts": 1792022394.0579,
+      "first_ts_iso_utc": "2026-10-14T00:00:00.548600+00:00",
+      "last_ts_iso_utc": "2026-10-14T23:59:54.057900+00:00",
+      "coverage_hours": 23.998197027775976,
+      "null_or_empty_values": 0,
+      "duplicate_trdMatchID": 0,
+      "gaps_gt_60s": 0,
+      "max_gap_s": 54.99959993362427,
+      "gaps_gt_60s_details": []
+    },
+    {
+      "file": "DOGEUSDT_2026-10-15.csv.gz",
+      "path": "/home/marco/money/data/tick/DOGEUSDT_2026-10-15.csv.gz",
+      "date": "2026-10-15",
+      "size_bytes": 17858935,
+      "mtime_epoch": 1792114325.859457,
+      "mtime_iso_utc": "2026-10-16T01:32:05.859457+00:00",
+      "n_rows": 471687,
+      "first_ts": 1792022400.1726,
+      "last_ts": 1792108798.8414,
+      "first_ts_iso_utc": "2026-10-15T00:00:00.172600+00:00",
+      "last_ts_iso_utc": "2026-10-15T23:59:58.841400+00:00",
+      "coverage_hours": 23.999630222188102,
+      "null_or_empty_values": 0,
+      "duplicate_trdMatchID": 0,
+      "gaps_gt_60s": 1,
+      "max_gap_s": 72.73880004882812,
+      "gaps_gt_60s_details": [
+        {
+          "from_ts": 1792108661.3353,
+          "to_ts": 1792108734.0741,
+          "from_iso_utc": "2026-10-15T23:57:41.335300+00:00",
+          "to_iso_utc": "2026-10-15T23:58:54.074100+00:00",
+          "gap_seconds": 72.7388
+        }
+      ]
+    },
+    {
+      "file": "DOGEUSDT_2026-10-16.csv.gz",
+      "path": "/home/marco/money/data/tick/DOGEUSDT_2026-10-16.csv.gz",
+      "date": "2026-10-16",
+      "size_bytes": 9786318,
+      "mtime_epoch": 1792200737.3653212,
+      "mtime_iso_utc": "2026-10-17T01:32:17.365321+00:00",
+      "n_rows": 259035,
+      "first_ts": 1792108800.18,
+      "last_ts": 1792195197.9429,
+      "first_ts_iso_utc": "2026-10-16T00:00:00.180000+00:00",
+      "last_ts_iso_utc": "2026-10-16T23:59:57.942900+00:00",
+      "coverage_hours": 23.99937858329879,
+      "null_or_empty_values": 0,
+      "duplicate_trdMatchID": 0,
+      "gaps_gt_60s": 1,
+      "max_gap_s": 61.01460003852844,
+      "gaps_gt_60s_details": [
+        {
+          "from_ts": 1792193657.6283,
+          "to_ts": 1792193718.6429,
+          "from_iso_utc": "2026-10-16T23:34:17.628300+00:00",
+          "to_iso_utc": "2026-10-16T23:35:18.642900+00:00",
+          "gap_seconds": 61.0146
+        }
+      ]
+    },
+    {
+      "file": "DOGEUSDT_2026-10-17.csv.gz",
+      "path": "/home/marco/money/data/tick/DOGEUSDT_2026-10-17.csv.gz",
+      "date": "2026-10-17",
+      "size_bytes": 7124632,
+      "mtime_epoch": 1792287173.3925564,
+      "mtime_iso_utc": "2026-10-18T01:32:53.392556+00:00",
+      "n_rows": 183321,
+      "first_ts": 1792195200.9376,
+      "last_ts": 1792281598.5251,
+      "first_ts_iso_utc": "2026-10-17T00:00:00.937600+00:00",
+      "last_ts_iso_utc": "2026-10-17T23:59:58.525100+00:00",
+      "coverage_hours": 23.999329861137603,
+      "null_or_empty_values": 0,
+      "duplicate_trdMatchID": 0,
+      "gaps_gt_60s": 8,
+      "max_gap_s": 94.79809999465942,
+      "gaps_gt_60s_details": [
+        {
+          "from_ts": 1792197624.8942,
+          "to_ts": 1792197687.7084,
+          "from_iso_utc": "2026-10-17T00:40:24.894200+00:00",
+          "to_iso_utc": "2026-10-17T00:41:27.708400+00:00",
+          "gap_seconds": 62.8142
+        },
+        {
+          "from_ts": 1792210811.2641,
+          "to_ts": 1792210879.1677,
+          "from_iso_utc": "2026-10-17T04:20:11.264100+00:00",
+          "to_iso_utc": "2026-10-17T04:21:19.167700+00:00",
+          "gap_seconds": 67.9036
+        },
+        {
+          "from_ts": 1792213758.8187,
+          "to_ts": 1792213837.6328,
+          "from_iso_utc": "2026-10-17T05:09:18.818700+00:00",
+          "to_iso_utc": "2026-10-17T05:10:37.632800+00:00",
+          "gap_seconds": 78.8141
+        },
+        {
+          "from_ts": 1792214820.448,
+          "to_ts": 1792214880.5845,
+          "from_iso_utc": "2026-10-17T05:27:00.448000+00:00",
+          "to_iso_utc": "2026-10-17T05:28:00.584500+00:00",
+          "gap_seconds": 60.1365
+        },
+        {
+          "from_ts": 1792215430.6176,
+          "to_ts": 1792215494.6761,
+          "from_iso_utc": "2026-10-17T05:37:10.617600+00:00",
+          "to_iso_utc": "2026-10-17T05:38:14.676100+00:00",
+          "gap_seconds": 64.0585
+        },
+        {
+          "from_ts": 1792237330.6466,
+          "to_ts": 1792237425.4447,
+          "from_iso_utc": "2026-10-17T11:42:10.646600+00:00",
+          "to_iso_utc": "2026-10-17T11:43:45.444700+00:00",
+          "gap_seconds": 94.7981
+        },
+        {
+          "from_ts": 1792238243.8252,
+          "to_ts": 1792238314.1987,
+          "from_iso_utc": "2026-10-17T11:57:23.825200+00:00",
+          "to_iso_utc": "2026-10-17T11:58:34.198700+00:00",
+          "gap_seconds": 70.3735
+        },
+        {
+          "from_ts": 1792248667.556,
+          "to_ts": 1792248729.572,
+          "from_iso_utc": "2026-10-17T14:51:07.556000+00:00",
+          "to_iso_utc": "2026-10-17T14:52:09.572000+00:00",
+          "gap_seconds": 62.016
+        }
+      ]
+    }
+  ]
+}

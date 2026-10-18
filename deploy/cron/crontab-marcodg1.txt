@@ -11,3 +11,9 @@
 
 # [09/10/26] tabellone contabile: versato->equity->fee->realizzato (ownership: proprietario)
 0 8 * * * cd /home/marco/money && /usr/bin/python3 scripts/tabellone.py --env /home/marco/denaro/secrets/main_okx.env --equity-url http://127.0.0.1:8912/api/infra.json --versato 1067 >> /home/marco/money/logs/tabellone.log 2>&1
+
+# [18/10/26] Collector fee ledger (P25) - lunedi 08:50, read-only, prima del KPI
+50 8 * * 1 cd /home/marco/money && /home/marco/money/.venv/bin/python3 scripts/raccogli_fee_ledger.py --env-file config/.env_banco >> /home/marco/money/logs/raccogli_fee_ledger.log 2>&1
+
+# [18/10/26] Watchdog raccolta tick (tick_watch.py) - 10:00 giornaliero; verdetto in logs/tick_watch/
+0 10 * * * mkdir -p /home/marco/money/logs/tick_watch && cd /home/marco/money && TICK_WATCH_OUT=/home/marco/money/logs/tick_watch /home/marco/money/.venv/bin/python3 scripts/tick_watch.py >> /home/marco/money/logs/tick_watch/cron.log 2>&1
