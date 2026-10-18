@@ -1044,6 +1044,7 @@ def collect_carry():
             "coppie_aperte": c.get("coppie_aperte"),
             "nozionale_totale_eur": c.get("nozionale_totale_eur"),
             "upl_totale": c.get("upl_totale"),
+            "candidate": c.get("candidate") or [],
             "coppie": c.get("coppie") or {}}
 
 
