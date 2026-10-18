@@ -1,0 +1,26 @@
+S2 — FUNDING SCAN X-PERP OKX EEA (scansione descrittiva — NON promozione)
+==============================================================================
+Dati: /home/sergio/money/data/funding_xperp.jsonl | righe lette: 3402 | malformate: 0 | simboli: 12
+Costi: okx_eea (conto OKX EEA con X-Perps aperti (KYC + appropriateness assessment)) | giro misto 0.180% | slippage 0.040%/lato | ciclo 0.260% x 12/anno (1 apertura/chiusura al mese)
+
+simbolo                      n giorni   media/g annuo lordo annuo NETTO  lato %g+short autocorr payback criteri
+DOGE/USD:USD-310404        334   112  +0.0266%    +9.72%     +6.60% short    99.1%  +0.484     10g PSN
+ADA/USD:USD-310404         334   112  +0.0262%    +9.57%     +6.45% short    94.6%  +0.440     10g PSN
+LINK/USD:USD-310523        334   112  +0.0258%    +9.40%     +6.28% short    91.1%  +0.633     10g PSN
+XRP/USD:USD-310404         334   112  +0.0221%    +8.06%     +4.94% short    92.0%  +0.657     12g PSN
+LTC/USD:USD-310404         334   112  +0.0202%    +7.37%     +4.25% short    87.5%  +0.696     13g PSN
+AVAX/USD:USD-310530        334   112  +0.0192%    +7.01%     +3.89% short    83.0%  +0.453     14g PSN
+BTC/USDT:USDT               90    31  +0.0120%    +4.37%     +1.25% short    93.5%  +0.393     22g P-N
+SOL/USD:USD-310404         334   112  +0.0102%    +3.72%     +0.60% short    75.0%  +0.624     26g PSN
+ETH/USDT:USDT               90    31  +0.0098%    +3.58%     +0.46% short    90.3%  +0.372     26g P-N
+BTC/USD:USD-310404         334   112  -0.0056%    -2.06%     -1.06%  long    56.2%  +0.804     46g PS-
+ETH/USD:USD-310404         334   112  +0.0021%    +0.75%     -2.37% short    69.6%  +0.744    126g PS-
+
+Criteri (NON promozione): persistenza > 0 [P] | n_giorni >= 60 [S] | netto > 0 dopo costi [N]; ! = anomalia
+CANDIDATI (7/12): DOGE/USD:USD-310404, ADA/USD:USD-310404, LINK/USD:USD-310523, XRP/USD:USD-310404, LTC/USD:USD-310404, AVAX/USD:USD-310530, SOL/USD:USD-310404
+La classifica esclude 1 simbolo/i 'da verificare' (un possibile errore di dati non e' un edge).
+DA VERIFICARE (|funding giornaliero| > 0.50% — possibile errore dati, non edge):
+  DOT/USD:USD-310808       giorno 2026-08-25: funding giornaliero +1.020%
+
+L'output e' DESCRITTIVO: i candidati si pre-registrano come esperimenti (spec propria) e passano da money.cancello.
+Nessuna promozione automatica. La classifica mescola lati diversi: controllare il campo 'lato' prima di confrontare.
