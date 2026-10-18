@@ -539,6 +539,7 @@ function render(d) {
   }).join('') || '<div class="skeleton">—</div>';
 
   // Saldi
+  const bal = d.balances || {};
   const bd = $('balances');
   bd.innerHTML = '';
   for (const [k, v] of Object.entries(bal)) {
