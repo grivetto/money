@@ -11,6 +11,9 @@ Criteri di accettazione coperti:
 4. riconciliazione (delta != amt -> errore esplicito + esito FAIL_RECONCILIA);
 5. dry-run senza scritture (contatore mock == 0);
 6. --execute senza --env-file -> rifiuto duro.
+7. riconciliazione robusta alla latenza di accredito (fix REQ-MERL-20261018-008):
+   saldo che converge dopo N letture (N=3, N=20) -> DONE; saldo che non si
+   aggiorna mai -> FAIL_RECONCILIA dopo il timeout con nota esplicita.
 """
 
 import json
@@ -338,6 +341,98 @@ def test_execute_senza_env_file_rifiuto_duro(capsys, monkeypatch, tmp_path):
     err = capsys.readouterr().err
     assert "RIFIUTO" in err and "--env-file" in err
     assert not (tmp_path / "logs").exists()
+
+
+# ---------------------------------------------------------------------------
+# Riconciliazione robusta alla latenza di accredito (fix REQ-MERL-20261018-008)
+# ---------------------------------------------------------------------------
+
+def test_riconciliazione_attende_accredito_ritardato_3_letture(tmp_path, capsys):
+    mock = MockClient(savings_credit_delay_reads=3)
+    log = str(tmp_path / "earn_move.log")
+    rc = esegui(mock, cfg(execute=True, log=log), sleep_fn=noop_sleep)
+    assert rc == 0
+    voce = last_log(log)
+    assert voce["esito"] == "DONE"
+    assert voce["delta_savings"] == "10"
+    # 1 lettura di preflight + 3 stale + 1 convergente = 5
+    n = sum(1 for m, _ in mock.calls if m == "GET finance/savings/balance")
+    assert n == 5
+    assert mock.savings["USDC"] == Decimal("10")
+    assert "RICONCILIAZIONE OK" in capsys.readouterr().out
+
+
+def test_riconciliazione_attende_accredito_ritardato_20_letture(tmp_path):
+    mock = MockClient(savings_credit_delay_reads=20)
+    log = str(tmp_path / "earn_move.log")
+    rc = esegui(mock, cfg(execute=True, log=log), sleep_fn=noop_sleep)
+    assert rc == 0
+    voce = last_log(log)
+    assert voce["esito"] == "DONE"
+    assert voce["delta_savings"] == "10"
+    # 1 lettura di preflight + 20 stale + 1 convergente = 22
+    n = sum(1 for m, _ in mock.calls if m == "GET finance/savings/balance")
+    assert n == 22
+    assert mock.savings["USDC"] == Decimal("10")
+
+
+def test_riconciliazione_accredito_mai_visibile_fail_dopo_timeout(tmp_path, capsys):
+    mock = MockClient(savings_credit_delay_reads=10**9)  # mai visibile nel poll
+    log = str(tmp_path / "earn_move.log")
+    rc = esegui(mock, cfg(execute=True, log=log), sleep_fn=noop_sleep)
+    assert rc == 1
+    voce = last_log(log)
+    assert voce["esito"] == "FAIL_RECONCILIA"
+    assert voce["delta_savings"] == "0"
+    assert "nota" in voce
+    assert "latenza di accredito" in voce["nota"]
+    assert "riverificare con un dry-run" in voce["nota"]
+    out = capsys.readouterr().out
+    assert "ERRORE RICONCILIAZIONE" in out
+    assert "latenza di accredito" in out
+    # nessuna azione correttiva: una sola POST (il purchase), mai altre
+    assert [m for m, _ in mock.scritture] == \
+        ["POST finance/savings/purchase-redempt"]
+
+
+def test_dryrun_con_latenza_impostata_resta_zero_scritture(capsys):
+    mock = MockClient(savings_credit_delay_reads=3)
+    rc = esegui(mock, cfg(), sleep_fn=noop_sleep)
+    assert rc == 0
+    assert mock.scritture == []
+    assert all(c[0].startswith("GET") for c in mock.calls)
+    assert "0 chiamate di scrittura" in capsys.readouterr().out
+
+
+def test_riconciliazione_letture_savings_tutte_fallite(tmp_path):
+    from earn_move import riconcilia_savings
+    mock = MockClient(fail_savings_read=True)
+    log = str(tmp_path / "earn_move.log")
+    out_lines = []
+    rc = riconcilia_savings(mock, cfg(execute=True, log=log),
+                            Decimal("0"), noop_sleep, out_lines.append)
+    assert rc == 1
+    voce = last_log(log)
+    assert voce["esito"] == "FAIL_RECONCILIA"
+    assert voce["delta_savings"] is None
+    assert "nota" in voce and "riverificare con un dry-run" in voce["nota"]
+    assert any("ERRORE RICONCILIAZIONE" in s for s in out_lines)
+
+
+def test_riconciliazione_delta_diverso_da_amt_sopravvive_al_poll(tmp_path, capsys):
+    # glitch permanente (delta 9.99, mai == amt): il poll deve esaurire il
+    # timeout e fallire come prima, con messaggio invariato (tolleranza 0).
+    mock = MockClient(savings_glitch=Decimal("-0.01"))
+    log = str(tmp_path / "earn_move.log")
+    rc = esegui(mock, cfg(execute=True, log=log), sleep_fn=noop_sleep)
+    assert rc == 1
+    voce = last_log(log)
+    assert voce["esito"] == "FAIL_RECONCILIA"
+    assert voce["delta_savings"] == "9.99"
+    out = capsys.readouterr().out
+    assert "ERRORE RICONCILIAZIONE" in out and "tolleranza 0" in out
+    # l'accredito non e' MAI arrivato: nessuna lettura deve vedere delta 0
+    assert "delta savings = 0" not in out
 
 
 # ---------------------------------------------------------------------------

@@ -24,6 +24,11 @@ Sicurezze (dure):
   "GIA A TARGET" e nessuna scrittura.
 - riconciliazione: delta saldo savings == amt (tolleranza 0), altrimenti errore
   esplicito + log esito=FAIL_RECONCILIA. Nessuna azione correttiva automatica.
+- riconciliazione robusta alla LATENZA di accredito (fix 2026-10-18, REQ-MERL-
+  20261018-008): dopo il purchase il saldo savings viene riletto fino alla
+  convergenza delta == amt (poll esteso 60x2s ~= 120s); se il delta resta 0
+  dopo il timeout -> FAIL_RECONCILIA con nota esplicita di possibile latenza
+  di accredito. Nessuna azione correttiva automatica (invariato).
 - --execute SENZA --env-file: rifiuto duro (mai chiavi nel codice, mai in log).
 - nessun ordine di trading, nessun prelievo verso l'esterno, mai chiavi stampate.
 
@@ -51,6 +56,15 @@ RATE_MIN = Decimal("0.01")   # 1%
 RATE_MAX = Decimal("3.65")   # 365% ("The rate value range is between 1% and 365%")
 POLL_ATTEMPTI = 10
 POLL_INTERVAL_S = 1.0
+# Riconciliazione post-purchase robusta alla latenza di accredito (fix
+# REQ-MERL-20261018-008): 60 letture x 2s ~= 120s totali di attesa della
+# convergenza delta == amt. Nessuna azione correttiva automatica.
+RECONCILIA_POLL_N = 60
+RECONCILIA_INTERVAL_S = 2.0
+NOTA_LATENZA_ACCREDITO = (
+    "saldo non ancora aggiornato: possibile latenza di accredito; "
+    "riverificare con un dry-run prima di qualunque azione"
+)
 
 # Saldi sintetici della modalita MOCK (dry-run senza --env-file). Dichiarati e
 # marcati [MOCK] su ogni riga: non sono mai dati reali.
@@ -146,7 +160,8 @@ class MockClient:
 
     def __init__(self, funding=None, trading=None, savings=None,
                  fail_transfer=False, fail_purchase=False,
-                 savings_glitch=None, transfer_delay_reads=0):
+                 savings_glitch=None, transfer_delay_reads=0,
+                 savings_credit_delay_reads=0, fail_savings_read=False):
         self.funding = {c: (MOCK_FUNDING if funding is None else funding)
                         for c in WHITELIST_CCY}
         self.trading = {c: (MOCK_TRADING if trading is None else trading)
@@ -159,8 +174,16 @@ class MockClient:
         self.fail_purchase = fail_purchase
         self.savings_glitch = savings_glitch      # Decimal: offset al saldo post-purchase
         self.transfer_delay_reads = transfer_delay_reads  # letture funding che vedono il pre-transfer
+        # Latency di accredito savings (fix REQ-MERL-20261018-008): dopo il
+        # purchase, il credito diventa visibile sul saldo savings solo dopo
+        # N letture di finance/savings/balance.
+        self.savings_credit_delay_reads = savings_credit_delay_reads
+        self.fail_savings_read = fail_savings_read  # letture savings sempre code=1
         self._stale_reads = 0
         self._funding_snapshot = None
+        self._pending_credit = {c: Decimal("0") for c in WHITELIST_CCY}
+        self._pending_glitch = {c: Decimal("0") for c in WHITELIST_CCY}
+        self._credit_wait_reads = 0
 
     # -- letture (read-only) -------------------------------------------------
     def privateGetAssetBalances(self, params):
@@ -182,6 +205,23 @@ class MockClient:
 
     def privateGetFinanceSavingsBalance(self, params):
         self.calls.append(("GET finance/savings/balance", dict(params)))
+        if self.fail_savings_read:
+            return {"code": "1", "msg": "mock: lettura savings fallita",
+                    "data": []}
+        if self._credit_wait_reads > 0:
+            # latenza di accredito in corso: questa lettura vede il saldo
+            # PRE-accredito (come il poll reale che vede 0 subito dopo il
+            # purchase con code=0).
+            self._credit_wait_reads -= 1
+        elif any(self._pending_credit.values()):
+            # ritardo scaduto: l'accredito (eventuale glitch incluso) diventa
+            # visibile su questa lettura, una sola volta.
+            for c in WHITELIST_CCY:
+                if self._pending_credit[c] or self._pending_glitch[c]:
+                    self.savings[c] += (self._pending_credit[c]
+                                        + self._pending_glitch[c])
+                    self._pending_credit[c] = Decimal("0")
+                    self._pending_glitch[c] = Decimal("0")
         return {"code": "0", "msg": "",
                 "data": [{"ccy": c, "amt": fmt(v), "loanAmt": fmt(v),
                           "pendingAmt": "0", "earnings": "0", "rate": ""}
@@ -211,9 +251,18 @@ class MockClient:
         amt = Decimal(params["amt"])
         ccy = params["ccy"]
         self.funding[ccy] -= amt      # per doc v5 il purchase attinge al funding
-        self.savings[ccy] += amt
+        if self.savings_credit_delay_reads > 0:
+            # accredito in latenza: il saldo savings resta invariato per N
+            # letture successive (fix REQ-MERL-20261018-008).
+            self._pending_credit[ccy] += amt
+            self._credit_wait_reads = self.savings_credit_delay_reads
+        else:
+            self.savings[ccy] += amt
         if self.savings_glitch is not None:
-            self.savings[ccy] += self.savings_glitch
+            if self.savings_credit_delay_reads > 0:
+                self._pending_glitch[ccy] += self.savings_glitch
+            else:
+                self.savings[ccy] += self.savings_glitch
         return {"code": "0", "msg": "",
                 "data": [{"ccy": ccy, "amt": fmt(amt), "side": "purchase"}]}
 
@@ -302,7 +351,8 @@ def stampa_piano(cfg: Config, bil: Bilanci, passi, attesi: Bilanci, out) -> None
         f"savings={fmt(attesi.savings)} {cfg.ccy}")
 
 
-def log_line(cfg: Config, esito: str, delta_savings: Optional[Decimal]) -> None:
+def log_line(cfg: Config, esito: str, delta_savings: Optional[Decimal],
+             nota: Optional[str] = None) -> None:
     """Append-only JSONL. SOLO in modalita --execute (il dry-run non scrive nulla)."""
     p = Path(cfg.log)
     p.parent.mkdir(parents=True, exist_ok=True)
@@ -314,6 +364,8 @@ def log_line(cfg: Config, esito: str, delta_savings: Optional[Decimal]) -> None:
         "esito": esito,
         "delta_savings": fmt(delta_savings) if delta_savings is not None else None,
     }
+    if nota is not None:
+        voce["nota"] = nota
     with p.open("a") as fh:
         fh.write(json.dumps(voce) + "\n")
 
@@ -384,20 +436,60 @@ def esegui(ex, cfg: Config, sleep_fn=time.sleep, out=print) -> int:
         out("Nessuna azione correttiva automatica: riesegui il preflight e verifica.")
         return 1
 
-    # Riconciliazione: delta saldo savings == amt, tolleranza 0.
-    post = read_savings(ex, cfg.ccy)
-    delta = post - bil.savings
-    if delta != cfg.amt:
-        log_line(cfg, "FAIL_RECONCILIA", delta)
-        out(f"ERRORE RICONCILIAZIONE: delta savings = {fmt(delta)} != amt "
-            f"{fmt(cfg.amt)} (tolleranza 0). Verifica manuale, nessuna azione "
-            "correttiva automatica.")
-        return 1
+    # Riconciliazione: poll esteso del saldo savings fino alla convergenza
+    # delta == amt (tolleranza 0). L'accredito OKX puo' diventare visibile
+    # con latenza oltre il poll post-transfer (fix REQ-MERL-20261018-008).
+    return riconcilia_savings(ex, cfg, bil.savings, sleep_fn, out)
 
-    log_line(cfg, "DONE", delta)
-    out(f"RICONCILIAZIONE OK: delta savings = {fmt(delta)} == amt "
-        f"{fmt(cfg.amt)}. Esito registrato in {cfg.log}.")
-    return 0
+
+def riconcilia_savings(ex, cfg: Config, saldo_iniziale: Decimal,
+                       sleep_fn, out) -> int:
+    """Attende la convergenza delta savings == amt (poll esteso ~120s max).
+
+    Ritorna 0 se converge, 1 altrimenti (esito FAIL_RECONCILIA in log).
+    NESSUNA azione correttiva automatica in alcun ramo.
+    """
+    delta: Optional[Decimal] = None
+    last_err: Optional[RuntimeError] = None
+    for n in range(1, RECONCILIA_POLL_N + 1):
+        try:
+            post = read_savings(ex, cfg.ccy)
+        except RuntimeError as exc:
+            # lettura momentaneamente fallita: il poll continua (nessuna
+            # azione correttiva); si tiene traccia dell'ultimo errore.
+            last_err = exc
+            post = None
+        if post is not None:
+            delta = post - saldo_iniziale
+            if delta == cfg.amt:
+                log_line(cfg, "DONE", delta)
+                out(f"RICONCILIAZIONE OK: delta savings = {fmt(delta)} == amt "
+                    f"{fmt(cfg.amt)} (convergenza alla lettura {n}). "
+                    f"Esito registrato in {cfg.log}.")
+                return 0
+        if n < RECONCILIA_POLL_N:
+            sleep_fn(RECONCILIA_INTERVAL_S)
+
+    # Timeout: nessuna convergenza. Esito invariato (FAIL_RECONCILIA, exit 1).
+    if delta is None:
+        nota = (f"letture del saldo savings fallite per {RECONCILIA_POLL_N} "
+                f"tentativi (ultimo errore: {last_err}); riverificare con un "
+                "dry-run prima di qualunque azione")
+        log_line(cfg, "FAIL_RECONCILIA", None, nota=nota)
+        out(f"ERRORE RICONCILIAZIONE: {nota}.")
+        return 1
+    if delta == 0:
+        log_line(cfg, "FAIL_RECONCILIA", delta, nota=NOTA_LATENZA_ACCREDITO)
+        out(f"ERRORE RICONCILIAZIONE: delta savings = 0 dopo ~"
+            f"{RECONCILIA_POLL_N * RECONCILIA_INTERVAL_S:.0f}s di poll "
+            f"({RECONCILIA_POLL_N}x{RECONCILIA_INTERVAL_S:.0f}s). "
+            f"{NOTA_LATENZA_ACCREDITO}.")
+        return 1
+    log_line(cfg, "FAIL_RECONCILIA", delta)
+    out(f"ERRORE RICONCILIAZIONE: delta savings = {fmt(delta)} != amt "
+        f"{fmt(cfg.amt)} (tolleranza 0). Verifica manuale, nessuna azione "
+        "correttiva automatica.")
+    return 1
 
 
 # --------------------------------------------------------------------------
