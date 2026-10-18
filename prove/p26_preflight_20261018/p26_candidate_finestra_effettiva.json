@@ -1,0 +1,514 @@
+[
+ {
+  "simbolo": "BTC/USDT",
+  "primo": "2019-01-01",
+  "ultimo": "2026-10-16",
+  "cov_add_eff": 100.0,
+  "cov_ver": 99.8849,
+  "notional": 490166668.931431
+ },
+ {
+  "simbolo": "ETH/USDT",
+  "primo": "2019-01-01",
+  "ultimo": "2026-10-17",
+  "cov_add_eff": 100.0,
+  "cov_ver": 100.0,
+  "notional": 253545068.261212
+ },
+ {
+  "simbolo": "DOGE/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-17",
+  "cov_add_eff": 100.0,
+  "cov_ver": 100.0,
+  "notional": 131513419.065091
+ },
+ {
+  "simbolo": "OKB/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 110751122.76744
+ },
+ {
+  "simbolo": "SOL/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-17",
+  "cov_add_eff": 100.0,
+  "cov_ver": 100.0,
+  "notional": 94614901.818761
+ },
+ {
+  "simbolo": "DOT/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-17",
+  "cov_add_eff": 100.0,
+  "cov_ver": 100.0,
+  "notional": 69105903.232038
+ },
+ {
+  "simbolo": "BCH/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-17",
+  "cov_add_eff": 100.0,
+  "cov_ver": 100.0,
+  "notional": 57279411.781823
+ },
+ {
+  "simbolo": "FIL/USDT",
+  "primo": "2020-12-04",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 95.22,
+  "cov_ver": 98.7342,
+  "notional": 52510337.187261
+ },
+ {
+  "simbolo": "LTC/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-17",
+  "cov_add_eff": 100.0,
+  "cov_ver": 100.0,
+  "notional": 50615761.01835
+ },
+ {
+  "simbolo": "XRP/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-17",
+  "cov_add_eff": 100.0,
+  "cov_ver": 100.0,
+  "notional": 49199636.274322
+ },
+ {
+  "simbolo": "ETC/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-17",
+  "cov_add_eff": 100.0,
+  "cov_ver": 100.0,
+  "notional": 44127215.218578
+ },
+ {
+  "simbolo": "AVAX/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-17",
+  "cov_add_eff": 100.0,
+  "cov_ver": 100.0,
+  "notional": 40272824.560526
+ },
+ {
+  "simbolo": "LINK/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-17",
+  "cov_add_eff": 100.0,
+  "cov_ver": 100.0,
+  "notional": 37874024.012286
+ },
+ {
+  "simbolo": "ATOM/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-17",
+  "cov_add_eff": 100.0,
+  "cov_ver": 100.0,
+  "notional": 35432497.093837
+ },
+ {
+  "simbolo": "UNI/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-17",
+  "cov_add_eff": 100.0,
+  "cov_ver": 100.0,
+  "notional": 32590819.944328
+ },
+ {
+  "simbolo": "TRX/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-17",
+  "cov_add_eff": 100.0,
+  "cov_ver": 100.0,
+  "notional": 32149460.204009
+ },
+ {
+  "simbolo": "NEAR/USDT",
+  "primo": "2020-12-04",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 95.22,
+  "cov_ver": 98.7342,
+  "notional": 27543786.247806
+ },
+ {
+  "simbolo": "THETA/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 27456219.918783
+ },
+ {
+  "simbolo": "XLM/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-17",
+  "cov_add_eff": 100.0,
+  "cov_ver": 100.0,
+  "notional": 24645771.793754
+ },
+ {
+  "simbolo": "AAVE/USDT",
+  "primo": "2020-10-23",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 98.36,
+  "cov_ver": 98.7342,
+  "notional": 23295903.223852
+ },
+ {
+  "simbolo": "ADA/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-17",
+  "cov_add_eff": 100.0,
+  "cov_ver": 100.0,
+  "notional": 20820438.479201
+ },
+ {
+  "simbolo": "SUSHI/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 20549038.587821
+ },
+ {
+  "simbolo": "CRV/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 19047856.610019
+ },
+ {
+  "simbolo": "ALGO/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 17312619.678483
+ },
+ {
+  "simbolo": "EGLD/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 15703876.847578
+ },
+ {
+  "simbolo": "NEO/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 14249969.636572
+ },
+ {
+  "simbolo": "LRC/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 14141215.698449
+ },
+ {
+  "simbolo": "KSM/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 12321547.48652
+ },
+ {
+  "simbolo": "ZIL/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 12263403.132404
+ },
+ {
+  "simbolo": "YFI/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 11991132.92068
+ },
+ {
+  "simbolo": "XTZ/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 11690395.264826
+ },
+ {
+  "simbolo": "MANA/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 11077616.631787
+ },
+ {
+  "simbolo": "USDC/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 10872237.275219
+ },
+ {
+  "simbolo": "ONT/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 10836363.697225
+ },
+ {
+  "simbolo": "IOST/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 10829023.006518
+ },
+ {
+  "simbolo": "QTUM/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 10616212.576486
+ },
+ {
+  "simbolo": "HBAR/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 9993788.475459
+ },
+ {
+  "simbolo": "IOTA/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 8954348.670614
+ },
+ {
+  "simbolo": "SNX/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 8381813.020688
+ },
+ {
+  "simbolo": "COMP/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 8078298.713801
+ },
+ {
+  "simbolo": "RVN/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 7191793.924291
+ },
+ {
+  "simbolo": "BAT/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 7182188.319462
+ },
+ {
+  "simbolo": "CELO/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 6198428.473205
+ },
+ {
+  "simbolo": "RSR/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 5850694.298756
+ },
+ {
+  "simbolo": "STORJ/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-09-25",
+  "cov_add_eff": 100.0,
+  "cov_ver": 97.4684,
+  "notional": 5769293.308676
+ },
+ {
+  "simbolo": "KNC/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 5379870.168404
+ },
+ {
+  "simbolo": "ICX/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-09-25",
+  "cov_add_eff": 100.0,
+  "cov_ver": 97.4684,
+  "notional": 5240669.730489
+ },
+ {
+  "simbolo": "ZRX/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 5082725.294953
+ },
+ {
+  "simbolo": "TRB/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 4971245.115936
+ },
+ {
+  "simbolo": "CRO/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 4934516.341472
+ },
+ {
+  "simbolo": "BAND/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 4791184.214175
+ },
+ {
+  "simbolo": "CVC/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 4192385.236753
+ },
+ {
+  "simbolo": "UMA/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 3646711.39074
+ },
+ {
+  "simbolo": "DGB/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 3044123.845929
+ },
+ {
+  "simbolo": "LSK/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 2514986.703341
+ },
+ {
+  "simbolo": "CTC/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 2358107.754868
+ },
+ {
+  "simbolo": "ELF/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-09-25",
+  "cov_add_eff": 100.0,
+  "cov_ver": 97.4684,
+  "notional": 2229686.585077
+ },
+ {
+  "simbolo": "BNT/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 1910797.691137
+ },
+ {
+  "simbolo": "SWFTC/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 1524381.896797
+ },
+ {
+  "simbolo": "NMR/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 909899.609143
+ },
+ {
+  "simbolo": "GAS/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 824323.841873
+ },
+ {
+  "simbolo": "SNT/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 659552.833262
+ },
+ {
+  "simbolo": "ORBS/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 541285.061729
+ },
+ {
+  "simbolo": "LEO/USDT",
+  "primo": "2020-10-01",
+  "ultimo": "2026-10-06",
+  "cov_add_eff": 100.0,
+  "cov_ver": 98.7342,
+  "notional": 70986.424995
+ }
+]

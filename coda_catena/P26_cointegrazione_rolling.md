@@ -87,3 +87,11 @@ cd ~/money && .venv/bin/python -m pytest tests/ricerca/ -k p26 -q
 
 ## Riferimenti
 P13 (verdetto + varianti ammesse) · `docs/18_programma_ricerca_quant.md` (protocollo) · cancello (`src/money/cancello.py`) · direttiva owner 2026-10-18 · `coda_catena/README.md`.
+
+## Addendum 2026-10-18 (Artù) — finestra di addestramento effettiva (da preflight dati)
+PRIMA di qualsiasi numero: il preflight dell'archivio (consegna opencode-omarchy, verificata da Artù; artefatti `prove/p26_preflight_20261018/`) mostra che 59/90 coppie USDT hanno prima barra **2020-10-01** (artefatto di raccolta OKX: confine di paginazione), non 2020-01-01; solo BTC/ETH risalgono al 2019-01-01. Interpretazione ufficiale:
+- **Finestra di addestramento effettiva: [2020-10-01, 2024-06-01)** (coerente con la convenzione «USDT-lungo» di P1/P3/P10/P14). La finestra di verifica resta [2024-06-01, ultima barra per coppia].
+- **Eleggibilità**: prima barra ≤ 2020-12-08 E copertura ≥95% su [2020-10-01, 2024-06-01) E copertura ≥95% su [2024-06-01, ultima barra]. (90/90 file contigui: 0 buchi interni.)
+- **Ranking volume**: volume NOTIONAL medio (v×close, USDT) — il campo `v` è in valuta base, non confrontabile tra simboli.
+- **Esito preflight**: 64/90 coppie idonee. Top 30 candidate (per notional, finestra effettiva): BTC, ETH, DOGE, OKB, SOL, DOT, BCH, FIL, LTC, XRP, ETC, AVAX, LINK, ATOM, UNI, TRX, NEAR, THETA, XLM, AAVE, ADA, SUSHI, CRV, ALGO, EGLD, NEO, LRC, KSM, ZIL, YFI — lista completa in `prove/p26_preflight_20261018/p26_candidate_finestra_effettiva.json`.
+- Coda dei file: 71 si fermano al 2026-10-06 (batch di raccolta, non delisting; copertura verifica ≥98,7% comunque).
