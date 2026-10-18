@@ -131,3 +131,10 @@ Lette dal banco a secco (21:53 UTC) + posizioni reali (MARCODG1, sola lettura):
 - **D2-b — trading: 368,45 €**, di cui margine isolato perp 178,41 USD (≈164,2 €) + gambe spot DOT/ADA/DOGE ≈174,8 € + USDC libero 32,23 (≈29,7 €) + EUR 1,07. **Eccedenza spostabile reale ≈ 29,7 €, NON ≈88 €**: la stima ROADMAP trattava il trading come liquido, ma è quasi tutto impegnato dal carry (margine + gambe spot). La "riserva 100 €" non esiste come cuscinetto liquido separato: il cuscinetto è il margine isolato stesso. **D2-b: importo reale 1/3 del previsto → non si esegue senza nuova conferma del proprietario** (opzioni: spostare ~20–25 € lasciando la riserva fee, oppure saltare).
 - Chiave main (okx): permessi `read_only,trade`; IP whitelist 87.106.3.15 + 87.106.222.123 → l'esecuzione della mossa gira da MARCODG1 (o nuvola).
 - Simple Earn già attivo: 599,73 USDC (534,00 €).
+
+### D2 ESEGUITA — esito reale (2026-10-18 13:27–13:28 UTC, Artù)
+
+- **D2-a: 211,00 USDC funding → Simple Earn** ✓ — verificato read-only: funding 211,000041→0,000041; savings 599,751→810,751.
+- **D2-b: 25,00 USDC trading → Simple Earn** ✓ (autorizzato dal proprietario 18/10, «~20–25 € residui») — trading free 32,227→7,227 (riserva fee lasciata); savings 810,751→835,751.
+- **Totale in Earn: 835,75 USDC (≈769 €) + earnings maturati in corso** (0,36 USDC al momento del run). L'harness `scripts/earn_move.py` ha eseguito transfer+purchase come da piano; la riga di log dice `FAIL_RECONCILIA` per un **falso negativo di latenza** (il saldo savings si accredita oltre il poll di 10 s: verifica manuale conferma delta esatti +211,00 e +25,00). Difetto minore del modulo → REQ-MERL-20261018-008 (poll esteso + test a latenza).
+- Nessuna azione correttiva automatica eseguita (come da design): la riconciliazione vera è la verifica read-only sopra + la riga del banco successiva.
