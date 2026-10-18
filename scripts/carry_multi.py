@@ -96,6 +96,10 @@ COPPIE: dict[str, Coppia] = {
                    "LINK/USDC", 1.0,  90.0, 15, "USDC"),
     "ADA":  Coppia("ADA",  "ADA-USD_UM_XPERP-310404", "ADA/USD:USD-310404",
                    "ADA/USDC",  10.0, 90.0, 16, "USDC"),
+    "LTC":  Coppia("LTC",  "LTC-USD_UM_XPERP-310404", "LTC/USD:USD-310404",
+                   "LTC/USDC",  0.1,  90.0, 22, "USDC"),
+    "AVAX": Coppia("AVAX", "AVAX-USD_UM_XPERP-310530", "AVAX/USD:USD-310530",
+                   "AVAX/USDC", 10.0, 90.0, 23, "USDC"),
 }
 
 
