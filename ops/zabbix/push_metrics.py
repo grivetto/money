@@ -574,7 +574,7 @@ def main():
     # ── 3. Progetto aggregato (da infra_snapshot) ──
     infra = read_json(HEALTH_DIR / "infra_snapshot.json")
     if infra:
-        host = "alpha-omega-project"
+        host = "denaro-live"
         prices = infra.get("prices", {})
         data += [
             {"host": host, "key": "project.equity", "value": infra.get("total_equity", 0)},
