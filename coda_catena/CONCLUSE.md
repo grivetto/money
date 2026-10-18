@@ -29,3 +29,4 @@ riapre gate e fix per quella spec.
 - P23_pedaggio_esecuzione.md — FATTA 18/10 (fee reali = tariffa taker esatta, riconciliazione MATCH; soglie confermate; maker-first non consigliato; report `prove/P23_report.md`)
 - P24_dormienti_earn.md — FATTA 18/10 (mossa D2 eseguita: 211 USDC funding + 25 USDC trading → Simple Earn, savings 835,75 USDC; voce operativa di tesoreria, non esperimento)
 - P25_kpi_settimanali.md — FATTA 18/10 (KPI settimanali + collector fee ledger integrati e in cron lunedì; voce operativa di osservabilità, non esperimento)
+- E2_significativita.md — infrastruttura integrata (18/10): strumenti di significatività bootstrap + Monte Carlo in `src/money/ricerca/significativita.py`; non è un esperimento

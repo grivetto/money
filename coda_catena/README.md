@@ -48,5 +48,5 @@ STATO DELLA CODA
 - P26_cointegrazione_rolling.md ... PRE-REGISTRATA (Artù 18/10) — cointegrazione v2: universo esteso (top 30 perp USDT OKX) + finestre rolling (120/180g, passo 5g); combina le tre varianti ammesse dal verdetto P13. Ultimo giro sulla lane pairs: se fallisce, archiviazione definitiva senza varianti ulteriori. In attesa di coda libera; implementatore da assegnare al via.
 
 ## Aggiornamento 2026-10-18 (notte) — E2 + ondata operai
-- E2_significativita.md ...... PRE-REGISTRATA + DISPATCHATA (Artù 18/10) — strumenti bootstrap significatività + Monte Carlo (lezioni Jesse, docs/35); implementa opencode-omarchy (lanciato, verificato attivo 01:10). Voce di manutenzione (fuori dal conteggio tentativi).
-- Ondata operai 18/10: opencode-omarchy → E2 · agy-MARCODG1 → preflight dati tick (salute raccolta, prerequisite della scansione microstruttura ~15/11) · A0-mc2 → dispatch da ricostruire (API CSRF, tool storico non nel repo).
+- E2_significativita.md ...... FATTA 18/10 (Artù) — integrata: `src/money/ricerca/significativita.py` + 14 test (suite 890 verde); fix DD dal valore iniziale (verifica indipendente). Voce di manutenzione (fuori dal conteggio tentativi).
+- Ondata operai 18/10: opencode-omarchy → E2 (consegnata 01:12, integrata) · agy-MARCODG1 → preflight dati tick (consegnato 17/10 23:12, verificato Artù 18/10: 4 file 13–16/10, 1.307.065 trade, 0 null/duplicati, 12 gap>60s; artefatti `prove/preflight_tick_20261018/`) · A0-mc2 → ricognizione on-chain/sentiment (docs/36, integrata 18/10).

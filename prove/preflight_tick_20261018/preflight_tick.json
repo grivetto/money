@@ -1,0 +1,297 @@
+{
+  "riepilogo": {
+    "tool_used": "python3 stdlib (gzip + csv + statistics) - pandas non installato",
+    "data_directory": "/home/marco/money/data/tick",
+    "n_file": 4,
+    "giorni_coperti": [
+      "2026-10-13",
+      "2026-10-14",
+      "2026-10-15",
+      "2026-10-16"
+    ],
+    "primo_timestamp_assoluto": "2026-10-13T00:00:00.645600Z",
+    "ultimo_timestamp_assoluto": "2026-10-16T23:59:57.942900Z",
+    "n_trade_totali": 1307065,
+    "totale_valori_vuoti_null": 0,
+    "duplicati_trdMatchID_intra_file": 0,
+    "duplicati_trdMatchID_cross_file": 0,
+    "totale_gap_gt_60s": 12,
+    "max_gap_assoluto_secondi": 111.3704,
+    "anomalie_rilevate": [
+      "DOGEUSDT_2026-10-13.csv.gz: 10 gap > 60s (gap massimo: 111.3704s tra 2026-10-13T23:47:59.875300Z e 2026-10-13T23:49:51.245700Z)",
+      "DOGEUSDT_2026-10-15.csv.gz: 1 gap > 60s (gap massimo: 72.7388s tra 2026-10-15T23:57:41.335300Z e 2026-10-15T23:58:54.074100Z)",
+      "DOGEUSDT_2026-10-16.csv.gz: 1 gap > 60s (gap massimo: 61.0146s tra 2026-10-16T23:34:17.628300Z e 2026-10-16T23:35:18.642900Z)"
+    ]
+  },
+  "files": [
+    {
+      "file": "DOGEUSDT_2026-10-13.csv.gz",
+      "readable": true,
+      "error": null,
+      "n_righe": 274967,
+      "primo_timestamp_epoch": 1791849600.6456,
+      "ultimo_timestamp_epoch": 1791935998.7849,
+      "primo_timestamp_iso_utc": "2026-10-13T00:00:00.645600Z",
+      "ultimo_timestamp_iso_utc": "2026-10-13T23:59:58.784900Z",
+      "copertura_ore": 23.99948313885265,
+      "size": {
+        "min": 1.0,
+        "p50": 66.0,
+        "max": 1881688.0,
+        "media": 3411.8065658788146
+      },
+      "price": {
+        "min": 0.07996,
+        "p50": 0.08403,
+        "max": 0.08521
+      },
+      "valori_vuoti_null_per_colonna": {
+        "timestamp": 0,
+        "symbol": 0,
+        "side": 0,
+        "size": 0,
+        "price": 0,
+        "tickDirection": 0,
+        "trdMatchID": 0,
+        "grossValue": 0,
+        "homeNotional": 0,
+        "foreignNotional": 0,
+        "RPI": 0
+      },
+      "duplicati_trdMatchID": 0,
+      "n_gap_gt_60s": 10,
+      "gap_massimo_secondi": 111.3704,
+      "dettaglio_gap_gt_60s": [
+        {
+          "row_index": 265173,
+          "from_iso_utc": "2026-10-13T20:58:52.181300Z",
+          "to_iso_utc": "2026-10-13T21:00:05.110800Z",
+          "gap_seconds": 72.9295
+        },
+        {
+          "row_index": 265870,
+          "from_iso_utc": "2026-10-13T21:17:12.804100Z",
+          "to_iso_utc": "2026-10-13T21:18:14.202800Z",
+          "gap_seconds": 61.3987
+        },
+        {
+          "row_index": 266725,
+          "from_iso_utc": "2026-10-13T21:36:13.280000Z",
+          "to_iso_utc": "2026-10-13T21:37:17.775000Z",
+          "gap_seconds": 64.495
+        },
+        {
+          "row_index": 267620,
+          "from_iso_utc": "2026-10-13T21:55:36.778700Z",
+          "to_iso_utc": "2026-10-13T21:56:37.336000Z",
+          "gap_seconds": 60.5573
+        },
+        {
+          "row_index": 271132,
+          "from_iso_utc": "2026-10-13T22:55:39.071200Z",
+          "to_iso_utc": "2026-10-13T22:57:00.513200Z",
+          "gap_seconds": 81.442
+        },
+        {
+          "row_index": 274248,
+          "from_iso_utc": "2026-10-13T23:36:48.938000Z",
+          "to_iso_utc": "2026-10-13T23:37:54.499000Z",
+          "gap_seconds": 65.561
+        },
+        {
+          "row_index": 274505,
+          "from_iso_utc": "2026-10-13T23:44:22.039100Z",
+          "to_iso_utc": "2026-10-13T23:45:23.138800Z",
+          "gap_seconds": 61.0997
+        },
+        {
+          "row_index": 274606,
+          "from_iso_utc": "2026-10-13T23:47:59.875300Z",
+          "to_iso_utc": "2026-10-13T23:49:51.245700Z",
+          "gap_seconds": 111.3704
+        },
+        {
+          "row_index": 274779,
+          "from_iso_utc": "2026-10-13T23:52:41.192700Z",
+          "to_iso_utc": "2026-10-13T23:53:44.657400Z",
+          "gap_seconds": 63.4647
+        },
+        {
+          "row_index": 274909,
+          "from_iso_utc": "2026-10-13T23:56:31.356600Z",
+          "to_iso_utc": "2026-10-13T23:57:35.504700Z",
+          "gap_seconds": 64.1481
+        }
+      ],
+      "dettaglio_gap_massimo": {
+        "row_index": 274606,
+        "from_iso_utc": "2026-10-13T23:47:59.875300Z",
+        "to_iso_utc": "2026-10-13T23:49:51.245700Z",
+        "gap_seconds": 111.3704
+      },
+      "n_gap_negativi": 0,
+      "anomalie": [
+        "10 gap > 60s (gap massimo: 111.3704s tra 2026-10-13T23:47:59.875300Z e 2026-10-13T23:49:51.245700Z)"
+      ]
+    },
+    {
+      "file": "DOGEUSDT_2026-10-14.csv.gz",
+      "readable": true,
+      "error": null,
+      "n_righe": 301376,
+      "primo_timestamp_epoch": 1791936000.5486,
+      "ultimo_timestamp_epoch": 1792022394.0579,
+      "primo_timestamp_iso_utc": "2026-10-14T00:00:00.548600Z",
+      "ultimo_timestamp_iso_utc": "2026-10-14T23:59:54.057900Z",
+      "copertura_ore": 23.998197027775976,
+      "size": {
+        "min": 1.0,
+        "p50": 67.0,
+        "max": 1251131.0,
+        "media": 4031.8703347313653
+      },
+      "price": {
+        "min": 0.08125,
+        "p50": 0.08326,
+        "max": 0.08565
+      },
+      "valori_vuoti_null_per_colonna": {
+        "timestamp": 0,
+        "symbol": 0,
+        "side": 0,
+        "size": 0,
+        "price": 0,
+        "tickDirection": 0,
+        "trdMatchID": 0,
+        "grossValue": 0,
+        "homeNotional": 0,
+        "foreignNotional": 0,
+        "RPI": 0
+      },
+      "duplicati_trdMatchID": 0,
+      "n_gap_gt_60s": 0,
+      "gap_massimo_secondi": 54.9996,
+      "dettaglio_gap_gt_60s": [],
+      "dettaglio_gap_massimo": {
+        "row_index": 279776,
+        "from_iso_utc": "2026-10-14T21:28:05.522900Z",
+        "to_iso_utc": "2026-10-14T21:29:00.522500Z",
+        "gap_seconds": 54.9996
+      },
+      "n_gap_negativi": 0,
+      "anomalie": []
+    },
+    {
+      "file": "DOGEUSDT_2026-10-15.csv.gz",
+      "readable": true,
+      "error": null,
+      "n_righe": 471687,
+      "primo_timestamp_epoch": 1792022400.1726,
+      "ultimo_timestamp_epoch": 1792108798.8414,
+      "primo_timestamp_iso_utc": "2026-10-15T00:00:00.172600Z",
+      "ultimo_timestamp_iso_utc": "2026-10-15T23:59:58.841400Z",
+      "copertura_ore": 23.999630222188102,
+      "size": {
+        "min": 1.0,
+        "p50": 70.0,
+        "max": 3382885.0,
+        "media": 3518.659356734445
+      },
+      "price": {
+        "min": 0.07752,
+        "p50": 0.07998,
+        "max": 0.08203
+      },
+      "valori_vuoti_null_per_colonna": {
+        "timestamp": 0,
+        "symbol": 0,
+        "side": 0,
+        "size": 0,
+        "price": 0,
+        "tickDirection": 0,
+        "trdMatchID": 0,
+        "grossValue": 0,
+        "homeNotional": 0,
+        "foreignNotional": 0,
+        "RPI": 0
+      },
+      "duplicati_trdMatchID": 0,
+      "n_gap_gt_60s": 1,
+      "gap_massimo_secondi": 72.7388,
+      "dettaglio_gap_gt_60s": [
+        {
+          "row_index": 471642,
+          "from_iso_utc": "2026-10-15T23:57:41.335300Z",
+          "to_iso_utc": "2026-10-15T23:58:54.074100Z",
+          "gap_seconds": 72.7388
+        }
+      ],
+      "dettaglio_gap_massimo": {
+        "row_index": 471642,
+        "from_iso_utc": "2026-10-15T23:57:41.335300Z",
+        "to_iso_utc": "2026-10-15T23:58:54.074100Z",
+        "gap_seconds": 72.7388
+      },
+      "n_gap_negativi": 0,
+      "anomalie": [
+        "1 gap > 60s (gap massimo: 72.7388s tra 2026-10-15T23:57:41.335300Z e 2026-10-15T23:58:54.074100Z)"
+      ]
+    },
+    {
+      "file": "DOGEUSDT_2026-10-16.csv.gz",
+      "readable": true,
+      "error": null,
+      "n_righe": 259035,
+      "primo_timestamp_epoch": 1792108800.18,
+      "ultimo_timestamp_epoch": 1792195197.9429,
+      "primo_timestamp_iso_utc": "2026-10-16T00:00:00.180000Z",
+      "ultimo_timestamp_iso_utc": "2026-10-16T23:59:57.942900Z",
+      "copertura_ore": 23.99937858329879,
+      "size": {
+        "min": 1.0,
+        "p50": 69.0,
+        "max": 3166765.0,
+        "media": 3339.2184917096147
+      },
+      "price": {
+        "min": 0.07928,
+        "p50": 0.0813,
+        "max": 0.08285
+      },
+      "valori_vuoti_null_per_colonna": {
+        "timestamp": 0,
+        "symbol": 0,
+        "side": 0,
+        "size": 0,
+        "price": 0,
+        "tickDirection": 0,
+        "trdMatchID": 0,
+        "grossValue": 0,
+        "homeNotional": 0,
+        "foreignNotional": 0,
+        "RPI": 0
+      },
+      "duplicati_trdMatchID": 0,
+      "n_gap_gt_60s": 1,
+      "gap_massimo_secondi": 61.0146,
+      "dettaglio_gap_gt_60s": [
+        {
+          "row_index": 257936,
+          "from_iso_utc": "2026-10-16T23:34:17.628300Z",
+          "to_iso_utc": "2026-10-16T23:35:18.642900Z",
+          "gap_seconds": 61.0146
+        }
+      ],
+      "dettaglio_gap_massimo": {
+        "row_index": 257936,
+        "from_iso_utc": "2026-10-16T23:34:17.628300Z",
+        "to_iso_utc": "2026-10-16T23:35:18.642900Z",
+        "gap_seconds": 61.0146
+      },
+      "n_gap_negativi": 0,
+      "anomalie": [
+        "1 gap > 60s (gap massimo: 61.0146s tra 2026-10-16T23:34:17.628300Z e 2026-10-16T23:35:18.642900Z)"
+      ]
+    }
+  ]
+}

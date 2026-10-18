@@ -1,6 +1,6 @@
 # E2 — Strumenti di significatività (bootstrap) e Monte Carlo — SPEC DI MANUTENZIONE
 
-STATO: PRE-REGISTRATA 2026-10-18 (Artù) — dispatchata a opencode-omarchy (ondata operai 18/10). Voce di MANUTENZIONE del protocollo di ricerca (infrastruttura): NON è un esperimento, fuori dal conteggio tentativi.
+STATO: FATTA 2026-10-18 (Artù) — consegna opencode-omarchy integrata e verificata: `src/money/ricerca/significativita.py` + `tests/ricerca/test_significativita.py` (14 test; suite 890 verde). Fix di integrazione dalla verifica indipendente: il max drawdown include il punto di partenza (0). Voce di MANUTENZIONE del protocollo di ricerca (infrastruttura): NON è un esperimento, fuori dal conteggio tentativi.
 Repo: `grivetto/money` · commit di registrazione: `cc494875`.
 
 ## Obiettivo (verificabile)
@@ -48,3 +48,8 @@ Riesecuzione ufficiale (Artù, venv canonico) su consegna: `pytest` + smoke con 
 
 ## Riferimenti
 `docs/35_lezioni_framework_2026-10-18.md` (lezioni 1–2) · skill `trading-tool-scouting` (candidati: jesse) · direttiva owner 2026-10-18.
+
+## Esito (2026-10-18, Artù)
+- Consegna opencode-omarchy: MANIFEST 4/4 OK; 13 test nel venv canonico; determinismo e guardie come da spec.
+- Verifica indipendente (assert calcolati a mano, 8 gruppi): trovato un difetto — il max drawdown non includeva il punto di partenza (0) → su curve che perdono subito il DD era sottostimato ([−3] → 0 invece di 3). Fix minimo post-review applicato in integrazione + test di regressione ([−3]→3; [−1]×3→3; [−5,+10]→5,0 per enumerazione).
+- Integrazione: modulo in `src/money/ricerca/significativita.py`, test in `tests/ricerca/test_significativita.py` (import `money.ricerca.significativita`); suite completa 890 verdi; ruff pulito.
