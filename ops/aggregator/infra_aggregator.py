@@ -21,6 +21,7 @@ import shlex
 import socket
 import subprocess
 import time
+from datetime import datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer, ThreadingHTTPServer
 from pathlib import Path
 
@@ -121,10 +122,17 @@ KRAKEN_ENV_FILES = [
     ("/home/marco/alpha-omega-trading/.env", "NUVOLASUB1_KRAKEN_API_KEY", "NUVOLASUB1_KRAKEN_API_SECRET"),
 ]
 
+# Su quale macchina gira questa istanza? (mc2 = dashboard locale; MARCODG1 = master
+# della dashboard pubblica). Serve per leggere in LOCALE cio' che altrove e' remoto.
+_HOSTNAME = socket.gethostname().lower()
+ON_MC2 = _HOSTNAME == "mc2"
+ON_MARCODG1 = _HOSTNAME == "marcodg1" or Path("/home/marco/denaro/secrets/main_okx.env").exists()
+
 NODES = {
     "nuvola": ("87.106.3.15", 22),
-    "mc2": ("127.0.0.1", 2222),   # via tunnel inverso (autossh -R 2222 su MARCODG1)
-    "marcodg1": ("127.0.0.1", 22),
+    # su MARCODG1 mc2 e' raggiungibile via tunnel inverso :2222; su mc2 e' locale.
+    "mc2": (("127.0.0.1", 22) if ON_MC2 else ("127.0.0.1", 2222)),
+    "marcodg1": (("127.0.0.1", 22) if ON_MARCODG1 else ("87.106.222.123", 22)),
 }
 
 
@@ -468,7 +476,8 @@ def fetch_prices():
         import ccxt
         ex = ccxt.okx({"enableRateLimit": True, "hostname": "eea.okx.com"})
         prices = {}
-        for s in ("SOL/EUR", "ADA/EUR", "XRP/EUR", "DOGE/EUR"):
+        # 2026-10-18: i prezzi che contano — mercato (BTC/ETH), carry (DOT/ADA/LTC/AVAX), canary (DOGE).
+        for s in ("BTC/EUR", "ETH/EUR", "DOGE/EUR", "DOT/EUR", "ADA/EUR", "LTC/EUR", "AVAX/EUR"):
             try:
                 t = ex.fetch_ticker(s)
                 prices[s] = {"last": t["last"], "bid": t.get("bid"), "ask": t.get("ask"),
@@ -727,6 +736,13 @@ def collect_node_bots():
         h["age_s"] = round(age, 1) if age is not None else None
         h["stale"] = (age is None) or (age > BOT_STALE_S)
         h.setdefault("mode", "paper")
+    # 2026-10-18: niente doppioni legacy. "mc2:BTC/EUR" (dal glob dei file) e
+    # "mc2:paper:BTC/EUR" (dalla lettura officina) sono lo STESSO bot: si tiene
+    # solo la chiave ufficiale ":paper:" (o ":live:" quando esistera' un live).
+    for _k in list(bots.keys()):
+        _parts = _k.split(":")
+        if len(_parts) == 2 and f"{_parts[0]}:paper:{_parts[1]}" in bots:
+            del bots[_k]
     return bots
 
 
@@ -749,6 +765,21 @@ def fetch_remote_paper(node_name):
     hit = _remote_cache.get(cache_key)
     if hit and now - hit[0] < _REMOTE_TTL:
         return hit[1]
+    if node_name == "mc2" and ON_MC2:
+        # istanza mc2: i file officina sono LOCALI (niente tunnel verso se stessi)
+        out = {}
+        try:
+            for f in sorted(Path(cfg["dir"]).glob("*_paper.json")):
+                try:
+                    h = json.loads(f.read_text())
+                except Exception:
+                    continue
+                if h.get("symbol"):
+                    out[h["symbol"]] = h
+        except OSError:
+            return {}
+        _remote_cache[cache_key] = (now, out)
+        return out
     ssh_args = " ".join(cfg["ssh"])
     d = cfg["dir"]
     cmd = (f"ssh -o BatchMode=yes -o ConnectTimeout=5 {ssh_args} "
@@ -783,6 +814,21 @@ def fetch_remote_node_bots(node_name):
     hit = _remote_cache.get(cache_key)
     if hit and now - hit[0] < _REMOTE_TTL:
         return hit[1]
+    if node_name == "mc2" and ON_MC2:
+        # istanza mc2: gli health dei bot sono LOCALI (*_paper.json in denaro/health)
+        out = {}
+        try:
+            for f in sorted(Path(data_dir).glob("*_paper.json")):
+                try:
+                    h = json.loads(f.read_text())
+                except Exception:
+                    continue
+                if h.get("symbol"):
+                    out[h["symbol"]] = h
+        except OSError:
+            return {}
+        _remote_cache[cache_key] = (now, out)
+        return out
     ssh_args = " ".join(cfg["ssh"])
     cmd = (f"ssh -o BatchMode=yes -o ConnectTimeout=5 {ssh_args} "
            f"'for f in {data_dir}/*_health.json {data_dir}/*.json; do if [ -f \"$f\" ]; then echo ===FILE===; cat \"$f\"; echo; fi; done'")
@@ -797,7 +843,9 @@ def fetch_remote_node_bots(node_name):
                     continue
                 try:
                     h = json.loads(lines[-1])
-                    sym = h.get("symbol", "unknown")
+                    sym = h.get("symbol")
+                    if not sym:
+                        continue  # file di servizio (trend/infra/snapshot) senza symbol: non e' un bot
                     bots[sym] = h
                 except Exception:
                     continue
@@ -861,6 +909,49 @@ SERVICE_UNITS = {
 }
 
 
+_smart_cache = {}
+
+
+def _read_json_smart(local_path: str, host: str = "MARCODG1", ttl: float = 20.0):
+    """Legge un JSON che vive su MARCODG1 (path /home/marco/...).
+
+    Se ci giriamo sopra (MARCODG1): lettura locale. Altrimenti (mc2): ssh + stat
+    per l'eta'. Cache TTL breve per non ripetere la stessa ssh nello stesso giro.
+    Ritorna (obj, age_s). Solleva eccezione se non leggibile (decide il chiamante).
+    """
+    now = time.time()
+    key = f"{host}:{local_path}"
+    hit = _smart_cache.get(key)
+    if hit and now - hit[0] < ttl:
+        return hit[1], hit[2] + (now - hit[0])
+    p = Path(local_path)
+    if p.exists():
+        obj = json.loads(p.read_text())
+        age = max(0.0, now - p.stat().st_mtime)
+    else:
+        if ON_MARCODG1:
+            raise FileNotFoundError(local_path)
+        q = shlex.quote(local_path)
+        remote_cmd = f"stat -c %Y {q} 2>/dev/null; echo @@; cat {q} 2>/dev/null"
+        r = subprocess.run(["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=5",
+                            host, remote_cmd], capture_output=True, text=True, timeout=20)
+        if r.returncode != 0 or "@@" not in r.stdout:
+            raise FileNotFoundError(local_path)
+        head, _, body = r.stdout.partition("@@")
+        body = body.strip()
+        if not body:
+            raise FileNotFoundError(local_path)
+        mtime = None
+        for line in head.strip().splitlines():
+            line = line.strip()
+            if line.isdigit():
+                mtime = float(line)
+        obj = json.loads(body)
+        age = max(0.0, now - mtime) if mtime else 0.0
+    _smart_cache[key] = (now, obj, age)
+    return obj, age
+
+
 CANARY_STATE = Path("/home/marco/canary/canary_state.json")
 
 
@@ -872,8 +963,8 @@ def collect_canary():
     errore onesto invece di numeri inventati.
     """
     try:
-        st = json.loads(CANARY_STATE.read_text())
-        age = int(time.time() - CANARY_STATE.stat().st_mtime)
+        st, age = _read_json_smart(str(CANARY_STATE))
+        age = int(age)
     except Exception as exc:
         return {"ok": False, "error": "state canary non leggibile: " + exc.__class__.__name__}
     spot = st.get("spot") or {}
@@ -908,8 +999,8 @@ def collect_ricerca():
     file manca, errore onesto.
     """
     try:
-        r = json.loads(RICERCA_STATO.read_text())
-        age = int(time.time() - RICERCA_STATO.stat().st_mtime)
+        r, age = _read_json_smart(str(RICERCA_STATO))
+        age = int(age)
     except Exception as exc:
         return {"ok": False, "error": "stato ricerca non leggibile: " + exc.__class__.__name__}
     return {
@@ -918,6 +1009,8 @@ def collect_ricerca():
         "generato_il": r.get("generato_il"),
         "promosse": r.get("promosse"),
         "archiviate": r.get("archiviate"),
+        "ultimi": r.get("ultimi") or [],
+        "prossimo": r.get("prossimo"),
         "review_c1": r.get("review_c1") or {},
         "funding_scan": r.get("funding_scan") or {},
         "p15_mvrv": r.get("p15_mvrv") or {},
@@ -931,8 +1024,8 @@ CARRY_STATO = Path("/home/marco/money/data/carry_stato.json")
 def collect_carry():
     """Stato del carry multi-coppia (DOT+ADA, 16/10) per la dashboard."""
     try:
-        c = json.loads(CARRY_STATO.read_text())
-        age = int(time.time() - CARRY_STATO.stat().st_mtime)
+        c, age = _read_json_smart(str(CARRY_STATO))
+        age = int(age)
     except Exception as exc:
         return {"ok": False, "error": "stato carry non leggibile: " + exc.__class__.__name__}
     return {"ok": True, "age_s": age,
@@ -941,12 +1034,145 @@ def collect_carry():
             "upl_totale": c.get("upl_totale"),
             "coppie": c.get("coppie") or {}}
 
+
+BANCO_HEALTH = "/home/marco/money/logs/banco_secco_health.json"
+BANCO_JSONL = "/home/marco/money/logs/banco_secco.jsonl"
+BANCO_HISTORY_CACHE = "/home/marco/money/data/banco_history.json"
+
+
+def collect_banco():
+    """[18/10] Il banco a secco (read-only) riconciliato: equity per comparto.
+
+    Fonte: banco_secco_health.json su MARCODG1 (run ogni ~2'). Se il file non e'
+    leggibile il campo e' ok=False: niente numeri inventati.
+    """
+    try:
+        b, age = _read_json_smart(BANCO_HEALTH)
+        age = int(age)
+    except Exception as exc:
+        return {"ok": False, "error": "banco non leggibile: " + exc.__class__.__name__}
+    return {
+        "ok": True, "age_s": age,
+        "ts": b.get("timestamp"), "esito": b.get("esito"),
+        "equity_eur": b.get("equity_eur"),
+        "equity_trading_eur": b.get("equity_trading_eur"),
+        "equity_funding_eur": b.get("equity_funding_eur"),
+        "equity_savings_eur": b.get("equity_savings_eur"),
+        "riconciliazione_quadra": b.get("riconciliazione_quadra"),
+        "ordini_aperti": b.get("ordini_aperti"),
+        "chiave_solo_lettura": b.get("chiave_solo_lettura"),
+    }
+
+
+def _parse_banco_row(line: str):
+    """Una riga JSONL del banco -> (ts_unix, equity_eur, savings_eur) o None."""
+    try:
+        r = json.loads(line)
+        ts_raw = str(r.get("timestamp") or "")
+        if not ts_raw:
+            return None
+        ts = datetime.fromisoformat(ts_raw.replace("Z", "+00:00")).timestamp()
+        eq = r.get("equity_eur")
+        if eq is None:
+            return None
+        sav = r.get("equity_savings_eur")
+        return (ts, float(eq), float(sav) if sav is not None else None)
+    except Exception:
+        return None
+
+
+def build_equity_series(rows, now):
+    """Serie equity/savings per la dashboard: finestre 24h (5'), 7g (1h), 14g (2h).
+
+    rows: iterabile di (ts, equity, savings|None). Ultimo punto di ogni bucket;
+    delta e summary calcolati dai punti REALI (mai interpolati).
+    """
+    pts = sorted((r for r in rows if r), key=lambda x: x[0])
+
+    def _win(secs, bucket):
+        lo = now - secs
+        out = []
+        cur = None
+        for p in pts:
+            if p[0] < lo:
+                continue
+            b = int(p[0] // bucket)
+            if cur != b:
+                out.append(list(p))
+                cur = b
+            else:
+                out[-1] = list(p)
+        return [[round(p[0]), round(p[1], 2),
+                 (round(p[2], 2) if p[2] is not None else None)] for p in out]
+
+    def _at(target):
+        cand = [p for p in pts if p[0] <= target]
+        return cand[-1] if cand else None
+
+    last = pts[-1] if pts else None
+
+    def _delta(secs, idx=1):
+        if not last:
+            return None
+        old = _at(last[0] - secs)
+        if not old or last[idx] is None or old[idx] is None:
+            return None
+        return round(last[idx] - old[idx], 2)
+
+    return {
+        "h24": _win(86400, 300),
+        "d7": _win(7 * 86400, 3600),
+        "d14": _win(14 * 86400, 7200),
+        "summary": {
+            "now": round(last[0]) if last else None,
+            "equity": round(last[1], 2) if last else None,
+            "savings": round(last[2], 2) if last and last[2] is not None else None,
+            "d24": _delta(86400), "d7": _delta(7 * 86400),
+            "earn_d24": _delta(86400, 2), "earn_d7": _delta(7 * 86400, 2),
+            "first_ts": round(pts[0][0]) if pts else None,
+            "n": len(pts),
+        },
+    }
+
+
+def collect_equity_history():
+    """[18/10] Storia del capitale dal banco (jsonl su MARCODG1).
+
+    Su MARCODG1: legge il jsonl e scrive la cache downsamplata (banco_history.json);
+    su mc2: legge la cache via ssh (file piccolo, gia' pronto per il grafico).
+    """
+    if ON_MARCODG1:
+        p = Path(BANCO_JSONL)
+        try:
+            size = p.stat().st_size
+            with open(p, "rb") as f:
+                if size > 4_000_000:
+                    f.seek(size - 4_000_000)
+                    f.readline()  # riga parziale in testa: scartata
+                raw = f.read().decode("utf-8", "replace")
+        except OSError as exc:
+            return {"ok": False, "error": "storia banco non leggibile: " + exc.__class__.__name__}
+        rows = [_parse_banco_row(l) for l in raw.splitlines()]
+        out = build_equity_series(rows, time.time())
+        out["ok"] = True
+        try:
+            Path(BANCO_HISTORY_CACHE).parent.mkdir(parents=True, exist_ok=True)
+            Path(BANCO_HISTORY_CACHE).write_text(json.dumps(out))
+        except OSError:
+            pass
+        return out
+    try:
+        obj, _age = _read_json_smart(BANCO_HISTORY_CACHE, ttl=60.0)
+        return obj
+    except Exception as exc:
+        return {"ok": False, "error": "storia banco non leggibile: " + exc.__class__.__name__}
+
 def collect_services():
     """Stato dei servizi Denaro per macchina (systemctl is-active)."""
     out = {}
     for node_name, cfg in SERVICE_UNITS.items():
         units = cfg["units"]
-        if cfg["ssh"]:
+        if cfg["ssh"] and not (node_name == "mc2" and ON_MC2):
             ssh_args = " ".join(cfg["ssh"])
             # NB: fallback per user unit (mc2: denaro-node-mc2 e' una --user unit;
             # `systemctl is-active` a scope di sistema la legge "inactive").
@@ -965,12 +1191,22 @@ def collect_services():
             except Exception:
                 states = {}
         else:
+            # Locale: systemctl, con fallback sulle unit --user (su mc2 denaro-node-mc2
+            # e' una user unit: a scope di sistema risulta "inactive").
             states = {}
+            _env_user = dict(os.environ, XDG_RUNTIME_DIR="/run/user/%d" % os.getuid())
             for u in units:
                 try:
                     r = subprocess.run(["systemctl", "is-active", u],
                                        capture_output=True, text=True, timeout=10)
-                    states[u] = r.stdout.strip()
+                    s = r.stdout.strip()
+                    if s != "active":
+                        r2 = subprocess.run(["systemctl", "--user", "is-active", u],
+                                            capture_output=True, text=True, timeout=10,
+                                            env=_env_user)
+                        if r2.stdout.strip() == "active":
+                            s = "active"
+                    states[u] = s
                 except Exception:
                     states[u] = ""
         out[node_name] = {
@@ -990,43 +1226,12 @@ def write_trend(points):
 def collect():
     data = {"generated": time.time(), "ts_iso": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
 
-    # 1) Bot health files (I 4 BOT REALI ATTIVI)
+    # 1) Card dei bot (2026-10-18, pulizia «togli i vecchi»): le card ufficiali
+    #    sono SOLO quelle dell'officina paper ("<nodo>:paper:<SYM>"); le vecchie
+    #    card "mc2:okx:*" (pre-officina, puntavano a file inesistenti -> no_file)
+    #    sono state rimosse: i 7 bot mc2 sono GLI STESSI della flotta paper e le
+    #    loro card si riempiono qui sotto dal backfill di node_bots.
     bots = {}
-    live_bots_map = {
-        # Kraken rimosso: le voci trend-live:* erano fossili (vedi sopra).
-        "mc2:okx:BTC/EUR": Path("/home/sergio/denaro/health/btc_mc2.json"),
-        "mc2:okx:ETH/EUR": Path("/home/sergio/denaro/health/eth_mc2.json"),
-        "mc2:okx:SOL/EUR": Path("/home/sergio/denaro/health/sol_mc2.json"),
-        "mc2:okx:XRP/EUR": Path("/home/sergio/denaro/health/xrp_mc2.json"),
-        "mc2:okx:DOGE/EUR": Path("/home/sergio/denaro/health/doge_mc2.json"),
-        "mc2:okx:TRX/EUR": Path("/home/sergio/denaro/health/trx_mc2.json"),
-        "mc2:okx:CRV/EUR": Path("/home/sergio/denaro/health/crv_mc2.json"),
-        # 2026-10-06: rimosse le 10 voci nuvola/marcodg1 che puntavano ai file
-        # *_live.json pre-officina (ora archiviati in health/_archivio_pre_paper_20261006/):
-        # erano la fonte delle card "no_file" accanto alle card paper vive. Le card dei
-        # bot riconvertiti vivono su "<nodo>:paper:<SYM>" (fetch_remote_paper, *_paper.json).
-    }
-    for bot_id, p in live_bots_map.items():
-        if p.exists():
-            try:
-                bots[bot_id] = json.loads(p.read_text())
-            except Exception:
-                bots[bot_id] = {"status": "error"}
-        else:
-            # Prova a leggere via SSH se il path e' su mc2 remoto
-            if "mc2:" in bot_id:
-                try:
-                    r = subprocess.run(["ssh", "-p", "2222", "-o", "BatchMode=yes", "-o", "ConnectTimeout=4",
-                                        "sergio@127.0.0.1", f"cat {p}"],
-                                       capture_output=True, text=True, timeout=5)
-                    if r.returncode == 0 and r.stdout.strip():
-                        bots[bot_id] = json.loads(r.stdout.strip())
-                    else:
-                        bots[bot_id] = {"status": "no_file"}
-                except Exception:
-                    bots[bot_id] = {"status": "no_file"}
-            else:
-                bots[bot_id] = {"status": "no_file"}
     data["bots"] = bots
 
     # 2) Saldi REALI: OKX main + subaccount (locale e via SSH) + Kraken
@@ -1090,34 +1295,16 @@ def collect():
     node_bots = collect_node_bots()
     data["node_bots"] = node_bots
 
-    # Le card in evidenza della dashboard leggono data["bots"], che si costruisce
-    # da live_bots_map: se una lettura locale/SSH li' fallisce, il bot sparisce
-    # dalla dashboard pur essendo VIVO e presente in node_bots. Qui si completa.
+    # Le card ufficiali dei bot vivono in node_bots con la chiave officina
+    # "<nodo>:paper:<SYM>" (o ":live:" quando esistera' un bot live). Qui si
+    # riempie data["bots"] con quelle: se una lettura fallisce la card sparisce
+    # dal payload e i consumer (dashboard, Zabbix, alert) non vedono fossili.
     for _k, _v in node_bots.items():
-        if not isinstance(_v, dict):
+        if not isinstance(_v, dict) or _v.get("stale"):
             continue
-        if _v.get("stale"):
-            continue
-        if _k.startswith(("mc2:okx:", "nuvola:okx:", "marcodg1:okx:")) or ":paper:" in _k:
+        if ":paper:" in _k:
             if _k not in bots or bots[_k].get("status") in (None, "no_file", "error"):
                 bots[_k] = _v
-    # Alcune fonti etichettano gli stessi bot in modo diverso: il glob dei nodi
-    # remoti produce "mc2:<SIMBOLO>", la lettura esplicita "mc2:okx:<SIMBOLO>".
-    # Se la chiave esplicita manca ma esiste quella per simbolo con dati vivi,
-    # si usa quella: senza, il bot e' VIVO ma la sua card non compare.
-    for _pref in ("mc2", "nuvola", "marcodg1"):
-        for _k, _v in list(node_bots.items()):
-            if not _k.startswith(_pref + ":") or _k.startswith(_pref + ":okx:"):
-                continue
-            if ":paper:" in _k:
-                # chiavi officina (01/10): già nella forma voluta, niente remap
-                continue
-            if not isinstance(_v, dict) or _v.get("stale"):
-                continue
-            _sim = _k[len(_pref) + 1:]
-            _expl = "%s:okx:%s" % (_pref, _sim)
-            if _expl not in bots or bots[_expl].get("status") in (None, "no_file", "error"):
-                bots[_expl] = _v
 
     # 6c) FRESCHEZZA delle card (2026-09-20). Le card della flotta devono
     # mostrare solo bot che stanno lavorando ADESSO: un health di giorni fa
@@ -1206,6 +1393,7 @@ def collect():
             "bots": len(nb),
             "running": len(running),
             "paper_running": len(paper_running),
+            "paper_equity": round(sum(b.get("total_equity", 0) for b in paper_running.values()), 2),
             "pnl": round(sum(b.get("pnl", 0) for b in running), 4),
             "trades": sum(b.get("trades", 0) for b in running),
             "equity": round(sum(b.get("total_equity", 0) for b in running), 2),
@@ -1216,6 +1404,8 @@ def collect():
     data["canary"] = collect_canary()
     data["ricerca"] = collect_ricerca()
     data["carry"] = collect_carry()
+    data["banco"] = collect_banco()
+    data["equity_history"] = collect_equity_history()
     data["services"] = collect_services()
     data["trend"] = read_trend()[-240:]
     return data

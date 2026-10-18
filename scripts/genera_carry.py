@@ -92,6 +92,10 @@ def main() -> int:
         "nozionale_totale_eur": round(noz_tot, 2),
         "upl_totale": round(upl_tot, 4),
         "coppie": coppie_out,
+        # Prossime candidate allo step D3 (abilitate nel gate il 18/10, dry-run ok).
+        # Lista curata: NON tutte le coppie del dict sono ammissibili adesso
+        # (LINK fuori gate, DOGE = canary sullo stesso conto, XRP sotto soglia).
+        "candidate": ["LTC", "AVAX"],
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(out, indent=2, ensure_ascii=False))

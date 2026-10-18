@@ -17,3 +17,6 @@
 
 # [18/10/26] Watchdog raccolta tick (tick_watch.py) - 10:00 giornaliero; verdetto in logs/tick_watch/
 0 10 * * * mkdir -p /home/marco/money/logs/tick_watch && cd /home/marco/money && TICK_WATCH_OUT=/home/marco/money/logs/tick_watch /home/marco/money/.venv/bin/python3 scripts/tick_watch.py >> /home/marco/money/logs/tick_watch/cron.log 2>&1
+
+# [18/10/26] Ricerca: riepilogo verdetti per dashboard/Zabbix (ogni 30') — il file era fermo al 15/10
+*/30 * * * * cd /home/marco/money && /home/marco/money/.venv/bin/python3 scripts/genera_ricerca.py >> /home/marco/money/logs/genera_ricerca.log 2>&1

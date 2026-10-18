@@ -13,7 +13,7 @@ Environment=DASH_HOST=127.0.0.1
 Environment=DASH_PORT=8913
 Environment=DASH_HTML_DIR=/home/sergio/money/ops/dashboard
 Environment=DASH_HTML_FILE=dashboard_infra.html
-Environment="AGG_URLS=http://127.0.0.1:8912/infra.json"
+Environment="AGG_URLS=http://[::1]:8912/infra.json,http://127.0.0.1:8912/infra.json"
 Environment=AGG_TIMEOUT=25
 Environment=DASH_CACHE_FILE=/home/sergio/denaro/health/infra_last_good.json
 ExecStart=/home/sergio/money/.venv/bin/python /home/sergio/money/ops/dashboard/serve_dashboard.py

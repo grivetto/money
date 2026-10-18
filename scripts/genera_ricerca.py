@@ -131,6 +131,17 @@ def leggi_basis() -> dict:
     }
 
 
+# Esperimenti con verdetto NEGATIVO/congelato nel registro (archiviate/falsificate).
+# Aggiornare SOLO quando il registro cambia: questa lista e' la fonte del contatore.
+ARCHIVIATE = [
+    "P1", "P2", "P3", "P5", "P6", "P10", "P11", "P12", "P13", "P14",   # trend/momentum/vol/cointegrazione
+    "P15", "P16", "P17", "P18", "P19",                                  # MVRV, domatori DD, multi-venue
+    "P21", "P22",                                                       # paniere carry, timing carry
+    "E_basis",                                                          # basis a scadenza
+]
+# +1: la caccia OHLCV S1-S4 (~600k configurazioni, 0 candidati) contata come una voce.
+
+
 def main() -> int:
     stato = {
         "generato_il": datetime.now(timezone.utc).isoformat(timespec="seconds"),
@@ -141,7 +152,14 @@ def main() -> int:
         "nodo_e_basis": leggi_basis(),
         # contatore onesto: quante strategie misurate hanno passato il cancello
         "promosse": 0,
-        "archiviate": 15,   # P1..P15 + famiglie A-O (senza duplicare P15)
+        "archiviate": len(ARCHIVIATE) + 1,
+        "ultimi": [
+            {"id": "P23", "data": "18/10", "esito": "soglie confermate: fee reali = tariffa taker; maker-first non consigliato"},
+            {"id": "E2", "data": "18/10", "esito": "significativita' integrata (bootstrap + Monte Carlo)"},
+            {"id": "P22", "data": "17/10", "esito": "archiviata: timing del carry chiuso (sempre-on)"},
+            {"id": "P21", "data": "17/10", "esito": "archiviata: paniere top-k perde contro il paniere statico"},
+        ],
+        "prossimo": "P26 cointegrazione rolling — review e misura ufficiale in corso",
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(stato, indent=2, ensure_ascii=False))

@@ -200,6 +200,20 @@ header { display: flex; align-items: flex-end; justify-content: space-between; m
 
 footer { margin-top: 30px; text-align: center; color: var(--dim); font-size: 11px; letter-spacing: 2px; opacity: .7; }
 .skeleton { color: var(--dim); }
+/* ── IL MOTORE / allocazione (18/10) ── */
+.seg { display: flex; gap: 6px; }
+.seg button { background: transparent; border: 1px solid rgba(0,243,255,.25); color: var(--dim); font-family: inherit; font-size: 10px; letter-spacing: 2px; padding: 5px 12px; border-radius: 5px; cursor: pointer; }
+.seg button.on { border-color: var(--neon-cyan); color: var(--neon-cyan); box-shadow: inset 0 0 8px rgba(0,243,255,.25); }
+.mot-grid { display: grid; grid-template-columns: 1.55fr 1fr; gap: 22px; margin-top: 14px; }
+.alloc { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+.alloc .a-row { display: grid; grid-template-columns: 96px 1fr 170px; gap: 10px; align-items: center; font-size: 11px; letter-spacing: 1px; }
+.alloc .a-row .lab { color: var(--dim); }
+.alloc .a-row .val { text-align: right; font-weight: 700; }
+.alloc .bar { height: 12px; border-radius: 4px; background: rgba(255,255,255,.05); overflow: hidden; }
+.alloc .bar i { display: block; height: 100%; border-radius: 4px; }
+.mot-stats { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 12px; font-size: 11px; color: var(--dim); letter-spacing: 1px; }
+.mot-stats b { color: var(--txt); }
+@media (max-width: 1100px) { .mot-grid { grid-template-columns: 1fr; } .alloc .a-row { grid-template-columns: 80px 1fr 130px; } }
 @media (max-width: 1100px) { .bots { grid-template-columns: 1fr; } .hero { flex-direction: column; align-items: flex-start; } }
 </style>
 </head>
@@ -230,6 +244,32 @@ footer { margin-top: 30px; text-align: center; color: var(--dim); font-size: 11p
     <div class="eq-break" style="text-align:right;font-size:12px" id="eqdetail"></div>
   </div>
 
+  <!-- IL MOTORE (18/10/26): capitale nel tempo (storia dal banco a secco, mai stimata)
+       + allocazione per comparto (Earn / trading / funding) + stato riconciliazione. -->
+  <div class="board" id="board-motore">
+    <div class="bd-head">
+      <div class="orb" id="orb-mot"></div>
+      <div>
+        <h2>IL MOTORE — CAPITALE &amp; RENDITA</h2>
+        <div style="font-size:10px;color:var(--dim);letter-spacing:2px" id="mot-nota">—</div>
+      </div>
+      <div class="seg" id="mot-range" style="margin-left:auto">
+        <button data-r="h24" class="on">24H</button><button data-r="d7">7G</button><button data-r="d14">14G</button>
+      </div>
+    </div>
+    <div class="mot-grid">
+      <div>
+        <svg id="mot-chart" viewBox="0 0 1000 230" preserveAspectRatio="none" style="width:100%;height:215px;display:block;background:rgba(0,243,255,0.03);border:1px solid rgba(0,243,255,0.15);border-radius:8px"></svg>
+        <div class="mot-stats" id="mot-stats"></div>
+      </div>
+      <div>
+        <div style="font-size:9px;color:var(--dim);letter-spacing:2px;margin-bottom:2px">ALLOCAZIONE CAPITALE (BANCO, READ-ONLY)</div>
+        <div class="alloc" id="mot-alloc"></div>
+        <div class="mot-stats" id="mot-banco"></div>
+      </div>
+    </div>
+  </div>
+
   <div class="board" id="board">
     <div class="bd-head">
       <div class="orb" id="orb"></div>
@@ -251,14 +291,14 @@ footer { margin-top: 30px; text-align: center; color: var(--dim); font-size: 11p
       <div class="tile"><div class="k">ENTRY / MARK</div><div class="v" id="t-px">—</div></div>
     </div>
     <div class="sparkwrap">
-      <div class="lbl"><span>MARK DOGE — SAMPLING LIVE (SESSIONE)</span><span id="spark-n">0 campioni</span></div>
+      <div class="lbl"><span>MARK DOGE — SAMPLING LIVE (SI POPOLA IN DIRETTA)</span><span id="spark-n">0 campioni</span></div>
       <svg id="spark" viewBox="0 0 1000 120" preserveAspectRatio="none" style="width:100%;height:110px;display:block"></svg>
     </div>
   </div>
 
 
-<!-- RICERCA EDGE (15/10/26): i verdetti degli esperimenti misurati — C1, P15, nodo E,
-     funding scan. Popolata da /api/infra.json → .ricerca (aggregator). -->
+<!-- RICERCA EDGE (18/10/26): verdetti aggiornati — contatore promosse/archiviate,
+     canary C1, funding scan, ultimo verdetto e prossimo. Da /api/infra.json → .ricerca. -->
 <div class="board" id="board-ricerca">
   <div class="bd-head">
     <div class="orb" id="orb-ric"></div>
@@ -270,16 +310,16 @@ footer { margin-top: 30px; text-align: center; color: var(--dim); font-size: 11p
   <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:12px">
     <div><div class="k">PROMOSSE</div><div class="v" id="r-promosse">—</div></div>
     <div><div class="k">ARCHIVIATE</div><div class="v" id="r-archiviate">—</div></div>
-    <div><div class="k">REVIEW C1</div><div class="v" id="r-c1">—</div></div>
-    <div><div class="k">FUNDING SCAN</div><div class="v" id="r-funding">—</div></div>
-    <div><div class="k">P15 · MVRV</div><div class="v" id="r-p15">—</div></div>
-    <div><div class="k">NODO E · BASIS</div><div class="v" id="r-basis">—</div></div>
+    <div><div class="k">CANARY C1 (REVIEW)</div><div class="v" id="r-c1">—</div></div>
+    <div><div class="k">FUNDING SCAN · MIGLIORE</div><div class="v" id="r-funding">—</div></div>
+    <div><div class="k">ULTIMO VERDETTO</div><div class="v" id="r-ultimo" style="font-size:12px">—</div></div>
+    <div><div class="k">PROSSIMO</div><div class="v" id="r-prossimo" style="font-size:12px">—</div></div>
   </div>
 </div>
 
 
-<!-- CARRY LIVE (16/10/26): DOT+ADA a 90 EUR/gamba, 1x isolated, delta-neutral.
-     Popolata da /api/infra.json -> .carry (aggregator). -->
+<!-- CARRY LIVE (16/10/26, dettaglio coppie 18/10): DOT+ADA a 90 EUR/gamba, 1x isolated,
+     delta-neutral. Popolata da /api/infra.json -> .carry (aggregator). -->
 <div class="board" id="board-carry">
   <div class="bd-head">
     <div class="orb" id="orb-carry"></div>
@@ -292,8 +332,22 @@ footer { margin-top: 30px; text-align: center; color: var(--dim); font-size: 11p
     <div><div class="k">COPPIE APERTE</div><div class="v" id="c-coppie">—</div></div>
     <div><div class="k">NOZIONALE</div><div class="v" id="c-noz">—</div></div>
     <div><div class="k">uPL</div><div class="v" id="c-upl">—</div></div>
-    <div><div class="k">DETTAGLIO</div><div class="v" id="c-dett" style="font-size:11px">—</div></div>
+    <div><div class="k">PROSSIME (DRY-RUN OK)</div><div class="v" id="c-next" style="font-size:13px">—</div></div>
   </div>
+  <div id="c-pairs" style="margin-top:12px"></div>
+</div>
+
+<!-- SCOMMESSA ASIMMETRICA (18/10/26): il wallet seed dell'airdrop farming —
+     dato rigenerato ogni 10' dal cron su MARCODG1 (scommessa.json). -->
+<div class="board" id="board-scommessa">
+  <div class="bd-head">
+    <div class="orb" id="orb-scomm"></div>
+    <div>
+      <h2>SCOMMESSA ASIMMETRICA — AIRDROP · WALLET SEED</h2>
+      <div style="font-size:10px;color:var(--dim);letter-spacing:2px" id="scomm-nota">—</div>
+    </div>
+  </div>
+  <div id="scommessa" style="margin-top:10px"></div>
 </div>
 
   <div class="card" style="margin-bottom:18px; border-color:rgba(0,243,255,0.25)">
@@ -317,7 +371,6 @@ footer { margin-top: 30px; text-align: center; color: var(--dim); font-size: 11p
     <div class="card" style="grid-column:1/-1"><h2><span class="ico">█</span> NODE ENGINE — TUTTI I BOT (paper + live)</h2><div id="nodebots"></div></div>
     <div class="card" style="grid-column:1/-1"><h2><span class="ico">⛶</span> NODI MONEY (3 macchine)</h2><div id="nodes"></div></div>
     <div class="card" style="grid-column:1/-1"><h2><span class="ico">⚙</span> SERVIZI MONEY (per macchina)</h2><div id="services"></div></div>
-    <div class="card" style="grid-column:1/-1"><h2><span class="ico">∿</span> TREND EQUITY (ultime 4h)</h2><div id="trend"></div></div>
     <div class="card" style="grid-column:1/-1"><h2><span class="ico">✖</span> ERRORI BOT</h2><div id="errors"></div></div>
   </div>
 
@@ -329,25 +382,6 @@ const $ = (id) => document.getElementById(id);
 const fmt = (v, d=2) => (v === undefined || v === null) ? '—' : Number(v).toLocaleString('it-IT', {minimumFractionDigits: d, maximumFractionDigits: d});
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-const BOT_META = {
-  'mc2:okx:BTC/EUR': {sym: 'BTC/EUR', ex: 'OKX·MC2SUB1·TREND', color: '#ff9500'},
-  'mc2:okx:ETH/EUR': {sym: 'ETH/EUR', ex: 'OKX·MC2SUB1·TREND', color: '#b026ff'},
-  'mc2:okx:SOL/EUR': {sym: 'SOL/EUR', ex: 'OKX·MC2SUB1·TREND', color: '#ffe600'},
-  'mc2:okx:XRP/EUR': {sym: 'XRP/EUR', ex: 'OKX·MC2SUB1·TREND', color: '#00f3ff'},
-  'mc2:okx:DOGE/EUR': {sym: 'DOGE/EUR', ex: 'OKX·MC2SUB1·TREND', color: '#ff2bd6'},
-  'mc2:okx:TRX/EUR': {sym: 'TRX/EUR', ex: 'OKX·MC2SUB1·TREND', color: '#0aff9d'},
-  'mc2:okx:CRV/EUR': {sym: 'CRV/EUR', ex: 'OKX·MC2SUB1·TREND', color: '#e600ff'},
-  'nuvola:okx:LINK/EUR': {sym: 'LINK/EUR', ex: 'OKX·NUVOLASUB1·TREND', color: '#0aff9d'},
-  'nuvola:okx:AVAX/EUR': {sym: 'AVAX/EUR', ex: 'OKX·NUVOLASUB1·TREND', color: '#ff9500'},
-  'nuvola:okx:DOT/EUR': {sym: 'DOT/EUR', ex: 'OKX·NUVOLASUB1·TREND', color: '#ff2bd6'},
-  'nuvola:okx:UNI/EUR': {sym: 'UNI/EUR', ex: 'OKX·NUVOLASUB1·TREND', color: '#e600ff'},
-  'nuvola:okx:SUI/EUR': {sym: 'SUI/EUR', ex: 'OKX·NUVOLASUB1·TREND', color: '#b026ff'},
-  'nuvola:okx:MINA/EUR': {sym: 'MINA/EUR', ex: 'OKX·NUVOLASUB1·TREND', color: '#ffe600'},
-  'marcodg1:okx:ADA/EUR': {sym: 'ADA/EUR', ex: 'OKX·MARCOSUB1·TREND', color: '#00f3ff'},
-  'marcodg1:okx:ARB/EUR': {sym: 'ARB/EUR', ex: 'OKX·MARCOSUB1·TREND', color: '#ffe600'},
-  'marcodg1:okx:XLM/EUR': {sym: 'XLM/EUR', ex: 'OKX·MARCOSUB1·TREND', color: '#ff2bd6'},
-  'marcodg1:okx:ALGO/EUR': {sym: 'ALGO/EUR', ex: 'OKX·MARCOSUB1·TREND', color: '#ff9500'},
-};
 // Paper bot della flotta: lista DINAMICA dal payload — mostra i bot che il
 // sistema crea e avvia davvero (niente liste fisse da aggiornare a mano).
 function paperBots(bots) {
@@ -384,13 +418,14 @@ function renderBoard(d) {
     ? (c.error || 'in attesa del monitor canary…')
     : (stale
         ? 'DATO NON AGGIORNATO — ultimo check ' + Math.round((c.age_s || 0) / 60) + ' min fa'
-        : '● LIVE · check ' + Math.round((c.age_s || 0) / 60) + ' min fa · fee = schedule · review 15/10');
+        : "● LIVE · check " + Math.round((c.age_s || 0) / 60) + " min fa · missione 14g: PASS (15/10) · posizione mantenuta e sorvegliata");
   if (c.ts_open) {
     const raw = String(c.ts_open);
     const t0 = Date.parse(raw.includes('Z') || raw.includes('+') ? raw : raw + 'Z');
     if (!isNaN(t0)) {
       const elapsed = Date.now() - t0;
-      $('board-day').textContent = 'DAY ' + Math.min(14, Math.floor(elapsed / 86400000) + 1) + '/14';
+      const day = Math.floor(elapsed / 86400000) + 1;
+      $('board-day').textContent = day <= 14 ? ('DAY ' + day + '/14') : ('DAY ' + day + ' · MISSIONE ✓');
       $('board-prog').style.width = Math.max(0, Math.min(100, elapsed / (14 * 86400000) * 100)).toFixed(2) + '%';
     }
   }
@@ -437,12 +472,13 @@ function renderFlotta(d) {
       'border-radius:5px;font-size:10px;letter-spacing:1px;color:' + col + '">' + esc(sym) + ' · ' + esc(ok ? 'paper ✓' : st) + '</span>';
   }).join('');
   $('flotta').innerHTML =
-    '<div class="row"><span class="k">OFFICINA PAPER — FORWARD TEST (SIMULATO)</span><span class="pill ' + (fresh === order.length ? 'ok' : 'warn') + '">' +
+    '<div class="row"><span class="k">STATO FLOTTA</span><span class="pill ' + (fresh === order.length && order.length ? 'ok' : 'warn') + '">' +
     fresh + ' / ' + order.length + ' ATTIVI</span></div>' +
-    '<div style="font-size:11px;color:var(--dim);margin:8px 0 6px">I bot paper della flotta — quelli che il sistema crea e avvia — girano in forward test sui prezzi live: ' +
-    'fill simulati, nessun ordine, nessuna chiave. Il live del progetto è il canary qui sopra. ' +
-    'Storia e stato completo su <a href="https://zab.grivetto.eu/zabbix.php?action=latest.view" target="_blank" style="color:var(--neon-cyan)">ZABBIX ▸</a> (' +
-    Object.keys(bots).length + ' bot monitorati, aggiornati ogni minuto).</div>' +
+    '<div style="font-size:11px;color:var(--dim);margin:8px 0 6px">' +
+    order.length + ' bot paper in forward test sui prezzi live (fill simulati, nessun ordine, nessuna chiave): ' +
+    'è la panca di osservazione del progetto. Il capitale vero vive nei motori qui sopra (carry + canary + Earn). ' +
+    'Storia e stato completo su <a href="https://zab.grivetto.eu/zabbix.php?action=latest.view" target="_blank" style="color:var(--neon-cyan)">ZABBIX ▸</a> ' +
+    '(aggiornati ogni minuto).</div>' +
     '<div>' + chips + '</div>';
 }
 
@@ -450,10 +486,13 @@ async function load() {
   try {
     const r = await fetch('/api/infra.json', {cache: 'no-store'});
     const d = await r.json();
+    window.__lastPayload = d;
     render(d);
     renderBoard(d);
+    renderMotore(d);
     renderRicerca(d);
     renderCarry(d);
+    loadScommessa();
   } catch (e) {
     $('sysstatus').textContent = 'SIGNAL LOST';
     $('dot').className = 'pulse warn';
@@ -465,24 +504,24 @@ function render(d) {
 
   const te = d.total_equity || 0;
   $('totaleq').textContent = fmt(te);
-  const be = d.bot_equity ?? 0, ke = d.kraken_equity ?? 0;
-  // Ripartizione REALE per conto (equity_breakdown dall'aggregator). Fallback ai
-  // vecchi totali per bot se il campo non e' disponibile.
+  const be = d.bot_equity ?? 0;
+  // Ripartizione REALE per conto (equity_breakdown dall'aggregator). I conti
+  // "dust" (< 1 EUR) non sporcano più la riga: si contano a parte.
   const eb = d.equity_breakdown || {};
-    // KRAKEN temporaneamente escluso dalla dashboard (richiesta 2026-09-17):
-  // il conto ha solo polvere e il nodo live e' fermo. Per riattivarlo
-  // basta svuotare HIDE_EXCHANGES.
   const HIDE_EXCHANGES = ['kraken'];
-const ebKeys = Object.keys(eb).filter(k => eb[k] && eb[k].ok && eb[k].eur !== null && eb[k].eur !== undefined && !HIDE_EXCHANGES.some(x => String(k).toLowerCase().includes(x)));
-  $('eqbreak').innerHTML = ebKeys.length
-    ? ebKeys.map(k => `${esc(k)} <b>€${fmt(eb[k].eur)}</b>`).join(' · ')
+  const ebKeys = Object.keys(eb).filter(k => eb[k] && eb[k].ok && eb[k].eur !== null && eb[k].eur !== undefined && !HIDE_EXCHANGES.some(x => String(k).toLowerCase().includes(x)));
+  const ebMain = ebKeys.filter(k => (eb[k].eur || 0) >= 1);
+  const ebDust = ebKeys.length - ebMain.length;
+  const shownKeys = ebMain.length ? ebMain : ebKeys;
+  $('eqbreak').innerHTML = shownKeys.length
+    ? shownKeys.map(k => `${esc(k)} <b>€${fmt(eb[k].eur)}</b>`).join(' · ') + (ebDust ? ` <span style="opacity:.6">· +${ebDust} conti dust &lt;1€</span>` : '')
     : `OKX LIVE <b>€${fmt(be)}</b>`;
-  if (d.equity_unpriced && d.equity_unpriced.length) {
-    $('eqdetail').innerHTML += ' · non valorizzate: ' + esc(d.equity_unpriced.join(', '));
-  }
-  const bal = d.balances || {};
-  const labels = Object.keys(bal).filter(k => bal[k] && bal[k].ok);
-  $('eqdetail').innerHTML = 'CHANNELS: ' + labels.map(esc).join(' ⏺ ');
+  // Δ24h / Δ7g dal banco a secco (storia reale, mai stimata).
+  const hs = (d.equity_history || {}).summary || {};
+  const dchip = (v, lab) => (v === null || v === undefined) ? '' :
+    ` · ${lab} <b style="color:${v >= 0 ? 'var(--neon-green)' : 'var(--neon-red)'}">${v >= 0 ? '+' : ''}${fmt(v)}€</b>`;
+  $('eqdetail').innerHTML = 'Δ dal banco' + dchip(hs.d24, '24h') + dchip(hs.d7, '7g') +
+    ((d.equity_unpriced && d.equity_unpriced.length) ? ' · non valorizzate: ' + esc(d.equity_unpriced.join(', ')) : '');
 
   // Flotta storica: riepilogo compatto (le 17 card dei bot spenti erano rumore)
   const bots = d.bots || {};
@@ -505,7 +544,10 @@ const ebKeys = Object.keys(eb).filter(k => eb[k] && eb[k].ok && eb[k].eur !== nu
   for (const [k, v] of Object.entries(bal)) {
     const d2 = document.createElement('div');
     if (v && v.ok) {
-      const tot = Object.entries(v.total || {}).map(([c, q]) => `${c}:${fmt(q, 4)}`).join(' · ');
+      const toks = Object.entries(v.total || {}).filter(([, q]) => Number(q) >= 0.001);
+      const tot = toks.length
+        ? toks.map(([c, q]) => `${c}:${fmt(q, (c === 'EUR' || c === 'USDC') ? 2 : 4)}`).join(' · ')
+        : 'dust (< 0,001 per token)';
       d2.innerHTML = `<div class="row"><span class="k">${esc(k)}</span><span class="pill ok">ONLINE</span></div><div class="skeleton" style="font-size:10px;padding-left:8px;letter-spacing:1px">${esc(tot)}</div>`;
     } else {
       d2.innerHTML = `<div class="row"><span class="k">${esc(k)}</span><span class="pill bad">OFFLINE</span></div>`;
@@ -548,17 +590,20 @@ const ebKeys = Object.keys(eb).filter(k => eb[k] && eb[k].ok && eb[k].eur !== nu
   $('system').innerHTML = Object.entries(sys).map(([k, v]) =>
     `<div class="kv"><span class="k">${esc(k)}</span><span class="v">${esc(v)}</span></div>`).join('') || '<div class="skeleton">—</div>';
 
-  // Docker
+  // Docker (vuoto su MARCODG1: nessun container li' — si dice, non si finge)
   const dc = d.docker || {};
-  $('docker').innerHTML = Object.entries(dc).map(([k, v]) => {
-    const up = String(v).includes('Up');
-    return `<div class="row"><span class="k">${esc(k)}</span><span class="pill ${up ? 'ok' : 'warn'}">${esc(v)}</span></div>`;
-  }).join('') || '<div class="skeleton">—</div>';
+  const dcEnt = Object.entries(dc);
+  $('docker').innerHTML = dcEnt.length
+    ? dcEnt.map(([k, v]) => {
+        const up = String(v).includes('Up');
+        return `<div class="row"><span class="k">${esc(k)}</span><span class="pill ${up ? 'ok' : 'warn'}">${esc(v)}</span></div>`;
+      }).join('')
+    : '<div class="skeleton">nessun container su questa macchina</div>';
 
-  // Status pill: prima la realtà operativa attuale (canary live), poi la flotta.
+  // Status pill: prima la realtà operativa attuale (canary + carry live), poi la flotta.
   const cok = d.canary && d.canary.ok === true && d.canary.status === 'open';
   if (cok) {
-    $('sysstatus').textContent = '◆ CANARY LIVE — OKX EEA';
+    $('sysstatus').textContent = '◆ LIVE — OKX EEA (CANARY + CARRY)';
     $('dot').className = 'pulse';
   } else if (d.canary && d.canary.status === 'open') {
     $('sysstatus').textContent = 'CANARY: DATO NON AGGIORNATO';
@@ -575,7 +620,6 @@ const ebKeys = Object.keys(eb).filter(k => eb[k] && eb[k].ok && eb[k].eur !== nu
   renderNodeBots(d);
   renderNodes(d);
   renderServices(d);
-  renderTrend(d);
   renderErrors(d);
 }
 
@@ -622,8 +666,8 @@ function renderNodes(d) {
         <span style="color:var(--dim);font-size:10px">${n.paper_running??0} paper · ${n.running??0} live</span>
       </span>
       <span class="v" style="display:flex;gap:14px">
+        <span>EQ PAPER <b>${fmt(n.paper_equity||0)}€</b></span>
         <span>LIVE EQ <b>${fmt(n.equity||0)}€</b></span>
-        <span>PNL <b style="color:${(n.pnl||0)>=0?'var(--neon-green)':'var(--neon-red)'}">${(n.pnl||0)>=0?'+':''}${fmt(n.pnl,3)}</b></span>
         <span>TR <b>${n.trades??0}</b></span>
       </span>`;
     wrap.appendChild(div);
@@ -640,9 +684,10 @@ function renderNodeBots(d) {
   };
   const totals = document.createElement('div');
   totals.className = 'row';
-  totals.innerHTML = `<span class="k">TOTALE NODE</span>
+  totals.innerHTML = `<span class="k">TOTALE — PAPER ${d.node_paper_bots ?? 0} · LIVE ${d.node_live_bots ?? 0}</span>
     <span class="v" style="display:flex;gap:14px">
-      <span>PNL <b style="color:${(d.node_total_pnl||0)>=0?'var(--neon-green)':'var(--neon-red)'}">${(d.node_total_pnl||0)>=0?'+':''}${fmt(d.node_total_pnl,2)}€</b></span>
+      <span>PNL PAPER <b style="color:${(d.node_paper_pnl||0)>=0?'var(--neon-green)':'var(--neon-red)'}">${(d.node_paper_pnl||0)>=0?'+':''}${fmt(d.node_paper_pnl,2)}€</b></span>
+      <span>PNL LIVE <b style="color:${(d.node_total_pnl||0)>=0?'var(--neon-green)':'var(--neon-red)'}">${(d.node_total_pnl||0)>=0?'+':''}${fmt(d.node_total_pnl,2)}€</b></span>
       <span>TRADE <b>${d.node_total_trades ?? 0}</b></span>
       <span>WR <b>${d.node_win_rate ?? 0}%</b></span>
     </span>`;
@@ -685,41 +730,6 @@ function renderNodeBots(d) {
   }
 }
 
-function renderTrend(d) {
-  const t = d.trend || [];
-  const wrap = $('trend');
-  if (t.length < 2) { wrap.innerHTML = '<div class="skeleton">RACCOLTA DATI IN CORSO…</div>'; return; }
-  const W = 1200, H = 110, PAD = 8;
-  const eqs = t.map(p => p.equity || 0);
-  const pnls = t.map(p => p.node_pnl || 0);
-  const wrs = t.map(p => p.win_rate || 0);
-  const lo = Math.min(...eqs), hi = Math.max(...eqs);
-  const range = (hi - lo) || 1;
-  const px = i => PAD + (i / (t.length - 1)) * (W - PAD * 2);
-  const py = v => H - PAD - ((v - lo) / range) * (H - PAD * 2);
-  const line = eqs.map((v, i) => `${px(i).toFixed(1)},${py(v).toFixed(1)}`).join(' ');
-  const pnlMax = Math.max(...pnls.map(Math.abs), 1);
-  const pnlLine = pnls.map((v, i) => `${px(i).toFixed(1)},${(H/2 - (v / pnlMax) * (H/2 - PAD)).toFixed(1)}`).join(' ');
-  const wrMax = Math.max(...wrs.map(Math.abs), 1);
-  const wrLine = wrs.map((v, i) => `${px(i).toFixed(1)},${(H/2 - (v / wrMax) * (H/2 - PAD)).toFixed(1)}`).join(' ');
-  const last = t[t.length - 1];
-  wrap.innerHTML = `
-    <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--dim);margin-bottom:6px">
-      <span>CAPITALE TOTALE (€) — min ${fmt(lo,1)} · max ${fmt(hi,1)}</span>
-      <span>ULTIMO: <b style="color:var(--neon-cyan)">${fmt(last.equity,1)}€</b> · PnL Node ${fmt(last.node_pnl,2)}€ · WR ${fmt(last.win_rate,1)}%</b></span>
-    </div>
-    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="width:100%;height:110px;background:rgba(0,243,255,0.03);border:1px solid rgba(0,243,255,0.15)">
-      <polyline points="${line}" fill="none" stroke="var(--neon-cyan)" stroke-width="2"/>
-      <polyline points="${pnlLine}" fill="none" stroke="var(--neon-green)" stroke-width="1.2" stroke-dasharray="4 3"/>
-      <polyline points="${wrLine}" fill="none" stroke="var(--neon-yellow)" stroke-width="1" stroke-dasharray="2 2"/>
-    </svg>
-    <div style="font-size:10px;color:var(--dim);margin-top:4px;display:flex;gap:14px">
-      <span><b style="color:var(--neon-cyan)">■</b> EQUITY</span>
-      <span><b style="color:var(--neon-green)">■</b> PnL NODE (scala centrata)</span>
-      <span><b style="color:var(--neon-yellow)">■</b> WIN RATE %</span>
-    </div>
-  `;
-}
 function renderErrors(d) {
   const er = d.node_errors || {};
   const wrap = $('errors');
@@ -730,11 +740,18 @@ function renderErrors(d) {
 }
 
 async function loadScommessa() {
+  let s = null;
   try {
     const r = await fetch('/scommessa.json', {cache: 'no-store'});
-    if (!r.ok) { renderScommessa(null); return; }
-    renderScommessa(await r.json());
-  } catch (e) { renderScommessa(null); }
+    if (r.ok) s = await r.json();
+  } catch (e) { /* la scheda dichiara il dato mancante */ }
+  renderScommessa(s);
+  const orb = $('orb-scomm'), nota = $('scomm-nota');
+  const fresh = s && s.ok !== false && typeof s.ts === 'number' && (Date.now() / 1000 - s.ts) <= 1800;
+  if (orb) orb.className = 'orb' + (fresh ? '' : ' bad');
+  if (nota) nota.textContent = fresh
+    ? ('wallet seed su ' + (s.rete || '—') + ' · tetto perdita €' + fmt(s.tetto_perdita_eur, 0) + ' · fase: ' + (s.fase || '—'))
+    : 'dato non aggiornato — nessun numero vecchio mostrato';
 }
 
 // Regola di onesta' (spec DSH 2026-09-19): oltre 30 minuti senza dato fresco
@@ -782,7 +799,7 @@ setInterval(boardTick, 1000);
 boardTick();
 tick();
 
-/* ── RICERCA EDGE (15/10/26) ── */
+/* ── RICERCA EDGE (18/10/26) ── */
 function renderRicerca(d) {
   const r = (d && d.ricerca) || {};
   if (!r.ok) {
@@ -799,30 +816,28 @@ function renderRicerca(d) {
   const tf = rc.checklist || {};
   const pass = Object.values(tf).filter(v => v === 'PASS').length;
   const tot = Object.keys(tf).length;
-  set('r-c1', tot ? (pass + '/' + tot) : 'n/d');
+  set('r-c1', tot ? (pass + '/' + tot + ' PASS') : 'n/d');
 
   const fs = r.funding_scan || {};
   if (fs.disponibile && fs.miglior_netto != null) {
-    const pct = (fs.miglior_netto * 100).toFixed(1) + '%';
-    set('r-funding', (fs.miglior || '?') + ' ' + pct);
+    const base = String(fs.miglior || '?').split('/')[0];
+    set('r-funding', base + ' ' + (fs.miglior_netto * 100).toFixed(1) + '%/anno');
   } else set('r-funding', 'n/d');
 
-  const p15 = r.p15_mvrv || {};
-  set('r-p15', p15.verdetto || (p15.disponibile ? 'n/d' : 'non misurata'));
-
-  const be = r.nodo_e_basis || {};
-  set('r-basis', be.verdetto || (be.disponibile ? 'n/d' : 'non misurato'));
+  const u = (r.ultimi || [])[0];
+  set('r-ultimo', u ? (u.id + ' · ' + u.data + ' · ' + String(u.esito || '').split(':')[0]) : 'n/d');
+  set('r-prossimo', r.prossimo || 'n/d');
 
   const el = $('r-nota');
   if (el) {
-    const eta = (typeof r.age_s === 'number') ? Math.round(r.age_s / 60) + "' fa" : '—';
-    el.textContent = 'aggiornato ' + eta +
-      ' · C1 = canary carry DOGE (review PASS) · il carry funding è l\'unico filone vivo';
+    const ageS = (typeof r.age_s === 'number') ? r.age_s : null;
+    const eta = ageS === null ? '—' : (ageS < 3600 ? Math.round(ageS / 60) + "' fa" : Math.round(ageS / 86400) + ' g fa');
+    el.textContent = 'aggiornato ' + eta + ' · 0 promosse su ~600k configurazioni misurate — il carry funding resta l\'unico motore netto positivo';
   }
 }
 
 
-/* ── CARRY LIVE (16/10/26) ── */
+/* ── CARRY LIVE (16/10/26; dettaglio per coppia 18/10) ── */
 function renderCarry(d) {
   const c = (d && d.carry) || {};
   const orb = $('orb-carry');
@@ -838,17 +853,132 @@ function renderCarry(d) {
   set('c-coppie', (c.coppie_aperte ?? 'n/d'));
   set('c-noz', (c.nozionale_totale_eur != null ? (c.nozionale_totale_eur + ' €') : 'n/d'));
   const upl = c.upl_totale;
-  set('c-upl', (upl != null ? (upl >= 0 ? '+' : '') + upl.toFixed(4) : 'n/d'));
+  set('c-upl', (upl != null ? (upl >= 0 ? '+' : '') + upl.toFixed(2) + ' €' : 'n/d'));
+  set('c-next', (c.candidate && c.candidate.length) ? c.candidate.join(' · ') : '—');
   const cp = c.coppie || {};
   const righe = Object.keys(cp).map(n => {
     const v = cp[n] || {};
-    const dl = (v.delta != null) ? v.delta.toFixed(4) : '?';
-    return n + ' ' + (v.aperta ? '●' : '○') + ' lev' + (v.leva || '?') + ' Δ' + dl;
-  });
-  set('c-dett', righe.join(' · ') || 'n/d');
+    if (!v.aperta) return '';
+    const px = v.prezzo_ora, liq = v.liq;
+    let liqTxt = 'n/d';
+    if (px && liq && px > 0) liqTxt = '+' + (((liq / px) - 1) * 100).toFixed(0) + '%';
+    const u = (v.upl != null) ? ((v.upl >= 0 ? '+' : '') + v.upl.toFixed(2) + '€') : 'n/d';
+    const dl = (v.delta != null) ? v.delta.toFixed(3) : '?';
+    return '<div class="row" style="border-left:3px solid var(--neon-green);padding-left:8px">' +
+      '<span class="k"><b style="color:var(--neon-cyan)">' + esc(n) + '</b> · lev' + esc(v.leva || '?') + ' · 1x isolated</span>' +
+      '<span class="v" style="display:flex;gap:16px">' +
+      '<span>uPL <b style="color:' + ((v.upl || 0) >= 0 ? 'var(--neon-green)' : 'var(--neon-red)') + '">' + u + '</b></span>' +
+      '<span>Δ ' + dl + '</span>' +
+      '<span>liq a ' + liqTxt + '</span></span></div>';
+  }).filter(Boolean).join('');
+  const el = $('c-pairs');
+  if (el) el.innerHTML = righe || '<div class="skeleton">nessuna coppia aperta</div>';
   const n = $('c-nota');
-  if (n) n.textContent = 'aggiornato ' + Math.round((c.age_s || 0) / 60) + "' fa"
-    + ' · funding carry ~5-7%/anno · leva 1x';
+  if (n) n.textContent = 'aggiornato ' + Math.round((c.age_s || 0) / 60) + "' fa" +
+    ' · funding carry ~5-7%/anno · delta-neutral 1x · prossimo step D3: una coppia nuova (gate dry-run ok 18/10)';
+}
+
+
+/* ── IL MOTORE (18/10/26): storia capitale + allocazione ── */
+let motRange = 'h24';
+document.addEventListener('click', (ev) => {
+  const b = ev.target.closest('#mot-range button');
+  if (!b) return;
+  motRange = b.dataset.r;
+  document.querySelectorAll('#mot-range button').forEach(x => x.classList.toggle('on', x === b));
+  if (window.__lastPayload) renderMotore(window.__lastPayload);
+});
+
+function _fmtTs(ts) {
+  if (!ts) return '—';
+  const dt = new Date(ts * 1000);
+  return dt.toLocaleDateString('it-IT', {day: '2-digit', month: '2-digit'}) + ' ' +
+         dt.toLocaleTimeString('it-IT', {hour: '2-digit', minute: '2-digit'});
+}
+
+function renderMotore(d) {
+  const h = d.equity_history || {};
+  const b = d.banco || {};
+  const orb = $('orb-mot'), nota = $('mot-nota'), stats = $('mot-stats');
+  const bancoEl = $('mot-banco'), alloc = $('mot-alloc'), svg = $('mot-chart');
+  if (!svg) return;
+
+  if (nota) {
+    if (h.ok) {
+      const ageB = (typeof b.age_s === 'number') ? Math.round(b.age_s / 60) + "' fa" : '—';
+      nota.textContent = 'banco a secco aggiornato ' + ageB + ' · esito ' + (b.esito || '?') +
+        ' · riconciliazione ' + (b.riconciliazione_quadra || '?') + ' · ' + (b.ordini_aperti ?? '?') + ' ordini aperti';
+    } else {
+      nota.textContent = (h.error || 'storia non disponibile') + ' — niente numeri inventati';
+    }
+  }
+  if (orb) orb.className = 'orb' + (h.ok ? '' : ' bad');
+
+  // ── grafico ──
+  const ser = (h[motRange] || []);
+  if (!h.ok || ser.length < 2) {
+    svg.innerHTML = '<text x="500" y="118" fill="#5a6a9e" font-size="16" text-anchor="middle">' +
+      (h.ok ? 'RACCOLTA STORIA IN CORSO…' : 'STORIA NON DISPONIBILE') + '</text>';
+  } else {
+    const W = 1000, H = 230, PAD = 12;
+    const eqs = ser.map(p => p[1]);
+    const savs = ser.map(p => p[2]).filter(v => v != null);
+    const lo = Math.min(...eqs, ...(savs.length ? savs : eqs));
+    const hi = Math.max(...eqs, ...(savs.length ? savs : eqs));
+    const rng = (hi - lo) || 1;
+    const px = i => PAD + (i / (ser.length - 1)) * (W - PAD * 2);
+    const py = v => H - PAD - ((v - lo) / rng) * (H - PAD * 2);
+    const eqLine = ser.map((p, i) => px(i).toFixed(1) + ',' + py(p[1]).toFixed(1)).join(' ');
+    const eqArea = PAD + ',' + (H - PAD) + ' ' + eqLine + ' ' + (W - PAD) + ',' + (H - PAD);
+    let savLine = '';
+    if (savs.length >= 2) {
+      savLine = ser.map((p, i) => (p[2] == null ? null : px(i).toFixed(1) + ',' + py(p[2]).toFixed(1)))
+        .filter(Boolean).join(' ');
+    }
+    const t0 = ser[0][0], t1 = ser[ser.length - 1][0];
+    svg.innerHTML =
+      '<polygon points="' + eqArea + '" fill="rgba(0,243,255,0.06)" stroke="none"/>' +
+      '<polyline points="' + eqLine + '" fill="none" stroke="var(--neon-cyan)" stroke-width="2"/>' +
+      (savLine ? '<polyline points="' + savLine + '" fill="none" stroke="var(--neon-green)" stroke-width="1.6" stroke-dasharray="5 4"/>' : '') +
+      '<text x="14" y="22" fill="#5a6a9e" font-size="13">MAX €' + hi.toFixed(1) + '</text>' +
+      '<text x="14" y="' + (H - 8) + '" fill="#5a6a9e" font-size="13">MIN €' + lo.toFixed(1) + '</text>' +
+      '<text x="' + (W - 14) + '" y="22" fill="#5a6a9e" font-size="13" text-anchor="end">' + _fmtTs(t1) + '</text>' +
+      '<text x="' + (W - 14) + '" y="' + (H - 8) + '" fill="#5a6a9e" font-size="13" text-anchor="end">' + _fmtTs(t0) + '</text>';
+  }
+
+  // ── stats ──
+  const s = h.summary || {};
+  if (stats) {
+    const chip = (lab, v, suf) => (v == null) ? '' :
+      '<span>' + lab + ' <b style="color:' + (v >= 0 ? 'var(--neon-green)' : 'var(--neon-red)') + '">' + (v >= 0 ? '+' : '') + fmt(v) + (suf || '€') + '</b></span>';
+    stats.innerHTML =
+      chip('Δ24H', s.d24) + chip('Δ7G', s.d7) + chip('EARN Δ7G', s.earn_d7) +
+      '<span>PUNTI <b>' + (s.n ?? 0) + '</b></span>' +
+      '<span style="opacity:.7">storia dal ' + _fmtTs(s.first_ts) + ' · fonte: banco a secco read-only</span>';
+  }
+
+  // ── allocazione ──
+  if (alloc && b.ok) {
+    const parts = [
+      ['EARN (SIMPLE EARN)', b.equity_savings_eur || 0, 'var(--neon-green)'],
+      ['TRADING', b.equity_trading_eur || 0, 'var(--neon-cyan)'],
+      ['FUNDING', b.equity_funding_eur || 0, 'var(--neon-purple)'],
+    ];
+    const tot = parts.reduce((a, x) => a + x[1], 0) || 1;
+    alloc.innerHTML = parts.map(([lab, val, col]) =>
+      '<div class="a-row"><span class="lab">' + lab + '</span>' +
+      '<span class="bar"><i style="width:' + (val / tot * 100).toFixed(1) + '%;background:' + col + ';box-shadow:0 0 10px ' + col + '"></i></span>' +
+      '<span class="val">€' + fmt(val) + ' · ' + (val / tot * 100).toFixed(1) + '%</span></div>').join('');
+  } else if (alloc) {
+    alloc.innerHTML = '<div class="skeleton">banco non leggibile — nessun numero inventato</div>';
+  }
+  if (bancoEl) {
+    bancoEl.innerHTML = b.ok
+      ? '<span>TOTALE BANCO <b>€' + fmt(b.equity_eur) + '</b></span>' +
+        '<span>ESITO <b style="color:' + (b.esito === 'PASS' ? 'var(--neon-green)' : 'var(--neon-yellow)') + '">' + esc(b.esito || '?') + '</b></span>' +
+        '<span>CHIAVE <b>' + esc(b.chiave_solo_lettura === 'si' ? 'SOLO LETTURA' : (b.chiave_solo_lettura || '?')) + '</b></span>'
+      : '';
+  }
 }
 
 </script>
