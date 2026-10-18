@@ -1,7 +1,7 @@
 # P27 — D3 step di scala: abilitazione coppie LTC/AVAX nel gate carry — SPEC DI IMPLEMENTAZIONE
 STATO: PRESA_DA Merlino 2026-10-18 (implementazione) — pre-registrata 2026-10-18 (hermes/Artù). REQ-MERL-20261018-011.
 Voce OPERATIVA (piano D3, ROADMAP §7: «carry a scala regolata, step +100 € con gate verdi»). Non è un esperimento; fuori dal conteggio tentativi.
-Repo: `grivetto/money` · commit di registrazione: `70388b7a` (file di questa voce: `coda_catena/P27_d3_scala_carry.md`).
+Repo: `grivetto/money` · commit di registrazione: `6c837c7e` (file di questa voce: `coda_catena/P27_d3_scala_carry.md`).
 
 ## Obiettivo (verificabile)
 Il gate unico di apertura (`scripts/carry_apri.py`, che importa `COPPIE` da `scripts/carry_multi.py`) supporta anche **LTC** e **AVAX**: dict `COPPIE` esteso con i parametri verificati, dry-run `carry_apri.py --coppia LTC|AVAX` che supera il gate carry (funding atteso baseline 0,01%/8h → payback ~34 periodi ≤ 90) e stampa il piano. Nessuna logica nuova: solo configurazione + test di coerenza.
