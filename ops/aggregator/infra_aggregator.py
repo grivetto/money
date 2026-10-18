@@ -228,9 +228,10 @@ def fetch_okx_balance(env):
         # in funding: con ~1.097 USDC messi a rendita l'equity e' scivolata da ~1.100 a
         # ~120 EUR (bug visto dal vivo). Si sommano anche i saldi savings (retry 2x;
         # se fallisce, l'account resta leggibile su trading+funding e si annota l'errore).
-        sav_tot, sav_err = {}, None
+        sav_tot, sav_detail, sav_err = {}, {}, None
         for _tent in range(2):
             sav_tot = {}
+            sav_detail = {}
             try:
                 sav = ex.privateGetFinanceSavingsBalance({}) or {}
                 for r in (sav.get("data") or []):
@@ -241,6 +242,15 @@ def fetch_okx_balance(env):
                         continue
                     if ccy and amt > 0:
                         sav_tot[ccy] = sav_tot.get(ccy, 0.0) + amt
+                        try:
+                            _earn = float(r.get("earnings") or 0)
+                        except (TypeError, ValueError):
+                            _earn = None
+                        try:
+                            _rate = float(r.get("rate") or 0)
+                        except (TypeError, ValueError):
+                            _rate = None
+                        sav_detail[ccy] = {"amt": round(amt, 6), "earnings": _earn, "rate": _rate}
                 sav_err = None
                 break
             except Exception as exc:
@@ -252,6 +262,8 @@ def fetch_okx_balance(env):
         total = {k: round(v, 6) for k, v in tot_merged.items()}
         free = {k: round(v, 6) for k, v in free_merged.items()}
         val = {"ok": True, "total": total, "free": free, "savings_ok": sav_err is None}
+        if sav_detail:
+            val["savings"] = sav_detail
         if sav_err:
             val["savings_error"] = sav_err
         _balance_cache[key] = (now, val)
@@ -1088,6 +1100,18 @@ def build_equity_series(rows, now):
     delta e summary calcolati dai punti REALI (mai interpolati).
     """
     pts = sorted((r for r in rows if r), key=lambda x: x[0])
+    # Coerenza (18/10): il banco ha avuto salti di CONTABILITA' (comparti non letti
+    # per giorni: 10-14/10 l'equity segnava ~120→22 invece di ~1.100). Un salto
+    # >25% tra punti consecutivi marca un cambio di metro: si tiene SOLO l'ultimo
+    # segmento coerente — mai mischiare due metri in un grafico o in un delta.
+    _breaks = []
+    for _i in range(1, len(pts)):
+        _a, _b = pts[_i - 1][1], pts[_i][1]
+        if _a and _b and abs(_b / _a - 1) > 0.25:
+            _breaks.append(pts[_i][0])
+    if _breaks:
+        _cut = _breaks[-1]
+        pts = [p for p in pts if p[0] >= _cut]
 
     def _win(secs, bucket):
         lo = now - secs
@@ -1130,6 +1154,8 @@ def build_equity_series(rows, now):
             "d24": _delta(86400), "d7": _delta(7 * 86400),
             "earn_d24": _delta(86400, 2), "earn_d7": _delta(7 * 86400, 2),
             "first_ts": round(pts[0][0]) if pts else None,
+            "coherent_from": round(pts[0][0]) if pts else None,
+            "breaks_dropped": len(_breaks),
             "n": len(pts),
         },
     }

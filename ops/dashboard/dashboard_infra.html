@@ -951,10 +951,14 @@ function renderMotore(d) {
   if (stats) {
     const chip = (lab, v, suf) => (v == null) ? '' :
       '<span>' + lab + ' <b style="color:' + (v >= 0 ? 'var(--neon-green)' : 'var(--neon-red)') + '">' + (v >= 0 ? '+' : '') + fmt(v) + (suf || '€') + '</b></span>';
+    const mainSav = ((((d.balances || {})['OKX main'] || {}).savings || {}).USDC) || {};
     stats.innerHTML =
-      chip('Δ24H', s.d24) + chip('Δ7G', s.d7) + chip('EARN Δ7G', s.earn_d7) +
+      chip('Δ24H', s.d24) + chip('Δ7G', s.d7) +
+      (mainSav.earnings != null ? '<span>EARN MATURATO <b style="color:var(--neon-green)">' + fmt(mainSav.earnings, 4) + ' USDC</b></span>' : '') +
       '<span>PUNTI <b>' + (s.n ?? 0) + '</b></span>' +
-      '<span style="opacity:.7">storia dal ' + _fmtTs(s.first_ts) + ' · fonte: banco a secco read-only</span>';
+      '<span style="opacity:.7">storia coerente dal ' + _fmtTs(s.coherent_from) +
+      (s.breaks_dropped ? ' (' + s.breaks_dropped + ' salti di contabilità esclusi)' : '') +
+      ' · <b style="color:var(--neon-cyan)">■</b> EQUITY · <b style="color:var(--neon-green)">■</b> SALDO EARN (trasferimenti inclusi)</span>';
   }
 
   // ── allocazione ──

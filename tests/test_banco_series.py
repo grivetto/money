@@ -76,6 +76,23 @@ def test_savings_none_non_rompe():
     assert s2["d24"] is None and s2["d7"] is None
 
 
+def test_guardia_salti_contabilita():
+    now = 1_800_000_000.0
+    rows = [
+        (now - 3 * 86400, 1000.0, None),
+        (now - 2 * 86400, 1050.0, None),
+        (now - 1.5 * 86400, 120.0, None),   # salto di contabilita' (-88%)
+        (now - 86400, 121.0, None),
+        (now, 122.0, None),
+    ]
+    out = agg.build_equity_series(rows, now)
+    s = out["summary"]
+    assert s["breaks_dropped"] == 1
+    assert s["coherent_from"] == int(now - 1.5 * 86400)
+    assert s["d24"] == 1.0                     # solo punti del segmento coerente
+    assert all(p[0] >= now - 1.5 * 86400 for p in out["h24"] + out["d7"] + out["d14"])
+
+
 def test_vuoto():
     out = agg.build_equity_series([], 1_800_000_000.0)
     assert out["h24"] == [] and out["d7"] == [] and out["d14"] == []
