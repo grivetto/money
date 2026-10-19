@@ -1,6 +1,6 @@
 # P26 — Cointegrazione v2: universo esteso + statistica ROLLING (lane pairs)
 
-STATO: PRE-REGISTRATA 2026-10-18 (Artù) — in attesa di coda libera; implementatore da assegnare al via (primo libero o Merlino). Riapre la lane P13 (archiviata 01/10) con le varianti esplicitamente ammesse dal suo verdetto, su direttiva dell'owner (18/10: pilastro «arbitraggio statistico — test di cointegrazione costanti»).
+STATO: **ARCHIVIATA DEFINITIVA (2026-10-19, Artù)** — misura UFFICIALE dal repo canonico: screening 435 coppie × W∈{120,180}g → **0 coppie eleggibili (exit 2)**; run indipendente in scratch (Merlino) concorde. Lane pairs chiusa senza varianti ulteriori. Implementazione Merlino (REQ-MERL-20261018-008: MANIFEST 7/7, 18 test, suite 936; ispezione Artù: EG/ADF byte-identici a p13). Artefatti `prove/P26_pairs_rolling*`. (Storia: PRE-REGISTRATA 2026-10-18; riapriva la lane P13 con le varianti esplicitamente ammesse dal suo verdetto, su direttiva dell'owner.)
 Repo: `grivetto/money` · commit di registrazione: `3e8e8c19` (file di questa voce: `coda_catena/P26_cointegrazione_rolling.md`).
 
 ## Obiettivo (verificabile)
@@ -95,3 +95,9 @@ PRIMA di qualsiasi numero: il preflight dell'archivio (consegna opencode-omarchy
 - **Ranking volume**: volume NOTIONAL medio (v×close, USDT) — il campo `v` è in valuta base, non confrontabile tra simboli.
 - **Esito preflight**: 64/90 coppie idonee. Top 30 candidate (per notional, finestra effettiva): BTC, ETH, DOGE, OKB, SOL, DOT, BCH, FIL, LTC, XRP, ETC, AVAX, LINK, ATOM, UNI, TRX, NEAR, THETA, XLM, AAVE, ADA, SUSHI, CRV, ALGO, EGLD, NEO, LRC, KSM, ZIL, YFI — lista completa in `prove/p26_preflight_20261018/p26_candidate_finestra_effettiva.json`.
 - Coda dei file: 71 si fermano al 2026-10-06 (batch di raccolta, non delisting; copertura verifica ≥98,7% comunque).
+
+## Esito — misura ufficiale (2026-10-19, Artù)
+- Run ufficiale dal repo canonico: `scripts/misura_p26.py --screening` → **ARCHIVIATA_DEFINITA, exit 2**: 870 righe coppia×W, **0 passanti, 0 coppie eleggibili**; miglior quota viva 2,6% (6/232, ALGO/SUSHI W=180, t −2,72); miglior |t_rho| ultima finestra −2,88 (AVAX/OKB); 5/870 righe con ultima finestra viva; 0/870 con quota ≥60%.
+- Run indipendente (scratch Merlino, 18/10): stesso esito (0 passanti) — due run concordi, verdetto robusto.
+- Nota di misura (non variante): con half-life ∈ [5,90]g il |t| massimo teorico dell'ADF su W=120/180 è ≈2,9/3,5 — la soglia dichiarata era al bordo dell'irraggiungibile per costruzione. Il verdetto (archiviazione) è della misura, non dell'implementazione; la spec prevedeva comunque questo esito come definitivo.
+- Review: MANIFEST 7/7 OK; 18/18 test nel venv canonico; ispezione Artù: `adf_statistica` e `z_seriesi` byte-identici a p13 (diff solo su commenti); suite repo 936 verdi.

@@ -1,0 +1,30 @@
+P26 — COINTEGRAZIONE V2: UNIVERSO ESTESO + STATISTICA ROLLING (lane pairs)
+========================================================================
+Addestramento: 2020-10-01 → 2024-06-01 (finestra effettiva) | Verifica: 2024-06-01 → ultima barra comune (una volta sola)
+Universo: top 30 perp USDT (notional medio addestramento;
+  lista congelata da prove/p26_preflight_20261018/p26_candidate_finestra_effettiva.json)
+  BTC, ETH, DOGE, OKB, SOL, DOT, BCH, FIL, LTC, XRP, ETC, AVAX, LINK, ATOM, UNI, TRX, NEAR, THETA, XLM, AAVE, ADA, SUSHI, CRV, ALGO, EGLD, NEO, LRC, KSM, ZIL, YFI
+
+SCREENER ROLLING (435 coppie x W in (120, 180), passo 5g;
+  viva = |t_rho|>= 3.5 E half-life [5,90]g;
+  eleggibile = viva >= 60% delle finestre valide E ultima viva)
+------------------------------------------------------------------------
+  [    ] ALGO/SUSHI W=180  vive   6/232 (  2.6%)  ult:no    t=  -2.72  hl=6.9g
+  [    ] ALGO/YFI   W=180  vive   6/232 (  2.6%)  ult:no    t=  -2.39  hl=8.3g
+  [    ] AVAX/OKB   W=180  vive   6/232 (  2.6%)  ult:no    t=  -2.88  hl=4.9g
+  [    ] AVAX/TRX   W=180  vive   6/232 (  2.6%)  ult:no    t=  -2.59  hl=9.8g
+  [    ] AAVE/EGLD  W=180  vive   5/232 (  2.2%)  ult:no    t=  -1.71  hl=13.6g
+  [    ] AAVE/LINK  W=180  vive   5/232 (  2.2%)  ult:no    t=  -2.13  hl=11.3g
+  [    ] AAVE/LRC   W=180  vive   5/232 (  2.2%)  ult:no    t=  -2.46  hl=4.4g
+  [    ] AAVE/OKB   W=180  vive   5/232 (  2.2%)  ult:no    t=  -2.70  hl=4.4g
+  [    ] ADA/XLM    W=180  vive   5/232 (  2.2%)  ult:no    t=  -1.95  hl=10.9g
+  [    ] ATOM/LINK  W=180  vive   5/232 (  2.2%)  ult:no    t=  -1.54  hl=18.0g
+  [    ] BCH/ETH    W=180  vive   5/232 (  2.2%)  ult:no    t=  -1.93  hl=12.8g
+  [    ] BCH/SOL    W=180  vive   5/232 (  2.2%)  ult:no    t=  -2.93  hl=5.8g
+  ... (870 righe coppia x W totali)
+
+VERDETTO: NESSUNA COPPIA ELEGGIBILE IN ADDESTRAMENTO.
+Esito previsto e accettato dalla spec: lane pairs ARCHIVIATA DEFINITIVAMENTE
+(nessuna variante ulteriore senza un fatto nuovo esterno).
+
+ESITO: ARCHIVIATA_DEFINITIVA (screening vuoto)

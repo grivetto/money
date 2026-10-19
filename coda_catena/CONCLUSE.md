@@ -4,9 +4,9 @@ Le spec elencate qui NON hanno piu' oggetto nel gate di dispatch (JEV + lint) ne
 job-store: esperimenti con verdetto gia' congelato nel registro, oppure voci che non sono
 esperimenti (infrastruttura integrata, milestone di governance).
 
-Il gate vale per le spec **attive**: al 18/10 nessuna voce di ricerca attiva (P23 chiusa) — P4 e P8 concluse l'08/10
+Il gate vale per le spec **attive**: al 19/10 nessuna voce di ricerca attiva (P26 chiusa) — P4 e P8 concluse l'08/10
 (P4 misurata con verdetto nel registro; P8 infrastruttura integrata, non esperimento);
-P21 e P22 concluse il 17/10, P23 conclusa il 18/10 (verdetti nel registro).
+P21 e P22 concluse il 17/10, P23 conclusa il 18/10, P26 conclusa il 19/10 (verdetti nel registro).
 Aggiungere/rimuovere voci SOLO quando lo stato nel registro cambia — rimuovere una voce
 riapre gate e fix per quella spec.
 
@@ -30,3 +30,4 @@ riapre gate e fix per quella spec.
 - P24_dormienti_earn.md — FATTA 18/10 (mossa D2 eseguita: 211 USDC funding + 25 USDC trading → Simple Earn, savings 835,75 USDC; estensione redeem P24b integrata 18/10: 68 test, sblocca D3; voce operativa di tesoreria, non esperimento)
 - P25_kpi_settimanali.md — FATTA 18/10 (KPI settimanali + collector fee ledger integrati e in cron lunedì; voce operativa di osservabilità, non esperimento)
 - E2_significativita.md — infrastruttura integrata (18/10): strumenti di significatività bootstrap + Monte Carlo in `src/money/ricerca/significativita.py`; non è un esperimento
+- P26_cointegrazione_rolling.md — ARCHIVIATA DEFINITIVA (19/10: screening ufficiale 0/435 coppie eleggibili, exit 2; run indipendente concorde; verdetto nel registro) — lane pairs chiusa
