@@ -1,5 +1,5 @@
 # P27 — D3 step di scala: abilitazione coppie LTC/AVAX nel gate carry — SPEC DI IMPLEMENTAZIONE
-STATO: PRESA_DA Merlino 2026-10-18 (implementazione) — pre-registrata 2026-10-18 (hermes/Artù). REQ-MERL-20261018-011.
+STATO: **INTEGRATA** (2026-10-19, Artù) — implementazione Merlino (REQ-MERL-20261018-011, 12 test, suite 930); **dry-run gate da MARCODG1: PASS su LTC e AVAX** (gate carry ok, payback 34 periodi, zero ordini; 19/10). Prossimo: apertura in finestra mattutina (UNA coppia: LTC), autorizzazione D3 del proprietario.
 Voce OPERATIVA (piano D3, ROADMAP §7: «carry a scala regolata, step +100 € con gate verdi»). Non è un esperimento; fuori dal conteggio tentativi.
 Repo: `grivetto/money` · commit di registrazione: `6c837c7e` (file di questa voce: `coda_catena/P27_d3_scala_carry.md`).
 
@@ -33,6 +33,12 @@ Comando di verifica (test offline, rieseguiti da Artù nel venv canonico):
 python -m pytest tests/test_carry_config.py -q
 ```
 Dry-run gate (SOLO Artù, da MARCODG1): `carry_apri.py --coppia LTC` e `--coppia AVAX` → atteso: gate carry ok, piano stampato, nessun ordine.
+
+## Esito dry-run (2026-10-19, Artù — da MARCODG1)
+- `carry_apri.py --coppia LTC` → gate ok=True (ammissibile) · piano: spot 1,5 LTC @ 59,83 = 89,75 EUR, perp 15 ct · payback 34 periodi (8h) · zero ordini.
+- `carry_apri.py --coppia AVAX` → gate ok=True (ammissibile) · piano: spot 10 AVAX @ 9,569 = 95,69 EUR, perp 1 ct · payback 34 periodi · zero ordini.
+- Redeem P24b dry-run PASS: 200 USDC savings→trading (min-savings-residuo 500), saldi attesi coerenti, zero scritture.
+- Nota onesta (sul capitale, non sul nozionale): il carry impiega ≈2× il nozionale (spot + margine 1×); il netto ≈7,8%/anno sul nozionale ≈ 3,9% sul capitale impiegato. Il valore dello step resta: validazione della meccanica in scala (docs/20) e motore pronto per la Fase 2 (capitale).
 
 ## Fuori scope
 - Modifiche al gate o al calcolo; l'esecuzione dell'apertura (di Artù, dopo il redeem e il dry-run); DOGE (escluso: canary C1 sullo stesso conto); XRP (funding attuale sotto gate).
