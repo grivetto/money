@@ -4,7 +4,8 @@
 Modalità:
   check    (default) — mc2: container docker attesi, unit utente critiche, disco,
              liveness della caccia continua S4 (prove/caccia_continua/stato.json).
-  carry    — MARCODG1 via ssh: raggiungibilità, monitor canary fermo, anomalie canary.
+  carry    — MARCODG1 via ssh: raggiungibilità, monitor canary fermo, anomalie canary,
+             freschezza raccolta esterni (on-chain/sentiment; file fermo > 48h = congelata).
   bots     — salute bot dal payload aggregatore: regressioni running->giù con rientro,
              nodi non raggiungibili dall'aggregatore.
   flotta   — fleet_integrity sui nodi remoti (MARCODG1, nuvola): allarme se compaiono ALLARMI.
@@ -256,6 +257,20 @@ def check_carry() -> int:
     cambi += gestisci("carry:anomalia", anomalia,
                       f"⚠️ canary C1: {dettaglio}",
                       "✅ canary C1: nessuna anomalia")
+    # 3) freschezza raccolta esterni (on-chain/sentiment): un file fermo > 48h = raccolta
+    #    congelata in silenzio (incidente 19/10: bug "salta se esiste" tenne i file fermi
+    #    94h; trovato dall'audit agy, non da un allarme — questa e' la guardia mancante).
+    r4 = _ssh("stat -c %Y /home/marco/money/data/esterni/onchain_btc.json 2>/dev/null || echo n/d", 20)
+    try:
+        eta_ext = time.time() - float(r4.stdout.strip())
+    except Exception:  # noqa: BLE001
+        eta_ext = None
+    fermo_ext = eta_ext is None or eta_ext > 48 * 3600
+    cambi += gestisci("raccolta:esterni", fermo_ext,
+                      "⚠️ raccolta esterni ferma ("
+                      + ("n/d" if eta_ext is None else format(eta_ext / 3600, ".0f") + "h")
+                      + ") — on-chain/sentiment non aggiornati",
+                      "✅ raccolta esterni di nuovo fresca")
     return cambi
 
 

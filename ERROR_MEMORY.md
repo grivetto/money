@@ -63,3 +63,9 @@ file PRIMA di modificare percorsi che muovono capitale.
 - Causa radice: un WIP di ricerca non committato aveva riscritto `src/money/raccoglitore_funding.py` rimuovendo `report_copertura`; i cron eseguono il working tree di ~/money, non un commit.
 - Fix: funzione ripristinata dalla HEAD; `basis_pp` corretto (spot X-Perp USD → coppia USDC, prima puntava a un mercato inesistente su OKX EEA); ticker caricati solo se ci sono record nuovi; test aggiornati (+4). Verifica live: scritti=20, errori=0, marker fresco.
 - Regola: il working tree di ~/money su mc2 È la produzione dei cron: una sessione che lo modifica non si chiude finché `pytest tests/` non è verde e le modifiche non sono committate.
+
+## 2026-10-19 — Raccolta esterni congelata 94h da un "salta se esiste" (trovata dall'audit agy)
+- Sintomo: `data/esterni/*.json` (on-chain CoinMetrics, F&G, TVL) fermi al 2026-10-15 nonostante il timer orario `money-ricerca-raccolta` girasse verde (58/58 run SUCCESS). Nessun allarme: la raccolta sembrava viva.
+- Causa radice: `scarica_esterni.py` saltava i file esistenti ("gia' presente, salto") e non li aggiornava MAI piu': il collector faceva la prima fotografia, non il flusso. Trovato dall'audit operai agy (ondata 19/10), non da un watchdog.
+- Fix: aggiornamento incrementale (legge l'ultima data, scarica da lì con overlap 3g, merge idempotente; F&G/TVL riscaricati sempre; file esistente mai sovrascritto se il download fallisce). Verifica live: 11 asset aggiornati fino a 2026-10-19, mtime nuovi. Guardia aggiunta: check `raccolta:esterni` in watch_alerts modo carry (allarme se il file resta fermo > 48h).
+- Regola: un collector che salta "se esiste" è una fotografia, non una raccolta: la freschezza si verifica con un check ripetibile (mtime/ultima data), mai dedotta dal verde del timer.
