@@ -1,6 +1,6 @@
 # P28 — Chiusura delta-neutral di una coppia carry multi (strumento operativo)
 
-STATO: PRE-REGISTRATA 2026-10-19 (Artù) — implementazione Merlino (REQ-MERL-20261019-012). Voce OPERATIVA (gestione del carry in produzione; fuori dal conteggio tentativi).
+STATO: **INTEGRATA (2026-10-19, Artù)** — implementazione Merlino (REQ-MERL-20261019-012: MANIFEST 5/5, 24 test, suite 978). Review PASS + **dry-run reale da MARCODG1 PASS su DOT e ADA (zero ordini)**. Commit `cb542704`. Voce OPERATIVA (gestione del carry in produzione; fuori dal conteggio tentativi).
 Repo: `grivetto/money` · file di questa voce: `coda_catena/P28_chiusura_carry_multi.md`.
 
 ## Obiettivo (verificabile)
