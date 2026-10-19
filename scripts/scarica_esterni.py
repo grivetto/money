@@ -13,11 +13,22 @@ Il vantaggio economico e' strutturale: sono segnali a BASSA frequenza (giornalie
 settimanale), quindi il pedaggio per trade pesa molto meno che su un segnale intraday.
 
 SOLA LETTURA: endpoint pubblici, nessuna chiave.
+
+AGGIORNAMENTO INCREMENTALE (fix 2026-10-19, incidente raccolta-congelata)
+=========================================================================
+La prima versione saltava i file esistenti ("gia' presente, salto") e non li
+aggiornava MAI piu': la raccolta on-chain/sentiment era congelata al 2026-10-15
+(trovato dall'audit agy del 19/10; 94h senza dati nuovi).
+Ora: ogni run LEGGE il file, calcola l'ultima data presente, scarica da li'
+(overlap di 3 giorni per coprire revisioni; il merge e' idempotente) e riscrive.
+F&G e TVL si riscaricano sempre (piccoli); se il download fallisce, il file
+esistente NON viene toccato. Un file corrotto viene ricostruito da zero.
 """
 from __future__ import annotations
 
 import json
 import time
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
@@ -104,42 +115,64 @@ def scarica_tvl() -> dict:
     return {str(r["date"]): r["tvl"] for r in d if isinstance(r, dict)}
 
 
+def _ultima_data(serie: dict) -> str | None:
+    """Ultima data (ISO) presente nella serie, su tutte le metriche."""
+    return max((max(v) for v in serie.values() if v), default=None)
+
+
 def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
     for asset in ASSET_ONCHAIN:
         dest = OUT / f"onchain_{asset}.json"
+        esistente: dict[str, dict[str, str]] = {}
         if dest.exists():
-            print(f"  {asset}: gia' presente, salto", flush=True)
-            continue
+            try:
+                esistente = json.loads(dest.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                print(f"  {asset}: file illeggibile, ricostruisco da zero", flush=True)
+                esistente = {}
+        inizio = "2011-01-01"
+        ultima = _ultima_data(esistente)
+        if ultima:
+            # overlap di 3 giorni: copre revisioni e bordo; il merge e' idempotente
+            inizio = (date.fromisoformat(ultima) - timedelta(days=3)).isoformat()
         try:
-            serie = scarica_asset(asset)
+            serie = scarica_asset(asset, inizio=inizio)
         except Exception as exc:
             print(f"  {asset}: ERRORE {type(exc).__name__}: {exc}", flush=True)
             continue
         if not serie:
-            print(f"  {asset}: nessun dato", flush=True)
+            print(f"  {asset}: nessun dato nuovo (cerco da {inizio})", flush=True)
             continue
-        dest.write_text(json.dumps(serie, separators=(",", ":")), encoding="utf-8")
-        giorni = max(len(v) for v in serie.values())
-        print(f"  {asset}: {len(serie)} metriche, fino a {giorni} giorni -> {dest.name}", flush=True)
+        for m, v in serie.items():
+            esistente.setdefault(m, {}).update(v)
+        dest.write_text(json.dumps(esistente, separators=(",", ":")), encoding="utf-8")
+        fine = _ultima_data(esistente) or "?"
+        print(f"  {asset}: {len(esistente)} metriche, aggiornato fino a {fine} -> {dest.name}", flush=True)
 
     fng = OUT / "sentiment_fng.json"
-    if not fng.exists():
-        try:
-            d = scarica_fng()
-            fng.write_text(json.dumps(d, separators=(",", ":")), encoding="utf-8")
-            print(f"  F&G: {len(d)} giorni", flush=True)
-        except Exception as exc:
-            print(f"  F&G: ERRORE {exc}", flush=True)
+    d = None
+    try:
+        d = scarica_fng()
+    except Exception as exc:
+        print(f"  F&G: ERRORE {exc} (file esistente non toccato)", flush=True)
+    if d:
+        fng.write_text(json.dumps(d, separators=(",", ":")), encoding="utf-8")
+        ultimo = max((int(k) for k in d), default=0)
+        giorno = datetime.fromtimestamp(ultimo, timezone.utc).date().isoformat()
+        print(f"  F&G: {len(d)} giorni, ultimo {giorno}", flush=True)
 
     tvl = OUT / "defi_tvl.json"
-    if not tvl.exists():
-        try:
-            d = scarica_tvl()
-            tvl.write_text(json.dumps(d, separators=(",", ":")), encoding="utf-8")
-            print(f"  TVL: {len(d)} giorni", flush=True)
-        except Exception as exc:
-            print(f"  TVL: ERRORE {exc}", flush=True)
+    d = None
+    try:
+        d = scarica_tvl()
+    except Exception as exc:
+        print(f"  TVL: ERRORE {exc} (file esistente non toccato)", flush=True)
+    if d:
+        tvl.write_text(json.dumps(d, separators=(",", ":")), encoding="utf-8")
+        ultimo = max((int(k) for k in d), default=0)
+        giorno = datetime.fromtimestamp(ultimo, timezone.utc).date().isoformat()
+        print(f"  TVL: {len(d)} giorni, ultimo {giorno}", flush=True)
     print("fatto", flush=True)
     return 0
 
