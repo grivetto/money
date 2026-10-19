@@ -59,7 +59,7 @@ TREND_BOTS = {
 # + auto-heal remoto (systemctl restart via SSH se health stale).
 REMOTE_NODES = {
     "nuvola": {
-        "ssh": ["sergio@87.106.3.15", "-p", "22"],
+        "ssh": ["sergio@100.103.169.99", "-p", "22"],
         "data_dir": "/home/sergio/alpha-omega-trading/node_data",
         "live_dir": "/home/sergio/denaro/health",
         "host": "alpha-omega-node-nuvola",
@@ -94,7 +94,7 @@ SERVICES = {
     },
     "nuvola": {
         "host": "nuvola",
-        "ssh": ["sergio@87.106.3.15", "-p", "22"],
+        "ssh": ["sergio@100.103.169.99", "-p", "22"],
         "units": ["denaro-node-nuvola-trade", "money-health-nuvola",
                   "zabbix-agent", "zabbix-tunnel", "denaro-exporter"],
     },
@@ -458,7 +458,7 @@ PAPER_WATCH = {
     "MARCODG1": {"ssh": None, "dir": "/home/marco/denaro/health"},
     "mc2": {"ssh": ["sergio@127.0.0.1", "-p", "2222"],
             "dir": "/home/sergio/denaro/health"},
-    "nuvola": {"ssh": ["sergio@87.106.3.15", "-p", "22"],
+    "nuvola": {"ssh": ["sergio@100.103.169.99", "-p", "22"],
                "dir": "/home/sergio/denaro/health"},
 }
 

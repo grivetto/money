@@ -35,7 +35,8 @@ HOST = os.getenv("AGG_HOST", "127.0.0.1")
 # remote_data_dir: cartella node_data sul nodo remoto.
 REMOTE_NODES = {
     "nuvola": {
-        "ssh": ["sergio@87.106.3.15", "-p", "22"],
+        # 19/10/26: via tailnet (il pubblico 87.106.3.15 resta fallback manuale).
+        "ssh": ["sergio@100.103.169.99", "-p", "22"],
         "data_dir": "/home/sergio/alpha-omega-trading/node_data",
         "unit": "denaro-node-nuvola",
     },
@@ -49,7 +50,7 @@ REMOTE_NODES = {
 # Officina paper (01/10/26): i health *_paper.json dei node riconvertiti vivono
 # in denaro/health su ogni nodo (su nuvola NON in node_data).
 PAPER_SOURCES = {
-    "nuvola": {"ssh": ["sergio@87.106.3.15", "-p", "22"],
+    "nuvola": {"ssh": ["sergio@100.103.169.99", "-p", "22"],
                "dir": "/home/sergio/denaro/health"},
     "mc2": {"ssh": ["sergio@127.0.0.1", "-p", "2222"],
             "dir": "/home/sergio/denaro/health"},
@@ -129,7 +130,7 @@ ON_MC2 = _HOSTNAME == "mc2"
 ON_MARCODG1 = _HOSTNAME == "marcodg1" or Path("/home/marco/denaro/secrets/main_okx.env").exists()
 
 NODES = {
-    "nuvola": ("87.106.3.15", 22),
+    "nuvola": ("100.103.169.99", 22),
     # su MARCODG1 mc2 e' raggiungibile via tunnel inverso :2222; su mc2 e' locale.
     "mc2": (("127.0.0.1", 22) if ON_MC2 else ("127.0.0.1", 2222)),
     "marcodg1": (("127.0.0.1", 22) if ON_MARCODG1 else ("87.106.222.123", 22)),
@@ -907,7 +908,7 @@ SERVICE_UNITS = {
         ],
     },
     "nuvola": {
-        "ssh": ["sergio@87.106.3.15", "-p", "22"],
+        "ssh": ["sergio@100.103.169.99", "-p", "22"],
         "units": ["denaro-node-nuvola-trade", "money-health-nuvola",
                   "zabbix-agent", "zabbix-tunnel", "denaro-exporter"],
     },

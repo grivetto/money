@@ -82,7 +82,7 @@ PROFILI: dict[str, dict] = {
         ],
     },
     "nuvola": {
-        "unita": ["denaro-node-nuvola-trade", "money-health-nuvola", "denaro-exporter", "tailscaled"],
+        "unita": ["denaro-node-nuvola-trade", "money-health-nuvola", "denaro-exporter", "zabbix-agent", "tailscaled"],
         "unita_utente": [],
         "http": [
             ("http://127.0.0.1:8911/health", (200,), 15),

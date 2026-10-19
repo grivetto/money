@@ -19,7 +19,7 @@ CASA_SERGIO = "/home/sergio/money"
 REPO_DIRS = {
     "marcodg1": (["marco@87.106.222.123", "-p", "22"], CASA_MARCO),
     "mc2": (["sergio@127.0.0.1", "-p", "2222"], CASA_SERGIO),
-    "nuvola": (["sergio@87.106.3.15", "-p", "22"], CASA_SERGIO),
+    "nuvola": (["sergio@100.103.169.99", "-p", "22"], CASA_SERGIO),
 }
 
 
