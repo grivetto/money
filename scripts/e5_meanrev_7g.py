@@ -98,7 +98,11 @@ def simula(barre, i, z, lato):
                 uscita, motivo = stop, "stop"
                 break
         zj = z[j]
-        if zj is not None and ((lato == 1 and zj >= -Z_OUT) or (lato == -1 and zj <= Z_OUT)):
+        # uscita = ritorno verso la media, SIMMETRICA nei due lati: |z| <= Z_OUT.
+        # (La prima versione usava una disuguaglianza per lato: per il lato "momentum"
+        #  era vera alla prima barra e il trade usciva subito — bug trovato il 21/10
+        #  dal t anomala di E6, -7,93 su un'inversione che doveva essere speculare.)
+        if zj is not None and abs(zj) <= Z_OUT:
             uscita, motivo = float(barre[j][4]), "rientro"
             break
     if uscita is None:
