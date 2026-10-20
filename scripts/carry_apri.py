@@ -50,20 +50,22 @@ COSTO_CICLO = 0.0034
 
 
 def funding_atteso(ex, inst_perp: str, periodi: int = 3) -> float:
-    """Media robusta del funding recente (min dei tre valori piu' alti).
+    """Media robusta del funding recente (min dei tre valori piu' alti), CON SEGNO.
 
     Regola MOSAICO-4 §3.1: mai l'ultimo valore osservato. La media robusta
     evita di aprire su un picco isolato che il ciclo successivo non conferma.
-    Ritorna la frazione per periodo (es. 0.0001 = 0,01%/8h).
+    Il SEGNO si conserva (fix audit 19/10, carry_apri.py:62-66): un funding
+    negativo deve arrivare NEGATIVO al gate, che lo rifiuta (cancello_carry.py:
+    «il carry non incassa»). Ritorna la frazione per periodo (es. 0.0001 = 0,01%/8h).
     """
     try:
         r = ex.publicGetPublicFundingRate({"instId": inst_perp})
         storico = ex.publicGetPublicFundingRateHistory({"instId": inst_perp, "limit": "12"})
         valori = []
         for d in (storico.get("data") or [])[:periodi]:
-            valori.append(abs(float(d.get("fundingRate") or 0)))
+            valori.append(float(d.get("fundingRate") or 0))
         if valori:
-            return min(valori)          # il piu' prudente dei recenti
+            return min(valori)          # il piu' prudente dei recenti, con segno
         d = (r.get("data") or [{}])[0]
         return float(d.get("fundingRate") or 0)
     except Exception:  # noqa: BLE001
@@ -106,6 +108,20 @@ def equity_progetto() -> float:
         return 0.0
 
 
+def saldo_spot_moneta(ex, nome: str) -> float:
+    """Saldo spot della moneta da `fetch_balance` (total): 0.0 se assente/illeggibile.
+
+    Usato dal preflight (fix audit 19/10, carry_apri.py:154-163, stesso controllo
+    del canary `canary_carry.py:297-302`): un residuo di spot nudo (run interrotto,
+    fill parziale non liquidato) deve bloccare una nuova apertura.
+    """
+    try:
+        b = ex.fetch_balance()
+        return float((b.get("total") or {}).get(nome, 0) or 0)
+    except Exception:
+        return 0.0
+
+
 def atr_ultimo(ex, symbol: str, n: int = 14, timeframe: str = "1d") -> float:
     """ATR semplice dalle barre giornaliere (stessa definizione di C1)."""
     o = ex.fetch_ohlcv(symbol, timeframe, limit=n + 1)
@@ -129,6 +145,31 @@ def attesa_fill(ex, oid: str, sym: str, secondi: int = 60, passo: float = 1.5):
             return o, "canceled"
         time.sleep(passo)
     return ex.fetch_order(oid, sym), "timeout"
+
+
+def unwind_spot(ex, sym_spot: str, nome: str, qty: float) -> dict:
+    """Liquida la gamba spot per tornare flat (stesso pattern del canary,
+    `canary_carry.py:461-472`). Non solleva MAI: l'esito va registrato, non perso.
+
+    Ritorna {"ordine": id o None, "esito": closed/canceled/timeout/errore,
+    "filled": qty finale vista, "errore": str}. `esito != "closed"` = NON FLAT:
+    il chiamante deve dichiararlo esplicitamente e registrare la quantita'.
+    """
+    try:
+        bid = ex.fetch_ticker(sym_spot)["bid"]
+        px = float(bid) * 0.998
+        cid = cid_stabile(f"{nome.lower()}u", f"unwind|{sym_spot}|{qty}")
+        o = invia_gamba(ex, Gamba(sym_spot, "sell", qty, px, cid))
+    except Exception as e:  # noqa: BLE001
+        return {"ordine": None, "esito": "errore", "filled": 0.0,
+                "errore": str(e)[:200]}
+    try:
+        oo, es = attesa_fill(ex, o["id"], sym_spot, 60)
+        filled = float(getattr(oo, "get", lambda k, d=0: d)("filled") or 0) if oo else 0.0
+    except Exception as e:  # noqa: BLE001
+        return {"ordine": o["id"], "esito": "errore", "filled": 0.0,
+                "errore": str(e)[:200]}
+    return {"ordine": o["id"], "esito": es, "filled": filled}
 
 
 def main() -> int:
@@ -155,11 +196,19 @@ def main() -> int:
     oo = ex.fetch_open_orders()
     posizioni = [p for p in ex.fetch_positions([c.sym_perp])
                  if abs(float(p.get("contracts") or 0)) > 0]
-    print(f"preflight: {len(oo)} ordini aperti, {len(posizioni)} posizioni su {c.sym_perp}")
+    saldo_spot = saldo_spot_moneta(ex, c.nome)
+    print(f"preflight: {len(oo)} ordini aperti, {len(posizioni)} posizioni su "
+          f"{c.sym_perp}, saldo spot {c.nome} {saldo_spot:.6f}")
     if oo:
         print("  ATTENZIONE: ordini aperti residui — preflight NON pulito")
     if posizioni:
         print(f"  ATTENZIONE: posizione gia' aperta su {c.sym_perp} — non si apre una seconda")
+        return 1
+    if abs(saldo_spot) > 1e-12:
+        # fix audit 19/10 (carry_apri.py:154-163): saldo spot atteso 0 — un
+        # residuo = spot nudo di un run precedente, non si apre una seconda gamba.
+        print(f"  ATTENZIONE: saldo spot {c.nome} residuo {saldo_spot:.6f} (atteso 0): "
+              f"spot nudo possibile — non si apre una seconda gamba")
         return 1
 
     px = ex.fetch_ticker(c.sym_spot)["last"]
@@ -209,8 +258,27 @@ def main() -> int:
             ex.cancel_order(o1["id"], c.sym_spot)
         except Exception:
             pass
-        print("  spot non completamente riempito: annullato il residuo, STOP (nessuna gamba scoperta)")
-        evento("apertura_annullata", gamba="spot", esito=es1, filled=filled1)
+        # Un fill arrivato tra l'ultima lettura e la cancel resta comunque
+        # eseguito: si rilegge l'ordine per non ignorare il riempito (fix audit
+        # 19/10, carry_apri.py:204-214 — "nessuna gamba scoperta" e' AMMESSO
+        # solo con filled == 0 verificato).
+        try:
+            of = ex.fetch_order(o1["id"], c.sym_spot)
+            filled1 = float((of or {}).get("filled") or filled1)
+        except Exception:
+            pass
+        if filled1 > 0:
+            esito_u = unwind_spot(ex, c.sym_spot, nome, filled1)
+            print(f"  spot riempito parzialmente ({filled1}): liquidato il riempito "
+                  f"(unwind esito={esito_u['esito']})")
+            evento("apertura_annullata", gamba="spot", esito=es1, filled=filled1,
+                   unwind_esito=esito_u["esito"], unwind_qty=esito_u["filled"])
+            if esito_u["esito"] != "closed":
+                print(f"  ATTENZIONE: unwind NON confermato — NON FLAT (qty {filled1}), "
+                      "verificare a mano")
+        else:
+            print("  spot non riempito: annullato il residuo, STOP (nessuna gamba scoperta)")
+            evento("apertura_annullata", gamba="spot", esito=es1, filled=0)
         return 1
 
     print("\n--- gamba 2/2: PERP short")
@@ -221,8 +289,17 @@ def main() -> int:
                                    td_mode=MGN))
     except Exception as e:  # noqa: BLE001
         print(f"  invio perp FALLITO: {type(e).__name__}: {str(e)[:120]}")
-        print("  ATTENZIONE: gamba spot APERTA e non coperta — richiede unwind manuale")
-        evento("gamba_scoperta", gamba="perp", errore=str(e)[:200])
+        print("  ATTENZIONE: gamba spot APERTA e scoperta — unwind automatico "
+              "(stesso pattern del canary, canary_carry.py:461-472)")
+        esito_u = unwind_spot(ex, c.sym_spot, nome, filled1)
+        evento("gamba_scoperta", gamba="perp", errore=str(e)[:200], qty_spot=filled1,
+               unwind_esito=esito_u["esito"], unwind_qty=esito_u["filled"])
+        if esito_u["esito"] != "closed":
+            print(f"  ATTENZIONE: unwind NON confermato — NON FLAT (qty {filled1}), "
+                  "verificare a mano")
+        else:
+            print(f"  gamba spot liquidata (unwind esito={esito_u['esito']}, "
+                  f"qty {esito_u['filled']})")
         return 1
     oo2, es2 = attesa_fill(ex, o2["id"], c.sym_perp, 60)
     filled2 = float(getattr(oo2, "get", lambda k, d=0: d)("filled") or 0)

@@ -52,9 +52,15 @@ Sicurezze (dure):
   (fix REQ-MERL-20261018-008/009): in caso di timeout -> esito
   FAIL_RECONCILIA con nota esplicita di possibile latenza. NESSUNA azione
   correttiva automatica.
-- transfer post-redeem: pre-attesa del credito funding con poll esteso
-  60x2s (stessa lezione latenza della REQ-008: il credito del redeem puo'
-  diventare visibile oltre i 10s del poll corto).
+- transfer post-redeem E post-transfer (purchase con --fonte trading):
+  pre-attesa del credito funding con poll esteso 60x2s a DELTA
+  (saldo >= iniziale + amt, mai soglia assoluta: un saldo preesistente
+  >= amt non e' un credito nuovo) — stessa lezione latenza della REQ-008
+  (il poll corto 10x1s non bastava).
+- eccezione durante l'esecuzione (inclusa POST riuscita con risposta
+  persa): lettura dei saldi (savings/funding/trading) registrata nel log
+  PRIMA di uscire, con nota esplicita «NON rilanciare senza aver verificato
+  i saldi» (fix audit 19/10: nessun re-run alla cieca su esito incerto).
 - --execute SENZA --env-file: rifiuto duro (mai chiavi nel codice, mai in log).
 - nessun ordine di trading, nessun prelievo verso l'esterno, mai chiavi stampate.
 
@@ -82,13 +88,13 @@ ACCT_FUNDING = "6"    # OKX v5: 6 = Funding account
 ACCT_TRADING = "18"   # OKX v5: 18 = Trading account
 RATE_MIN = Decimal("0.01")   # 1%
 RATE_MAX = Decimal("3.65")   # 365% ("The rate value range is between 1% and 365%")
-POLL_ATTEMPTI = 10
-POLL_INTERVAL_S = 1.0
 # Riconciliazione robusta alla latenza di accredito/debito (fix
 # REQ-MERL-20261018-008): 60 letture x 2s ~= 120s totali di attesa della
 # convergenza dei delta attesi. Nessuna azione correttiva automatica.
-# Lo stesso poll esteso e' usato come pre-attesa del credito funding
-# prima del transfer post-redeem (lezione latenza della REQ-008).
+# Lo stesso poll esteso e' usato come pre-attesa del credito funding:
+# prima del transfer post-redeem E dopo il transfer nel ramo purchase
+# (fix audit 19/10: il vecchio poll corto 10x1s era documentato
+# insufficiente dalla REQ-008).
 RECONCILIA_POLL_N = 60
 RECONCILIA_INTERVAL_S = 2.0
 NOTA_LATENZA_ACCREDITO = (
@@ -501,12 +507,20 @@ def log_line(cfg: Config, esito: str, delta_savings: Optional[Decimal],
         fh.write(json.dumps(voce) + "\n")
 
 
-def attendi_funding(ex, ccy: str, amt: Decimal, sleep_fn,
+def attendi_funding(ex, ccy: str, saldo_iniziale: Decimal, amt: Decimal, sleep_fn,
                     tentativi: int, intervallo_s: float) -> bool:
-    """Poll del saldo funding fino a >= amt (dorme PRIMA della prima lettura)."""
+    """Poll del saldo funding fino a `saldo >= saldo_iniziale + amt` (dorme PRIMA
+    della prima lettura).
+
+    Il confronto e' a DELTA rispetto al saldo iniziale (fix audit 19/10,
+    earn_move.py:504-511): la soglia assoluta `>= amt` e' un falso positivo se
+    il funding conteneva gia' abbastanza fondi — il credito del passo precedente
+    potrebbe essere ancora in volo e si trasferirebbero fondi PREESISTENTI.
+    """
+    bersaglio = saldo_iniziale + amt
     for _ in range(tentativi):
         sleep_fn(intervallo_s)
-        if read_funding(ex, ccy) >= amt:
+        if read_funding(ex, ccy) >= bersaglio:
             return True
     return False
 
@@ -554,13 +568,16 @@ def esegui(ex, cfg: Config, sleep_fn=time.sleep, out=print) -> int:
             if p["tipo"] == "transfer":
                 if p.get("attesa_funding"):
                     # redeem -> trading: il credito del redeem sul funding puo'
-                    # avere latenza (lezione REQ-008): pre-attesa estesa.
-                    if not attendi_funding(ex, cfg.ccy, cfg.amt, sleep_fn,
-                                           RECONCILIA_POLL_N,
+                    # avere latenza (lezione REQ-008): pre-attesa estesa a DELTA
+                    # (saldo >= iniziale + amt, mai soglia assoluta).
+                    if not attendi_funding(ex, cfg.ccy, bil.funding, cfg.amt,
+                                           sleep_fn, RECONCILIA_POLL_N,
                                            RECONCILIA_INTERVAL_S):
                         raise RuntimeError(
                             f"dopo il redeem il funding {cfg.ccy} non ha "
-                            f"raggiunto {fmt(cfg.amt)} (poll esteso "
+                            f"raggiunto {fmt(bil.funding + cfg.amt)} (saldo "
+                            f"iniziale {fmt(bil.funding)} + amt {fmt(cfg.amt)}; "
+                            f"poll esteso "
                             f"{RECONCILIA_POLL_N}x{RECONCILIA_INTERVAL_S:.0f}s)"
                         )
                 resp = ex.privatePostAssetTransfer({
@@ -571,13 +588,19 @@ def esegui(ex, cfg: Config, sleep_fn=time.sleep, out=print) -> int:
                 out(f"transfer eseguito: {fmt(cfg.amt)} {cfg.ccy} "
                     f"{p['from']} -> {p['to']}")
                 if p.get("attesa_purchase"):
-                    # Attesa disponibilita nel funding prima del purchase.
-                    if not attendi_funding(ex, cfg.ccy, cfg.amt, sleep_fn,
-                                           POLL_ATTEMPTI, POLL_INTERVAL_S):
+                    # Attesa del credito nel funding prima del purchase: poll
+                    # ESTESO a delta (fix audit 19/10, earn_move.py:573-581 —
+                    # il poll corto 10x1s era documentato insufficiente dalla
+                    # REQ-008; stesso poll della riconciliazione/redeem).
+                    if not attendi_funding(ex, cfg.ccy, bil.funding, cfg.amt,
+                                           sleep_fn, RECONCILIA_POLL_N,
+                                           RECONCILIA_INTERVAL_S):
                         raise RuntimeError(
                             f"dopo il transfer il funding {cfg.ccy} non ha "
-                            f"raggiunto {fmt(cfg.amt)} (poll "
-                            f"{POLL_ATTEMPTI}x{POLL_INTERVAL_S}s)"
+                            f"raggiunto {fmt(bil.funding + cfg.amt)} (saldo "
+                            f"iniziale {fmt(bil.funding)} + amt {fmt(cfg.amt)}; "
+                            f"poll esteso "
+                            f"{RECONCILIA_POLL_N}x{RECONCILIA_INTERVAL_S:.0f}s)"
                         )
             elif p["tipo"] == "purchase":
                 params = {"ccy": cfg.ccy, "amt": fmt(cfg.amt), "side": "purchase"}
@@ -594,13 +617,31 @@ def esegui(ex, cfg: Config, sleep_fn=time.sleep, out=print) -> int:
                 out(f"redeem eseguito: {fmt(cfg.amt)} {cfg.ccy} "
                     "da Simple Earn (rientra nel funding account)")
     except Exception as exc:
+        # La POST puo' essere RIUSCITA con la risposta persa (timeout): prima di
+        # uscire si leggono i saldi e si registra la fotografia nel log (fix
+        # audit 19/10, earn_move.py:596-604). MAI rilanciare alla cieca: un
+        # secondo purchase/redeem muoverebbe capitale una seconda volta.
+        letti = {}
         try:
-            log_line(cfg, "FAIL_EXEC", None)
+            letti = {"savings": read_savings(ex, cfg.ccy),
+                     "funding": read_funding(ex, cfg.ccy),
+                     "trading": read_trading(ex, cfg.ccy)}
+            esito_lettura = "ok"
+        except Exception as le:  # noqa: BLE001
+            esito_lettura = f"fallita ({type(le).__name__}: {le})"[:200]
+        nota_saldi = " ".join(f"{k}={fmt(v)}" for k, v in letti.items()) or esito_lettura
+        nota = (f"lettura saldi post-errore: {esito_lettura} {nota_saldi} | "
+                f"NON rilanciare senza aver verificato i saldi | "
+                f"errore: {str(exc)[:200]}")
+        try:
+            log_line(cfg, "FAIL_EXEC", None, nota=nota)
         except OSError as log_exc:
             print(f"ATTENZIONE: log non scritto ({type(log_exc).__name__})",
                   file=sys.stderr)
         out(f"ERRORE ESECUZIONE: {type(exc).__name__}: {exc}")
-        out("Nessuna azione correttiva automatica: riesegui il preflight e verifica.")
+        out(f"SALDI POST-ERRORE ({esito_lettura}): {nota_saldi}")
+        out("NON rilanciare senza aver verificato i saldi: riesegui il preflight "
+            "(dry-run) e confronta.")
         return 1
 
     # Riconciliazione: poll esteso fino alla convergenza dei delta attesi
