@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Denaro — Rapporto di avanzamento e proposta di budget</title>
+<style>
+  :root{
+    --ink:#15202e; --muted:#5b6b80; --line:#d7dee8; --accent:#1f4e8c;
+    --accent2:#0f6b4f; --warn:#8a5a12; --bg:#ffffff; --soft:#f4f6f9;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{background:#e9edf2}
+  body{font-family:"Liberation Sans","DejaVu Sans",Arial,sans-serif;color:var(--ink);font-size:16px;line-height:1.55}
+  .slide{
+    width:1280px;height:720px;background:var(--bg);margin:0 auto 18px;padding:54px 64px 64px;
+    position:relative;overflow:hidden;display:flex;flex-direction:column;
+  }
+  .kicker{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:10px}
+  h1{font-family:"Liberation Serif","DejaVu Serif",Georgia,serif;font-size:46px;line-height:1.12;font-weight:700;letter-spacing:-.01em}
+  h2{font-family:"Liberation Serif","DejaVu Serif",Georgia,serif;font-size:34px;line-height:1.16;font-weight:700;margin-bottom:18px}
+  h3{font-size:17px;font-weight:700;margin-bottom:8px}
+  p{color:var(--ink)}
+  .lead{font-size:17.5px;color:var(--muted);max-width:1000px}
+  .rule{width:54px;height:3px;background:var(--accent);margin:22px 0 24px}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:34px}
+  .cols3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  table{width:100%;border-collapse:collapse;font-size:14.5px}
+  th{text-align:left;font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--ink);padding:8px 10px 8px 0}
+  td{padding:9px 10px 9px 0;border-bottom:1px solid var(--line);vertical-align:top}
+  td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:6px}
+  .kpi{background:var(--soft);border:1px solid var(--line);padding:16px 18px}
+  .kpi .v{font-family:"Liberation Serif","DejaVu Serif",serif;font-size:30px;font-weight:700;line-height:1.1}
+  .kpi .l{font-size:12px;color:var(--muted);margin-top:4px}
+  .small{font-size:13px;color:var(--muted)}
+  .foot{position:absolute;left:64px;right:64px;bottom:24px;display:flex;justify-content:space-between;font-size:11px;color:#8494a8;border-top:1px solid var(--line);padding-top:10px}
+  .tag{display:inline-block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border:1px solid var(--line);color:var(--muted)}
+  .ok{color:var(--accent2);font-weight:700}
+  .bad{color:var(--warn);font-weight:700}
+  .cover{justify-content:center;background:var(--bg)}
+  .cover .brand{font-family:"Liberation Serif",serif;font-size:20px;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);margin-bottom:26px}
+  .cover h1{font-size:54px;max-width:900px}
+  .cover .sub{font-size:20px;color:var(--muted);margin-top:18px;max-width:780px}
+  .cover .meta{position:absolute;bottom:56px;left:64px;font-size:13px;color:var(--muted)}
+  ul.tight{list-style:none;font-size:15px}
+  ul.tight li{padding:7px 0;border-bottom:1px solid var(--line)}
+  ul.tight li:last-child{border-bottom:none}
+  ul.tight li b{font-weight:700}
+  .box{background:var(--soft);border-left:3px solid var(--accent);padding:16px 20px;font-size:15.5px}
+  .box.green{border-left-color:var(--accent2)}
+  .pipeline{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 18px;font-size:13px}
+  .pipeline span{border:1px solid var(--line);background:var(--soft);padding:7px 11px}
+  .pipeline span.on{border-color:var(--accent);color:var(--accent);font-weight:700}
+  .ask{font-family:"Liberation Serif",serif;font-size:64px;font-weight:700;line-height:1;color:var(--accent)}
+  .ask span{font-size:24px;color:var(--muted);font-weight:400}
+  .two-num{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:10px}
+  @page{size:1280px 720px;margin:0}
+  @media print{
+    html,body{background:#fff}
+    .slide{margin:0;page-break-after:always;break-after:page}
+    .slide:last-child{page-break-after:auto}
+  }
+</style>
+</head>
+<body>
+
+<!-- 1 · COPERTINA -->
+<section class="slide cover">
+  <div class="brand">Denaro</div>
+  <h1>Sistema di ricerca e validazione per il trading algoritmico su cripto</h1>
+  <div class="sub">Rapporto di avanzamento e proposta di budget</div>
+  <div class="meta">Sergio Grivetto · ottobre 2026 · denaro.grivetto.eu · github.com/grivetto/money</div>
+</section>
+
+<!-- 2 · EXECUTIVE SUMMARY -->
+<section class="slide">
+  <div class="kicker">Sintesi</div>
+  <h2>In una pagina</h2>
+  <div class="cols">
+    <div>
+      <table>
+        <tr><td><b>Cosa è</b></td><td>Una piattaforma di ricerca quantitativa che misura, valida e sorveglia strategie di trading su cripto. Prima la misura, poi la strategia.</td></tr>
+        <tr><td><b>Stato</b></td><td>Operativa su 5 macchine con 22 operatori software; 1.097 € di capitale reale riconciliato; 13 bot in test; 2 esperimenti reali a taglia minima.</td></tr>
+        <tr><td><b>Evidenza</b></td><td>1.004 test automatici verdi, ogni numero con il proprio artefatto riproducibile, repo pubblico.</td></tr>
+        <tr><td><b>Risultato</b></td><td>Zero strategie promosse finora. È il risultato corretto: il sistema ha scartato ciò che non regge i costi.</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="box green">
+        <b>La richiesta</b><br>
+        25 €/mese per sei mesi (150 €) per coprire il costo degli strumenti di ricerca AI.<br><br>
+        Non finanzia una scommessa: finanzia la capacità di misurare, e quindi di decidere con i numeri.
+      </div>
+      <p class="small" style="margin-top:14px">Tutto il resto — macchine, infrastruttura, codice, tempo — è già sostenuto dal sottoscritto.</p>
+    </div>
+  </div>
+  <div class="foot"><span>Denaro · ottobre 2026</span><span>2</span></div>
+</section>
+
+<!-- 3 · CONTESTO -->
+<section class="slide">
+  <div class="kicker">Contesto</div>
+  <h2>Perché quasi tutti i risultati nel trading algoritmico non sono verificabili</h2>
+  <div class="cols3">
+    <div>
+      <h3>PnL senza costi</h3>
+      <p class="small">Backtest che ignorano commissioni, spread e slippage. Il profitto è nel foglio di calcolo, non nel conto.</p>
+    </div>
+    <div>
+      <h3>Look-ahead</h3>
+      <p class="small">Il modello usa dati che al momento della decisione non esistevano. Produce curve eccellenti e perdite reali.</p>
+    </div>
+    <div>
+      <h3>«Live» mai riconciliato</h3>
+      <p class="small">Bot dichiarati attivi che non hanno mai inviato un ordine, o il cui risultato non è mai stato confrontato con l'exchange.</p>
+    </div>
+  </div>
+  <div class="rule"></div>
+  <p class="lead">La conseguenza è sempre la stessa: non si distingue un vantaggio reale dal rumore, e si scala il rumore. Il progetto parte dal problema opposto: rendere il risultato verificabile prima di chiedere capitale.</p>
+  <div class="foot"><span>Denaro · ottobre 2026</span><span>3</span></div>
+</section>
+
+<!-- 4 · PRINCIPI -->
+<section class="slide">
+  <div class="kicker">Metodo</div>
+  <h2>Quattro regole non negoziabili</h2>
+  <div class="cols">
+    <ul class="tight">
+      <li><b>1. La misura viene prima della strategia.</b> Prima si costruisce lo strumento che non può mentire, poi si cercano ipotesi.</li>
+      <li><b>2. Fee e slippage sempre nel conto.</b> Una strategia che guadagna solo senza costi non esiste.</li>
+    </ul>
+    <ul class="tight">
+      <li><b>3. Ipotesi dichiarate prima dei numeri.</b> Ogni esperimento è pre-registrato: obiettivo, criteri, soglia di fallimento.</li>
+      <li><b>4. Riconciliazione con l'exchange.</b> Il capitale è letto in sola lettura ogni cinque minuti; se non quadra, il sistema si ferma.</li>
+    </ul>
+  </div>
+  <div class="box" style="margin-top:22px">Il criterio operativo: <b>ogni affermazione deve poter essere riletta come un artefatto</b> — un file, un comando, un numero riproducibile. Il resto è opinione.</div>
+  <div class="foot"><span>Denaro · ottobre 2026</span><span>4</span></div>
+</section>
+
+<!-- 5 · SISTEMA OGGI -->
+<section class="slide">
+  <div class="kicker">Stato dell'arte</div>
+  <h2>Cosa è operativo oggi</h2>
+  <div class="kpis">
+    <div class="kpi"><div class="v">5</div><div class="l">macchine collegate (hub, trading, monitoraggio, sviluppo, Windows)</div></div>
+    <div class="kpi"><div class="v">22</div><div class="l">operatori software con avvio automatico e riavvio su errore</div></div>
+    <div class="kpi"><div class="v">1.004</div><div class="l">test automatici verdi, suite offline</div></div>
+    <div class="kpi"><div class="v">5′</div><div class="l">intervallo di riconciliazione del capitale</div></div>
+  </div>
+  <table style="margin-top:22px">
+    <tr><th>Componente</th><th>Funzione</th><th>Stato</th></tr>
+    <tr><td>Hub di regia e ricerca</td><td>direzione, misure, review, scrittura unica sul repository</td><td class="ok">attivo</td></tr>
+    <tr><td>Nodo trading e web</td><td>esecuzione degli esperimenti, dashboard, sito pubblico</td><td class="ok">attivo</td></tr>
+    <tr><td>Nodo monitoraggio</td><td>health check, exporter, agenti di sorveglianza</td><td class="ok">attivo</td></tr>
+    <tr><td>Nodo sviluppo e agenti</td><td>ricerca, sviluppo, esecuzione dei task</td><td class="ok">attivo</td></tr>
+    <tr><td>Postazione Windows</td><td>operatori aggiuntivi, container</td><td class="ok">attivo</td></tr>
+    <tr><td>Sorveglianza</td><td>Zabbix su tutti i nodi, alert Telegram, watchdog anti-silenzio</td><td class="ok">attivo</td></tr>
+  </table>
+  <div class="foot"><span>Denaro · ottobre 2026</span><span>5</span></div>
+</section>
+
+<!-- 6 · RISULTATI -->
+<section class="slide">
+  <div class="kicker">Risultati</div>
+  <h2>Numeri misurati, compresi quelli scomodi</h2>
+  <div class="two-num">
+    <table>
+      <tr><th>Ricerca</th><th>Valore</th></tr>
+      <tr><td>Ipotesi misurate e archiviate</td><td class="num">19+</td></tr>
+      <tr><td>Configurazioni esplorate dalla ricerca automatica</td><td class="num">≈300.000</td></tr>
+      <tr><td>Candidati emersi</td><td class="num">0</td></tr>
+      <tr><td>Strategie promosse al capitale</td><td class="num">0</td></tr>
+    </table>
+    <table>
+      <tr><th>Esercizio</th><th>Valore</th></tr>
+      <tr><td>Capitale reale riconciliato</td><td class="num">1.097 €</td></tr>
+      <tr><td>Bot in forward test (paper)</td><td class="num">13</td></tr>
+      <tr><td>Esperimenti reali a taglia minima</td><td class="num">2</td></tr>
+      <tr><td>Ordini non autorizzati</td><td class="num">0</td></tr>
+    </table>
+  </div>
+  <div class="box" style="margin-top:20px">Due esperimenti reali sono vivi e coperti: un carry delta-neutral su DOGE (review di 14 giorni superata) e un carry multicoppia DOT/ADA a leva 1×. Il capitale resta a taglia minima finché l'evidenza non giustifica una scala.</div>
+  <div class="foot"><span>Denaro · ottobre 2026</span><span>6</span></div>
+</section>
+
+<!-- 7 · PIPELINE -->
+<section class="slide">
+  <div class="kicker">Processo</div>
+  <h2>Nessuna strategia tocca il capitale senza passare dal cancello</h2>
+  <div class="pipeline">
+    <span>idea</span><span>→</span><span>spec pre-registrata</span><span>→</span><span>esecuzione</span><span>→</span>
+    <span>review indipendente</span><span>→</span><span>misura su dati reali</span><span>→</span>
+    <span class="on">cancello · 8 criteri</span><span>→</span><span>paper</span><span>→</span><span>canary</span><span>→</span><span>capitale</span>
+  </div>
+  <div class="cols">
+    <table>
+      <tr><th>Criterio del cancello</th><th>Perché conta</th></tr>
+      <tr><td>Numerosità del campione</td><td>evita conclusioni su poche operazioni</td></tr>
+      <tr><td>Intervallo di confidenza</td><td>distingue l'effetto dal caso</td></tr>
+      <tr><td>Profit factor</td><td>misura la qualità, non solo il segno</td></tr>
+      <tr><td>Drawdown massimo</td><td>stima il rischio di rovina</td></tr>
+    </table>
+    <table>
+      <tr><th>Criterio del cancello</th><th>Perché conta</th></tr>
+      <tr><td>Copertura dei costi (3×)</td><td>il margine deve sopravvivere a fee e slippage</td></tr>
+      <tr><td>Rilevanza economica</td><td>un vantaggio infinitesimo non paga l'infrastruttura</td></tr>
+      <tr><td>Indipendenza dai blocchi</td><td>evita il risultato concentrato in un periodo fortunato</td></tr>
+      <tr><td>Stabilità out-of-sample</td><td>il criterio che ha archiviato più ipotesi di quante ne abbia promosse</td></tr>
+    </table>
+  </div>
+  <div class="foot"><span>Denaro · ottobre 2026</span><span>7</span></div>
+</section>
+
+<!-- 8 · ECONOMIA -->
+<section class="slide">
+  <div class="kicker">Economia</div>
+  <h2>Il conto, senza addolcire</h2>
+  <table>
+    <tr><th>Voce</th><th>Valore mensile</th><th>Nota</th></tr>
+    <tr><td>Rendita corrente (Earn + carry)</td><td class="num">≈ +3,4 €</td><td>stimata sui comparti attivi, capitale a taglia minima</td></tr>
+    <tr><td>Costi ricorrenti</td><td class="num">≈ −31 €</td><td>9 € VPS + 22 € strumenti AI (listino)</td></tr>
+    <tr><td><b>Risultato netto</b></td><td class="num bad">≈ −28 €</td><td>il divario da chiudere con la ricerca, non con il capitale</td></tr>
+  </table>
+  <div class="rule"></div>
+  <p class="lead">Con questo capitale l'unica strategia sensata è ridurre i costi, svegliare ogni euro dormiente e crescere solo quando l'evidenza lo giustifica. Il collo di bottiglia non è il capitale: è il tempo di ricerca.</p>
+  <div class="foot"><span>Denaro · ottobre 2026</span><span>8</span></div>
+</section>
+
+<!-- 9 · RISCHI -->
+<section class="slide">
+  <div class="kicker">Rischi</div>
+  <h2>Cosa può andare storto, e cosa facciamo al riguardo</h2>
+  <table>
+    <tr><th>Rischio</th><th>Impatto</th><th>Mitigazione</th></tr>
+    <tr><td>Nessuna strategia supera il cancello</td><td>Il progetto non produce rendita</td><td>Kill-check a gennaio: il sistema passa in manutenzione a costo quasi zero, capitale intatto</td></tr>
+    <tr><td>Perdita su un esperimento</td><td>Perdita del capitale esposto</td><td>Taglia minima, leva 1×, stop espliciti, un solo bot per conto, riconciliazione continua</td></tr>
+    <tr><td>Guasto infrastrutturale</td><td>Interruzione della sorveglianza</td><td>Monitoraggio su tutti i nodi, alert, watchdog, riavvio automatico, accesso ridondante</td></tr>
+    <tr><td>Deriva dei costi</td><td>Il netto peggiora</td><td>Registro costi mensile, soglia di break-even dichiarata, nessuna spesa non misurata</td></tr>
+  </table>
+  <div class="box" style="margin-top:20px">Il rischio massimo dichiarato è <b>la perdita del capitale esposto agli esperimenti</b>, non l'intero capitale: il resto è in strumenti a capitale protetto o non impiegato.</div>
+  <div class="foot"><span>Denaro · ottobre 2026</span><span>9</span></div>
+</section>
+
+<!-- 10 · RICHIESTA -->
+<section class="slide">
+  <div class="kicker">Proposta</div>
+  <h2>La richiesta, in chiaro</h2>
+  <div class="cols">
+    <div>
+      <div class="ask">25 €<span>/mese</span></div>
+      <table style="margin-top:18px">
+        <tr><td>Sei mesi</td><td class="num">150 €</td></tr>
+        <tr><td>Dodici mesi</td><td class="num">300 €</td></tr>
+        <tr><td>Già coperto dal sottoscritto</td><td>macchine, infrastruttura, codice, tempo</td></tr>
+      </table>
+    </div>
+    <div>
+      <h3>Cosa copre</h3>
+      <p class="small" style="margin-bottom:12px">Il costo degli strumenti di ricerca AI che lavorano in parallelo: esecuzione delle ipotesi in coda, revisioni indipendenti, analisi dei dati.</p>
+      <h3>Cosa produce</h3>
+      <p class="small">Un report mensile verificabile: capitale riconciliato, rendita netta, costi, esperimenti in corso, decisioni richieste. Nessun numero non tracciabile.</p>
+    </div>
+  </div>
+  <div class="box green" style="margin-top:18px">Se il progetto non produce evidenza entro gennaio, la richiesta si chiude e il sistema resta in manutenzione a costo quasi nullo. La decisione può essere presa in qualsiasi momento, con i numeri in mano.</div>
+  <div class="foot"><span>Denaro · ottobre 2026</span><span>10</span></div>
+</section>
+
+<!-- 11 · PIANO -->
+<section class="slide">
+  <div class="kicker">Piano</div>
+  <h2>Sei mesi, tre tappe con criteri di uscita</h2>
+  <table>
+    <tr><th>Periodo</th><th>Obiettivo</th><th>Criterio di successo</th></tr>
+    <tr><td>Novembre — dicembre</td><td>Portare il carry da taglia di prova a taglia utile; chiudere la review del canary</td><td>Rendita netta positiva sul comparto, drawdown entro soglia</td></tr>
+    <tr><td>Gennaio — febbraio</td><td>Eseguire la coda di ricerca; misurare le ipotesi in attesa</td><td>Almeno una strategia oltre il cancello, o chiusura motivata</td></tr>
+    <tr><td>Marzo — aprile</td><td>Se c'è evidenza: scala graduale. Se non c'è: manutenzione</td><td>Decisione documentata, capitale protetto in entrambi i casi</td></tr>
+  </table>
+  <div class="rule"></div>
+  <p class="lead">Le tappe non sono promesse di rendimento: sono criteri per decidere se continuare. È la differenza tra un progetto e una scommessa.</p>
+  <div class="foot"><span>Denaro · ottobre 2026</span><span>11</span></div>
+</section>
+
+<!-- 12 · CHIUSURA -->
+<section class="slide">
+  <div class="kicker">Trasparenza</div>
+  <h2>Cosa può verificare chiunque, oggi</h2>
+  <div class="cols">
+    <ul class="tight">
+      <li><b>Repository pubblico</b> — codice, test e artefatti delle misure: github.com/grivetto/money</li>
+      <li><b>Dashboard</b> — stato del sistema e della squadra: denaro.grivetto.eu</li>
+      <li><b>Report mensile</b> — capitale riconciliato, rendita netta, costi, decisioni</li>
+    </ul>
+    <ul class="tight">
+      <li><b>Alert automatici</b> — ogni scostamento di capitale o servizio</li>
+      <li><b>Numeri riproducibili</b> — ogni cifra citata ha il comando che la rigenera</li>
+      <li><b>Nessun segreto nelle pagine</b> — solo stato, mai chiavi o credenziali</li>
+    </ul>
+  </div>
+  <div class="box" style="margin-top:24px;font-size:17px">La richiesta è di <b>150 € per sei mesi</b>. In cambio non c'è una promessa di rendimento: c'è un sistema che misura, documenta e si ferma quando i numeri non lo giustificano.</div>
+  <div class="foot"><span>Denaro · ottobre 2026</span><span>12</span></div>
+</section>
+
+</body>
+</html>

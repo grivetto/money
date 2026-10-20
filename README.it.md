@@ -37,7 +37,7 @@ sua storia, come memoria di cosa è stato provato — non come base su cui costr
 
 ---
 
-## 📊 Stato in sintesi — 2026-10-16
+## 📊 Stato in sintesi — 2026-10-20
 
 > **TL;DR** — un rig di ricerca onesto su denaro vero: il cancello ha archiviato tutto ciò che è
 > stato misurato finora; il canary carry **C1** ha passato la review dei 14 giorni il 15/10 e il
@@ -47,13 +47,13 @@ sua storia, come memoria di cosa è stato provato — non come base su cui costr
 
 | | |
 | :--- | :--- |
-| **Test** | **726 passati**, `ruff` pulito |
+| **Test** | **1.004 passati**, `ruff` pulito |
 | **Esperimenti misurati** | tutte le famiglie classiche (trend, breakout, rotazione, reversal, weekend, capitolazione…) più la serie pre-registrata P fino a P19b — 20+ misurati, ogni verdetto congelato in `prove/` |
 | **Verdetti** | **nessuna famiglia promossa** — tutte archiviate ai costi reali (il filone trend è chiuso con prova multipla: DD di portafoglio mai sotto il 41,5%, soglia cancello 25%); **S4 caccia continua esaurita** (316k tentativi, 0 candidati — fermata il 15/10); l'unico sopravvissuto è il **carry**: review di C1 **PASS** (15/10) → live su due coppie in più |
 | **Carry live (C1 + DOT+ADA)** | C1 (DOGE, delta-neutral, dal 01/10): funding **+0,045 USDC** (~118% del minimo atteso), netto coppia ≈ +0,05 USDC; **DOT+ADA** (aperti il 15/10 23:00 UTC): nozionale ≈ **180 EUR**, uPL +0,36 — taglia minima, tutto riconciliato |
 | **Ordini reali inviati** | solo i due esperimenti **approvati dall'owner e a taglia minima** qui sopra — nient'altro opera; il cancello promuove e l'owner autorizza |
 | **Capitale** | ≈ **1.096 EUR** su OKX (verificato in sola lettura) — trading ≈368 · funding ≈194 · Simple Earn ≈534; resta in **$ (USDC/Earn)** per decisione dell'owner (16/10) — i movimenti in € sono scomposti (cambio vs resto) nel digest giornaliero |
-| **Squadra & ops** | **16 esecutori + 1 regia su 5 macchine** (`A0` ×3 · `DSH` ×3 · `opencode` ×4 · `agy` ×4 · `Hermes` ×2 — mc2/omarchy/win/nuvola/marcodg1; consegne riviste da Hermes), **13 bot paper / 0 live**, alerting attivo (`@DenaroAlertBot`: digest 9:00 + campanello equity a 1.090 €), check post-riavvio **49/49** |
+| **Squadra & ops** | **20 esecutori + 2 direttori su 5 macchine** (`A0` ×5 · `DSH` ×5 · `opencode` ×5 · `agy` ×5 · `Hermes` ×2 — mc2/omarchy/win/nuvola/marcodg1; consegne riviste da Hermes), **13 bot paper / 0 live**, alerting attivo (`@DenaroAlertBot`: digest 9:00 + campanello equity a 1.090 €), check post-riavvio **49/49** |
 | **Ultimo commit** | `main` — vedi `git log` per la testa corrente |
 
 Repository: `C:\dev\money` in locale, `github.com/grivetto/money` in remoto. Pacchetto Python sotto
@@ -106,9 +106,9 @@ money/cancello.py              8 criteri, 3 verdetti, ogni motivo porta il suo n
 promosso / archiviato / insufficiente          il verdetto e' vincolante
 ```
 
-### Il sistema attorno alla pipeline — aggiornato 2026-10-16
+### Il sistema attorno alla pipeline — aggiornato 2026-10-20
 
-![Denaro — foto del sistema, 2026-10-16](FOTO_SISTEMA_2026-10-16.png)
+![Denaro — foto del sistema, 2026-10-20](FOTO_SISTEMA_2026-10-20.png)
 
 ```
                      ┌──────────────────────── mc2 — l'hub ──────────────────────────┐
@@ -134,15 +134,15 @@ promosso / archiviato / insufficiente          il verdetto e' vincolante
 
 *Un solo anello: idea → spec pre-registrata (`coda_catena/` + `REGISTRO`) → esecutore → review
 (test rieseguiti nel repo) → misura (artefatti congelati in `prove/`) → cancello a 8 criteri →
-promozione/archivio → banco a secco → canary → live a taglia minima. Gli esecutori — `A0-mc2`,
-`A0-win`, `DSH-mc2/omarchy/win`, `opencode-mc2/omarchy`, `agy-omarchy` — consegnano a Hermes; il
+promozione/archivio → banco a secco → canary → live a taglia minima. Gli esecutori — `A0`, `DSH`, `opencode`, `agy` su tutti e cinque i nodi
+(mc2, omarchy, nuvola, MARCODG1, andromeda) — consegnano a Hermes; il
 **nodo agenti** (Omarchy) ospita `DSH-omarchy` e `opencode-omarchy` come servizi systemd
 (loopback-only, raggiunti via tunnel ssh); niente entra senza review. Visual:
-[`FOTO_SISTEMA_2026-10-16.png`](FOTO_SISTEMA_2026-10-16.png) ·
-[`FOTO_SQUADRA_2026-10-16.png`](FOTO_SQUADRA_2026-10-16.png).
+[`FOTO_SISTEMA_2026-10-20.png`](FOTO_SISTEMA_2026-10-20.png) ·
+[`FOTO_SQUADRA_2026-10-20.png`](FOTO_SQUADRA_2026-10-20.png).
 Architettura: [`ARCHITETTURA_2026-10-16.md`](ARCHITETTURA_2026-10-16.md).*
 
-![La squadra — 2026-10-16](FOTO_SQUADRA_2026-10-16.png)
+![La squadra — 2026-10-20](FOTO_SQUADRA_2026-10-20.png)
 
 ### Le tecnologie usate
 

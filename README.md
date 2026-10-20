@@ -38,7 +38,7 @@ foundation to build on.
 
 ---
 
-## 📊 Status at a glance — 2026-10-16
+## 📊 Status at a glance — 2026-10-20
 
 > **TL;DR** — an honest research rig on real money: the gate has archived everything measured so
 > far; the carry canary **C1** passed its 14-day review on 15/10 and the carry now runs on two
@@ -47,13 +47,13 @@ foundation to build on.
 
 | | |
 | :--- | :--- |
-| **Tests** | **726 passed**, `ruff` clean |
+| **Tests** | **1,004 passed**, `ruff` clean |
 | **Experiments measured** | every classical family (trend, breakout, rotation, reversal, weekend, capitulation…) plus the pre-registered P-series up to P19b — 20+ measured, every verdict frozen in `prove/` |
 | **Verdicts** | **no family promoted** — all archived at real costs (the trend filone is closed with multiple proofs: portfolio DD never went below 41.5%, gate bar 25%); **S4 continuous hunt exhausted** (316k attempts, 0 candidates — retired 15/10); the only survivor is the **carry**: C1's review **PASSED** (15/10) → live on two more pairs |
 | **Live carry (C1 + DOT+ADA)** | C1 (DOGE, delta-neutral, since 01/10): funding **+0.045 USDC** (~118% of the expected minimum), pair net ≈ +0.05 USDC; **DOT+ADA** (opened 15/10 23:00 UTC): notional ≈ **180 EUR**, uPL +0.36 — minimal size, fully reconciled |
 | **Real orders sent** | only the two **owner-approved, minimal-size** experiments above — nothing else trades; the gate promotes and the owner authorizes |
 | **Capital** | ≈ **1,096 EUR** on OKX (read-only verified) — trading ≈368 · funding ≈194 · Simple Earn ≈534; kept in **USD (USDC/Earn)** by owner decision (16/10) — € swings are decomposed (FX vs the rest) in the daily digest |
-| **Squad & ops** | **16 executors + 1 director on 5 machines** (`A0` ×3 · `DSH` ×3 · `opencode` ×4 · `agy` ×4 · `Hermes` ×2 — mc2/omarchy/win/nuvola/marcodg1; deliveries reviewed by Hermes), **13 paper bots / 0 live**, live alerting (`@DenaroAlertBot`: 9:00 digest + equity bell at 1,090 €), post-reboot check **49/49** |
+| **Squad & ops** | **20 executors + 2 directors on 5 machines** (`A0` ×5 · `DSH` ×5 · `opencode` ×5 · `agy` ×5 · `Hermes` ×2 — mc2/omarchy/win/nuvola/marcodg1; deliveries reviewed by Hermes), **13 paper bots / 0 live**, live alerting (`@DenaroAlertBot`: 9:00 digest + equity bell at 1,090 €), post-reboot check **49/49** |
 | **Last commit** | `main` — see `git log` for the current head |
 
 Repository: `C:\dev\money` locally, `github.com/grivetto/money` remotely. Python package under
@@ -105,9 +105,9 @@ money/cancello.py              8 criteria, 3 verdicts, every reason carries its 
 promosso / archiviato / insufficiente          the verdict is binding
 ```
 
-### The system around the pipeline — updated 2026-10-16
+### The system around the pipeline — updated 2026-10-20
 
-![Denaro — system snapshot, 16/10/2026](FOTO_SISTEMA_2026-10-16.png)
+![Denaro — system snapshot, 20/10/2026](FOTO_SISTEMA_2026-10-20.png)
 
 ```
                      ┌──────────────────────── mc2 — the hub ────────────────────────┐
@@ -133,15 +133,15 @@ promosso / archiviato / insufficiente          the verdict is binding
 
 *One loop: idea → pre-registered spec (`coda_catena/` + `REGISTRO`) → executor → review (tests
 re-run in-repo) → measure (artifacts frozen in `prove/`) → 8-criteria gate → promote/archive →
-dry bench → canary → minimum-size live. The executors — `A0-mc2`, `A0-win`, `DSH-mc2/omarchy/win`,
-`opencode-mc2/omarchy`, `agy-omarchy` — deliver to Hermes; the **agents node** (Omarchy) hosts
+dry bench → canary → minimum-size live. The executors — `A0`, `DSH`, `opencode`, `agy` on all five nodes
+(mc2, omarchy, nuvola, MARCODG1, andromeda) — deliver to Hermes; the **agents node** (Omarchy) hosts
 `DSH-omarchy` and `opencode-omarchy` as systemd services (loopback-only, reached over an ssh
 tunnel); nothing lands without review. Visuals:
-[`FOTO_SISTEMA_2026-10-16.png`](FOTO_SISTEMA_2026-10-16.png) ·
-[`FOTO_SQUADRA_2026-10-16.png`](FOTO_SQUADRA_2026-10-16.png).
+[`FOTO_SISTEMA_2026-10-20.png`](FOTO_SISTEMA_2026-10-20.png) ·
+[`FOTO_SQUADRA_2026-10-20.png`](FOTO_SQUADRA_2026-10-20.png).
 Architecture: [`ARCHITETTURA_2026-10-16.md`](ARCHITETTURA_2026-10-16.md).*
 
-![The squad — 16/10/2026](FOTO_SQUADRA_2026-10-16.png)
+![The squad — 20/10/2026](FOTO_SQUADRA_2026-10-20.png)
 
 ### Core technologies
 

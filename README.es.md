@@ -38,17 +38,17 @@ cimiento sobre el que construir.
 
 ---
 
-## 📊 Estado de un vistazo — 2026-10-16
+## 📊 Estado de un vistazo — 2026-10-20
 
 | | |
 | :--- | :--- |
-| **Tests** | **726 passed**, `ruff` limpio |
+| **Tests** | **1.004 superados**, `ruff` limpio |
 | **Experimentos medidos** | todas las familias clásicas (tendencia, breakout, rotación, reversal, weekend, capitulación…) y la serie pre-registrada P hasta P19b — 20+ medidos, cada veredicto congelado en `prove/` |
 | **Veredictos** | **ninguna familia promovida** — todas archivadas a costes reales (el filón tendencia cerrado con prueba múltiple: DD de cartera nunca por debajo del 41,5%; umbral del cancello 25%); **S4 caza continua agotada** (316k intentos, 0 candidatos — detenida el 15/10); la única superviviente es el **carry**: revisión de C1 **PASS** (15/10) → en vivo sobre dos pares más |
 | **Carry en vivo (C1 + DOT+ADA)** | C1 (DOGE, delta-neutral, desde 01/10): funding **+0,045 USDC** (~118% del mínimo esperado); **DOT+ADA** (abiertos el 15/10 23:00 UTC): nocional ≈ **180 EUR**, uPL +0,36 — tamaño mínimo, todo reconciliado |
 | **Órdenes reales enviadas** | solo los dos experimentos **aprobados por el propietario y de tamaño mínimo** de arriba — nada más opera; el cancello promueve y el propietario autoriza |
 | **Capital** | ≈ **1.096 EUR** en OKX (verificado en solo lectura) — trading ≈368 · funding ≈194 · Simple Earn ≈534; se mantiene en **USD (USDC/Earn)** por decisión del propietario (16/10) — el digest diario descompone el movimiento en € (cambio vs resto) |
-| **Equipo & ops** | **16 ejecutores + 1 dirección en 5 máquinas** (`A0` ×3 · `DSH` ×3 · `opencode` ×4 · `agy` ×4 · `Hermes` ×2 — mc2/omarchy/win/nuvola/marcodg1), **13 bots paper / 0 en vivo**, alertas activas (`@DenaroAlertBot`: digest 9:00 + campana de equity 1.090 €), check post-reinicio **49/49** |
+| **Equipo & ops** | **20 ejecutores + 2 direcciones en 5 máquinas** (`A0` ×5 · `DSH` ×5 · `opencode` ×5 · `agy` ×5 · `Hermes` ×2 — mc2/omarchy/win/nuvola/marcodg1), **13 bots paper / 0 en vivo**, alertas activas (`@DenaroAlertBot`: digest 9:00 + campana de equity 1.090 €), check post-reinicio **49/49** |
 | **Último commit** | `main` — ver `git log` para el head actual |
 
 Repositorio: `C:\dev\money` en local, `github.com/grivetto/money` en remoto. Paquete Python bajo
@@ -89,13 +89,13 @@ money/cancello.py              8 criteria, 3 verdicts, every reason carries its 
 promosso / archiviato / insufficiente          the verdict is binding
 ```
 
-### El sistema alrededor de la pipeline — actualizado 16/10/2026
+### El sistema alrededor de la pipeline — actualizado 20/10/2026
 
-![Denaro — foto del sistema, 16/10/2026](FOTO_SISTEMA_2026-10-16.png)
+![Denaro — foto del sistema, 20/10/2026](FOTO_SISTEMA_2026-10-20.png)
 
 **Primer bot en vivo del proyecto**: carry C1 (DOGE) en OKX EEA desde el 01/10 — tamaño mínimo, totalmente reconciliado, review el 15/10. Alrededor: los cuatro nodos (mc2 hub · MARCODG1 ops + live · nuvola monitorización · **omarchy agentes**: DSH + OpenCode), la fábrica ×100 (tick 3 s, worker 5 s), los operarios A0-mc2/A0-win (Gemini 2.5), DSH ×3 (mc2/omarchy/win), los ejecutores free OpenCode ×2 + agy-omarchy y el juez advisory JEV.
 
-*Visual: [`FOTO_SISTEMA_2026-10-16.png`](FOTO_SISTEMA_2026-10-16.png) · [`FOTO_SQUADRA_2026-10-16.png`](FOTO_SQUADRA_2026-10-16.png). Arquitectura: [`ARCHITETTURA_2026-10-16.md`](ARCHITETTURA_2026-10-16.md).*
+*Visual: [`FOTO_SISTEMA_2026-10-20.png`](FOTO_SISTEMA_2026-10-20.png) · [`FOTO_SQUADRA_2026-10-20.png`](FOTO_SQUADRA_2026-10-20.png). Arquitectura: [`ARCHITETTURA_2026-10-16.md`](ARCHITETTURA_2026-10-16.md).*
 
 ### Tecnologías centrales
 
