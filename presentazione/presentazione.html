@@ -11,6 +11,9 @@
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{background:#e9edf2}
   body{font-family:"Liberation Sans","DejaVu Sans",Arial,sans-serif;color:var(--ink);font-size:16px;line-height:1.55}
+  a{color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(31,78,140,.35)}
+  a:hover{border-bottom-color:var(--accent)}
+  .mono{font-family:"JetBrains Mono","DejaVu Sans Mono",ui-monospace,monospace;font-size:13.5px}
   .slide{
     width:1280px;height:720px;background:var(--bg);margin:0 auto 18px;padding:54px 64px 64px;
     position:relative;overflow:hidden;display:flex;flex-direction:column;
@@ -34,14 +37,17 @@
   .kpi .l{font-size:12px;color:var(--muted);margin-top:4px}
   .small{font-size:13px;color:var(--muted)}
   .foot{position:absolute;left:64px;right:64px;bottom:24px;display:flex;justify-content:space-between;font-size:11px;color:#8494a8;border-top:1px solid var(--line);padding-top:10px}
+  .foot a{color:#5b6b80;border-bottom:none}
   .tag{display:inline-block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border:1px solid var(--line);color:var(--muted)}
   .ok{color:var(--accent2);font-weight:700}
   .bad{color:var(--warn);font-weight:700}
   .cover{justify-content:center;background:var(--bg)}
   .cover .brand{font-family:"Liberation Serif",serif;font-size:20px;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);margin-bottom:26px}
-  .cover h1{font-size:54px;max-width:900px}
+  .cover h1{font-size:52px;max-width:920px}
   .cover .sub{font-size:20px;color:var(--muted);margin-top:18px;max-width:780px}
-  .cover .meta{position:absolute;bottom:56px;left:64px;font-size:13px;color:var(--muted)}
+  .cover .links-bar{margin-top:32px;display:flex;flex-wrap:wrap;gap:10px}
+  .cover .link-chip{font-size:13px;background:var(--soft);border:1px solid var(--line);padding:6px 12px;color:var(--accent);font-weight:600}
+  .cover .meta{position:absolute;bottom:48px;left:64px;right:64px;display:flex;justify-content:space-between;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
   ul.tight{list-style:none;font-size:15px}
   ul.tight li{padding:7px 0;border-bottom:1px solid var(--line)}
   ul.tight li:last-child{border-bottom:none}
@@ -69,7 +75,17 @@
   <div class="brand">Denaro</div>
   <h1>Sistema di ricerca e validazione per il trading algoritmico su cripto</h1>
   <div class="sub">Rapporto di avanzamento e proposta di budget</div>
-  <div class="meta">Sergio Grivetto · ottobre 2026 · denaro.grivetto.eu · github.com/grivetto/money</div>
+  <div class="links-bar">
+    <a class="link-chip" href="https://denaro.grivetto.eu/" target="_blank" rel="noopener">denaro.grivetto.eu</a>
+    <a class="link-chip" href="https://denaro.grivetto.eu/dashboard" target="_blank" rel="noopener">denaro.grivetto.eu/dashboard</a>
+    <a class="link-chip" href="https://denaro.grivetto.eu/squadra" target="_blank" rel="noopener">denaro.grivetto.eu/squadra</a>
+    <a class="link-chip" href="https://denaro.grivetto.eu/agenti" target="_blank" rel="noopener">denaro.grivetto.eu/agenti</a>
+    <a class="link-chip" href="https://github.com/grivetto/money" target="_blank" rel="noopener">github.com/grivetto/money</a>
+  </div>
+  <div class="meta">
+    <span>Sergio Grivetto · ottobre 2026</span>
+    <span>Pagine live verificabili: <a href="https://denaro.grivetto.eu/dashboard">Dashboard</a> · <a href="https://denaro.grivetto.eu/squadra">Squadra</a> · <a href="https://denaro.grivetto.eu/agenti">Agenti</a> · <a href="https://github.com/grivetto/money">Codice &amp; Prove</a></span>
+  </div>
 </section>
 
 <!-- 2 · EXECUTIVE SUMMARY -->
@@ -80,8 +96,8 @@
     <div>
       <table>
         <tr><td><b>Cosa è</b></td><td>Una piattaforma di ricerca quantitativa che misura, valida e sorveglia strategie di trading su cripto. Prima la misura, poi la strategia.</td></tr>
-        <tr><td><b>Stato</b></td><td>Operativa su 5 macchine con 22 operatori software; 1.097 € di capitale reale riconciliato; 13 bot in test; 2 esperimenti reali a taglia minima.</td></tr>
-        <tr><td><b>Evidenza</b></td><td>1.004 test automatici verdi, ogni numero con il proprio artefatto riproducibile, repo pubblico.</td></tr>
+        <tr><td><b>Stato</b></td><td>Operativa su 5 macchine con 22 operatori software (<a href="https://denaro.grivetto.eu/agenti">/agenti</a>); 1.097 € di capitale reale riconciliato (<a href="https://denaro.grivetto.eu/dashboard">/dashboard</a>); 13 bot in test; 2 esperimenti reali a taglia minima.</td></tr>
+        <tr><td><b>Evidenza</b></td><td>1.004 test automatici verdi, ogni numero con il proprio artefatto riproducibile, repository pubblico (<a href="https://github.com/grivetto/money">github.com/grivetto/money</a>).</td></tr>
         <tr><td><b>Risultato</b></td><td>Zero strategie promosse finora. È il risultato corretto: il sistema ha scartato ciò che non regge i costi.</td></tr>
       </table>
     </div>
@@ -94,7 +110,7 @@
       <p class="small" style="margin-top:14px">Tutto il resto — macchine, infrastruttura, codice, tempo — è già sostenuto dal sottoscritto.</p>
     </div>
   </div>
-  <div class="foot"><span>Denaro · ottobre 2026</span><span>2</span></div>
+  <div class="foot"><span>Denaro · <a href="https://denaro.grivetto.eu/">denaro.grivetto.eu</a> · <a href="https://github.com/grivetto/money">github.com/grivetto/money</a></span><span>2</span></div>
 </section>
 
 <!-- 3 · CONTESTO -->
@@ -117,7 +133,7 @@
   </div>
   <div class="rule"></div>
   <p class="lead">La conseguenza è sempre la stessa: non si distingue un vantaggio reale dal rumore, e si scala il rumore. Il progetto parte dal problema opposto: rendere il risultato verificabile prima di chiedere capitale.</p>
-  <div class="foot"><span>Denaro · ottobre 2026</span><span>3</span></div>
+  <div class="foot"><span>Denaro · <a href="https://denaro.grivetto.eu/">denaro.grivetto.eu</a> · <a href="https://github.com/grivetto/money">github.com/grivetto/money</a></span><span>3</span></div>
 </section>
 
 <!-- 4 · PRINCIPI -->
@@ -135,7 +151,7 @@
     </ul>
   </div>
   <div class="box" style="margin-top:22px">Il criterio operativo: <b>ogni affermazione deve poter essere riletta come un artefatto</b> — un file, un comando, un numero riproducibile. Il resto è opinione.</div>
-  <div class="foot"><span>Denaro · ottobre 2026</span><span>4</span></div>
+  <div class="foot"><span>Denaro · <a href="https://denaro.grivetto.eu/">denaro.grivetto.eu</a> · <a href="https://github.com/grivetto/money">github.com/grivetto/money</a></span><span>4</span></div>
 </section>
 
 <!-- 5 · SISTEMA OGGI -->
@@ -143,21 +159,21 @@
   <div class="kicker">Stato dell'arte</div>
   <h2>Cosa è operativo oggi</h2>
   <div class="kpis">
-    <div class="kpi"><div class="v">5</div><div class="l">macchine collegate (hub, trading, monitoraggio, sviluppo, Windows)</div></div>
-    <div class="kpi"><div class="v">22</div><div class="l">operatori software con avvio automatico e riavvio su errore</div></div>
-    <div class="kpi"><div class="v">1.004</div><div class="l">test automatici verdi, suite offline</div></div>
-    <div class="kpi"><div class="v">5′</div><div class="l">intervallo di riconciliazione del capitale</div></div>
+    <div class="kpi"><div class="v">5</div><div class="l">macchine collegate (<a href="https://denaro.grivetto.eu/squadra">denaro.grivetto.eu/squadra</a>)</div></div>
+    <div class="kpi"><div class="v">22</div><div class="l">operatori software monitorati (<a href="https://denaro.grivetto.eu/agenti">denaro.grivetto.eu/agenti</a>)</div></div>
+    <div class="kpi"><div class="v">1.004</div><div class="l">test automatici verdi (<a href="https://github.com/grivetto/money">github.com/grivetto/money</a>)</div></div>
+    <div class="kpi"><div class="v">5′</div><div class="l">riconciliazione capitale (<a href="https://denaro.grivetto.eu/dashboard">denaro.grivetto.eu/dashboard</a>)</div></div>
   </div>
   <table style="margin-top:22px">
-    <tr><th>Componente</th><th>Funzione</th><th>Stato</th></tr>
-    <tr><td>Hub di regia e ricerca</td><td>direzione, misure, review, scrittura unica sul repository</td><td class="ok">attivo</td></tr>
-    <tr><td>Nodo trading e web</td><td>esecuzione degli esperimenti, dashboard, sito pubblico</td><td class="ok">attivo</td></tr>
-    <tr><td>Nodo monitoraggio</td><td>health check, exporter, agenti di sorveglianza</td><td class="ok">attivo</td></tr>
-    <tr><td>Nodo sviluppo e agenti</td><td>ricerca, sviluppo, esecuzione dei task</td><td class="ok">attivo</td></tr>
-    <tr><td>Postazione Windows</td><td>operatori aggiuntivi, container</td><td class="ok">attivo</td></tr>
-    <tr><td>Sorveglianza</td><td>Zabbix su tutti i nodi, alert Telegram, watchdog anti-silenzio</td><td class="ok">attivo</td></tr>
+    <tr><th>Componente</th><th>Funzione e pagina di verifica</th><th>Stato</th></tr>
+    <tr><td>Hub di regia e ricerca (mc2)</td><td>direzione, misure, review, scrittura unica su <a href="https://github.com/grivetto/money">github.com/grivetto/money</a></td><td class="ok">attivo</td></tr>
+    <tr><td>Nodo trading e web (MARCODG1)</td><td>esperimenti live, <a href="https://denaro.grivetto.eu/">landing</a>, <a href="https://denaro.grivetto.eu/dashboard">/dashboard</a>, <a href="https://denaro.grivetto.eu/squadra">/squadra</a>, <a href="https://denaro.grivetto.eu/agenti">/agenti</a></td><td class="ok">attivo</td></tr>
+    <tr><td>Nodo monitoraggio (nuvola)</td><td>health check, exporter, bot paper in forward test</td><td class="ok">attivo</td></tr>
+    <tr><td>Nodo sviluppo e quant (omarchy)</td><td>ricerca quantitativa, sviluppo moduli, test offline</td><td class="ok">attivo</td></tr>
+    <tr><td>Postazione Windows (andromeda)</td><td>operatori aggiuntivi, container Docker</td><td class="ok">attivo</td></tr>
+    <tr><td>Sorveglianza continua</td><td>Zabbix 5/5 nodi, alert Telegram, feed <a href="https://denaro.grivetto.eu/api/infra.json">/api/infra.json</a></td><td class="ok">attivo</td></tr>
   </table>
-  <div class="foot"><span>Denaro · ottobre 2026</span><span>5</span></div>
+  <div class="foot"><span>Denaro · <a href="https://denaro.grivetto.eu/">denaro.grivetto.eu</a> · <a href="https://github.com/grivetto/money">github.com/grivetto/money</a></span><span>5</span></div>
 </section>
 
 <!-- 6 · RISULTATI -->
@@ -180,8 +196,8 @@
       <tr><td>Ordini non autorizzati</td><td class="num">0</td></tr>
     </table>
   </div>
-  <div class="box" style="margin-top:20px">Due esperimenti reali sono vivi e coperti: un carry delta-neutral su DOGE (review di 14 giorni superata) e un carry multicoppia DOT/ADA a leva 1×. Il capitale resta a taglia minima finché l'evidenza non giustifica una scala.</div>
-  <div class="foot"><span>Denaro · ottobre 2026</span><span>6</span></div>
+  <div class="box" style="margin-top:20px">Due esperimenti reali sono vivi e coperti (visibili in tempo reale su <a href="https://denaro.grivetto.eu/dashboard">denaro.grivetto.eu/dashboard</a>): un carry delta-neutral su DOGE (review di 14 giorni superata) e un carry multicoppia DOT/ADA a leva 1×. Il capitale resta a taglia minima finché l'evidenza non giustifica una scala.</div>
+  <div class="foot"><span>Denaro · <a href="https://denaro.grivetto.eu/">denaro.grivetto.eu</a> · <a href="https://github.com/grivetto/money">github.com/grivetto/money</a></span><span>6</span></div>
 </section>
 
 <!-- 7 · PIPELINE -->
@@ -209,7 +225,7 @@
       <tr><td>Stabilità out-of-sample</td><td>il criterio che ha archiviato più ipotesi di quante ne abbia promosse</td></tr>
     </table>
   </div>
-  <div class="foot"><span>Denaro · ottobre 2026</span><span>7</span></div>
+  <div class="foot"><span>Denaro · <a href="https://denaro.grivetto.eu/">denaro.grivetto.eu</a> · <a href="https://github.com/grivetto/money">github.com/grivetto/money</a></span><span>7</span></div>
 </section>
 
 <!-- 8 · ECONOMIA -->
@@ -224,7 +240,7 @@
   </table>
   <div class="rule"></div>
   <p class="lead">Con questo capitale l'unica strategia sensata è ridurre i costi, svegliare ogni euro dormiente e crescere solo quando l'evidenza lo giustifica. Il collo di bottiglia non è il capitale: è il tempo di ricerca.</p>
-  <div class="foot"><span>Denaro · ottobre 2026</span><span>8</span></div>
+  <div class="foot"><span>Denaro · <a href="https://denaro.grivetto.eu/">denaro.grivetto.eu</a> · <a href="https://github.com/grivetto/money">github.com/grivetto/money</a></span><span>8</span></div>
 </section>
 
 <!-- 9 · RISCHI -->
@@ -239,7 +255,7 @@
     <tr><td>Deriva dei costi</td><td>Il netto peggiora</td><td>Registro costi mensile, soglia di break-even dichiarata, nessuna spesa non misurata</td></tr>
   </table>
   <div class="box" style="margin-top:20px">Il rischio massimo dichiarato è <b>la perdita del capitale esposto agli esperimenti</b>, non l'intero capitale: il resto è in strumenti a capitale protetto o non impiegato.</div>
-  <div class="foot"><span>Denaro · ottobre 2026</span><span>9</span></div>
+  <div class="foot"><span>Denaro · <a href="https://denaro.grivetto.eu/">denaro.grivetto.eu</a> · <a href="https://github.com/grivetto/money">github.com/grivetto/money</a></span><span>9</span></div>
 </section>
 
 <!-- 10 · RICHIESTA -->
@@ -263,7 +279,7 @@
     </div>
   </div>
   <div class="box green" style="margin-top:18px">Se il progetto non produce evidenza entro gennaio, la richiesta si chiude e il sistema resta in manutenzione a costo quasi nullo. La decisione può essere presa in qualsiasi momento, con i numeri in mano.</div>
-  <div class="foot"><span>Denaro · ottobre 2026</span><span>10</span></div>
+  <div class="foot"><span>Denaro · <a href="https://denaro.grivetto.eu/">denaro.grivetto.eu</a> · <a href="https://github.com/grivetto/money">github.com/grivetto/money</a></span><span>10</span></div>
 </section>
 
 <!-- 11 · PIANO -->
@@ -278,27 +294,48 @@
   </table>
   <div class="rule"></div>
   <p class="lead">Le tappe non sono promesse di rendimento: sono criteri per decidere se continuare. È la differenza tra un progetto e una scommessa.</p>
-  <div class="foot"><span>Denaro · ottobre 2026</span><span>11</span></div>
+  <div class="foot"><span>Denaro · <a href="https://denaro.grivetto.eu/">denaro.grivetto.eu</a> · <a href="https://github.com/grivetto/money">github.com/grivetto/money</a></span><span>11</span></div>
 </section>
 
-<!-- 12 · CHIUSURA -->
+<!-- 12 · CHIUSURA E LINK LIVE -->
 <section class="slide">
-  <div class="kicker">Trasparenza</div>
-  <h2>Cosa può verificare chiunque, oggi</h2>
-  <div class="cols">
-    <ul class="tight">
-      <li><b>Repository pubblico</b> — codice, test e artefatti delle misure: github.com/grivetto/money</li>
-      <li><b>Dashboard</b> — stato del sistema e della squadra: denaro.grivetto.eu</li>
-      <li><b>Report mensile</b> — capitale riconciliato, rendita netta, costi, decisioni</li>
-    </ul>
-    <ul class="tight">
-      <li><b>Alert automatici</b> — ogni scostamento di capitale o servizio</li>
-      <li><b>Numeri riproducibili</b> — ogni cifra citata ha il comando che la rigenera</li>
-      <li><b>Nessun segreto nelle pagine</b> — solo stato, mai chiavi o credenziali</li>
-    </ul>
-  </div>
-  <div class="box" style="margin-top:24px;font-size:17px">La richiesta è di <b>150 € per sei mesi</b>. In cambio non c'è una promessa di rendimento: c'è un sistema che misura, documenta e si ferma quando i numeri non lo giustificano.</div>
-  <div class="foot"><span>Denaro · ottobre 2026</span><span>12</span></div>
+  <div class="kicker">Trasparenza e accesso diretto</div>
+  <h2>Tutte le pagine web del progetto, verificabili oggi</h2>
+  <table>
+    <tr><th>Pagina / Risorsa</th><th>Indirizzo diretto (cliccabile)</th><th>Cosa mostra in tempo reale</th></tr>
+    <tr>
+      <td><b>Vetrina pubblica</b></td>
+      <td class="mono"><a href="https://denaro.grivetto.eu/" target="_blank" rel="noopener">https://denaro.grivetto.eu/</a></td>
+      <td>Sintesi del progetto, principi operativi e accesso rapido alle viste live</td>
+    </tr>
+    <tr>
+      <td><b>Dashboard («Il Motore»)</b></td>
+      <td class="mono"><a href="https://denaro.grivetto.eu/dashboard" target="_blank" rel="noopener">https://denaro.grivetto.eu/dashboard</a></td>
+      <td>Storia capitale dal banco (24h/7g/14g), saldi Earn/Trading/Funding, carry, ricerca edge</td>
+    </tr>
+    <tr>
+      <td><b>La squadra</b></td>
+      <td class="mono"><a href="https://denaro.grivetto.eu/squadra" target="_blank" rel="noopener">https://denaro.grivetto.eu/squadra</a></td>
+      <td>Architettura delle 5 macchine, ruoli e organizzazione della fabbrica</td>
+    </tr>
+    <tr>
+      <td><b>Pannello operatori AI</b></td>
+      <td class="mono"><a href="https://denaro.grivetto.eu/agenti" target="_blank" rel="noopener">https://denaro.grivetto.eu/agenti</a></td>
+      <td>Stato live dei 22 operatori software (Hermes, A0, DSH, OpenCode, agy) sui 5 nodi</td>
+    </tr>
+    <tr>
+      <td><b>Feed JSON pubblici</b></td>
+      <td class="mono"><a href="https://denaro.grivetto.eu/api/infra.json" target="_blank" rel="noopener">https://denaro.grivetto.eu/api/infra.json</a> · <a href="https://denaro.grivetto.eu/scommessa.json" target="_blank" rel="noopener">/scommessa.json</a></td>
+      <td>Telemetria grezza in sola lettura servita dall'aggregatore</td>
+    </tr>
+    <tr>
+      <td><b>Repository GitHub</b></td>
+      <td class="mono"><a href="https://github.com/grivetto/money" target="_blank" rel="noopener">https://github.com/grivetto/money</a></td>
+      <td>Codice sorgente, 1.004 test automatici, artefatti in <code>prove/</code> e registro esperimenti</td>
+    </tr>
+  </table>
+  <div class="box" style="margin-top:20px;font-size:16.5px">La richiesta è di <b>150 € per sei mesi (25 €/mese)</b>. In cambio non c'è una promessa di rendimento: c'è un sistema aperto che chiunque può ispezionare ai link qui sopra, in qualsiasi momento.</div>
+  <div class="foot"><span>Denaro · <a href="https://denaro.grivetto.eu/">denaro.grivetto.eu</a> · <a href="https://github.com/grivetto/money">github.com/grivetto/money</a></span><span>12</span></div>
 </section>
 
 </body>
