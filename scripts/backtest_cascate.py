@@ -103,11 +103,17 @@ _EVENTI_CACHE: dict = {}
 
 
 def eventi_di(dati, soglia):
-    """{symbol: [indici evento]} — calcolato una volta per soglia."""
-    if soglia not in _EVENTI_CACHE:
+    """{symbol: [indici evento]} — calcolato una volta per (dataset, soglia).
+
+    La chiave include l'identita' del dataset: senza, una seconda chiamata con un
+    dataset diverso (es. OOS cross-exchange) riusava la cache del primo e andava in
+    KeyError sui simboli nuovi (trovato in E4, 2026-10-21).
+    """
+    chiave = (id(dati), soglia)
+    if chiave not in _EVENTI_CACHE:
         mv = {s: medie_volume(barre) for s, barre in dati.items()}
-        _EVENTI_CACHE[soglia] = {s: eventi(dati[s], mv[s], soglia) for s in dati}
-    return _EVENTI_CACHE[soglia]
+        _EVENTI_CACHE[chiave] = {s: eventi(dati[s], mv[s], soglia) for s in dati}
+    return _EVENTI_CACHE[chiave]
 
 
 def atr14(barre, i):
