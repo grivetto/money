@@ -37,6 +37,7 @@ STATE = DIR / "canary_state.json"
 EVENTS = DIR / "canary_events.jsonl"
 
 from money.esecuzione.cancello import gate_pre_trade
+from money.esecuzione import stato as modulo_stato
 from money.esecuzione.invio import Gamba, invia_gamba
 from money.rischio import stop_da_atr
 
@@ -277,6 +278,69 @@ def posizione(ex):
     return None
 
 
+# --- fix P2 audit 19/10: reprice e unwind mai alla cieca ----------------------------
+
+def residuo_reprice(target: float, oid: str, sym: str, ex) -> float:
+    """Residuo da rinviare dopo una cancel su reprice, dal fill EFFETTIVO.
+
+    Il fill va letto DOPO la cancel (audit 19/10, canary_carry.py:388-403 e
+    429-439): leggere prima della cancel lascia una race con l'ultimo fill in
+    transito, e un `fetch_order` fallito NON deve mai diventare «filled 0» →
+    rinvio della taglia piena (over-buy / over-short). Se il fill non e'
+    leggibile si FERMA e si chiede la riconciliazione manuale.
+    """
+    oo = None
+    try:
+        oo = ex.fetch_order(oid, sym)
+    except Exception:
+        oo = None
+    if not oo:
+        evento("reprice_fill_illeggibile", symbol=sym, ordine=oid)
+        sys.exit(f"REPRICE {sym}: fill non leggibile dopo cancel — "
+                 "riconciliare a mano (mai rinviare la taglia piena)")
+    filled = float(oo.get("filled") or 0)
+    residuo = target - filled
+    if residuo < 0:
+        evento("reprice_residuo_negativo", symbol=sym, ordine=oid,
+               filled=filled, target=target)
+        sys.exit(f"REPRICE {sym}: filled {filled} > target {target} — "
+                 "riconciliare a mano")
+    print(f"reprice {sym}: filled {filled} su {target} -> residuo {residuo}")
+    return residuo
+
+
+def residuo_reprice_perp(target_ct: int, oid: str, sym: str, ex) -> int:
+    """Residuo in CONTRATTI da rinviare sul perp (interi): 0 = gia' coperto.
+
+    Mai rinviare l'intera `ct` quando una parte e' gia' riempita (over-short,
+    audit 19/10 canary_carry.py:429-439); un residuo frazionario su uno
+    strumento a contratti interi non si arrotonda in silenzio: si ferma.
+    """
+    residuo = residuo_reprice(float(target_ct), oid, sym, ex)
+    if residuo < 1:
+        print(f"reprice {sym}: residuo {residuo} < 1 ct — nessun rinvio")
+        return 0
+    if abs(residuo - round(residuo)) > 1e-9:
+        evento("reprice_residuo_frazionario", symbol=sym, ordine=oid, residuo=residuo)
+        sys.exit(f"REPRICE {sym}: residuo frazionario {residuo} ct — "
+                 "riconciliare a mano")
+    return int(round(residuo))
+
+
+def verdetto_unwind(esito: str, residuo) -> str:
+    """Verdetto dell'unwind spot: «flat» SOLO con fill closed e residuo ~0.
+
+    Audit 19/10 (canary_carry.py:463-472): l'esito di attesa_fill era scartato
+    e si dichiarava «flat» a priori. Il saldo residuo NON leggibile (None) e'
+    NON FLAT: mai dichiarare flat senza verifica.
+    """
+    if residuo is None:
+        return f"non_flat|esito {esito}|saldo non leggibile"
+    if esito == "closed" and residuo <= 0.01:
+        return "flat"
+    return f"non_flat|residuo {residuo:.4f}|esito {esito}"
+
+
 def preflight(ex):
     ok = True
     ex.load_markets()
@@ -354,209 +418,252 @@ def main():
         evento("convert", esito=esito, ordine=o["id"])
 
     elif cmd == "open":
-        st = carica_state()
-        if st and st.get("status") == "open":
-            sys.exit("stato già 'open' — usare status/close")
         if not preflight(ex):
             sys.exit("preflight NO-GO")
-        if not flag("--execute"):
-            print("[DRY] open non eseguito")
-            return
-        if kill_attivo():
-            sys.exit(f"KILL SWITCH attivo ({KILL}): nessuna apertura")
-        # leva 1x isolated (fallback cross registrato)
         try:
-            r = ex.privatePostAccountSetLeverage({"instId": INST, "lever": LEVER, "mgnMode": MGN})
-            print("set-lever isolated:", r.get("code"))
-        except Exception as e:
-            print("set-lever isolated ERR:", str(e)[:110], "-> fallback cross")
-            ex.privatePostAccountSetLeverage({"instId": INST, "lever": LEVER, "mgnMode": "cross"})
-            globals()["MGN"] = "cross"
-        # gamba 1: SPOT buy limit
-        st = st or {}
-        ds = now_iso()[:10]
-        t_s = ex.fetch_ticker(SYM_SPOT)
-        px1 = ex.price_to_precision(SYM_SPOT, float(t_s["ask"]) * 1.002)
-        mid1 = float(t_s["last"])
-        cancello(ex, SYM_SPOT, "buy", Q_SPOT, float(px1))
-        seme_s1 = intento(st, "intent_s1", f"{SYM_SPOT}|buy|{Q_SPOT}|{ds}")
-        cid = cid_stabile("c1s", seme_s1)
-        o1 = invia_gamba(ex, Gamba(SYM_SPOT, "buy", Q_SPOT, float(px1), cid))
-        oo1, es1 = attesa_fill(ex, o1["id"], SYM_SPOT, 60)
-        if es1 == "reprice":
-            print("spot: reprice")
-            oo1_prev = None
-            try:
-                oo1_prev = ex.fetch_order(o1["id"], SYM_SPOT)
-            except Exception:
-                pass
-            try:
-                ex.cancel_order(o1["id"], SYM_SPOT)
-            except Exception:
-                pass
-            filled_prev = float((oo1_prev or {}).get("filled") or 0)
-            residuo = Q_SPOT - filled_prev
-            t_s = ex.fetch_ticker(SYM_SPOT)
-            px1b = ex.price_to_precision(SYM_SPOT, float(t_s["ask"]) * 1.004)
-            cancello(ex, SYM_SPOT, "buy", residuo, float(px1b))
-            seme_s2 = intento(st, "intent_s2", f"{seme_s1}|reprice")
-            o1b = invia_gamba(ex, Gamba(SYM_SPOT, "buy", residuo, float(px1b), cid_stabile("c1s", seme_s2)))
-            oo1b, es1 = attesa_fill(ex, o1b["id"], SYM_SPOT, 45)
-            if es1 != "closed":
+            with modulo_stato.lock_esclusivo(str(STATE)):
+                st = carica_state()
+                if st and st.get("status") == "open":
+                    sys.exit("stato già 'open' — usare status/close")
+                if not flag("--execute"):
+                    print("[DRY] open non eseguito")
+                    return
+                if kill_attivo():
+                    sys.exit(f"KILL SWITCH attivo ({KILL}): nessuna apertura")
+                st = st or {}
+                # leva 1x isolated (fallback cross registrato)
                 try:
-                    ex.cancel_order(o1b["id"], SYM_SPOT)
-                except Exception:
-                    pass
-        qty_doge = spot_qty(ex)
-        avg1 = float((oo1 or {}).get("average") or 0)
-        fee1 = float((oo1 or {}).get("fee", {}).get("cost") or 0) if isinstance((oo1 or {}).get("fee"), dict) else 0.0
-        fee1_ccy = ((oo1 or {}).get("fee") or {}).get("currency") if isinstance((oo1 or {}).get("fee"), dict) else None
-        evento("spot_fill", qty=qty_doge, avg=avg1, fee=fee1, fee_ccy=fee1_ccy, esito=es1, mid_pre=mid1)
-        print(f"SPOT: {qty_doge} DOGE @ {avg1} (mid pre {mid1})")
-        if qty_doge < 100:
-            evento("abort", motivo="spot fill < 100 DOGE", qty=qty_doge)
-            sys.exit(f"FILL SPOT INSUFFICIENTE ({qty_doge}) — nessuna gamba perp aperta")
-        # gamba 2: PERP short limit
-        ct = round(qty_doge / CT_VAL)
-        t_p = ex.fetch_ticker(SYM_PER)
-        px2 = ex.price_to_precision(SYM_PER, float(t_p["bid"]) * 0.998)
-        mid2 = float(t_p["last"])
-        cancello(ex, SYM_PER, "sell", float(ct) * CT_VAL, float(px2), leva=float(LEVER))
-        seme_p1 = intento(st, "intent_p1", f"{SYM_PER}|sell|{ct}|{ds}")
-        o2 = invia_gamba(ex, Gamba(SYM_PER, "sell", float(ct), float(px2),
-                                   cid_stabile("c1p", seme_p1), td_mode=MGN))
-        oo2, es2 = attesa_fill(ex, o2["id"], SYM_PER, 60)
-        if es2 == "reprice":
-            try:
-                ex.cancel_order(o2["id"], SYM_PER)
-            except Exception:
-                pass
-            t_p = ex.fetch_ticker(SYM_PER)
-            px2b = ex.price_to_precision(SYM_PER, float(t_p["bid"]) * 0.996)
-            cancello(ex, SYM_PER, "sell", float(ct) * CT_VAL, float(px2b), leva=float(LEVER))
-            seme_p2 = intento(st, "intent_p2", f"{seme_p1}|reprice")
-            o2b = invia_gamba(ex, Gamba(SYM_PER, "sell", float(ct), float(px2b),
-                                        cid_stabile("c1p", seme_p2), td_mode=MGN))
-            oo2, es2 = attesa_fill(ex, o2b["id"], SYM_PER, 45)
-            if es2 != "closed":
-                try:
-                    ex.cancel_order(o2b["id"], SYM_PER)
-                except Exception:
-                    pass
-        p = posizione(ex)
-        if p and abs(float(p.get("pos") or 0)) >= 1:
-            avg2 = float(p.get("avgPx") or 0)
-            stato = {
-                "status": "open", "ts_open": now_iso(),
-                "inst": INST, "symbols": {"perp": SYM_PER, "spot": SYM_SPOT},
-                "spot": {"qty": qty_doge, "avg_px": avg1, "fee": fee1, "order": o1["id"], "esito": es1, "mid_pre": mid1},
-                "perp": {"ct": abs(float(p.get("pos"))), "avg_px": avg2, "order": o2["id"], "esito": es2, "mid_pre": mid2,
-                          "mgnMode": MGN, "lever": LEVER},
-                "delta_qty": abs(qty_doge - abs(float(p.get("pos"))) * CT_VAL),
-            }
-            salva_state(stato)
-            evento("open_complete", ct=stato["perp"]["ct"], avg_perp=avg2, qty_spot=qty_doge, delta=stato["delta_qty"])
-            print("APERTO:", json.dumps(stato, ensure_ascii=False)[:400])
-        else:
-            evento("perdita_hedge", motivo="gamba perp assente dopo retry", esito=es2)
-            print("!! PERP ASSENTE: chiudo la gamba spot per tornare flat")
-            t_s = ex.fetch_ticker(SYM_SPOT)
-            pxu = ex.price_to_precision(SYM_SPOT, float(t_s["bid"]) * 0.998)
-            try:
-                seme_u = intento(st, "intent_u", f"unwind|{SYM_SPOT}|{qty_doge}")
-                ou = invia_gamba(ex, Gamba(SYM_SPOT, "sell", qty_doge, float(pxu), cid_stabile("c1u", seme_u)))
-                attesa_fill(ex, ou["id"], SYM_SPOT, 45)
-                evento("unwind_spot", ordine=ou["id"])
-            except Exception as e:
-                evento("unwind_spot_ERR", errore=str(e)[:140])
-            sys.exit("hedge mancato: spot liquidato per tornare flat (verifica a mano)")
+                    r = ex.privatePostAccountSetLeverage({"instId": INST, "lever": LEVER, "mgnMode": MGN})
+                    print("set-lever isolated:", r.get("code"))
+                except Exception as e:
+                    print("set-lever isolated ERR:", str(e)[:110], "-> fallback cross")
+                    ex.privatePostAccountSetLeverage({"instId": INST, "lever": LEVER, "mgnMode": "cross"})
+                    globals()["MGN"] = "cross"
+                # gamba 1: SPOT buy limit
+                ds = now_iso()[:10]
+                t_s = ex.fetch_ticker(SYM_SPOT)
+                px1 = ex.price_to_precision(SYM_SPOT, float(t_s["ask"]) * 1.002)
+                mid1 = float(t_s["last"])
+                cancello(ex, SYM_SPOT, "buy", Q_SPOT, float(px1))
+                seme_s1 = intento(st, "intent_s1", f"{SYM_SPOT}|buy|{Q_SPOT}|{ds}")
+                cid = cid_stabile("c1s", seme_s1)
+                o1 = invia_gamba(ex, Gamba(SYM_SPOT, "buy", Q_SPOT, float(px1), cid))
+                oo1, es1 = attesa_fill(ex, o1["id"], SYM_SPOT, 60)
+                if es1 == "reprice":
+                    print("spot: reprice")
+                    try:
+                        ex.cancel_order(o1["id"], SYM_SPOT)
+                    except Exception:
+                        pass
+                    residuo = residuo_reprice(Q_SPOT, o1["id"], SYM_SPOT, ex)
+                    if residuo > 0:
+                        t_s = ex.fetch_ticker(SYM_SPOT)
+                        px1b = ex.price_to_precision(SYM_SPOT, float(t_s["ask"]) * 1.004)
+                        cancello(ex, SYM_SPOT, "buy", residuo, float(px1b))
+                        seme_s2 = intento(st, "intent_s2", f"{seme_s1}|reprice")
+                        o1b = invia_gamba(ex, Gamba(SYM_SPOT, "buy", residuo, float(px1b), cid_stabile("c1s", seme_s2)))
+                        oo1b, es1 = attesa_fill(ex, o1b["id"], SYM_SPOT, 45)
+                        if es1 != "closed":
+                            try:
+                                ex.cancel_order(o1b["id"], SYM_SPOT)
+                            except Exception:
+                                pass
+                qty_doge = spot_qty(ex)
+                avg1 = float((oo1 or {}).get("average") or 0)
+                fee1 = float((oo1 or {}).get("fee", {}).get("cost") or 0) if isinstance((oo1 or {}).get("fee"), dict) else 0.0
+                fee1_ccy = ((oo1 or {}).get("fee") or {}).get("currency") if isinstance((oo1 or {}).get("fee"), dict) else None
+                evento("spot_fill", qty=qty_doge, avg=avg1, fee=fee1, fee_ccy=fee1_ccy, esito=es1, mid_pre=mid1)
+                print(f"SPOT: {qty_doge} DOGE @ {avg1} (mid pre {mid1})")
+                if qty_doge < 100:
+                    evento("abort", motivo="spot fill < 100 DOGE", qty=qty_doge)
+                    sys.exit(f"FILL SPOT INSUFFICIENTE ({qty_doge}) — nessuna gamba perp aperta")
+                # gamba 2: PERP short limit
+                ct = round(qty_doge / CT_VAL)
+                t_p = ex.fetch_ticker(SYM_PER)
+                px2 = ex.price_to_precision(SYM_PER, float(t_p["bid"]) * 0.998)
+                mid2 = float(t_p["last"])
+                cancello(ex, SYM_PER, "sell", float(ct) * CT_VAL, float(px2), leva=float(LEVER))
+                seme_p1 = intento(st, "intent_p1", f"{SYM_PER}|sell|{ct}|{ds}")
+                o2 = invia_gamba(ex, Gamba(SYM_PER, "sell", float(ct), float(px2),
+                                           cid_stabile("c1p", seme_p1), td_mode=MGN))
+                oo2, es2 = attesa_fill(ex, o2["id"], SYM_PER, 60)
+                if es2 == "reprice":
+                    try:
+                        ex.cancel_order(o2["id"], SYM_PER)
+                    except Exception:
+                        pass
+                    residuo_ct = residuo_reprice_perp(ct, o2["id"], SYM_PER, ex)
+                    if residuo_ct > 0:
+                        t_p = ex.fetch_ticker(SYM_PER)
+                        px2b = ex.price_to_precision(SYM_PER, float(t_p["bid"]) * 0.996)
+                        cancello(ex, SYM_PER, "sell", residuo_ct * CT_VAL, float(px2b), leva=float(LEVER))
+                        seme_p2 = intento(st, "intent_p2", f"{seme_p1}|reprice")
+                        o2b = invia_gamba(ex, Gamba(SYM_PER, "sell", float(residuo_ct), float(px2b),
+                                                    cid_stabile("c1p", seme_p2), td_mode=MGN))
+                        oo2, es2 = attesa_fill(ex, o2b["id"], SYM_PER, 45)
+                        if es2 != "closed":
+                            try:
+                                ex.cancel_order(o2b["id"], SYM_PER)
+                            except Exception:
+                                pass
+                p = posizione(ex)
+                if p and abs(float(p.get("pos") or 0)) >= 1:
+                    avg2 = float(p.get("avgPx") or 0)
+                    stato = {
+                        "status": "open", "ts_open": now_iso(),
+                        "inst": INST, "symbols": {"perp": SYM_PER, "spot": SYM_SPOT},
+                        "spot": {"qty": qty_doge, "avg_px": avg1, "fee": fee1, "order": o1["id"], "esito": es1, "mid_pre": mid1},
+                        "perp": {"ct": abs(float(p.get("pos"))), "avg_px": avg2, "order": o2["id"], "esito": es2, "mid_pre": mid2,
+                                  "mgnMode": MGN, "lever": LEVER},
+                        "delta_qty": abs(qty_doge - abs(float(p.get("pos"))) * CT_VAL),
+                    }
+                    salva_state(stato)
+                    evento("open_complete", ct=stato["perp"]["ct"], avg_perp=avg2, qty_spot=qty_doge, delta=stato["delta_qty"])
+                    print("APERTO:", json.dumps(stato, ensure_ascii=False)[:400])
+                else:
+                    evento("perdita_hedge", motivo="gamba perp assente dopo retry", esito=es2)
+                    print("!! PERP ASSENTE: chiudo la gamba spot per tornare flat")
+                    t_s = ex.fetch_ticker(SYM_SPOT)
+                    pxu = ex.price_to_precision(SYM_SPOT, float(t_s["bid"]) * 0.998)
+                    try:
+                        seme_u = intento(st, "intent_u", f"unwind|{SYM_SPOT}|{qty_doge}")
+                        ou = invia_gamba(ex, Gamba(SYM_SPOT, "sell", qty_doge, float(pxu), cid_stabile("c1u", seme_u)))
+                        oou, esu = attesa_fill(ex, ou["id"], SYM_SPOT, 45)
+                        residuo = None
+                        try:
+                            residuo = float((ex.fetch_balance().get("DOGE") or {}).get("free") or 0)
+                        except Exception:
+                            residuo = None
+                        verdetto = verdetto_unwind(esu, residuo)
+                        evento("unwind_spot", ordine=ou["id"], esito=esu,
+                               doge_residuo=residuo, verdetto=verdetto)
+                        if verdetto == "flat":
+                            sys.exit("hedge mancato: spot liquidato per tornare flat (verificato)")
+                        sys.exit(f"hedge mancato: NON FLAT — {verdetto}; riconciliare a mano")
+                    except Exception as e:
+                        evento("unwind_spot_ERR", errore=str(e)[:140])
+                        sys.exit(f"hedge mancato: NON FLAT — unwind non verificato "
+                                 f"({str(e)[:80]}); riconciliare a mano")
+        except modulo_stato.LockOccupato:
+            sys.exit(f"LOCK OCCUPATO: un altro processo canary sta operando su "
+                     f"{STATE.name} — apertura rifiutata")
 
     elif cmd == "status":
         quiet = flag("--quiet")
-        st = carica_state() or {"status": "closed"}
-        p = posizione(ex)
-        b_doge = spot_qty(ex)
-        lin = []
-        if p:
-            pos_ct = abs(float(p.get("pos") or 0))
-            upl = float(p.get("upl") or 0)
-            fnd = float(p.get("fundingFee") or 0)
-            mark = float(p.get("markPx") or 0)
-            liq = float(p.get("liqPx") or 0)
-            delta = abs(b_doge - pos_ct * CT_VAL)
-            mkt = ex.fetch_ticker(SYM_SPOT)
-            mid_s = float(mkt["last"])
-            spot_avg = float(st.get("spot", {}).get("avg_px") or 0)
-            spot_delta = b_doge * (mid_s - spot_avg) if spot_avg else 0.0
-            net = spot_delta + upl + fnd
-            lin.append(f"C1 DOGE: perp {pos_ct:.0f}ct@ {p.get('avgPx')} mark {mark} upl {upl:+.4f} funding {fnd:+.4f}")
-            lin.append(f"   spot {b_doge} DOGE (avg {spot_avg}) mid {mid_s} delta-qty {delta:.2f} liq {liq}")
-            lin.append(f"   net stimato (spotΔ+upl+funding) {net:+.4f} USDC")
-            an = []
-            if delta > 1.0:
-                an.append(f"DELTA-QTY {delta:.2f}")
-            if mark and pos_ct and float(p.get("avgPx") or 0) and mark > float(p["avgPx"]) * 1.4:
-                an.append("MARK +40% -> valutare margine")
-            a_fnd = anomalia_funding(fnd, pos_ct, CT_VAL, mark, st.get("ts_open"))
-            if a_fnd:
-                an.append(a_fnd)
-            if an:
-                lin.append("   ANOMALIE: " + ", ".join(an))
-            st.update({"status": "open", "last_pos_ct": pos_ct, "last_mark": mark, "last_upl": upl,
-                       "last_funding": fnd, "last_delta": delta, "last_check": now_iso()})
-        else:
-            lin.append(f"C1 DOGE: nessuna posizione perp | DOGE spot {b_doge}")
-            if b_doge > 0.01:
-                lin.append("   !! DOGE spot presente senza perp (naked/da chiudere)")
-        salva_state(st)
-        if quiet:
-            print(" | ".join(lin))
-        else:
-            print("\n".join(lin))
+        try:
+            with modulo_stato.lock_esclusivo(str(STATE)):
+                st = carica_state() or {"status": "closed"}
+                p = posizione(ex)
+                b_doge = spot_qty(ex)
+                lin = []
+                if p:
+                    pos_ct = abs(float(p.get("pos") or 0))
+                    upl = float(p.get("upl") or 0)
+                    fnd = float(p.get("fundingFee") or 0)
+                    mark = float(p.get("markPx") or 0)
+                    liq = float(p.get("liqPx") or 0)
+                    delta = abs(b_doge - pos_ct * CT_VAL)
+                    mkt = ex.fetch_ticker(SYM_SPOT)
+                    mid_s = float(mkt["last"])
+                    spot_avg = float(st.get("spot", {}).get("avg_px") or 0)
+                    spot_delta = b_doge * (mid_s - spot_avg) if spot_avg else 0.0
+                    net = spot_delta + upl + fnd
+                    lin.append(f"C1 DOGE: perp {pos_ct:.0f}ct@ {p.get('avgPx')} mark {mark} upl {upl:+.4f} funding {fnd:+.4f}")
+                    lin.append(f"   spot {b_doge} DOGE (avg {spot_avg}) mid {mid_s} delta-qty {delta:.2f} liq {liq}")
+                    lin.append(f"   net stimato (spotΔ+upl+funding) {net:+.4f} USDC")
+                    an = []
+                    if delta > 1.0:
+                        an.append(f"DELTA-QTY {delta:.2f}")
+                    if mark and pos_ct and float(p.get("avgPx") or 0) and mark > float(p["avgPx"]) * 1.4:
+                        an.append("MARK +40% -> valutare margine")
+                    a_fnd = anomalia_funding(fnd, pos_ct, CT_VAL, mark, st.get("ts_open"))
+                    if a_fnd:
+                        an.append(a_fnd)
+                    if an:
+                        lin.append("   ANOMALIE: " + ", ".join(an))
+                    st.update({"status": "open", "last_pos_ct": pos_ct, "last_mark": mark, "last_upl": upl,
+                               "last_funding": fnd, "last_delta": delta, "last_check": now_iso()})
+                else:
+                    lin.append(f"C1 DOGE: nessuna posizione perp | DOGE spot {b_doge}")
+                    if b_doge > 0.01:
+                        lin.append("   !! DOGE spot presente senza perp (naked/da chiudere)")
+                salva_state(st)
+                if quiet:
+                    print(" | ".join(lin))
+                else:
+                    print("\n".join(lin))
+        except modulo_stato.LockOccupato:
+            sys.exit(f"LOCK OCCUPATO: lo stato {STATE.name} e' in scrittura da un altro "
+                     "processo canary — riprovare")
 
     elif cmd == "close":
-        st = carica_state() or {}
         if not flag("--execute"):
             print("[DRY] close non eseguito")
             return
-        p = posizione(ex)
-        esiti = {}
-        if p and abs(float(p.get("pos") or 0)) >= 1:
-            ct = abs(float(p.get("pos")))
-            t_p = ex.fetch_ticker(SYM_PER)
-            px = ex.price_to_precision(SYM_PER, float(t_p["ask"]) * 1.002)
-            seme_x = intento(st, "intent_x", f"close_perp|{SYM_PER}|{ct}")
-            o = invia_gamba(ex, Gamba(SYM_PER, "buy", ct, float(px),
-                                      cid_stabile("c1x", seme_x),
-                                      td_mode=st.get("perp", {}).get("mgnMode", MGN), reduce_only=True))
-            oo, es = attesa_fill(ex, o["id"], SYM_PER, 60)
-            if es != "closed":
-                try:
-                    ex.cancel_order(o["id"], SYM_PER)
-                except Exception:
-                    pass
-            esiti["perp"] = es
-            evento("close_perp", esito=es, ordine=o["id"])
-        b_doge = spot_qty(ex)
-        if b_doge > 0.01:
-            t_s = ex.fetch_ticker(SYM_SPOT)
-            px = ex.price_to_precision(SYM_SPOT, float(t_s["bid"]) * 0.998)
-            seme_y = intento(st, "intent_y", f"close_spot|{SYM_SPOT}|{b_doge}")
-            o = invia_gamba(ex, Gamba(SYM_SPOT, "sell", b_doge, float(px), cid_stabile("c1y", seme_y)))
-            oo, es = attesa_fill(ex, o["id"], SYM_SPOT, 60)
-            if es != "closed":
-                try:
-                    ex.cancel_order(o["id"], SYM_SPOT)
-                except Exception:
-                    pass
-            esiti["spot"] = es
-            evento("close_spot", esito=es, ordine=o["id"])
-        p2 = posizione(ex)
-        b2 = spot_qty(ex)
-        st.update({"status": "closed", "ts_close": now_iso(), "esiti": esiti})
-        salva_state(st)
-        evento("close_complete", pos_residua=bool(p2), doge_residuo=b2, esiti=esiti)
-        print("chiuso:", esiti, "| pos residua:", bool(p2), "| DOGE residuo:", b2)
+        try:
+            with modulo_stato.lock_esclusivo(str(STATE)):
+                st = carica_state() or {}
+                p = posizione(ex)
+                esiti = {}
+                if p and abs(float(p.get("pos") or 0)) >= 1:
+                    ct = abs(float(p.get("pos")))
+                    t_p = ex.fetch_ticker(SYM_PER)
+                    px = ex.price_to_precision(SYM_PER, float(t_p["ask"]) * 1.002)
+                    seme_x = intento(st, "intent_x", f"close_perp|{SYM_PER}|{ct}")
+                    o = invia_gamba(ex, Gamba(SYM_PER, "buy", ct, float(px),
+                                              cid_stabile("c1x", seme_x),
+                                              td_mode=st.get("perp", {}).get("mgnMode", MGN), reduce_only=True))
+                    oo, es = attesa_fill(ex, o["id"], SYM_PER, 60)
+                    if es != "closed":
+                        try:
+                            ex.cancel_order(o["id"], SYM_PER)
+                        except Exception:
+                            pass
+                    esiti["perp"] = es
+                    evento("close_perp", esito=es, ordine=o["id"])
+                p2 = posizione(ex)
+                perp_residua = bool(p2 and abs(float(p2.get("pos") or 0)) >= 1)
+                # Lo spot si vende SOLO a copertura perp chiusa (audit 19/10
+                # canary_carry.py:524-557): venderlo comunque = short nudo se il
+                # perp resta aperto.
+                if not perp_residua:
+                    b_doge = spot_qty(ex)
+                    if b_doge > 0.01:
+                        t_s = ex.fetch_ticker(SYM_SPOT)
+                        px = ex.price_to_precision(SYM_SPOT, float(t_s["bid"]) * 0.998)
+                        seme_y = intento(st, "intent_y", f"close_spot|{SYM_SPOT}|{b_doge}")
+                        o = invia_gamba(ex, Gamba(SYM_SPOT, "sell", b_doge, float(px), cid_stabile("c1y", seme_y)))
+                        oo, es = attesa_fill(ex, o["id"], SYM_SPOT, 60)
+                        if es != "closed":
+                            try:
+                                ex.cancel_order(o["id"], SYM_SPOT)
+                            except Exception:
+                                pass
+                        esiti["spot"] = es
+                        evento("close_spot", esito=es, ordine=o["id"])
+                else:
+                    evento("close_spot_sospeso", motivo="copertura perp ancora aperta: "
+                           "spot NON venduto", pos_ct=abs(float(p2.get("pos"))))
+                p3 = posizione(ex)
+                b3 = spot_qty(ex)
+                pos_residua = bool(p3 and abs(float(p3.get("pos") or 0)) >= 1)
+                doge_residuo = b3 > 0.01
+                if pos_residua or doge_residuo:
+                    st.update({"esiti": esiti, "ts_close_tentativo": now_iso()})
+                    if pos_residua:
+                        st["status"] = "open"
+                    salva_state(st)
+                    evento("close_incompleta", pos_residua=pos_residua,
+                           doge_residuo=b3, esiti=esiti)
+                    sys.exit(f"close NON COMPLETA: perp residua {pos_residua}, "
+                             f"DOGE residuo {b3} — stato NON marcato closed")
+                st.update({"status": "closed", "ts_close": now_iso(), "esiti": esiti})
+                salva_state(st)
+                evento("close_complete", pos_residua=False, doge_residuo=b3, esiti=esiti)
+                print("chiuso:", esiti, "| DOGE residuo:", b3)
+        except modulo_stato.LockOccupato:
+            sys.exit(f"LOCK OCCUPATO: un altro processo canary sta operando su "
+                     f"{STATE.name} — chiusura rifiutata")
 
     else:
         sys.exit(f"comando sconosciuto: {cmd}")
