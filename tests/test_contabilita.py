@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Test del ledger: la verita' che il progetto precedente non aveva.
 
-Il caso da cui parte tutto: \`legacy/trades.db\` ha **quattro tabelle e zero righe**. Questi
+Il caso da cui parte tutto: `legacy/trades.db` ha **quattro tabelle e zero righe**. Questi
 test esistono perche' non possa succedere di nuovo — e perche' un PnL calcolato male sia un
 test rosso, non un numero sul cruscotto.
 """

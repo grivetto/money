@@ -91,7 +91,7 @@ def main() -> int:
     oos2 = stat(co)
     oos3 = stat(c3)
 
-    print(f"\n=== E6 momentum estremi 7g | long z>=+3, short z<=-3 ===")
+    print("\n=== E6 momentum estremi 7g | long z>=+3, short z<=-3 ===")
     for nome, s in (("TRAIN bybit", train), ("OOS-1 bybit", oos1),
                     ("OOS-2 okx", oos2), ("OOS-3 BINANCE", oos3)):
         if s.get("n", 0) < 2:

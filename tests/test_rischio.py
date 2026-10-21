@@ -2,7 +2,7 @@
 """Test del motore di rischio: ogni guardia ha un test che la fa **scattare**.
 
 Una guardia senza un test che la viola e' una guardia che non esiste: e' la lezione di
-\`tools/kill_switch.py:16\`, che definisce \`DRAWDOWN_THRESHOLD\` e non lo confronta con niente.
+`tools/kill_switch.py:16`, che definisce `DRAWDOWN_THRESHOLD` e non lo confronta con niente.
 """
 from __future__ import annotations
 
