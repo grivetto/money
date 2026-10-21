@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Denaro — trading sistematico · web.grivetto.eu</title>
+<meta name="description" content="Denaro: trading sistematico crypto su OKX EEA. La porta del progetto — dashboard della flotta, agenti, squadra e dati live riconciliati.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#05070c">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://web.grivetto.eu/">
+<meta property="og:title" content="Denaro — trading sistematico">
+<meta property="og:description" content="Trading sistematico crypto su OKX EEA · dashboard, agenti, squadra e dati live riconciliati.">
+<meta property="og:image" content="https://web.grivetto.eu/trading-2026-10-08.jpg">
+<link rel="canonical" href="https://web.grivetto.eu/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23070b12'/%3E%3Cpath d='M16 6l9 10-9 10-9-10z' fill='none' stroke='%2358c8ff' stroke-width='2.4'/%3E%3Ccircle cx='16' cy='16' r='2.6' fill='%23b18cff'/%3E%3C/svg%3E">
+<link rel="preload" as="image" href="trading-2026-10-08.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#05070c;
+    --panel:rgba(10,16,26,.78);
+    --panel-hover:rgba(13,21,34,.88);
+    --border:rgba(124,170,255,.16);
+    --border-strong:rgba(124,170,255,.42);
+    --ink:#e9eff7;
+    --soft:#c3cfdd;
+    --muted:#8fa1b8;
+    --muted-2:#67788f;
+    --cyan:#58c8ff;
+    --blue:#58a6ff;
+    --violet:#b18cff;
+    --green:#2fe3a4;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{height:100%}
+  body{
+    min-height:100vh;
+    font-family:'Space Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    color:var(--ink);
+    background:var(--bg) url("trading-2026-10-08.jpg") center top / cover fixed no-repeat;
+    display:flex;align-items:center;justify-content:center;
+    padding:clamp(20px,4vw,52px) clamp(16px,3vw,36px);
+  }
+  body::before{
+    content:"";position:fixed;inset:0;z-index:-2;
+    background:
+      radial-gradient(1100px 560px at 50% 14%, rgba(88,166,255,.10), transparent 62%),
+      linear-gradient(180deg, rgba(5,7,12,.46) 0%, rgba(5,7,12,.70) 52%, rgba(5,7,12,.93) 100%);
+  }
+  body::after{
+    content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(120,170,255,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(120,170,255,.05) 1px, transparent 1px);
+    background-size:44px 44px;
+    -webkit-mask-image:radial-gradient(ellipse 78% 64% at 50% 38%, #000 30%, transparent 80%);
+    mask-image:radial-gradient(ellipse 78% 64% at 50% 38%, #000 30%, transparent 80%);
+  }
+  ::selection{background:rgba(88,200,255,.28)}
+  a:focus-visible{outline:2px solid rgba(88,200,255,.75);outline-offset:3px;border-radius:12px}
+
+  .frame{width:100%;max-width:920px;display:flex;flex-direction:column;gap:clamp(24px,3.8vh,36px)}
+
+  /* ── top bar ─────────────────────────────────────── */
+  .topbar{
+    display:flex;justify-content:space-between;align-items:center;gap:14px;
+    font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--muted-2);border-bottom:1px solid var(--border);padding-bottom:12px;
+  }
+  .topbar .brand{color:var(--muted);display:inline-flex;align-items:center;gap:8px}
+  .brand svg{width:11px;height:11px;color:var(--cyan)}
+
+  /* ── hero ────────────────────────────────────────── */
+  .hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:13px}
+  .kicker{
+    font-family:var(--mono);font-size:11px;letter-spacing:.36em;text-transform:uppercase;
+    color:var(--cyan);opacity:.92;padding-left:.36em;
+  }
+  .wordmark{
+    font-size:clamp(56px,11vw,104px);font-weight:700;line-height:1;letter-spacing:.055em;
+    background:linear-gradient(118deg,#7dd3fc 0%,#58a6ff 36%,#a371f7 70%,#e879f9 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 0 28px rgba(88,166,255,.30)) drop-shadow(0 3px 12px rgba(0,0,0,.65));
+  }
+  .tagline{color:var(--soft);font-size:clamp(14.5px,2vw,17px);letter-spacing:.015em}
+  .tagline .hl{font-family:var(--mono);font-size:.9em;color:#9fc6ff;letter-spacing:.03em}
+
+  /* ── live strip ──────────────────────────────────── */
+  .live{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+  .pill{
+    display:inline-flex;align-items:center;gap:9px;padding:8px 16px;border-radius:999px;
+    background:rgba(47,227,164,.09);border:1px solid rgba(47,227,164,.34);color:#5ff0bd;
+    font-family:var(--mono);font-size:12px;letter-spacing:.05em;
+  }
+  .dot{
+    width:7px;height:7px;border-radius:50%;background:var(--green);
+    box-shadow:0 0 10px rgba(47,227,164,.9);animation:pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.8)}}
+  .chip{
+    display:inline-flex;align-items:center;gap:8px;padding:8px 15px;border-radius:999px;
+    border:1px solid var(--border);color:var(--muted);
+    font-family:var(--mono);font-size:12px;letter-spacing:.05em;
+  }
+  .chip b{color:var(--soft);font-weight:500}
+  .chip.pos b{color:#5ff0bd}
+  .chip.neg b{color:#ff9d9d}
+  .chip.off{border-style:dashed;color:var(--muted-2)}
+  .hidden{display:none!important}
+
+  /* ── cards ───────────────────────────────────────── */
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .card{
+    position:relative;display:flex;align-items:center;gap:16px;padding:19px 18px;
+    background:var(--panel);border:1px solid var(--border);border-radius:14px;
+    color:var(--ink);text-decoration:none;overflow:hidden;
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    transition:border-color .2s,transform .2s,box-shadow .25s,background .2s;
+  }
+  .card::before,.card::after{
+    content:"";position:absolute;width:15px;height:15px;pointer-events:none;opacity:.85;
+    transition:opacity .2s;
+  }
+  .card::before{top:-1px;left:-1px;border-top:2px solid rgba(88,200,255,.55);border-left:2px solid rgba(88,200,255,.55);border-top-left-radius:7px}
+  .card::after{bottom:-1px;right:-1px;border-bottom:2px solid rgba(177,140,255,.55);border-right:2px solid rgba(177,140,255,.55);border-bottom-right-radius:7px}
+  .card:hover{
+    border-color:var(--border-strong);background:var(--panel-hover);transform:translateY(-2px);
+    box-shadow:0 14px 36px rgba(0,0,0,.45), 0 0 30px rgba(88,166,255,.12);
+  }
+  .card:hover::before,.card:hover::after{opacity:1}
+  .ico{
+    flex:0 0 auto;width:43px;height:43px;border-radius:11px;display:grid;place-items:center;
+    border:1px solid rgba(88,166,255,.34);color:#9fc6ff;
+    background:linear-gradient(150deg,rgba(88,166,255,.16),rgba(163,113,247,.10));
+  }
+  .ico svg{width:21px;height:21px}
+  .card h2{font-size:16px;font-weight:600;letter-spacing:.02em}
+  .card p{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-top:4px;letter-spacing:.03em}
+  .arrow{margin-left:auto;color:var(--muted-2);transition:transform .2s,color .2s}
+  .arrow svg{width:18px;height:18px;display:block}
+  .card:hover .arrow{transform:translateX(3px);color:#9fc6ff}
+
+  /* ── links / footer ──────────────────────────────── */
+  .linksrow{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+  .ghost{
+    display:inline-flex;align-items:center;gap:9px;padding:10px 17px;border-radius:11px;
+    border:1px solid var(--border);color:var(--muted);text-decoration:none;
+    font-family:var(--mono);font-size:12px;letter-spacing:.04em;
+    transition:border-color .2s,color .2s,background .2s;
+  }
+  .ghost svg{width:15px;height:15px}
+  .ghost:hover{border-color:var(--border-strong);color:#cfe0f5;background:rgba(13,21,34,.7)}
+
+  footer{
+    border-top:1px solid var(--border);padding-top:15px;
+    display:flex;flex-wrap:wrap;gap:10px 26px;align-items:center;justify-content:space-between;
+    font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:var(--muted-2);
+  }
+  .nodes{display:inline-flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
+  .nodes .lbl{color:#4d5c70}
+  .nodes span.n{color:var(--muted)}
+  .credits{display:inline-flex;gap:10px;align-items:center;flex-wrap:wrap}
+  footer a{color:var(--muted);text-decoration:none;transition:color .15s}
+  footer a:hover{color:#cfe0f5}
+  footer a.sep{color:#3d4b5e;pointer-events:none}
+
+  @media (max-width:640px){
+    .cards{grid-template-columns:1fr}
+    footer{justify-content:flex-start}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+  }
+</style>
+</head>
+<body>
+<div class="frame">
+
+  <header class="topbar">
+    <span class="brand">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="3"><path d="M16 5l10 11-10 11L6 16z"/></svg>
+      web.grivetto.eu
+    </span>
+    <span>porta del progetto</span>
+  </header>
+
+  <main class="hero">
+    <p class="kicker">progetto money · trading sistematico</p>
+    <h1 class="wordmark">DENARO</h1>
+    <p class="tagline">Trading sistematico crypto · <span class="hl">OKX&nbsp;EEA</span> · paper e canary live</p>
+  </main>
+
+  <section class="live" id="live" aria-live="polite">
+    <span class="pill hidden" id="pillSistema"><span class="dot"></span>Sistema operativo</span>
+    <span class="chip hidden" id="chipCapitale"></span>
+    <span class="chip hidden" id="chipCanary"></span>
+    <span class="chip hidden" id="chipCarry"></span>
+    <span class="chip hidden" id="chipBots"></span>
+    <span class="chip off hidden" id="chipOff">dati live non disponibili</span>
+  </section>
+
+  <section class="cards" aria-label="Accessi">
+    <a class="card" href="https://denaro.grivetto.eu/dashboard">
+      <span class="ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/>
+        </svg>
+      </span>
+      <span>
+        <h2>Dashboard</h2>
+        <p>flotta · equity · posizioni</p>
+      </span>
+      <span class="arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M13 6l6 6-6 6"/>
+        </svg>
+      </span>
+    </a>
+
+    <a class="card" href="https://denaro.grivetto.eu/agenti">
+      <span class="ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h6v6H9z"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/>
+        </svg>
+      </span>
+      <span>
+        <h2>Agenti</h2>
+        <p>agenti e nodi in campo</p>
+      </span>
+      <span class="arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M13 6l6 6-6 6"/>
+        </svg>
+      </span>
+    </a>
+
+    <a class="card" href="https://denaro.grivetto.eu/squadra">
+      <span class="ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 20h5v-2a3 3 0 00-5.36-1.86"/><path d="M9 20H4v-2a3 3 0 015.36-1.86"/><circle cx="12" cy="7" r="3"/><circle cx="19" cy="10" r="2"/><circle cx="5" cy="10" r="2"/>
+        </svg>
+      </span>
+      <span>
+        <h2>Squadra</h2>
+        <p>chi costruisce il sistema</p>
+      </span>
+      <span class="arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M13 6l6 6-6 6"/>
+        </svg>
+      </span>
+    </a>
+
+    <a class="card" href="https://github.com/grivetto/money" target="_blank" rel="noopener">
+      <span class="ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+        </svg>
+      </span>
+      <span>
+        <h2>Codice</h2>
+        <p>repo · grivetto/money</p>
+      </span>
+      <span class="arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M13 6l6 6-6 6"/>
+        </svg>
+      </span>
+    </a>
+  </section>
+
+  <nav class="linksrow" aria-label="Collegamenti">
+    <a class="ghost" href="https://denaro.grivetto.eu/scommessa.json">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/>
+      </svg>
+      scommessa asimmetrica
+    </a>
+    <a class="ghost" href="https://denaro.grivetto.eu/api/infra.json">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 3H7a2 2 0 00-2 2v5a2 2 0 01-2 2 2 2 0 012 2v5a2 2 0 002 2h1"/><path d="M16 3h1a2 2 0 012 2v5a2 2 0 002 2 2 2 0 00-2 2v5a2 2 0 01-2 2h-1"/>
+      </svg>
+      feed infrastruttura
+    </a>
+  </nav>
+
+  <footer>
+    <span class="nodes">
+      <span class="lbl">nodi</span>
+      <span class="n">mc2</span>·<span class="n">MARCODG1</span>·<span class="n">nuvola</span>·<span class="n">omarchy</span>·<span class="n">win</span>
+    </span>
+    <span class="credits">
+      <span id="liveTs">dati live · in attesa</span>
+      <a class="sep">·</a>
+      <a href="trading-2026-10-08.jpg" target="_blank" rel="noopener">il trading · 08/10/2026</a>
+      <a class="sep">·</a>
+      <span>nessun cookie</span>
+      <a class="sep">·</a>
+      <span>© 2026 Sergio Grivetto</span>
+    </span>
+  </footer>
+
+</div>
+<script>
+(function(){
+  "use strict";
+  var FEED = "https://denaro-api.grivetto.eu/api/infra.json";
+  var FRESH_S = 900; // il banco gira ogni 2 minuti; oltre 15' = vecchio
+
+  function $(id){ return document.getElementById(id); }
+
+  function fmtEUR(n){
+    try{ return new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR"}).format(n); }
+    catch(e){ return n.toFixed(2) + " \u20ac"; }
+  }
+  function fmtPnL(n){
+    var s = (n >= 0 ? "+" : "\u2212") + Math.abs(n).toFixed(2).replace(".", ",");
+    return s + " \u20ac";
+  }
+  function ageMin(ts){ return Math.round((Date.now()/1000 - ts)/60); }
+
+  function setText(id, text){ var el = $(id); if(!el) return; el.textContent = text; el.classList.remove("hidden"); }
+  function show(id){ var el = $(id); if(el) el.classList.remove("hidden"); }
+
+  function render(d){
+    var now = Date.now()/1000;
+
+    // banco: riconciliazione contabile (PASS = sistema sano)
+    var b = d.banco || {};
+    if (b.ok && b.esito === "PASS" && b.age_s < FRESH_S){ show("pillSistema"); }
+    else if (b.ok && b.esito){ setText("pillSistema","banco: " + b.esito); }
+
+    // capitale riconciliato (OKX main, feed aggregatore)
+    var eq = null;
+    var eb = d.equity_breakdown || {};
+    var main = eb["OKX main"];
+    if (main && main.ok && typeof main.eur === "number"){ eq = main.eur; }
+    else if (typeof d.total_equity === "number"){ eq = d.total_equity; }
+    if (eq !== null){ setText("chipCapitale","capitale OKX " + fmtEUR(eq)); }
+
+    // canary DOGE (posizione reale, la prima)
+    var c = d.canary || {};
+    if (c && c.ok && c.symbol){
+      var stato = c.status === "open" ? "aperta" : "chiusa";
+      var el = "canary " + c.symbol + " · " + stato + " · ";
+      var wrap = document.createElement("b"); wrap.textContent = fmtPnL(c.upl || 0);
+      var chip = $("chipCanary"); chip.classList.remove("hidden");
+      chip.textContent = el; chip.appendChild(wrap);
+      chip.classList.remove("pos","neg");
+      chip.classList.add((c.upl||0) >= 0 ? "pos" : "neg");
+    }
+
+    // carry DOT/ADA (coppie funding)
+    var k = d.carry || {};
+    if (k && k.ok){
+      var el2 = "carry · " + k.coppie_aperte + " coppie · ";
+      var wrap2 = document.createElement("b"); wrap2.textContent = fmtPnL(k.upl_totale || 0);
+      var chip2 = $("chipCarry"); chip2.classList.remove("hidden");
+      chip2.textContent = el2; chip2.appendChild(wrap2);
+      chip2.classList.remove("pos","neg");
+      chip2.classList.add((k.upl_totale||0) >= 0 ? "pos" : "neg");
+    }
+
+    // flotta bot
+    var paper = d.node_paper_bots, live = d.node_live_bots;
+    if (typeof paper === "number" || typeof live === "number"){
+      setText("chipBots", (paper||0) + " bot paper · " + (live||0) + " live");
+    }
+
+    // freschezza feed
+    var tms = typeof d.generated === "number" ? d.generated * 1000 : Date.parse(d.ts_iso || "");
+    if (tms && !isNaN(tms)){
+      var t = new Date(tms);
+      var hm = ("0"+t.getUTCHours()).slice(-2) + ":" + ("0"+t.getUTCMinutes()).slice(-2);
+      setText("liveTs", "dati live · " + hm + " UTC · denaro-api");
+    }
+  }
+
+  function offline(){
+    show("chipOff");
+    setText("liveTs", "dati live non disponibili");
+  }
+
+  function load(){
+    var ctl = new AbortController();
+    var t = setTimeout(function(){ ctl.abort(); }, 8000);
+    fetch(FEED, {cache:"no-store", signal:ctl.signal})
+      .then(function(r){ clearTimeout(t); if(!r.ok) throw new Error("http "+r.status); return r.json(); })
+      .then(function(d){ render(d); })
+      .catch(function(){ clearTimeout(t); offline(); });
+  }
+
+  load();
+  setInterval(load, 60000);
+})();
+</script>
+</body>
+</html>
