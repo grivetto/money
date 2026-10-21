@@ -26,7 +26,7 @@ Earn e carry (piccoli, gated). Il piano per i guadagni reali è in **`ROADMAP.md
 | **Ricerca** | Serie P1–P19b + famiglie A/B/C + S4: **tutte archiviate o insufficienti**; S4 esaurita (316k tentativi, 0 candidati); loop giornaliero attivo |
 | **Squadra** | **16 esecutori + 1 regia su 5 macchine**; consegne riviste da Hermes (test rieseguiti) |
 | **Vigilanza** | **veglia auto-riparante** (2′) + digest Telegram 9:00 + soglia equity 1.090 € + Zabbix/Grafana + status post-riavvio |
-| **Qualità** | **726 test verdi** offline, `ruff` pulito, misure riproducibili |
+| **Qualità** | **1021 test verdi** offline, `ruff` pulito, misure riproducibili |
 
 ## 3. Le due squadre e le 5 macchine
 
