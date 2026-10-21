@@ -5,8 +5,7 @@
 
 ## Il disegno in tre cerchi
 
-1. **VETRINA — il mondo.** Tutto il pubblico vive su `denaro.grivetto.eu`, col brand Denaro.
-   Regola: dalla vetrina si linka solo vetrina (più GitHub); niente numeri non riconciliati.
+1. **VETRINA — il mondo.** Tutto il pubblico vive su `web.grivetto.eu` (landing principale, dal 21/10), col brand Denaro; le route applicative restano su `denaro.grivetto.eu`. Regola: dalla vetrina si linka solo vetrina (più GitHub); niente numeri non riconciliati.
 2. **OFFICINA — solo noi.** Strumenti di lavoro sempre dietro **Cloudflare Access**:
    Zabbix, Grafana, Browser SSH. Mai linkati dalla vetrina.
 3. **LABORATORIO — solo tailnet.** Il Kitchen Lab (`mc2.tail1b5252.ts.net`) è il backstage di mc2:
@@ -19,7 +18,7 @@
 | grivetto.eu | sito personale owner | — | **non si tocca** (301 → www.grivetto.eu) | ✓ |
 | denaro.grivetto.eu | vetrina: `/` landing · `/dashboard` · `/agenti` · `/squadra` · `/scommessa.json` · `/api/infra.json` | **MARCODG1** `money-dashboard-marcodg1` (127.0.0.1:8913, dir `/home/marco/money/ops/dashboard`) | pubblico | 200 ✓ |
 | denaro-api.grivetto.eu | feed JSON dell'aggregatore | MARCODG1 `:8912` | pubblico | 200 ✓ |
-| web.grivetto.eu | **ritirato** → 301 a denaro/squadra | stub su MARCODG1 (`/home/marco/denaro/landing`, backup `index.bak-20261015.html`) | pubblico | 301 ✓ |
+| web.grivetto.eu | **vetrina principale** (21/10) → landing Denaro, link a dashboard/agenti/squadra/scommessa/infra | MARCODG1 `python -m http.server 8914` in `/home/marco/denaro/landing` (stub precedente: `index.stub-20261015.html`) | pubblico | 200 ✓ (origin; 301 CF da rimuovere) |
 | home.grivetto.eu | **ritirato** → 301 a denaro.grivetto.eu/ | nginx mc2 `:80` (vhost `grivetto-legacy-redirect.conf`) | pubblico | 301 ✓ |
 | dashboard.grivetto.eu | **ritirato** → 301 a /dashboard | idem (tunnel cloudflared-home ripuntato a `:80`) | pubblico | 301 ✓ |
 | zab.grivetto.eu | Zabbix | MARCODG1 → reverse tunnel → mc2 `:1080` | **Cloudflare Access** (app «zab») | ✓ |
@@ -36,6 +35,12 @@
 - **Kit di ripristino**: `deploy/reinstall/landing/` (contiene anche la pagina squadra pre-assorbimento, ora ridondante).
 - **Stub web**: `/home/marco/denaro/landing/` su MARCODG1 (fuori repo).
 - **Dati vivi** (`scommessa.json`, `agenti.json`): aggiornati da cron su mc2 e copiati su MARCODG1 via `scp` (unico flusso mc2→MARCODG1).
+
+## Cambi del 21/10
+
+1. **web.grivetto.eu → vetrina principale** — nuova landing Denaro su MARCODG1 `:8914` (`/home/marco/denaro/landing/index.html`, sha256 `51e3188c…f71d`), dati live da `denaro-api.grivetto.eu/api/infra.json`; stub precedente salvato come `index.stub-20261015.html`.
+   Rollback origin: ripristinare `index.stub-20261015.html` su MARCODG1 e riavviare il servizio `:8914`.
+   Pendenza: rimuovere la Redirect Rule Cloudflare «[15/10/26] web.grivetto.eu legacy» (zona `cb5723e72edb4382bdd66c9cc4916685`, Rules → Redirect Rules) — senza dashboard CF resta 301.
 
 ## Cambi del 15/10 (con rollback)
 
