@@ -25,6 +25,7 @@
 | grafana.grivetto.eu | Grafana | MARCODG1 `money-grafana` `:3000` | **Cloudflare Access** (app «grafana», creata 15/10) | ✓ |
 | ssh.grivetto.eu | Browser SSH | tunnel mc2 → sshd | Cloudflare Access (app «ssh») | ✓ |
 | mc2.tail1b5252.ts.net | Kitchen Lab (home di mc2) | nginx mc2 (cert TLS tailscale) | **solo tailnet** (firewall blocca il pubblico) | ✓ |
+| mc2.tail1b5252.ts.net:8443-8450 | Officina TLS (Agent Zero/DSH) | nginx mc2 (cert tailscale) | **solo tailnet/LAN** | ✓ |
 | freellmapi.grivetto.eu | router LLM (extra-progetto) | mc2 `:3001` | API con chiave (UI pubblica) | decisione aperta |
 
 ## Dove vivono i file (deploy)
@@ -43,6 +44,7 @@
    Redirect Rule CF «[15/10/26] web.grivetto.eu legacy» rimossa il 21/10 (verificato: web.grivetto.eu = 200).
 2. **denaro.grivetto.eu/ → 301 web.grivetto.eu** — implementato in `ops/dashboard/serve_dashboard.py` (solo Host `denaro.grivetto.eu` e path `/` o `/index.html`; route operative invariate). Test: `tests/test_redirect_denaro.py`.
    Rollback: revert del commit + restart `money-dashboard-mc2` e `money-dashboard-marcodg1`.
+3. **Officina TLS** — nginx site `officina-tools` su mc2 (`:8443-8450`, cert tailnet), config in `deploy/nginx/officina-tools.conf` + `officina-ssl.conf`; link "apri" di `/agenti` aggiornati a `https://mc2.tail1b5252.ts.net:<porta>`. Rollback: rimuovere il site e `nginx -t && systemctl reload nginx`.
 
 ## Cambi del 15/10 (con rollback)
 
