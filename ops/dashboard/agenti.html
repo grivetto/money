@@ -75,10 +75,20 @@ const NODI = [
   {id:"nuvola",   label:"nuvola",   host:"87.106.3.15 · VPS",       operai:["a0","opencode","agy"],               ip:"87.106.3.15",   porte:{a0:50080}},
   {id:"marcodg1", label:"marcodg1", host:"87.106.222.123 · VPS",    operai:["a0","opencode","agy"],               ip:"87.106.222.123",porte:{a0:50080}},
 ];
+// Officina in TLS sul tailnet di mc2 (nginx :8443-8450, cert tailscale).
+// Dal 21/10 i link http://LAN venivano bloccati da Chrome (HTTPS-Only mode) da pagina https.
+const OFFICINA_HOST = "mc2.tail1b5252.ts.net";
+const OFFICINA = {
+  mc2:      {a0:8443, dsh:8444},
+  omarchy:  {a0:8445},
+  win:      {a0:8447},
+  nuvola:   {a0:8449},
+  marcodg1: {a0:8450},
+};
 const STRUMENTI = {
   hermes:  {nome:"Hermes",     link:null},
-  a0:      {nome:"Agent Zero", link:(n)=> "http://" + n.ip + ":" + n.porte.a0 + "/"},
-  dsh:     {nome:"DSH web",    link:(n)=> "http://" + n.ip + ":" + n.porte.dsh + "/"},
+  a0:      {nome:"Agent Zero", link:(n)=> OFFICINA[n.id] && OFFICINA[n.id].a0 ? "https://" + OFFICINA_HOST + ":" + OFFICINA[n.id].a0 + "/" : null},
+  dsh:     {nome:"DSH web",    link:(n)=> OFFICINA[n.id] && OFFICINA[n.id].dsh ? "https://" + OFFICINA_HOST + ":" + OFFICINA[n.id].dsh + "/" : null},
   opencode:{nome:"opencode",   link:null},
   agy:     {nome:"agy",        link:null},
 };
@@ -131,7 +141,8 @@ function render(d){
       const v = (nd.operai || {})[wk] || {up:null, dettaglio:"nodo non raggiungibile"};
       const cls = v.up === true ? "up" : (v.up === false ? "down" : "unk");
       let link = "";
-      if(st.link && v.up === true && n.porte[wk]) link = ' <a href="' + st.link(n) + '" target="_blank" rel="noopener" title="raggiungibile dalla rete di casa">apri ▸</a>';
+      const url = st.link ? st.link(n) : null;
+      if(url && v.up === true) link = ' <a href="' + url + '" target="_blank" rel="noopener" title="officina · solo tailnet">apri ▸</a>';
       return '<div class="row"><span class="dot ' + cls + '"></span><span class="nome">' + st.nome + '</span><span class="det">' + esc(v.dettaglio) + "</span>" + link + "</div>";
     }).join("");
     return '<div class="node' + (off ? " off" : "") + '"><h2>' + esc(n.label) + "</h2>" +
