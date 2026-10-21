@@ -46,9 +46,16 @@ GAMMA_EULERO = 0.5772156649015329
 
 
 def media(xs: Sequence[float]) -> float:
+    """Media aritmetica con somma **compensata** (`math.fsum`).
+
+    Serve la precisione su una serie costante: senza fsum (Python < 3.12) la
+    media non coincide esattamente col valore, la varianza diventa rumore
+    float e i verdetti cambiano tra versioni di Python. Con fsum una serie
+    costante ha varianza esattamente nulla su ogni interprete.
+    """
     if not xs:
         raise ValueError("media di una sequenza vuota: non e' zero, e' indefinita")
-    return sum(xs) / len(xs)
+    return math.fsum(xs) / len(xs)
 
 
 def deviazione(xs: Sequence[float]) -> float:
