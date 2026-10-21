@@ -65,6 +65,9 @@ from pathlib import Path
 # la landing "il trading" (richiesta owner 11/10/2026, spostata da web.grivetto.eu).
 DASHBOARD_ROUTES = {"/dashboard"}
 LANDING_ROUTES = {"/", "/index.html"}
+# Redirect 301: la radice di denaro.grivetto.eu è la vetrina web (direttiva owner 21/10/2026).
+# Le route operative (/dashboard, /agenti, /squadra, JSON) restano invariate.
+EXTERNAL_LANDING_URL = "https://web.grivetto.eu/"
 # Pagina «La squadra»: assorbita da web.grivetto.eu (direttiva owner 15/10/2026).
 SQUADRA_ROUTES = {"/squadra"}
 # Asset statici serviti dalla stessa dir HTML (sfondi di landing e squadra).
@@ -356,6 +359,10 @@ class DashboardHandler(BaseHTTPRequestHandler):
     # ---------- HTTP ----------
     def do_GET(self) -> None:  # noqa: N802
         path = self.path.split("?", 1)[0].rstrip("/") or "/"
+        host = self.headers.get("Host", "").split(":")[0].lower()
+        if host == "denaro.grivetto.eu" and path in LANDING_ROUTES:
+            self._send(301, b"", "text/plain; charset=utf-8", {"Location": EXTERNAL_LANDING_URL})
+            return
         _fav = FAVICON_MAP.get(path)
         if _fav is not None:
             _fpath = Path(self.html_dir) / _fav[0]
@@ -393,6 +400,10 @@ class DashboardHandler(BaseHTTPRequestHandler):
 
     def do_HEAD(self) -> None:  # noqa: N802
         path = self.path.split("?", 1)[0].rstrip("/") or "/"
+        host = self.headers.get("Host", "").split(":")[0].lower()
+        if host == "denaro.grivetto.eu" and path in LANDING_ROUTES:
+            self._send(301, b"", "text/plain; charset=utf-8", {"Location": EXTERNAL_LANDING_URL}, head_only=True)
+            return
         _fav = FAVICON_MAP.get(path)
         if _fav is not None:
             _fpath = Path(self.html_dir) / _fav[0]
