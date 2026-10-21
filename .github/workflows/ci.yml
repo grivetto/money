@@ -1,6 +1,10 @@
 name: CI
 # Qualita' minima del repo money: lint, test, compilazione e test con -O (assert rimossi).
 # Il progetto non deve potersi dichiarare "verde" con assert disattivabili o lint rosso.
+# Matrice su ogni versione Python dichiarata supportata (requires-python >=3.11: testata
+# 3.11, 3.12 e 3.14 - le versioni in uso sui nodi). Dipendenze installate dal lock di
+# sviluppo requirements-dev.lock: ambiente riproducibile da un clone pulito.
+# Rigenerare il lock con: uv pip compile pyproject.toml --extra dev --universal --python-version 3.11 -o requirements-dev.lock
 on:
   push:
     branches: [main]
@@ -11,15 +15,20 @@ on:
 jobs:
   qualita:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.14"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-      - name: Installa dipendenze
+          python-version: ${{ matrix.python-version }}
+      - name: Installa dipendenze (dal lock di sviluppo)
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e ".[dev]"
+          python -m pip install -r requirements-dev.lock
+          python -m pip install -e . --no-deps
           python -m pip check
       - name: Ruff (lint)
         run: ruff check .
