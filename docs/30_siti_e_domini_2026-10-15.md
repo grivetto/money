@@ -33,7 +33,7 @@
   Deploy di una modifica: commit+push da mc2 → `ssh MARCODG1 'cd /home/marco/money && git pull --ff-only'` → `sudo systemctl restart money-dashboard-marcodg1` (per modifiche a `serve_dashboard.py`; gli HTML si rileggono a ogni richiesta).
 - **Kitchen Lab**: sorgente `deploy/kitchen-lab/` → `sudo cp deploy/kitchen-lab/index.html /var/www/kitchen-lab/index.html` (mc2); solo tailnet.
 - **Kit di ripristino**: `deploy/reinstall/landing/` (contiene anche la pagina squadra pre-assorbimento, ora ridondante).
-- **Stub web**: `/home/marco/denaro/landing/` su MARCODG1 (fuori repo).
+- **Landing web principale** (fuori repo, da portare in `deploy/web-landing/`): `/home/marco/denaro/landing/` su MARCODG1, servita da `money-landing-marcodg1.service` (`:8914`); stub precedente `index.stub-20261015.html`.
 - **Dati vivi** (`scommessa.json`, `agenti.json`): aggiornati da cron su mc2 e copiati su MARCODG1 via `scp` (unico flusso mc2→MARCODG1).
 
 ## Cambi del 21/10
