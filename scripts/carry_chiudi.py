@@ -79,6 +79,11 @@ EVENTI_FILE = "eventi.jsonl"
 EPS_CT = 1e-6        # contratti perp
 EPS_QTY = 1e-8       # unita' di spot
 
+#: F5 (P31): tolleranza relativa tra il saldo spot reale e la qty della coppia
+#: (stato qty_spot). Entro la tolleranza si vende il saldo reale; oltre, e'
+#: saldo estraneo alla coppia -> rifiuto (serve --qty esplicito).
+TOLL_QTY_REL = 0.001   # 0,1%
+
 #: Attesa fill ordine: C1 usa 60s con passo 1.5s -> 40 tentativi (iniezione
 #: sleep_fn per i test: il budget e' in tentativi, non a muro).
 POLL_FILL_TENTATIVI = 40
@@ -112,6 +117,12 @@ REPRICE_SELL = 0.996
 
 class CLIError(Exception):
     """Rifiuto di configurazione/guardia (exit 2)."""
+
+
+class PosizioneIncoerente(Exception):
+    """F1 (P31): info['pos'] e 'side' della posizione perp si contraddicono.
+    Fermarsi senza ordini (exit 1): il lato non si deduce mai da una fonte
+    ambigua."""
 
 
 @dataclass
@@ -167,12 +178,64 @@ def build_client(env_path: Path) -> Any:
 # Letture dall'exchange (posizioni REALI: mai i numeri dello stato)
 # ---------------------------------------------------------------------------
 
-def qty_perp(ex, c) -> float:
-    """Posizione perp CON SEGNO (0 se assente)."""
+def lato_taglia_perp(p: dict) -> Tuple[float, float, str]:
+    """F1 (P31): UNICO punto che decide lato e taglia della gamba perp, usato
+    sia dal piano (stampa_piano) sia dall'invio (chiudi_perp).
+
+    Forma REALE di ccxt: `contracts` e' POSITIVO (taglia), la direzione sta in
+    `side` (short -> chiusura buy, long -> sell). Forma legacy (mock/test di
+    P28): `contracts` firmato senza `side`.
+
+    Ritorna (ct_firmato, qty_abs, side_di_chiusura)."""
+    ct = float(p.get("contracts") or 0)
+    qty = abs(ct)
+    if qty <= EPS_CT:
+        return 0.0, 0.0, ""
+    side = (p.get("side") or "").lower()
+    if side == "short":
+        return -qty, qty, "buy"
+    if side == "long":
+        return qty, qty, "sell"
+    return ct, qty, "sell" if ct > 0 else "buy"
+
+
+def _coerenza_info_pos(p: dict, ct: float) -> None:
+    """F1 (P31): info['pos'] e' SOLO un controllo di coerenza (mai fonte
+    primaria). Se il segno contraddice `side` -> PosizioneIncoerente."""
+    info = p.get("info")
+    if not isinstance(info, dict):
+        return
+    raw = info.get("pos")
+    if raw is None:
+        return
+    try:
+        pos_info = float(str(raw).strip().replace(",", "."))
+    except (TypeError, ValueError):
+        return
+    if abs(ct) > EPS_CT and abs(pos_info) > EPS_CT and (pos_info > 0) != (ct > 0):
+        raise PosizioneIncoerente(
+            f"posizione perp incoerente: contracts={p.get('contracts')} "
+            f"side={p.get('side')} info.pos={raw}")
+
+
+def leggi_perp_reale(ex, c, controlla: bool = True) -> Tuple[float, str]:
+    """(ct con segno, side di chiusura) dalla posizione reale. Unico punto
+    usato da piano e invio; qty_perp ne e' il wrapper di sola lettura."""
     for p in ex.fetch_positions([c.sym_perp]):
-        if abs(float(p.get("contracts") or 0)) > 0:
-            return float(p["contracts"])
-    return 0.0
+        ct, qty, side = lato_taglia_perp(p)
+        if qty <= EPS_CT:
+            continue
+        if controlla:
+            _coerenza_info_pos(p, ct)
+        return ct, side
+    return 0.0, ""
+
+
+def qty_perp(ex, c) -> float:
+    """Posizione perp CON SEGNO (0 se assente). Sola lettura (riconciliazione):
+    taglia e lato dal punto unico lato_taglia_perp, senza check di coerenza."""
+    ct, _ = leggi_perp_reale(ex, c, controlla=False)
+    return ct
 
 
 def saldo_spot(ex, c) -> Tuple[float, float]:
@@ -187,6 +250,20 @@ def qty_spot(ex, c) -> float:
     """Quantita' spot vendibile: free se disponibile, altrimenti total."""
     free, total = saldo_spot(ex, c)
     return free if free > EPS_QTY else total
+
+
+def saldo_funding(ex, c) -> float:
+    """F3 (P31): totale della valuta nei comparti funding e Simple Earn (se il
+    client li espone): la gamba spot puo' essere li', non nel trading.
+    0.0 se il comparto non e' esposto o la lettura fallisce."""
+    tot = 0.0
+    for tipo in ("funding", "earn"):
+        try:
+            b = ex.fetch_balance({"type": tipo})
+            tot += float((b.get("total") or {}).get(c.nome, 0) or 0)
+        except Exception:  # noqa: BLE001
+            continue
+    return tot
 
 
 def leggi_posizioni_reali(ex, c) -> Tuple[float, float]:
@@ -248,15 +325,66 @@ def _annulla(ex, oid: str, sym: str) -> None:
         pass
 
 
-def chiudi_perp(ex, c, cfg: Config, mgn: str, sleep_fn, out) -> Dict[str, Any]:
+def _cerca_ordine_vivo(ex, cid: str, sym: str) -> Optional[dict]:
+    """F2 (P31): cerca un ordine per clOrdId dopo un'eccezione di invio.
+    Ritorna l'ordine se ESISTE (vivo o riempito), None solo se provato
+    assente. Un'eccezione su create_order NON prova "non inviato"."""
+    try:
+        oo = ex.fetch_order(cid, sym)
+        if isinstance(oo, dict) and (oo.get("status") or "") in ("open", "closed"):
+            return oo
+    except Exception:  # noqa: BLE001
+        pass
+    try:
+        for oo in ex.fetch_open_orders(sym):
+            info = oo.get("info")
+            cid_o = None
+            if isinstance(info, dict):
+                cid_o = info.get("clOrdId") or info.get("clientOrderId")
+            if cid_o is None:
+                cid_o = oo.get("clientOrderId")
+            if cid_o == cid:
+                return oo
+    except Exception:  # noqa: BLE001
+        pass
+    return None
+
+
+def chiudi_perp(ex, c, cfg: Config, mgn: str, voce: dict, sleep_fn, out) -> Dict[str, Any]:
     """Chiude la posizione perp: LIMIT reduceOnly, lato opposto al segno,
-    +1 reprice (pattern C1). qty = posizione reale RILETTA qui."""
+    +1 reprice (pattern C1). qty = posizione reale RILETTA qui; lato e taglia
+    dal punto unico leggi_perp_reale (F1). Eccezione su create_order NON
+    equivale a "non inviato" (F2). "Assente" mai con una sola lettura (F4).
+    Fill cumulato primo+secondo ordine (F6)."""
     res = _esito_gamba()
-    ct = qty_perp(ex, c)
+    try:
+        ct, side = leggi_perp_reale(ex, c)
+    except PosizioneIncoerente as e:
+        out(f"  STOP: {e}")
+        res["esito"] = "incerto"
+        return res
     if abs(ct) <= EPS_CT:
+        # F4: seconda lettura concordante ~1s dopo; arbitro finale lo stato
+        sleep_fn(1.0)
+        try:
+            ct2, _side2 = leggi_perp_reale(ex, c)
+        except PosizioneIncoerente as e:
+            out(f"  STOP: {e}")
+            res["esito"] = "incerto"
+            return res
+        ct_stato = float(voce.get("ct_perp") or 0)
+        if abs(ct2) > EPS_CT:
+            out(f"  letture perp discordanti (0 poi {ct2:g} ct): nessun ordine, "
+                "verifica manuale.")
+            res["esito"] = "incerto"
+            return res
+        if abs(ct_stato) > EPS_CT:
+            out(f"  perp assente in 2 letture ma stato ct_perp={ct_stato:g}: "
+                "nessun ordine, verifica manuale.")
+            res["esito"] = "incerto"
+            return res
         return res
     res["pre_qty"] = ct
-    side = "sell" if ct > 0 else "buy"          # opposto al segno: mai invertire
     qty = abs(ct)
     t = ex.fetch_ticker(c.sym_perp)
     px = ex.price_to_precision(c.sym_perp,
@@ -268,17 +396,52 @@ def chiudi_perp(ex, c, cfg: Config, mgn: str, sleep_fn, out) -> Dict[str, Any]:
         o = invia_gamba(ex, Gamba(c.sym_perp, side, qty, float(px), cid,
                                   td_mode=mgn, reduce_only=True))
     except Exception as e:  # noqa: BLE001
+        # F2: un'eccezione non prova "non inviato": cercare per clOrdId; se
+        # l'ordine esiste, annullarlo, rileggere e fermarsi con "incerto".
+        trovato = _cerca_ordine_vivo(ex, cid, c.sym_perp)
+        if trovato is not None:
+            _annulla(ex, trovato.get("id") or cid, c.sym_perp)
+            try:
+                ct_ri, _ = qty_perp(ex, c)
+                ri = f"posizione residua {ct_ri:g} ct"
+            except Exception:  # noqa: BLE001
+                ri = "posizione residua ILLEGGIBILE"
+            out(f"  invio perp INCERTO ({type(e).__name__}): ordine {cid} "
+                f"trovato vivo e annullato; {ri} — VERIFICA MANUALE, nessuna "
+                "altra gamba.")
+            res.update({"esito": "incerto", "ordine": trovato.get("id", ""),
+                        "cl_ord_id": cid})
+            return res
         out(f"  invio perp FALLITO: {type(e).__name__}: {str(e)[:120]}")
         res["esito"] = "invio_fallito"
         return res
+    filled_tot = 0.0
+    fees = []
     oo, es = attesa_fill(ex, o["id"], c.sym_perp, POLL_FILL_TENTATIVI, sleep_fn)
     if es == "reprice":
         _annulla(ex, o["id"], c.sym_perp)
-        ct2 = qty_perp(ex, c)                   # rilettura: mai > posizione reale
+        # F6: il fill DEFINITIVO del primo ordine conta (riletto post-cancel)
+        try:
+            oo1 = ex.fetch_order(o["id"], c.sym_perp)
+        except Exception:  # noqa: BLE001
+            oo1 = None
+        if isinstance(oo1, dict):
+            filled_tot += float(oo1.get("filled") or 0)
+            f1 = leggi_fee(oo1)
+            if f1 is not None:
+                fees.append(f1)
+        try:
+            ct2, side2 = leggi_perp_reale(ex, c)   # rilettura: mai > posizione reale
+        except PosizioneIncoerente as e:
+            out(f"  STOP: {e}")
+            res.update({"esito": "incerto", "filled": filled_tot,
+                        "fee": somma_fee(fees), "ordine": o["id"],
+                        "cl_ord_id": cid})
+            return res
         if abs(ct2) <= EPS_CT:
             es = "closed"                       # il primo tentativo ha chiuso tutto
+            oo = oo1 if isinstance(oo1, dict) else oo
         else:
-            side2 = "sell" if ct2 > 0 else "buy"
             qty2 = abs(ct2)
             t2 = ex.fetch_ticker(c.sym_perp)
             px2 = ex.price_to_precision(
@@ -291,26 +454,50 @@ def chiudi_perp(ex, c, cfg: Config, mgn: str, sleep_fn, out) -> Dict[str, Any]:
                 o2 = invia_gamba(ex, Gamba(c.sym_perp, side2, qty2, float(px2), cid2,
                                            td_mode=mgn, reduce_only=True))
             except Exception as e:  # noqa: BLE001
+                trovato = _cerca_ordine_vivo(ex, cid2, c.sym_perp)
+                if trovato is not None:
+                    _annulla(ex, trovato.get("id") or cid2, c.sym_perp)
+                    out(f"  invio perp (reprice) INCERTO ({type(e).__name__}): "
+                        f"ordine {cid2} trovato vivo e annullato — VERIFICA "
+                        "MANUALE.")
+                    res.update({"esito": "incerto", "filled": filled_tot,
+                                "fee": somma_fee(fees),
+                                "ordine": trovato.get("id", ""),
+                                "cl_ord_id": cid2})
+                    return res
                 out(f"  invio perp (reprice) FALLITO: {type(e).__name__}: {str(e)[:120]}")
-                res["esito"] = "invio_fallito"
+                res.update({"esito": "invio_fallito", "filled": filled_tot,
+                            "fee": somma_fee(fees), "ordine": o["id"],
+                            "cl_ord_id": cid2})
                 return res
             oo, es = attesa_fill(ex, o2["id"], c.sym_perp,
                                  REPRICE_FILL_TENTATIVI, sleep_fn)
             if es != "closed":
                 _annulla(ex, o2["id"], c.sym_perp)
+    if isinstance(oo, dict):
+        filled_tot += float(oo.get("filled") or 0)
+        f2 = leggi_fee(oo)
+        if f2 is not None:
+            fees.append(f2)
     res.update({"esito": es,
-                "filled": float(oo.get("filled") or 0) if isinstance(oo, dict) else 0.0,
-                "fee": leggi_fee(oo),
-                "ordine": (oo or {}).get("id", "")})
+                "filled": filled_tot,
+                "fee": somma_fee(fees),
+                "ordine": (oo or {}).get("id", ""),
+                "cl_ord_id": cid})
     out(f"  esito perp: {es} filled={res['filled']}")
     return res
 
 
-def chiudi_spot(ex, c, cfg: Config, sleep_fn, out) -> Dict[str, Any]:
+def chiudi_spot(ex, c, cfg: Config, voce: dict, sleep_fn, out) -> Dict[str, Any]:
     """Vende lo spot detenuto: LIMIT +1 reprice (pattern C1). Solo SELL: la
-    gamba spot del carry e' long; mai un buy (mai invertire il segno)."""
+    gamba spot del carry e' long; mai un buy (mai invertire il segno).
+    F5: la qty venduta e' al piu' la qty della coppia (stato qty_spot).
+    F2/F6: come chiudi_perp (ordine vivo su eccezione, fill cumulato)."""
     res = _esito_gamba()
+    qty_attesa = float(voce.get("qty_spot") or 0)
     q = qty_spot(ex, c)
+    if qty_attesa > EPS_QTY:
+        q = min(q, qty_attesa * (1 + TOLL_QTY_REL))
     if q <= EPS_QTY:
         return res
     res["pre_qty"] = q
@@ -322,15 +509,38 @@ def chiudi_spot(ex, c, cfg: Config, sleep_fn, out) -> Dict[str, Any]:
     try:
         o = invia_gamba(ex, Gamba(c.sym_spot, "sell", q, float(px), cid))
     except Exception as e:  # noqa: BLE001
+        trovato = _cerca_ordine_vivo(ex, cid, c.sym_spot)
+        if trovato is not None:
+            _annulla(ex, trovato.get("id") or cid, c.sym_spot)
+            out(f"  invio spot INCERTO ({type(e).__name__}): ordine {cid} "
+                "trovato vivo e annullato — VERIFICA MANUALE.")
+            res.update({"esito": "incerto", "ordine": trovato.get("id", ""),
+                        "cl_ord_id": cid})
+            return res
         out(f"  invio spot FALLITO: {type(e).__name__}: {str(e)[:120]}")
         res["esito"] = "invio_fallito"
         return res
+    filled_tot = 0.0
+    fees = []
     oo, es = attesa_fill(ex, o["id"], c.sym_spot, POLL_FILL_TENTATIVI, sleep_fn)
     if es == "reprice":
         _annulla(ex, o["id"], c.sym_spot)
+        # F6: il fill DEFINITIVO del primo ordine conta (riletto post-cancel)
+        try:
+            oo1 = ex.fetch_order(o["id"], c.sym_spot)
+        except Exception:  # noqa: BLE001
+            oo1 = None
+        if isinstance(oo1, dict):
+            filled_tot += float(oo1.get("filled") or 0)
+            f1 = leggi_fee(oo1)
+            if f1 is not None:
+                fees.append(f1)
         q2 = qty_spot(ex, c)                    # rilettura: mai > posizione reale
+        if qty_attesa > EPS_QTY:
+            q2 = min(q2, qty_attesa * (1 + TOLL_QTY_REL))
         if q2 <= EPS_QTY:
             es = "closed"
+            oo = oo1 if isinstance(oo1, dict) else oo
         else:
             t2 = ex.fetch_ticker(c.sym_spot)
             px2 = ex.price_to_precision(c.sym_spot,
@@ -341,17 +551,36 @@ def chiudi_spot(ex, c, cfg: Config, sleep_fn, out) -> Dict[str, Any]:
             try:
                 o2 = invia_gamba(ex, Gamba(c.sym_spot, "sell", q2, float(px2), cid2))
             except Exception as e:  # noqa: BLE001
+                trovato = _cerca_ordine_vivo(ex, cid2, c.sym_spot)
+                if trovato is not None:
+                    _annulla(ex, trovato.get("id") or cid2, c.sym_spot)
+                    out(f"  invio spot (reprice) INCERTO ({type(e).__name__}): "
+                        f"ordine {cid2} trovato vivo e annullato — VERIFICA "
+                        "MANUALE.")
+                    res.update({"esito": "incerto", "filled": filled_tot,
+                                "fee": somma_fee(fees),
+                                "ordine": trovato.get("id", ""),
+                                "cl_ord_id": cid2})
+                    return res
                 out(f"  invio spot (reprice) FALLITO: {type(e).__name__}: {str(e)[:120]}")
-                res["esito"] = "invio_fallito"
+                res.update({"esito": "invio_fallito", "filled": filled_tot,
+                            "fee": somma_fee(fees), "ordine": o["id"],
+                            "cl_ord_id": cid2})
                 return res
             oo, es = attesa_fill(ex, o2["id"], c.sym_spot,
                                  REPRICE_FILL_TENTATIVI, sleep_fn)
             if es != "closed":
                 _annulla(ex, o2["id"], c.sym_spot)
+    if isinstance(oo, dict):
+        filled_tot += float(oo.get("filled") or 0)
+        f2 = leggi_fee(oo)
+        if f2 is not None:
+            fees.append(f2)
     res.update({"esito": es,
-                "filled": float(oo.get("filled") or 0) if isinstance(oo, dict) else 0.0,
-                "fee": leggi_fee(oo),
-                "ordine": (oo or {}).get("id", "")})
+                "filled": filled_tot,
+                "fee": somma_fee(fees),
+                "ordine": (oo or {}).get("id", ""),
+                "cl_ord_id": cid})
     out(f"  esito spot: {es} filled={res['filled']}")
     return res
 
@@ -370,14 +599,14 @@ def stima_fee(c, ct: float, q_spot: float, px_p: float, px_s: float) -> Dict[str
 
 
 def stampa_piano(c, cfg: Config, ct: float, q_spot: float, t_p: dict, t_s: dict,
-                 mgn: str, out) -> None:
+                 mgn: str, side_perp: str, out) -> None:
     out(f"=== CHIUDI {cfg.coppia} {'[EXECUTE]' if cfg.execute else '[DRY-RUN]'} ===")
     if cfg.motivo:
         out(f"motivo: {cfg.motivo}")
     out(f"posizioni reali (exchange): perp {ct:g} ct ({ct * c.ct_val:g} {c.nome})"
         f" | spot {q_spot:g} {c.nome}")
     if abs(ct) > EPS_CT:
-        side = "sell" if ct > 0 else "buy"
+        side = side_perp or ("sell" if ct > 0 else "buy")   # punto unico F1
         lim = _prezzo_limit(c.sym_perp, float(t_p["ask"] if side == "buy" else t_p["bid"]),
                             side, primo=True)
         noz = abs(ct) * c.ct_val * float(t_p["last"])
@@ -455,7 +684,17 @@ def esegui(ex, cfg: Config, sleep_fn=time.sleep, out=print) -> int:
     voce = voce or {}
 
     # -- posizioni REALI + prezzi indicativi + minimi --
-    ct, q_spot = leggi_posizioni_reali(ex, c)
+    qty_attesa = float(voce.get("qty_spot") or 0)      # F3/F5: qty della coppia
+    toll_qty = max(EPS_QTY, qty_attesa * TOLL_QTY_REL)
+    try:
+        ct, side_perp = leggi_perp_reale(ex, c)        # punto unico F1
+    except PosizioneIncoerente as e:
+        out(f"RIFIUTO: {e} — nessun ordine inviato.")
+        return 1
+    q_spot = qty_spot(ex, c)
+    free_t, total_t = saldo_spot(ex, c)
+    total_f = saldo_funding(ex, c)
+    totale_reale = total_t + total_f
     t_p = ex.fetch_ticker(c.sym_perp)
     t_s = ex.fetch_ticker(c.sym_spot)
     mkt_p = ex.market(c.sym_perp)
@@ -463,6 +702,25 @@ def esegui(ex, cfg: Config, sleep_fn=time.sleep, out=print) -> int:
     min_p = float((mkt_p.get("limits") or {}).get("amount", {}).get("min") or 0)
     min_s = float((mkt_s.get("limits") or {}).get("amount", {}).get("min") or 0)
     mgn = voce.get("mgn_mode") or MGN_DEFAULT
+
+    # -- F3: la gamba spot si decide con stato + trading + funding/earn --
+    if qty_attesa > EPS_QTY:
+        if totale_reale <= EPS_QTY:
+            out(f"RIFIUTO: {cfg.coppia} qty_spot={qty_attesa:g} nello stato ma "
+                "spot reale 0 in trading+funding/earn — verifica manuale, "
+                "nessun ordine.")
+            return 2
+        if total_t <= EPS_QTY:
+            out(f"RIFIUTO: spot della coppia ({qty_attesa:g}) non nel trading "
+                f"ma in funding/earn ({totale_reale:g}) — serve earn_move "
+                "redeem prima della chiusura, nessun ordine.")
+            return 2
+    # -- F5: la qty spot venduta e' quella della coppia, non l'intero saldo --
+    if qty_attesa > EPS_QTY and total_t > qty_attesa + toll_qty:
+        out(f"RIFIUTO: saldo spot {total_t:g} supera la qty della coppia "
+            f"{qty_attesa:g} di {total_t - qty_attesa:g} — serve --qty "
+            "esplicito, nessun ordine.")
+        return 2
 
     # -- idempotenza: entrambe le gambe gia' a zero --
     if abs(ct) <= EPS_CT and q_spot <= EPS_QTY:
@@ -478,12 +736,11 @@ def esegui(ex, cfg: Config, sleep_fn=time.sleep, out=print) -> int:
         out(f"RIFIUTO: spot {q_spot:g} {c.nome} sotto il minimo di mercato "
             f"{min_s:g} — chiusura manuale necessaria.")
         return 2
-    free, total = saldo_spot(ex, c)
-    if total > EPS_QTY and free <= EPS_QTY:
-        out(f"ATTENZIONE: spot {total:g} presente ma free=0 (vincolato?): "
+    if total_t > EPS_QTY and free_t <= EPS_QTY:
+        out(f"ATTENZIONE: spot {total_t:g} presente ma free=0 (vincolato?): "
             "il sell potrebbe fallire — verifica ordini aperti.")
 
-    stampa_piano(c, cfg, ct, q_spot, t_p, t_s, mgn, out)
+    stampa_piano(c, cfg, ct, q_spot, t_p, t_s, mgn, side_perp, out)
     if not cfg.execute:
         out("DRY-RUN: 0 ordini inviati, 0 scritture (stato/eventi intatti).")
         return 0
@@ -494,16 +751,24 @@ def esegui(ex, cfg: Config, sleep_fn=time.sleep, out=print) -> int:
     esiti: Dict[str, str] = {"perp": "assente", "spot": "assente"}
 
     # 1) perp (reduceOnly). Se non si chiude: lo spot NON si tocca.
-    r_p = chiudi_perp(ex, c, cfg, mgn, sleep_fn, out)
+    r_p = chiudi_perp(ex, c, cfg, mgn, voce, sleep_fn, out)
     esiti["perp"] = r_p["esito"]
     evento(cfg.stato_dir, "chiusura_perp", coppia=cfg.coppia,
-           esito=r_p["esito"], filled=r_p["filled"], ordine=r_p["ordine"])
+           esito=r_p["esito"], filled=r_p["filled"], ordine=r_p["ordine"],
+           cl_ord_id=r_p.get("cl_ord_id", ""))
     if r_p["esito"] == "assente":
         out("  gamba perp assente: si prosegue con lo spot (fallback C1).")
     elif r_p["esito"] != "closed":
         esiti["spot"] = "non_tentato"
-        nota = (f"gamba perp non chiusa ({r_p['esito']}): la gamba spot NON "
-                "viene venduta (nessuna posizione nuda); verifica manuale.")
+        if r_p["esito"] == "incerto":
+            nota = (f"gamba perp INCERTA (ordine {r_p.get('ordine') or '?'} "
+                    f"clOrdId {r_p.get('cl_ord_id') or '?'}): trovata viva e "
+                    "annullata dopo errore di invio; la gamba spot NON viene "
+                    "venduta — verifica manuale.")
+        else:
+            nota = (f"gamba perp non chiusa ({r_p['esito']}): la gamba spot "
+                    "NON viene venduta (nessuna posizione nuda); verifica "
+                    "manuale.")
         registra_esito(cfg, esiti, "chiusura_fallita", nota=nota)
         evento(cfg.stato_dir, "chiusura_fallita", coppia=cfg.coppia,
                nota=nota, esiti=esiti)
@@ -511,16 +776,35 @@ def esegui(ex, cfg: Config, sleep_fn=time.sleep, out=print) -> int:
         return 1
 
     # 2) spot (solo dopo perp chiusa o assente)
-    r_s = chiudi_spot(ex, c, cfg, sleep_fn, out)
+    r_s = chiudi_spot(ex, c, cfg, voce, sleep_fn, out)
     esiti["spot"] = r_s["esito"]
     evento(cfg.stato_dir, "chiusura_spot", coppia=cfg.coppia,
-           esito=r_s["esito"], filled=r_s["filled"], ordine=r_s["ordine"])
+           esito=r_s["esito"], filled=r_s["filled"], ordine=r_s["ordine"],
+           cl_ord_id=r_s.get("cl_ord_id", ""))
+    nota_spot = None
     if r_s["esito"] == "assente":
-        out("  gamba spot assente: chiusa solo la perp (nota).")
+        if qty_attesa > EPS_QTY:
+            # F3: lo stato dice che la gamba doveva esserci ma il trading e'
+            # vuoto: MAI scrivere closed (la qty puo' essere in funding/earn)
+            nota = (f"gamba spot assente ma stato qty_spot={qty_attesa:g} "
+                    "> tolleranza: possibile funding/earn — verifica manuale.")
+            registra_esito(cfg, esiti, "chiusura_fallita", nota=nota)
+            evento(cfg.stato_dir, "chiusura_fallita", coppia=cfg.coppia,
+                   nota=nota, esiti=esiti)
+            out(f"FALLIMENTO CHIUSURA: {nota}")
+            return 1
+        nota_spot = f"gamba spot assente (qty attesa {qty_attesa:g})"
+        out(f"  gamba spot assente: chiusa solo la perp (nota: {nota_spot}).")
     elif r_s["esito"] != "closed":
-        residuo = r_s["pre_qty"] - r_s["filled"]
-        nota = (f"gamba spot non chiusa ({r_s['esito']}): perp gia' chiusa, "
-                f"spot residuo {residuo:.8g} {c.nome} LONG — da sistemare a mano.")
+        if r_s["esito"] == "incerto":
+            nota = (f"gamba spot INCERTA (ordine {r_s.get('ordine') or '?'} "
+                    f"clOrdId {r_s.get('cl_ord_id') or '?'}): trovata viva e "
+                    "annullata dopo errore di invio — verifica manuale.")
+        else:
+            residuo = r_s["pre_qty"] - r_s["filled"]
+            nota = (f"gamba spot non chiusa ({r_s['esito']}): perp gia' "
+                    f"chiusa, spot residuo {residuo:.8g} {c.nome} LONG — da "
+                    "sistemare a mano.")
         registra_esito(cfg, esiti, "chiusura_fallita", nota=nota)
         evento(cfg.stato_dir, "chiusura_fallita", coppia=cfg.coppia,
                nota=nota, esiti=esiti)
@@ -532,7 +816,7 @@ def esegui(ex, cfg: Config, sleep_fn=time.sleep, out=print) -> int:
     ok, ct2, q2, letture = riconcilia(ex, c, attesa_spot, sleep_fn)
     fee = somma_fee([r_p["fee"], r_s["fee"]])
     if ok:
-        registra_esito(cfg, esiti, "closed", fee=fee)
+        registra_esito(cfg, esiti, "closed", nota=nota_spot, fee=fee)
         evento(cfg.stato_dir, "chiusura_completa", coppia=cfg.coppia,
                esiti=esiti, fee=fee, perp_residuo=ct2, spot_residuo=q2,
                letture_riconciliazione=letture)
