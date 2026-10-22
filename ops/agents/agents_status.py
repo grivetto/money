@@ -149,7 +149,7 @@ def valuta_linux(lett: dict | None, cfg: dict) -> dict:
         if not st:
             fuori["a0"] = _voce(None, "container agent-zero non osservabile")
         else:
-            fuori["a0"] = _voce(st == "running" and http == "200",
+            fuori["a0"] = _voce(st == "running" and http in ("200", "302", "401", "403"),
                                 f"container {st} · http {http or '—'}")
     if "dsh" in ops:
         st, http = lett.get("dsh", ""), lett.get("dsh_http", "")
