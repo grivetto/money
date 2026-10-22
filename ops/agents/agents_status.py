@@ -38,8 +38,8 @@ DEFAULT_OUT = Path(__file__).resolve().parent.parent / "dashboard" / "agenti.jso
 NODI = {
     "mc2":      {"alias": None,       "operai": ["hermes", "a0", "dsh", "opencode", "agy"], "porta_dsh": 4080},
     "omarchy":  {"alias": "omarchy",  "operai": ["hermes", "a0", "dsh", "opencode", "agy"], "porta_dsh": 5080},
-    "nuvola":   {"alias": "nuvola",   "operai": ["a0", "opencode", "agy"], "porta_dsh": None},
-    "marcodg1": {"alias": "MARCODG1", "operai": ["a0", "opencode", "agy"], "porta_dsh": None},
+    "nuvola":   {"alias": "nuvola",   "operai": ["hermes", "a0", "opencode", "agy"], "porta_dsh": None},
+    "marcodg1": {"alias": "MARCODG1", "operai": ["hermes", "a0", "opencode", "agy"], "porta_dsh": None},
 }
 WIN_ALIAS = "winpc"
 WIN_OPERAI = ("a0", "dsh")
