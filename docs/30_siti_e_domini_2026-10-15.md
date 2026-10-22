@@ -62,3 +62,20 @@
 - Censimento dei vhost nginx morti su mc2 (`sgrivett.ddns.net` :8899, `mgrivett.ddns.net` :8080, `mc2.myddns.me`, `denaro-dashboard` :8901 → 502) → spegnere ciò che è morto.
 - Decidere l'accesso di `freellmapi` (se non serve pubblico: dietro Access o tailnet).
 - (Opzionale, futuro) analytics privacy-friendly per la vetrina.
+
+## Cambi del 22/10 — console agenti + Access
+
+1. **`/agenti` e `/api/console` dietro Cloudflare Access** — app self-hosted `denaro-agenti`
+   (id `b4262b6f-7b15-4e66-9b1d-b3fb026bbcd5`) con due path: `denaro.grivetto.eu/agenti` e
+   `denaro.grivetto.eu/api/console`; policy allow per `sergio.grivetto@gmail.com` e `sergio@grivetto.eu`,
+   sessione 24h. `/dashboard`, `/squadra`, `/scommessa.json` restano pubblici. IdP dell'account: solo
+   One-time PIN (codice via email).
+2. **Console agenti** (`ops/dashboard/serve_dashboard.py` + `agenti.html`) — proxy server-side verso gli
+   API server Hermes; chiavi solo in `/home/marco/denaro/console/keys.json` (600, mai nel browser):
+   - `GET /api/console/agents` (health dei 4), `POST /api/console/chat` → `202 {job}`,
+     `GET /api/console/result?id=` (polling; i turni possono superare i 100s di Cloudflare).
+3. **API server Hermes sul tailnet** (bind sull'IP tailscale, non su 0.0.0.0):
+   mc2 `100.87.24.42:8642`, omarchy `100.106.55.91:8643` (attivo dopo restart gateway),
+   MARCODG1 `100.89.26.52:8644`, nuvola `100.103.169.99:8645` (servizio `hermes-gateway` installato 22/10).
+4. **Agent Zero: autenticazione attiva** su tutti e 5 i nodi (mc2/omarchy/win/marcodg1/nuvola):
+   `AUTH_LOGIN`/`AUTH_PASSWORD` in `/a0/.env` (600), redirect a `/login`; ALLOWED_ORIGINS invariati.
