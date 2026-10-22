@@ -5,6 +5,15 @@ Landing di primo livello del progetto **Denaro** (brand pubblico), servita da
 (dashboard, agenti, squadra, scommessa.json, api/infra.json) e sono raggiungibili
 dalla landing.
 
+## Contenuto del kit
+
+| File | Ruolo |
+|---|---|
+| `index.html` | landing (hero, strip dati live, card, link) |
+| `scommessa.html` | pagina leggibile della scommessa asimmetrica (legge `denaro.grivetto.eu/scommessa.json`) |
+| `infra.html` | pagina leggibile del feed infrastruttura (legge `denaro-api.grivetto.eu/api/infra.json`) |
+| `trading-2026-10-08.jpg` | asset hero della landing |
+
 ## Origin
 
 - Host: **MARCODG1**, unit `money-landing-marcodg1`
@@ -14,10 +23,12 @@ dalla landing.
 
 ## Dipendenza dati live
 
-La landing fa fetch di `https://denaro-api.grivetto.eu/api/infra.json`
-(CORS `*`, feed aggregatore MARCODG1 :8912) e mostra: capitale riconciliato
-OKX main, canary DOGE, carry DOT/ADA, bot paper/live, banco PASS.
-Senza rete o feed giù: chips «dati live non disponibili», pagina comunque usabile.
+Le pagine fanno fetch dei feed pubblici (CORS `*`):
+- landing: capitale OKX main, canary DOGE, carry DOT/ADA, bot paper/live, banco PASS;
+- `scommessa.html`: wallet, valore, fase, prossimo passo;
+- `infra.html`: equity + breakdown, nodi, bot, canary, carry, banco, ricerca.
+
+Senza rete o feed giù: le pagine restano usabili e mostrano «dati live non disponibili».
 Nessun cookie, nessun tracking, nessuno script esterno oltre ai font Google.
 
 ## Deploy (da mc2)
@@ -25,6 +36,8 @@ Nessun cookie, nessun tracking, nessuno script esterno oltre ai font Google.
 ```bash
 ssh MARCODG1 'cd /home/marco/money && git pull --ff-only'
 ssh MARCODG1 'cp /home/marco/money/deploy/web-landing/index.html \
+              /home/marco/money/deploy/web-landing/scommessa.html \
+              /home/marco/money/deploy/web-landing/infra.html \
               /home/marco/money/deploy/web-landing/trading-2026-10-08.jpg \
               /home/marco/denaro/landing/'
 # verifica: sha atteso in testa al commit + HTTP 200 sul titolo giusto
@@ -35,13 +48,12 @@ ssh MARCODG1 'sha256sum /home/marco/denaro/landing/index.html && \
 ## Rollback
 
 1. Stub pre-21/10 (301 via meta refresh verso denaro/squadra):
-   `cp /home/marco/denaro/landing/index.stub-20261015.html \
-       /home/marco/denaro/landing/index.html`
+   `cp /home/marco/denaro/landing/index.stub-20261015.html /home/marco/denaro/landing/index.html`
 2. In alternativa riattivare la Redirect Rule Cloudflare
    «[15/10/26] web.grivetto.eu legacy» (zona `cb5723e72edb4382bdd66c9cc4916685`).
 
 ## Nota Cloudflare
 
-Finché esiste la Redirect Rule «[15/10/26] web.grivetto.eu legacy», il 301 scatta
-prima dell'origin e la landing non si vede. La regola va rimossa dalla dashboard CF
-(Rules → Redirect Rules). Mappa completa in `docs/30_siti_e_domini_2026-10-15.md`.
+La Redirect Rule «[15/10/26] web.grivetto.eu legacy» è stata rimossa il 21/10
+(ruleset dynamic-redirect v2, zero regole): `web.grivetto.eu` risponde 200 dall'origin.
+Mappa completa in `docs/30_siti_e_domini_2026-10-15.md`.
