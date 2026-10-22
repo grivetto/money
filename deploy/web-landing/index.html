@@ -168,6 +168,14 @@
   footer a:hover{color:#cfe0f5}
   footer a.sep{color:#3d4b5e;pointer-events:none}
 
+  /* ── foto squadra ────────────────────────────────── */
+  .shot{margin:0;border:1px solid var(--border);border-radius:14px;overflow:hidden}
+  .shot img{display:block;width:100%;height:auto}
+  .shot figcaption{
+    font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:var(--muted-2);
+    padding:10px 15px;border-top:1px solid var(--border);
+  }
+
   @media (max-width:640px){
     .cards{grid-template-columns:1fr}
     footer{justify-content:flex-start}
@@ -246,7 +254,7 @@
       </span>
       <span>
         <h2>Squadra</h2>
-        <p>chi costruisce il sistema</p>
+        <p>5 nodi · 13 operai · 3 Hermes</p>
       </span>
       <span class="arrow" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -271,16 +279,74 @@
         </svg>
       </span>
     </a>
+
+    <a class="card" href="https://github.com/grivetto/alpha-omega-trading" target="_blank" rel="noopener">
+      <span class="ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>
+        </svg>
+      </span>
+      <span>
+        <h2>Alpha-Omega</h2>
+        <p>repo · grivetto/alpha-omega-trading</p>
+      </span>
+      <span class="arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M13 6l6 6-6 6"/>
+        </svg>
+      </span>
+    </a>
+
+
+    <a class="card" href="https://grafana.grivetto.eu" target="_blank" rel="noopener">
+      <span class="ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+        </svg>
+      </span>
+      <span>
+        <h2>Grafana</h2>
+        <p>dati live</p>
+      </span>
+      <span class="arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M13 6l6 6-6 6"/>
+        </svg>
+      </span>
+    </a>
+
+    <a class="card" href="https://zab.grivetto.eu" target="_blank" rel="noopener">
+      <span class="ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+        </svg>
+      </span>
+      <span>
+        <h2>Zabbix</h2>
+        <p>monitoraggio flotta</p>
+      </span>
+      <span class="arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M13 6l6 6-6 6"/>
+        </svg>
+      </span>
+    </a>
+
   </section>
 
+  <figure class="shot">
+    <img src="squadra-2026-10-20.png" width="3200" height="2000" loading="lazy" alt="La squadra del progetto money — snapshot 20/10/2026">
+    <figcaption>la squadra · 20/10/2026</figcaption>
+  </figure>
+
   <nav class="linksrow" aria-label="Collegamenti">
-    <a class="ghost" href="https://denaro.grivetto.eu/scommessa.json">
+    <a class="ghost" href="/scommessa.html">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/>
       </svg>
       scommessa asimmetrica
     </a>
-    <a class="ghost" href="https://denaro.grivetto.eu/api/infra.json">
+    <a class="ghost" href="/infra.html">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M8 3H7a2 2 0 00-2 2v5a2 2 0 01-2 2 2 2 0 012 2v5a2 2 0 002 2h1"/><path d="M16 3h1a2 2 0 012 2v5a2 2 0 002 2 2 2 0 00-2 2v5a2 2 0 01-2 2h-1"/>
       </svg>
@@ -403,5 +469,5 @@
   setInterval(function(){ load(0); }, 60000);
 })();
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4eadd37bb2dea73',t:'MTc5MjY5Njg3Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
