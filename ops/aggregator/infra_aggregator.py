@@ -504,12 +504,29 @@ def fetch_prices():
 
 
 def ping_host(host, port, timeout=4):
+    """Raggiungibilita' VERA del nodo: TCP + banner SSH.
+
+    Il solo connect TCP mente: con sshd vivo ma incapace di servire (fork/OOM,
+    DNS inverso appeso) il kernel accetta la connessione e il nodo risulta
+    "reachable" mentre e' di fatto morto (caso nuvola 21/10: nodo giu' ~24h,
+    nessun alert). Porta 22/2222 -> pretendiamo il banner `SSH-`.
+    """
     try:
         s = socket.create_connection((host, port), timeout=timeout)
-        s.close()
+    except Exception:
+        return False
+    try:
+        if port in (22, 2222):
+            s.settimeout(min(timeout, 3))
+            return s.recv(64).startswith(b"SSH-")
         return True
     except Exception:
         return False
+    finally:
+        try:
+            s.close()
+        except Exception:
+            pass
 
 
 def docker_state():

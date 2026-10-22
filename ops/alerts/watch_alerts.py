@@ -322,9 +322,15 @@ def check_bots() -> int:
     cambi += gestisci("bots:check", False, "", "✅ bots: aggregatore di nuovo leggibile")
 
     bots = {k: b for k, b in (d.get("bots") or {}).items() if isinstance(b, dict)}
+    # Un nodo che sparisce del tutto (nessun bot nel payload) non entrava ne' in
+    # `bots` ne' in `node_totals`: nessun alert. Caso nuvola 21/10, nodo giu' ~24h
+    # in silenzio. Qui si aggiunge la mappa `nodes` (probe SSH, non solo TCP).
+    nodi = d.get("nodes") or {}
     non_rag = {n for n, t in (d.get("node_totals") or {}).items()
                if isinstance(t, dict) and not t.get("reachable", True)}
-    for n in sorted({k.split(":")[0] for k in bots} | set(d.get("node_totals") or {})):
+    non_rag |= {n for n, t in nodi.items()
+                if isinstance(t, dict) and not t.get("reachable", True)}
+    for n in sorted({k.split(":")[0] for k in bots} | set(d.get("node_totals") or {}) | set(nodi)):
         if n in non_rag:
             if _bump(f"botnode:{n}", True) >= 2:
                 cambi += gestisci(f"botnode:{n}", True,
