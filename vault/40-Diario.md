@@ -169,3 +169,10 @@
 - **Extra trovato in verifica** (non nella nota): `media()` resa deterministica con `math.fsum` — serie costanti a varianza esattamente nulla anche su Python <3.12 (`b17c8f7a`).
 - **Code agenti completate**: 8/8 turni (opencode×4 + agy×4 su mc2/omarchy/nuvola/MARCODG1) EXIT=0: audit TREND paper, spec TSMOM, funding history DOT/ADA, scheda costi carry, eval risk-layer, freqtrade gap, data hygiene candele, parametri exchange. Merlino P33: ACK ricevuto, in corso nel sandbox (handoff entro 24h).
 - **Resta dalla nota** (settimane 2–3+): P0.3 fail-closed percorso capitale (16 `except Exception` in 7 file; 4 assert fuori `src/`), P1.5 coverage, P1.6 separazione offline/rete/live, P1.7 manifest provenienza, P2.8–P2.10.
+
+## 2026-10-22 (2) — Nuovo Hermes su MARCODG1: canale, presidio carry, riconciliazione
+- **Contatto**: Hermes v0.22.4 su MARCODG1 (`marco`), gateway in systemd user (enabled+active), modello `gemini-4-argon`; canale `hermes_bridge/marcodg1/` su mc2 (protocollo in `PROTOCOLLO.md`) + turni headless `hermes chat --query-file … -Q`. Il nodo ha ssh a mc2 come `sergio` (TS 100.87.24.42); `~/money` in sola lettura (8 commit indietro, nessun pull).
+- **T1** (onboarding/status): carry 2/2 aperte, nozionale 179,79 EUR, uPL +2,4…+3,2; `genera_carry` fresco (cron */5), canary DOGE attivo, fee_ledger 23 righe, zero traceback; disco 27%, RAM 2,4/3,8 GB.
+- **T2** (watchdog): `~/hermes-scratch/carry_watch/carry_watch.py` (stdlib, read-only, exit 0/1/2) + skill Denaro sincronizzate da mc2.
+- **T4** (installazione): cron `1-59/5` con flock (diff crontab = +1 riga, backup `crontab.bak-20261022`), `--alert` con cooldown 30' e RECOVERY, testato (ALERT 23:58:47 → RECOVERY 23:58:58 in `alerts.log`); prima riga di log 00:01:01 OK.
+- **T3** (riconciliazione carry, integrata in `prove/carry_recon_2026-10-22/`): strumenti reali X-Perp EEA; 18 epoche funding → +0,3159 USDC, fee ingresso −0,2697, uPL +2,485, delta spot −2,640 → **netto −0,1088 USDC** (il funding ha già coperto le fee; payback ~10 gg).

@@ -1,0 +1,134 @@
+[
+  {
+    "filename": "funding_DOT-USDT-SWAP.json",
+    "path": "/home/marco/hermes-scratch/carry_recon/raw/funding_DOT-USDT-SWAP.json",
+    "url": "https://www.okx.com/api/v5/public/funding-rate-history?instId=DOT-USDT-SWAP&limit=100",
+    "fetched_at_utc": "2026-10-21T23:45:41+00:00",
+    "sha256": "b6de848e8a04e972ed92b7086ae82577ce94f769c9256894713359cbd5a0cce0",
+    "bytes": 18506,
+    "okx_code": "0",
+    "okx_msg": "",
+    "records": 100
+  },
+  {
+    "filename": "funding_ADA-USDT-SWAP.json",
+    "path": "/home/marco/hermes-scratch/carry_recon/raw/funding_ADA-USDT-SWAP.json",
+    "url": "https://www.okx.com/api/v5/public/funding-rate-history?instId=ADA-USDT-SWAP&limit=100",
+    "fetched_at_utc": "2026-10-21T23:45:41+00:00",
+    "sha256": "fa8bee5825dff3f7213f517fe38e41179db2b439281d1dee9fc6edcb3cedbfef",
+    "bytes": 18394,
+    "okx_code": "0",
+    "okx_msg": "",
+    "records": 100
+  },
+  {
+    "filename": "instruments_DOT-USDT-SWAP.json",
+    "path": "/home/marco/hermes-scratch/carry_recon/raw/instruments_DOT-USDT-SWAP.json",
+    "url": "https://www.okx.com/api/v5/public/instruments?instType=SWAP&instId=DOT-USDT-SWAP",
+    "fetched_at_utc": "2026-10-21T23:45:42+00:00",
+    "sha256": "0c6bb65653766b8ba91dd422bc2706e980380c676b635e8645609eb5c75f8c41",
+    "bytes": 1110,
+    "okx_code": "0",
+    "okx_msg": "",
+    "records": 1
+  },
+  {
+    "filename": "instruments_ADA-USDT-SWAP.json",
+    "path": "/home/marco/hermes-scratch/carry_recon/raw/instruments_ADA-USDT-SWAP.json",
+    "url": "https://www.okx.com/api/v5/public/instruments?instType=SWAP&instId=ADA-USDT-SWAP",
+    "fetched_at_utc": "2026-10-21T23:45:42+00:00",
+    "sha256": "a1326f34e01eae371a87faea5ec5d7b65caab3038777d7e787c0e358c84272c8",
+    "bytes": 1115,
+    "okx_code": "0",
+    "okx_msg": "",
+    "records": 1
+  },
+  {
+    "filename": "mark_candles_1H_DOT-USDT-SWAP.json",
+    "path": "/home/marco/hermes-scratch/carry_recon/raw/mark_candles_1H_DOT-USDT-SWAP.json",
+    "url": "https://www.okx.com/api/v5/market/mark-price-candles?instId=DOT-USDT-SWAP&bar=1H&limit=200",
+    "fetched_at_utc": "2026-10-21T23:45:42+00:00",
+    "sha256": "5dd4a5b71e40e325391def7228df658f074576e7df51655d383366ea2b74980a",
+    "bytes": 11545,
+    "okx_code": "0",
+    "okx_msg": "",
+    "records": 200
+  },
+  {
+    "filename": "mark_candles_1H_ADA-USDT-SWAP.json",
+    "path": "/home/marco/hermes-scratch/carry_recon/raw/mark_candles_1H_ADA-USDT-SWAP.json",
+    "url": "https://www.okx.com/api/v5/market/mark-price-candles?instId=ADA-USDT-SWAP&bar=1H&limit=200",
+    "fetched_at_utc": "2026-10-21T23:45:43+00:00",
+    "sha256": "946e8151be17831a7428ba3842d24b83a1efd14b732cea01af979b7f1548a003",
+    "bytes": 11547,
+    "okx_code": "0",
+    "okx_msg": "",
+    "records": 200
+  },
+  {
+    "filename": "funding_DOT-USD_UM_XPERP-310808.json",
+    "path": "/home/marco/hermes-scratch/carry_recon/raw/funding_DOT-USD_UM_XPERP-310808.json",
+    "url": "https://www.okx.com/api/v5/public/funding-rate-history?instId=DOT-USD_UM_XPERP-310808&limit=100",
+    "fetched_at_utc": "2026-10-21T23:45:43+00:00",
+    "sha256": "6782b089bb46e86bb30fdf883b2f707cec64748515aded816daf7693b76212ad",
+    "bytes": 18654,
+    "okx_code": "0",
+    "okx_msg": "",
+    "records": 100
+  },
+  {
+    "filename": "funding_ADA-USD_UM_XPERP-310404.json",
+    "path": "/home/marco/hermes-scratch/carry_recon/raw/funding_ADA-USD_UM_XPERP-310404.json",
+    "url": "https://www.okx.com/api/v5/public/funding-rate-history?instId=ADA-USD_UM_XPERP-310404&limit=100",
+    "fetched_at_utc": "2026-10-21T23:45:43+00:00",
+    "sha256": "eba5580a035b714c0836b83b49a411f5e46ac9aa432ed9f531fafefc0e203d33",
+    "bytes": 18654,
+    "okx_code": "0",
+    "okx_msg": "",
+    "records": 100
+  },
+  {
+    "filename": "instruments_FUTURES_DOT-USD_UM_XPERP-310808.json",
+    "path": "/home/marco/hermes-scratch/carry_recon/raw/instruments_FUTURES_DOT-USD_UM_XPERP-310808.json",
+    "url": "https://www.okx.com/api/v5/public/instruments?instType=FUTURES&instId=DOT-USD_UM_XPERP-310808",
+    "fetched_at_utc": "2026-10-21T23:45:43+00:00",
+    "sha256": "638a77815c20d7a59e61e6ac33b99045cfd01c5d63142fa5cc5af29c148713f1",
+    "bytes": 1132,
+    "okx_code": "0",
+    "okx_msg": "",
+    "records": 1
+  },
+  {
+    "filename": "instruments_FUTURES_ADA-USD_UM_XPERP-310404.json",
+    "path": "/home/marco/hermes-scratch/carry_recon/raw/instruments_FUTURES_ADA-USD_UM_XPERP-310404.json",
+    "url": "https://www.okx.com/api/v5/public/instruments?instType=FUTURES&instId=ADA-USD_UM_XPERP-310404",
+    "fetched_at_utc": "2026-10-21T23:45:44+00:00",
+    "sha256": "2b821abd495174b3920e7cd55b2b06f47a7379b77f2a8eb907a3d2b521e080d3",
+    "bytes": 1134,
+    "okx_code": "0",
+    "okx_msg": "",
+    "records": 1
+  },
+  {
+    "filename": "mark_candles_1H_DOT-USD_UM_XPERP-310808.json",
+    "path": "/home/marco/hermes-scratch/carry_recon/raw/mark_candles_1H_DOT-USD_UM_XPERP-310808.json",
+    "url": "https://www.okx.com/api/v5/market/mark-price-candles?instId=DOT-USD_UM_XPERP-310808&bar=1H&limit=200",
+    "fetched_at_utc": "2026-10-21T23:45:44+00:00",
+    "sha256": "557c0968ec81007cc76daff86148222e31ae3afe3c693a0e49444b4a8f1fa3ad",
+    "bytes": 11549,
+    "okx_code": "0",
+    "okx_msg": "",
+    "records": 200
+  },
+  {
+    "filename": "mark_candles_1H_ADA-USD_UM_XPERP-310404.json",
+    "path": "/home/marco/hermes-scratch/carry_recon/raw/mark_candles_1H_ADA-USD_UM_XPERP-310404.json",
+    "url": "https://www.okx.com/api/v5/market/mark-price-candles?instId=ADA-USD_UM_XPERP-310404&bar=1H&limit=200",
+    "fetched_at_utc": "2026-10-21T23:45:44+00:00",
+    "sha256": "b52ab2facff78d6f5445eef5ccf5ae656a047790bfba234f5c991382ce2413d4",
+    "bytes": 11564,
+    "okx_code": "0",
+    "okx_msg": "",
+    "records": 200
+  }
+]
