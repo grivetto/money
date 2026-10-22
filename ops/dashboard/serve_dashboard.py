@@ -76,6 +76,48 @@ ASSET_ROUTES = {
     "/squadra-dev-2026-10-11.jpg": ("squadra-dev-2026-10-11.jpg", "image/jpeg"),
 }
 JSON_ROUTES = {"/api/infra.json", "/infra.json", "/api/infra", "/infra", "/api/dsh.json", "/dsh.json"}
+
+# ── Console agenti (22/10) ────────────────────────────────────────────────
+# Proxy server-side verso gli API server dei 4 Hermes. Le chiavi NON arrivano
+# mai al browser: stanno in un file 600 sul nodo (CONSOLE_KEYS).
+CONSOLE_KEYS_FILE = os.environ.get("CONSOLE_KEYS", "/home/marco/denaro/console/keys.json")
+CONSOLE_TIMEOUT = int(os.environ.get("CONSOLE_TIMEOUT", "300"))
+CONSOLE_HEALTH_TIMEOUT = 3
+CONSOLE_JOBS: dict = {}
+CONSOLE_JOBS_LOCK = threading.Lock()
+
+
+def carica_agenti_console() -> dict:
+    """Mappa {id: {label, url, key}} dal file chiavi; vuota se assente/illeggibile."""
+    try:
+        d = json.loads(Path(CONSOLE_KEYS_FILE).read_text(encoding="utf-8"))
+        return d.get("agenti") or {}
+    except (OSError, ValueError):
+        return {}
+
+
+def console_http(url: str, method: str = "GET", body: dict | None = None,
+                 key: str = "", timeout: int = 10):
+    """(status, json) verso un API server Hermes; (0, {}) su errore di rete."""
+    data = None
+    headers = {"Accept": "application/json"}
+    if body is not None:
+        data = json.dumps(body).encode()
+        headers["Content-Type"] = "application/json"
+    if key:
+        headers["Authorization"] = "Bearer " + key
+    req = urllib.request.Request(url, data=data, headers=headers, method=method)
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return r.status, json.loads(r.read().decode() or "{}")
+    except urllib.error.HTTPError as e:
+        try:
+            return e.code, json.loads(e.read().decode() or "{}")
+        except ValueError:
+            return e.code, {}
+    except Exception:
+        return 0, {}
+
 # La scheda scommessa legge il file scritto dal cron (tools/scommessa.py su
 # MARCODG1); il server lo serve senza cache: se manca -> 404 "nessun dato".
 SCOMMESSA_ROUTES = {"/scommessa.json", "/api/scommessa.json"}
@@ -393,10 +435,113 @@ class DashboardHandler(BaseHTTPRequestHandler):
             self._serve_dsh()
         elif path in {r.rstrip("/") or "/" for r in JSON_ROUTES}:
             self._serve_json()
+        elif path == "/api/console/agents":
+            self._serve_console_agents()
+        elif path == "/api/console/result":
+            self._serve_console_result()
         elif path == "/healthz":
             self._serve_healthz()
         else:
             self._send(404, b'{"error":"not found"}', "application/json; charset=utf-8")
+
+    def _serve_console_agents(self) -> None:
+        """GET /api/console/agents: stato dei 4 Hermes (health, nessuna chiave)."""
+        agenti = carica_agenti_console()
+        out = {"object": "hermes.console.agents", "agents": []}
+        for nome, cfg in agenti.items():
+            base = (cfg.get("url") or "").rstrip("/")
+            st, corpo = console_http(base + "/health", timeout=CONSOLE_HEALTH_TIMEOUT)
+            out["agents"].append({
+                "id": nome,
+                "label": cfg.get("label", nome),
+                "ok": st == 200 and corpo.get("status") == "ok",
+                "version": corpo.get("version", ""),
+            })
+        self._send(200, json.dumps(out).encode(), "application/json; charset=utf-8",
+                   {"Cache-Control": "no-store"})
+
+    def _console_job_run(self, jid: str, agente: str, base: str, key: str,
+                         sessione: str, messaggio: str) -> None:
+        """Esegue il turno in background: session (se serve) + chat + risultato."""
+        t0 = time.time()
+        esito = {"done": True, "ok": False, "agent": agente, "session_id": sessione,
+                 "reply": "", "error": "", "elapsed": 0.0}
+        if not sessione:
+            st, corpo = console_http(base + "/api/sessions", "POST",
+                                     {}, key, 30)
+            sessione = ((corpo.get("session") or {}).get("id") or "")
+            if st not in (200, 201) or not sessione:
+                esito.update(error="creazione sessione fallita (http %s)" % st)
+                with CONSOLE_JOBS_LOCK:
+                    CONSOLE_JOBS[jid] = esito
+                return
+        st, corpo = console_http(base + "/api/sessions/" + sessione + "/chat", "POST",
+                                 {"message": messaggio}, key, CONSOLE_TIMEOUT)
+        risposta = ""
+        if st in (200, 201) and isinstance(corpo.get("message"), dict):
+            risposta = corpo["message"].get("content") or ""
+        esito.update(ok=st in (200, 201), session_id=sessione, reply=risposta,
+                     error="" if st in (200, 201) else "http %s" % st,
+                     elapsed=round(time.time() - t0, 1))
+        with CONSOLE_JOBS_LOCK:
+            CONSOLE_JOBS[jid] = esito
+
+    def _serve_console_chat(self) -> None:
+        """POST /api/console/chat {agent, message, session_id?} -> {job}.
+
+        Asincrono: il turno Hermes puo' durare piu' dei 100s di Cloudflare,
+        quindi la risposta arriva da /api/console/result?id=<job>.
+        """
+        try:
+            n = int(self.headers.get("Content-Length") or 0)
+            req = json.loads(self.rfile.read(n).decode() or "{}")
+        except (ValueError, OSError):
+            self._send(400, b'{"error":"json non valido"}', "application/json; charset=utf-8")
+            return
+        agente = str(req.get("agent") or "").strip()
+        messaggio = str(req.get("message") or "").strip()
+        sessione = str(req.get("session_id") or "").strip()
+        cfg = carica_agenti_console().get(agente)
+        if not cfg or not messaggio:
+            self._send(400, b'{"error":"agent o message mancanti"}',
+                       "application/json; charset=utf-8")
+            return
+        base = (cfg.get("url") or "").rstrip("/")
+        key = cfg.get("key", "")
+        jid = os.urandom(12).hex()
+        with CONSOLE_JOBS_LOCK:
+            CONSOLE_JOBS[jid] = {"done": False, "ok": False, "agent": agente,
+                                 "session_id": sessione, "reply": "", "error": "",
+                                 "elapsed": 0.0}
+            if len(CONSOLE_JOBS) > 200:
+                for k in list(CONSOLE_JOBS)[:-150]:
+                    CONSOLE_JOBS.pop(k, None)
+        threading.Thread(target=self._console_job_run,
+                         args=(jid, agente, base, key, sessione, messaggio),
+                         daemon=True).start()
+        self._send(202, json.dumps({"job": jid, "agent": agente,
+                                    "session_id": sessione}).encode(),
+                   "application/json; charset=utf-8", {"Cache-Control": "no-store"})
+
+    def _serve_console_result(self) -> None:
+        """GET /api/console/result?id=<job> -> stato/risposta del turno."""
+        from urllib.parse import parse_qs
+        qs = parse_qs(self.path.split("?", 1)[1] if "?" in self.path else "")
+        jid = (qs.get("id") or [""])[0]
+        with CONSOLE_JOBS_LOCK:
+            esito = CONSOLE_JOBS.get(jid)
+        if esito is None:
+            self._send(404, b'{"error":"job sconosciuto"}', "application/json; charset=utf-8")
+            return
+        self._send(200, json.dumps(esito).encode(), "application/json; charset=utf-8",
+                   {"Cache-Control": "no-store"})
+
+    def do_POST(self) -> None:  # noqa: N802
+        path = self.path.split("?", 1)[0].rstrip("/") or "/"
+        if path == "/api/console/chat":
+            self._serve_console_chat()
+            return
+        self._send(404, b'{"error":"not found"}', "application/json; charset=utf-8")
 
     def do_HEAD(self) -> None:  # noqa: N802
         path = self.path.split("?", 1)[0].rstrip("/") or "/"
