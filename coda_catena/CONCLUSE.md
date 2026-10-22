@@ -31,3 +31,5 @@ riapre gate e fix per quella spec.
 - P25_kpi_settimanali.md — FATTA 18/10 (KPI settimanali + collector fee ledger integrati e in cron lunedì; voce operativa di osservabilità, non esperimento)
 - E2_significativita.md — infrastruttura integrata (18/10): strumenti di significatività bootstrap + Monte Carlo in `src/money/ricerca/significativita.py`; non è un esperimento
 - P26_cointegrazione_rolling.md — ARCHIVIATA DEFINITIVA (19/10: screening ufficiale 0/435 coppie eleggibili, exit 2; run indipendente concorde; verdetto nel registro) — lane pairs chiusa
+
+- **E7 — funding_extreme_contrarian** (22/10) — NON PROMOSSA, 6/6 criteri colpiti: n=4332, netto −0,2213%/trade (t −1,49), lordo +0,0787% (t +0,53, cioè zero), PF netto 0,93, maxDD 102%, IC90 attraversa lo zero. Artefatti: `prove/REGISTRO_ESPERIMENTI.md` (voce 22/10), handoff `hermes_bridge/merlino/handoff/E7/`, spec `docs/ipotesi/funding_extreme_contrarian.md`. Il funding non è un segnale direzionale: è una rendita da incassare (carry).
