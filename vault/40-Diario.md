@@ -183,3 +183,27 @@
 - **Costruito e deployato** (MARCODG1): `scripts/raccoglitore_l2_okx.py` — feed pubblico EEA, 400 livelli, metriche 1 Hz (spread a 3 decimali, depth 1/5/10/20/50/100 bp, imbalance), trades aggressore, heartbeat `data/l2/l2_stato.json`; supervisore cron 5' con `l2_start.sh` (flock) + check veglia 120 s (21/21 ok). Guard clause: abortisce se trova chiavi in ambiente.
 - **Perché continua 7 giorni**: gli input H2 (fill rate e adverse selection a 5/30/60 s) servono alla lane «ingressi maker 1h/4h», distinta e non decisa qui. Spec `coda_catena/MM1_l2_book_btc_eur.md` (lint 7/7), voce nel registro PRIMA dei numeri, commit `0ff5fb0d` (su `merlino/squadra-counts`).
 - **Da decidere**: C1 canary DOGE oltre la review del 15/10 (chiusura = ordine reale, serve autorizzazione owner); prossima lane: maker-entry 1h/4h (spec separata, penalità fill ≥2 tick + costo opportunità) oppure on-chain delta-neutral su L2 (richiede RPC).
+
+## 2026-10-23 (pomeriggio) — Produzione: sweep idle + scaling DOT carry 3×
+- **Idle sweep**: 7,0 USDC dormienti nel trading (tasso 0%) → trasferiti in Simple Earn (3,6% APY).
+  Eseguito via `transfer trading→funding` + `finance/savings/purchase-redempt`. Earn: 836 → 843 USDC.
+- **Scaling DOT carry**: riscattati 400 USDC da Earn, acquistato spot 175 DOT (~200 USDC @ 1.141)
+  + aperto short 175 ct X-Perp DOT (isolato 1×, margin ~200 USDC). La posizione passa da
+  78/78 a 253/253 DOT spot/perp — **3,2× lo scale precedente**. Delta gambe: −0,25 DOT (neutro).
+  Fee entry stimate: ~0,30 USDC spot + ~0,10 USDC perp = ~0,40 USDC totali.
+- **Allocazione risultante** (USD equivalenti stimati):
+  - Earn USDC: 443 (40%)
+  - DOT carry: 288 spot + 290 margin = 578 (53%)
+  - ADA carry: 85 spot + 90 margin = 175 (16% — overload con DOT oltre 100%, ma è somma dei valori)
+  - DOGE canary: 9 spot + 10 margin = 19
+  - Idle EUR: 3
+  - **Equity totale stimata**: ~1.220 USDC (da verificare col banco al prossimo tick)
+  - **Rendita attesa**: funding DOT/ADA/DOGE lorda ~11% annua su ~770 USDC carry ≈ 85 USDC/anno
+    + Earn 3,6% su ~443 USDC ≈ 16 USDC/anno = ~101 USDC/anno (9,2% su ~1.100).
+    [Nota: funding al tasso base 0,0001; se scende, la rendita cala; se sale, aumenta.]
+- **Rischio**: funding regime reversal (il funding può diventare negativo); monitoraggio via
+  `carry_watch.py` (cron 5') e `genera_carry.py` (cron */5). Isolated margin 1× — no
+  liquidation risk oltre al movimento del sottostante (il carry è market-neutral per costruzione).
+- **Da fare**: rivedere C1 DOGE canary (scaduto 15/10); verificare che il banco a secco rifletta
+  la nuova allocazione; considerare un aumento del carry se il funding supera 0,00015
+  (soglia carry_watch).
