@@ -163,8 +163,10 @@ class OrderBook:
             "best_bid_qty": round(bb_sz, 5),
             "best_ask": round(ba_px, 2),
             "best_ask_qty": round(ba_sz, 5),
-            "spread_bps": round(spread, 1),
-            "ask_bid_bps": round((ba_px / bb_px - 1) * 10_000, 1) if bb_px > 0 else 0.0,
+            # 3 decimali: a 72k€ un tick da 0,1€ vale 0,0014 bps — 1 decimale lo azzererebbe
+            "spread_bps": round(spread, 3),
+            "spread_abs_eur": round(ba_px - bb_px, 2) if bb_px > 0 else 0.0,
+            "ask_bid_bps": round((ba_px / bb_px - 1) * 10_000, 3) if bb_px > 0 else 0.0,
             "n_bid": len(self.bids),
             "n_ask": len(self.asks),
         }
