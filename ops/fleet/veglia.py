@@ -79,6 +79,7 @@ PROFILI: dict[str, dict] = {
             ("/home/marco/money/logs/banco_secco.jsonl", 900),
             ("/home/marco/canary/canary.log", 2400),
             ("/home/marco/money/data/carry_stato.json", 3600),
+            ("/home/marco/money/data/l2/l2_stato.json", 120),
         ],
     },
     "nuvola": {
