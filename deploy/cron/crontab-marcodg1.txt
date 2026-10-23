@@ -20,3 +20,7 @@
 
 # [18/10/26] Ricerca: riepilogo verdetti per dashboard/Zabbix (ogni 30') — il file era fermo al 15/10
 */30 * * * * cd /home/marco/money && /home/marco/money/.venv/bin/python3 scripts/genera_ricerca.py >> /home/marco/money/logs/genera_ricerca.log 2>&1
+
+# [23/10/26] Raccoglitore L2 BTC-EUR (feed pubblico EEA, books+trades) — singleton via flock,
+# il cron ogni 5 minuti agisce da supervisore: se il collector e' morto, riparte. Lane MM1.
+*/5 * * * * /home/marco/money/scripts/l2_start.sh >> /home/marco/money/logs/raccoglitore_l2.log 2>&1
