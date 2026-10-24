@@ -7,104 +7,176 @@
 <meta name="color-scheme" content="dark">
 <style>
   :root{
-    --bg:#05070c; --panel:rgba(10,16,26,.78); --border:rgba(124,170,255,.16);
+    --bg:#05070c; --panel:rgba(10,16,26,.80); --border:rgba(124,170,255,.16);
     --ink:#e9eff7; --soft:#c3cfdd; --muted:#8fa1b8; --muted-2:#67788f;
-    --cyan:#58c8ff; --blue:#58a6ff; --violet:#b18cff; --green:#2fe3a4;
+    --cyan:#58c8ff; --green:#2fe3a4; --amber:#ffb454; --red:#ff6b7a;
     --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{
     min-height:100vh;font-family:'Space Grotesk',system-ui,sans-serif;
-    color:var(--ink);background:var(--bg);
-    display:flex;align-items:center;justify-content:center;
-    padding:clamp(20px,4vw,52px) clamp(16px,3vw,36px);
+    color:var(--ink);background:var(--bg);padding:clamp(18px,4vw,48px) clamp(14px,3vw,32px);
   }
   body::before{
     content:"";position:fixed;inset:0;z-index:-2;
-    background:radial-gradient(1100px 560px at 50% 16%, rgba(88,166,255,.10), transparent 62%),
-               linear-gradient(180deg, rgba(5,7,12,.50), rgba(5,7,12,.93));
+    background:radial-gradient(1100px 560px at 50% 12%, rgba(88,166,255,.10), transparent 62%),
+               linear-gradient(180deg, rgba(5,7,12,.55), rgba(5,7,12,.95));
   }
-  .frame{width:100%;max-width:720px;display:flex;flex-direction:column;gap:26px}
-
+  .wrap{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
   .topbar{
-    display:flex;justify-content:space-between;align-items:center;
-    font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
-    color:var(--muted-2);border-bottom:1px solid var(--border);padding-bottom:12px;
+    display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted-2);border-bottom:1px solid var(--border);padding-bottom:11px;
   }
   .topbar a{color:var(--muted);text-decoration:none}
   .topbar a:hover{color:var(--cyan)}
-
-  h1{font-size:clamp(32px,5vw,48px);font-weight:700;letter-spacing:.04em;
-     background:linear-gradient(118deg,#7dd3fc,#58a6ff 36%,#e879f9);
-     -webkit-background-clip:text;background-clip:text;color:transparent;}
-
-  .panel{
-    background:var(--panel);border:1px solid var(--border);border-radius:14px;
-    padding:20px 22px;backdrop-filter:blur(10px);
-  }
-  .panel h2{font-size:16px;font-weight:600;margin-bottom:12px;color:var(--cyan)}
-  .row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(124,170,255,.08)}
+  h1{font-size:clamp(28px,4.4vw,42px);font-weight:700;letter-spacing:.03em;
+     background:linear-gradient(118deg,#7dd3fc,#58a6ff 38%,#e879f9);
+     -webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+  .panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;
+         padding:16px 18px;backdrop-filter:blur(10px)}
+  .panel h2{font-size:12px;font-family:var(--mono);letter-spacing:.10em;text-transform:uppercase;
+            color:var(--cyan);margin-bottom:12px;font-weight:600}
+  .row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+       padding:5px 0;border-bottom:1px solid rgba(124,170,255,.07)}
   .row:last-child{border-bottom:none}
   .label{font-family:var(--mono);font-size:11px;color:var(--muted)}
-  .value{font-family:var(--mono);font-size:12px;color:var(--ink)}
-  .value.green{color:var(--green)}
-  .value.mono{font-size:10px;word-break:break-all}
-
-  .tag{
-    display:inline-block;padding:3px 10px;border-radius:999px;
-    font-family:var(--mono);font-size:10px;letter-spacing:.04em;
-    border:1px solid var(--border);
-  }
+  .value{font-family:var(--mono);font-size:13px;color:var(--ink)}
+  .value.green{color:var(--green)} .value.amber{color:var(--amber)} .value.red{color:var(--red)}
+  .mono-sm{font-family:var(--mono);font-size:10.5px;word-break:break-all;color:var(--muted)}
+  .big{font-family:var(--mono);font-size:22px;color:var(--green);letter-spacing:.01em}
+  .tag{display:inline-block;padding:2px 9px;border-radius:999px;font-family:var(--mono);
+       font-size:10px;letter-spacing:.04em;border:1px solid var(--border)}
   .tag.live{background:rgba(47,227,164,.09);border-color:rgba(47,227,164,.34);color:#5ff0bd}
-  .tag.wait{background:rgba(88,166,255,.09);border-color:rgba(88,166,255,.34);color:#9fc6ff}
-
-  footer{
-    border-top:1px solid var(--border);padding-top:15px;
-    font-family:var(--mono);font-size:11px;color:var(--muted-2);
-    display:flex;justify-content:space-between;
-  }
+  .tag.wait{background:rgba(255,180,84,.10);border-color:rgba(255,180,84,.32);color:#ffc97a}
+  .tag.err{background:rgba(255,107,122,.10);border-color:rgba(255,107,122,.34);color:#ff9aa4}
+  footer{border-top:1px solid var(--border);padding-top:12px;
+         font-family:var(--mono);font-size:11px;color:var(--muted-2);
+         display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
   footer a{color:var(--muted);text-decoration:none}
+  .stale{color:var(--amber)}
 </style>
 </head>
 <body>
-<div class="frame">
+<div class="wrap">
 
   <header class="topbar">
-    <a href="/">← denaro.grivetto.eu</a>
+    <a href="/dashboard">← denaro / dashboard</a>
     <span>airdrop farm</span>
   </header>
 
   <h1>Airdrop Farm</h1>
+  <div class="sub">wallet on-chain · saldi live · <span id="ts">caricamento…</span></div>
 
-  <div class="panel">
-    <h2>🔑 Wallet On-Chain</h2>
-    <div class="row"><span class="label">Indirizzo</span><span class="value mono">0x0c993E43594FB8309FaC1e494c66a576e54E9Ed9</span></div>
-    <div class="row"><span class="label">Reti attive</span><span class="value">Arbitrum · Base · Optimism</span></div>
-    <div class="row"><span class="label">Saldo Arbitrum</span><span class="value mono" id="bal-arb">in attesa prelievo...</span></div>
-    <div class="row"><span class="label">Fondi allocati</span><span class="value">~50€ (0.013 ETH + 30 USDC)</span></div>
+  <div class="grid" id="chains">
+    <div class="panel"><h2>Arbitrum</h2><div class="row"><span class="label">caricamento…</span></div></div>
+    <div class="panel"><h2>Base</h2><div class="row"><span class="label">caricamento…</span></div></div>
+    <div class="panel"><h2>Optimism</h2><div class="row"><span class="label">caricamento…</span></div></div>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <h2>Totale on-chain</h2>
+      <div class="row"><span class="label">USDC</span><span class="big" id="tot-usdc">—</span></div>
+      <div class="row"><span class="label">ETH</span><span class="value" id="tot-eth">—</span></div>
+      <div class="row"><span class="label">Nodi RPC</span><span class="value" id="health">—</span></div>
+    </div>
+
+    <div class="panel">
+      <h2>Wallet</h2>
+      <div class="row"><span class="label">Indirizzo</span></div>
+      <div class="mono-sm" id="wallet">—</div>
+      <div class="row" style="margin-top:8px"><span class="label">Reti attive</span><span class="value">3</span></div>
+    </div>
+
+    <div class="panel">
+      <h2>Flash Earn</h2>
+      <div class="row"><span class="label">Radar</span><span class="tag wait" id="radar">in attesa campagna</span></div>
+      <div class="row"><span class="label">Auto-subscribe</span><span class="tag live">pronto</span></div>
+      <div class="row"><span class="label">Capitale Earn</span><span class="value">~372 USDC</span></div>
+    </div>
   </div>
 
   <div class="panel">
-    <h2>📡 Flash Earn Radar</h2>
-    <div class="row"><span class="label">Stato</span><span class="tag wait">in attesa prossima campagna</span></div>
-    <div class="row"><span class="label">Capitale in Earn</span><span class="value">372 USDC</span></div>
-    <div class="row"><span class="label">Auto-subscribe</span><span class="tag live">pronto</span></div>
-    <div class="row"><span class="label">Ultima verificata</span><span class="value">KAT (scaduta 24/10)</span></div>
+    <h2>Attività completata</h2>
+    <div class="row"><span class="label">Prelievo OKX → Arbitrum</span><span class="value green">0.013 ETH + 30 USDC</span></div>
+    <div class="row"><span class="label">Swap Arbitrum</span><span class="value">0.0005 ETH → USDC</span></div>
+    <div class="row"><span class="label">Bridge → Base (Across)</span><span class="value">0.004 ETH</span></div>
+    <div class="row"><span class="label">Bridge → Optimism (Across)</span><span class="value">0.003 ETH</span></div>
+    <div class="row"><span class="label">Swap Base</span><span class="value">0.001 ETH → USDC</span></div>
+    <div class="row"><span class="label">Swap Optimism</span><span class="value">0.001 ETH → USDC</span></div>
   </div>
 
   <div class="panel">
-    <h2>🎯 Prossimi target</h2>
-    <div class="row"><span class="label">1. Arcus</span><span class="tag wait">waitlist</span></div>
-    <div class="row"><span class="label">2. Polymarket</span><span class="tag wait">da iniziare</span></div>
-    <div class="row"><span class="label">3. Variational</span><span class="tag wait">da iniziare</span></div>
-    <div class="row"><span class="label">Pharos PROS</span><span class="value" style="color:var(--muted-2)">non idonei</span></div>
+    <h2>Prossimi target</h2>
+    <div class="row"><span class="label">Arcus (Robinhood Chain)</span><span class="tag wait">da esplorare</span></div>
+    <div class="row"><span class="label">Polymarket (Polygon)</span><span class="tag wait">da configurare</span></div>
+    <div class="row"><span class="label">Morpho / Aave (lending)</span><span class="tag wait">attività</span></div>
   </div>
 
   <footer>
-    <span>wallet: 0x0c99...9Ed9</span>
+    <span id="generated">—</span>
     <a href="https://github.com/grivetto/money">grivetto/money</a>
   </footer>
 
 </div>
+
+<script>
+(function(){
+  const $ = (id) => document.getElementById(id);
+  const fmtEth = (v) => (v === null || v === undefined) ? "n/d" : Number(v).toFixed(6);
+  const fmtUsdc = (v) => (v === null || v === undefined) ? "n/d" : Number(v).toFixed(2);
+
+  function chainCard(c){
+    const err = !!c.error;
+    const badge = err ? '<span class="tag err">RPC KO</span>' : '<span class="tag live">ok</span>';
+    const link = c.explorer
+      ? `<a class="mono-sm" style="color:var(--muted)" href="${c.explorer}/address/${window.__wallet || ''}" target="_blank" rel="noopener">apri</a>`
+      : "—";
+    return `<div class="panel">
+      <h2>${c.chain} ${badge}</h2>
+      <div class="row"><span class="label">ETH</span><span class="value">${fmtEth(c.eth)}</span></div>
+      <div class="row"><span class="label">USDC</span><span class="value green">${fmtUsdc(c.usdc)}</span></div>
+      <div class="row"><span class="label">explorer</span>${link}</div>
+    </div>`;
+  }
+
+  async function load(){
+    try{
+      const r = await fetch("/api/airdrop.json", {cache:"no-store"});
+      if(!r.ok) throw new Error("HTTP " + r.status);
+      const d = await r.json();
+      window.__wallet = d.wallet || "";
+      $("wallet").textContent = d.wallet || "—";
+      $("chains").innerHTML = (d.chains || []).map(chainCard).join("");
+      $("tot-usdc").textContent = fmtUsdc(d.totals && d.totals.usdc) + " USDC";
+      $("tot-eth").textContent = fmtEth(d.totals && d.totals.eth) + " ETH";
+      const h = d.health || {};
+      $("health").textContent = (h.chains_ok ?? "?") + "/" + (h.chains_total ?? "?") + " ok";
+      $("health").className = "value " + (h.ok ? "green" : "amber");
+      const gen = d.generated_at || "";
+      $("generated").textContent = "aggiornato: " + gen;
+      const age = gen ? (Date.now() - new Date(gen).getTime())/1000 : null;
+      const ts = $("ts");
+      if(age !== null && age > 1800){
+        ts.textContent = "dato fermo da " + Math.round(age/60) + " min";
+        ts.className = "stale";
+      } else {
+        ts.textContent = "aggiornato " + (gen ? new Date(gen).toLocaleTimeString("it-IT") : "—");
+        ts.className = "";
+      }
+    }catch(e){
+      $("ts").textContent = "dati non disponibili (" + e.message + ")";
+      $("ts").className = "stale";
+      $("health").textContent = "errore";
+      $("health").className = "value red";
+    }
+  }
+  load();
+  setInterval(load, 60000);
+})();
+</script>
 </body>
 </html>
