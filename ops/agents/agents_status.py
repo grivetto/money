@@ -38,8 +38,8 @@ DEFAULT_OUT = Path(__file__).resolve().parent.parent / "dashboard" / "agenti.jso
 NODI = {
     "mc2":      {"alias": None,       "operai": ["hermes", "a0", "dsh", "opencode", "agy"], "porta_dsh": 4080},
     "omarchy":  {"alias": "omarchy",  "operai": ["hermes", "a0", "dsh", "opencode", "agy"], "porta_dsh": 5080},
-    "nuvola":   {"alias": "nuvola",   "operai": ["a0", "opencode", "agy"], "porta_dsh": None},
-    "marcodg1": {"alias": "MARCODG1", "operai": ["a0", "opencode", "agy"], "porta_dsh": None},
+    "nuvola":   {"alias": "nuvola",   "operai": ["hermes", "a0", "opencode", "agy"], "porta_dsh": None},
+    "marcodg1": {"alias": "MARCODG1", "operai": ["hermes", "a0", "opencode", "agy"], "porta_dsh": None},
 }
 WIN_ALIAS = "winpc"
 WIN_OPERAI = ("a0", "dsh")
@@ -116,7 +116,7 @@ def raccogli_win() -> dict | None:
                              WIN_ALIAS, "docker inspect agent-zero --format {{.State.Status}}"],
                             capture_output=True, text=True, timeout=60)
         r3 = subprocess.run(["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10",
-                             WIN_ALIAS, "curl.exe -s -o NUL --max-time 8 http://127.0.0.1:50080/ "
+                             WIN_ALIAS, "curl.exe -s -o NUL --max-time 8 http://127.0.0.1:48080/ "
                                         "&& echo UP || echo DOWN"],
                             capture_output=True, text=True, timeout=60)
         if r1.returncode != 0 and r2.returncode != 0:
@@ -149,7 +149,7 @@ def valuta_linux(lett: dict | None, cfg: dict) -> dict:
         if not st:
             fuori["a0"] = _voce(None, "container agent-zero non osservabile")
         else:
-            fuori["a0"] = _voce(st == "running" and http == "200",
+            fuori["a0"] = _voce(st == "running" and http in ("200", "302", "401", "403"),
                                 f"container {st} · http {http or '—'}")
     if "dsh" in ops:
         st, http = lett.get("dsh", ""), lett.get("dsh_http", "")
