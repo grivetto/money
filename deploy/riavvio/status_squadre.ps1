@@ -22,9 +22,9 @@ elseif ($stato) { KoMsg "A0-win container agent-zero: $stato" }
 else { KoMsg "A0-win container agent-zero: non osservabile (Docker Desktop spento?)" }
 
 try {
-  $r = Invoke-WebRequest -UseBasicParsing -Uri "http://127.0.0.1:50080/" -TimeoutSec 8
-  OkMsg "A0-win http :50080 ($($r.StatusCode))"
-} catch { KoMsg "A0-win http :50080 non risponde" }
+  $r = Invoke-WebRequest -UseBasicParsing -Uri "http://127.0.0.1:48080/" -TimeoutSec 8
+  OkMsg "A0-win http :48080 ($($r.StatusCode))"
+} catch { KoMsg "A0-win http :48080 non risponde" }
 
 # --- DSH-win: porta 3080 in ascolto ---
 $dsh = netstat -ano | Select-String ":3080\s" | Select-String "LISTENING"
