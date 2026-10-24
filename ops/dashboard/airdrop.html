@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Denaro · Airdrop Farm</title>
+<meta name="color-scheme" content="dark">
+<style>
+  :root{
+    --bg:#05070c; --panel:rgba(10,16,26,.78); --border:rgba(124,170,255,.16);
+    --ink:#e9eff7; --soft:#c3cfdd; --muted:#8fa1b8; --muted-2:#67788f;
+    --cyan:#58c8ff; --blue:#58a6ff; --violet:#b18cff; --green:#2fe3a4;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    min-height:100vh;font-family:'Space Grotesk',system-ui,sans-serif;
+    color:var(--ink);background:var(--bg);
+    display:flex;align-items:center;justify-content:center;
+    padding:clamp(20px,4vw,52px) clamp(16px,3vw,36px);
+  }
+  body::before{
+    content:"";position:fixed;inset:0;z-index:-2;
+    background:radial-gradient(1100px 560px at 50% 16%, rgba(88,166,255,.10), transparent 62%),
+               linear-gradient(180deg, rgba(5,7,12,.50), rgba(5,7,12,.93));
+  }
+  .frame{width:100%;max-width:720px;display:flex;flex-direction:column;gap:26px}
+
+  .topbar{
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--muted-2);border-bottom:1px solid var(--border);padding-bottom:12px;
+  }
+  .topbar a{color:var(--muted);text-decoration:none}
+  .topbar a:hover{color:var(--cyan)}
+
+  h1{font-size:clamp(32px,5vw,48px);font-weight:700;letter-spacing:.04em;
+     background:linear-gradient(118deg,#7dd3fc,#58a6ff 36%,#e879f9);
+     -webkit-background-clip:text;background-clip:text;color:transparent;}
+
+  .panel{
+    background:var(--panel);border:1px solid var(--border);border-radius:14px;
+    padding:20px 22px;backdrop-filter:blur(10px);
+  }
+  .panel h2{font-size:16px;font-weight:600;margin-bottom:12px;color:var(--cyan)}
+  .row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(124,170,255,.08)}
+  .row:last-child{border-bottom:none}
+  .label{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .value{font-family:var(--mono);font-size:12px;color:var(--ink)}
+  .value.green{color:var(--green)}
+  .value.mono{font-size:10px;word-break:break-all}
+
+  .tag{
+    display:inline-block;padding:3px 10px;border-radius:999px;
+    font-family:var(--mono);font-size:10px;letter-spacing:.04em;
+    border:1px solid var(--border);
+  }
+  .tag.live{background:rgba(47,227,164,.09);border-color:rgba(47,227,164,.34);color:#5ff0bd}
+  .tag.wait{background:rgba(88,166,255,.09);border-color:rgba(88,166,255,.34);color:#9fc6ff}
+
+  footer{
+    border-top:1px solid var(--border);padding-top:15px;
+    font-family:var(--mono);font-size:11px;color:var(--muted-2);
+    display:flex;justify-content:space-between;
+  }
+  footer a{color:var(--muted);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="frame">
+
+  <header class="topbar">
+    <a href="/">← denaro.grivetto.eu</a>
+    <span>airdrop farm</span>
+  </header>
+
+  <h1>Airdrop Farm</h1>
+
+  <div class="panel">
+    <h2>🔑 Wallet On-Chain</h2>
+    <div class="row"><span class="label">Indirizzo</span><span class="value mono">0x0c993E43594FB8309FaC1e494c66a576e54E9Ed9</span></div>
+    <div class="row"><span class="label">Reti attive</span><span class="value">Arbitrum · Base · Optimism</span></div>
+    <div class="row"><span class="label">Saldo Arbitrum</span><span class="value mono" id="bal-arb">in attesa prelievo...</span></div>
+    <div class="row"><span class="label">Fondi allocati</span><span class="value">~50€ (0.013 ETH + 30 USDC)</span></div>
+  </div>
+
+  <div class="panel">
+    <h2>📡 Flash Earn Radar</h2>
+    <div class="row"><span class="label">Stato</span><span class="tag wait">in attesa prossima campagna</span></div>
+    <div class="row"><span class="label">Capitale in Earn</span><span class="value">372 USDC</span></div>
+    <div class="row"><span class="label">Auto-subscribe</span><span class="tag live">pronto</span></div>
+    <div class="row"><span class="label">Ultima verificata</span><span class="value">KAT (scaduta 24/10)</span></div>
+  </div>
+
+  <div class="panel">
+    <h2>🎯 Prossimi target</h2>
+    <div class="row"><span class="label">1. Arcus</span><span class="tag wait">waitlist</span></div>
+    <div class="row"><span class="label">2. Polymarket</span><span class="tag wait">da iniziare</span></div>
+    <div class="row"><span class="label">3. Variational</span><span class="tag wait">da iniziare</span></div>
+    <div class="row"><span class="label">Pharos PROS</span><span class="value" style="color:var(--muted-2)">non idonei</span></div>
+  </div>
+
+  <footer>
+    <span>wallet: 0x0c99...9Ed9</span>
+    <a href="https://github.com/grivetto/money">grivetto/money</a>
+  </footer>
+
+</div>
+</body>
+</html>
