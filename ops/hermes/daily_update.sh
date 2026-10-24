@@ -99,7 +99,7 @@ do_update_remote() {
   local ssh_alias=$1
   local home=$2
   ssh -o BatchMode=yes -o ConnectTimeout=10 "$ssh_alias" "
-    export PATH='$home/.local/bin:\$PATH'
+    export PATH=\"$home/.local/bin:\$PATH\"
     cd '$home'
     hermes --version 2>&1 | head -1
     hermes update 2>&1
