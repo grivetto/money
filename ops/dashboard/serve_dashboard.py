@@ -87,6 +87,9 @@ CONSOLE_TIMEOUT = int(os.environ.get("CONSOLE_TIMEOUT", "300"))
 CONSOLE_HEALTH_TIMEOUT = 3
 CONSOLE_JOBS: dict = {}
 CONSOLE_JOBS_LOCK = threading.Lock()
+#: Cloudflare Access aggiunge questo header alle richieste autenticate.
+#: La policy Access deve coprire anche /api/console: senza header -> 403.
+CONSOLE_ACCESS_HEADER = "Cf-Access-Jwt-Assertion"
 
 
 def carica_agenti_console() -> dict:
@@ -468,13 +471,31 @@ class DashboardHandler(BaseHTTPRequestHandler):
         elif path in {r.rstrip("/") or "/" for r in JSON_ROUTES}:
             self._serve_json()
         elif path == "/api/console/agents":
+            if not self._console_access_ok():
+                self._deny_console()
+                return
             self._serve_console_agents()
         elif path == "/api/console/result":
+            if not self._console_access_ok():
+                self._deny_console()
+                return
             self._serve_console_result()
         elif path == "/healthz":
             self._serve_healthz()
         else:
             self._send(404, b'{"error":"not found"}', "application/json; charset=utf-8")
+
+    def _console_access_ok(self) -> bool:
+        """La console e' protetta da Cloudflare Access: senza JWT header -> 403.
+
+        La policy Access copre /agenti; finche' non copre anche /api/console,
+        questo guard impedisce che chiunque possa usare i 4 Hermes.
+        """
+        return bool(self.headers.get(CONSOLE_ACCESS_HEADER))
+
+    def _deny_console(self) -> None:
+        self._send(403, b'{"error":"console protetta da Cloudflare Access: aggiungere /api/console alla app Access"}',
+                   "application/json; charset=utf-8")
 
     def _serve_console_agents(self) -> None:
         """GET /api/console/agents: stato dei 4 Hermes (health, nessuna chiave)."""
@@ -571,6 +592,9 @@ class DashboardHandler(BaseHTTPRequestHandler):
     def do_POST(self) -> None:  # noqa: N802
         path = self.path.split("?", 1)[0].rstrip("/") or "/"
         if path == "/api/console/chat":
+            if not self._console_access_ok():
+                self._deny_console()
+                return
             self._serve_console_chat()
             return
         self._send(404, b'{"error":"not found"}', "application/json; charset=utf-8")
