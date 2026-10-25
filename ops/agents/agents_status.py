@@ -37,7 +37,7 @@ DEFAULT_OUT = Path(__file__).resolve().parent.parent / "dashboard" / "agenti.jso
 #: nodi linux: alias ssh (None = locale su mc2), operai presenti, porta dsh-web
 NODI = {
     "mc2":      {"alias": None,       "operai": ["hermes", "a0", "dsh", "opencode", "agy"], "porta_dsh": 4080},
-    "omarchy":  {"alias": "omarchy",  "operai": ["hermes", "a0", "dsh", "opencode", "agy"], "porta_dsh": 5080},
+    "omarchy":  {"alias": "omarchy",  "operai": ["hermes", "a0", "dsh", "opencode", "agy"], "porta_dsh": 5080, "host_dsh": "192.168.1.98"},
     "nuvola":   {"alias": "nuvola",   "operai": ["hermes", "a0", "opencode", "agy"], "porta_dsh": None},
     "marcodg1": {"alias": "MARCODG1", "operai": ["hermes", "a0", "opencode", "agy"], "porta_dsh": None},
 }
@@ -67,8 +67,9 @@ def _snippet(cfg: dict) -> str:
     if "dsh" in ops:
         porta = cfg["porta_dsh"]
         righe.append("echo dsh=$(systemctl is-active dsh-web 2>/dev/null)")
+        host_dsh = cfg.get("host_dsh", "127.0.0.1")
         righe.append(f"echo dsh_http=$(curl -s -o /dev/null -w '%{{http_code}}' --max-time 5 "
-                     f"http://127.0.0.1:{porta}/ 2>/dev/null)")
+                     f"http://{host_dsh}:{porta}/ 2>/dev/null)")
     if "opencode" in ops:
         righe.append("echo opencode=$(systemctl is-active opencode 2>/dev/null)")
         righe.append(f"echo opencode_port=$(ss -ltn 2>/dev/null | grep -q ':{PORT_OPENCODE}' "
