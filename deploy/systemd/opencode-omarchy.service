@@ -1,10 +1,14 @@
-# /etc/systemd/system/opencode.service — omarchy (user sergio)
+# /etc/systemd/system/opencode.service — opencode API server (omarchy) (user sergio)
 # opencode API server — auto-start + always-on
 
 [Unit]
 Description=opencode API server (omarchy)
 After=network-online.target
 Wants=network-online.target
+# Rete di sicurezza: se la unit entra in loop di riavvio si ferma in stato failed
+# (meglio di migliaia di restart silenziosi).
+StartLimitIntervalSec=120
+StartLimitBurst=8
 
 [Service]
 Type=simple
@@ -13,7 +17,11 @@ Group=sergio
 WorkingDirectory=/home/sergio
 Environment=HOME=/home/sergio
 Environment=PATH=/home/sergio/.opencode/bin:/home/sergio/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-ExecStart=/home/sergio/.opencode/bin/opencode serve --service
+# Guardia anti-loop: opencode v2 esce 0 se trova un server gia attivo avviato da
+# fuori (TUI/upgrade). Fermiamo l'eventuale orfano, cosi la unit resta lunico gestore.
+ExecStartPre=-/bin/sh -c 'timeout 15 /home/sergio/.opencode/bin/opencode service stop >/dev/null 2>&1 || true'
+ExecStartPre=-/bin/sh -c 'pkill -f "^/home/[a-z0-9_]+/.opencode/bin/opencode serve --service" >/dev/null 2>&1 || true'
+ExecStart=/home/sergio/.opencode/bin/opencode serve --service --hostname 192.168.1.98
 Restart=always
 RestartSec=5
 TimeoutStopSec=15

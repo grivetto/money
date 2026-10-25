@@ -114,17 +114,17 @@ const NODI = [
 // Dal 21/10 i link http://LAN venivano bloccati da Chrome (HTTPS-Only mode) da pagina https.
 const OFFICINA_HOST = "mc2.tail1b5252.ts.net";
 const OFFICINA = {
-  mc2:      {a0:8443, dsh:8444},
-  omarchy:  {a0:8445, dsh:8446},
+  mc2:      {a0:8443, dsh:8444, opencode:8451},
+  omarchy:  {a0:8445, dsh:8446, opencode:8452},
   win:      {a0:8447},
-  nuvola:   {a0:8449},
-  marcodg1: {a0:8450},
+  nuvola:   {a0:8449, opencode:8453},
+  marcodg1: {a0:8450, opencode:8454},
 };
 const STRUMENTI = {
   hermes:  {nome:"Hermes",     link:null},
   a0:      {nome:"Agent Zero", link:(n)=> OFFICINA[n.id] && OFFICINA[n.id].a0 ? "https://" + OFFICINA_HOST + ":" + OFFICINA[n.id].a0 + "/" : null},
   dsh:     {nome:"DSH web",    link:(n)=> OFFICINA[n.id] && OFFICINA[n.id].dsh ? "https://" + OFFICINA_HOST + ":" + OFFICINA[n.id].dsh + "/" : null},
-  opencode:{nome:"opencode",   link:null},
+  opencode:{nome:"opencode",   link:(n)=> OFFICINA[n.id] && OFFICINA[n.id].opencode ? "https://" + OFFICINA_HOST + ":" + OFFICINA[n.id].opencode + "/" : null},
   agy:     {nome:"agy",        link:null},
 };
 const NOMI_STRUMENTO = {hermes:"HERMES", a0:"A0", dsh:"DSH", opencode:"OPENCODE", agy:"AGY"};
