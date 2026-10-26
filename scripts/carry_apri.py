@@ -11,6 +11,13 @@ DIFFERENZE rispetto a C1 (dichiarate):
   - riusa `money.esecuzione.invio` (unico punto di invio) e
     `money.esecuzione.cancello` (gate con stop ATR obbligatorio).
 
+P34 (REQ-MERL-20261026-020):
+  - il funding del gate viene da `money.funding_carry.stima_funding`: per gli
+    X-Perp EEA la tariffa corrente e' ammessa SOLO se identica alla tariffa
+    dichiarata (0,0001); per gli USDT-SWAP vale il p10 della serie rolling
+    (>= 30 periodi, altrimenti rifiuto "campione insufficiente"). Il dry-run
+    stampa stima + fonte; scostamento/errore -> nessuna apertura.
+
 Sicurezze (identiche a C1): chiavi mai stampate; LIMIT (mai market); clOrdId
 idempotenti; un solo reprice; fill parziale gestito; kill switch a file.
 
@@ -37,6 +44,7 @@ sys.path.insert(0, str(ROOT))
 from money.esecuzione.cancello import gate_pre_trade  # noqa: E402
 from money.esecuzione.cancello_carry import gate_carry  # noqa: E402
 from money.esecuzione.invio import Gamba, invia_gamba  # noqa: E402
+from money.funding_carry import stima_funding  # noqa: E402  (P34-F1)
 from money.rischio import stop_da_atr  # noqa: E402
 from scripts.carry_multi import COPPIE, leggi_env, ENV_FILE, DIR_STATO, KILL  # noqa: E402
 
@@ -50,26 +58,16 @@ COSTO_CICLO = 0.0034
 
 
 def funding_atteso(ex, inst_perp: str, periodi: int = 3) -> float:
-    """Media robusta del funding recente (min dei tre valori piu' alti), CON SEGNO.
+    """Wrapper di compatibilita' verso la stima P34-F1 (money.funding_carry).
 
-    Regola MOSAICO-4 §3.1: mai l'ultimo valore osservato. La media robusta
-    evita di aprire su un picco isolato che il ciclo successivo non conferma.
-    Il SEGNO si conserva (fix audit 19/10, carry_apri.py:62-66): un funding
-    negativo deve arrivare NEGATIVO al gate, che lo rifiuta (cancello_carry.py:
-    «il carry non incassa»). Ritorna la frazione per periodo (es. 0.0001 = 0,01%/8h).
+    Ritorna il VALORE NUDO della stima: chi decide deve usare
+    `stima_funding()` (ok/motivo/fonte) — un valore nudo non autorizza
+    un'apertura (main() usa stima_funding). `periodi` e' mantenuto per
+    compatibilita' di firma ma non e' piu' il parametro della stima: per gli
+    X-Perp vale la tariffa dichiarata (0,0001), per gli SWAP la finestra
+    >= 30 periodi della spec P34.
     """
-    try:
-        r = ex.publicGetPublicFundingRate({"instId": inst_perp})
-        storico = ex.publicGetPublicFundingRateHistory({"instId": inst_perp, "limit": "12"})
-        valori = []
-        for d in (storico.get("data") or [])[:periodi]:
-            valori.append(float(d.get("fundingRate") or 0))
-        if valori:
-            return min(valori)          # il piu' prudente dei recenti, con segno
-        d = (r.get("data") or [{}])[0]
-        return float(d.get("fundingRate") or 0)
-    except Exception:  # noqa: BLE001
-        return 0.0
+    return stima_funding(ex, inst_perp).valore
 
 
 def ora() -> str:
@@ -224,11 +222,14 @@ def main() -> int:
     # rischio da posizione direzionale, che il carry non ha (verificato 16/10:
     # con equity 498 EUR il gate direzionale limitava il nozionale a 16 EUR).
     eq = equity_progetto()
-    funding = funding_atteso(ex, c.inst_perp)
+    st = stima_funding(ex, c.inst_perp)
     delta_rel = delta_atteso / qty_spot if qty_spot else 1.0
-    print(f"equity progetto: {eq:.2f} | funding atteso: {funding*100:.5f}%/8h | "
-          f"delta: {delta_rel:.4%}")
-    dec = gate_carry(nozionale=noz, funding_atteso=funding,
+    print(f"equity progetto: {eq:.2f} | funding atteso: {st.valore*100:.5f}%/8h "
+          f"| fonte: {st.fonte} | ok={st.ok} | delta: {delta_rel:.4%}")
+    if not st.ok:
+        print(f"GATE FUNDING RIFIUTA l'apertura: {st.motivo}")
+        return 1
+    dec = gate_carry(nozionale=noz, funding_atteso=st.valore,
                      costo_ciclo=COSTO_CICLO, delta_relativo=delta_rel, leva=1.0)
     print(f"gate carry: ok={dec.ok} motivi={dec.motivi}")
     print(f"  liquidazione a {dec.distanza_liq:.1%} | payback {dec.periodi_payback:.0f} periodi (8h)")
