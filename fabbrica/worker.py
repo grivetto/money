@@ -86,7 +86,7 @@ def checks_marcodg1(st):
 def checks_nuvola(st):
     """A0-PC (via tailscale) + servizi del nodo."""
     rc, out = sh("curl -s -m 6 -o /dev/null -w '%{http_code}' "
-                 "http://100.76.22.119:50080/api/health", timeout=10)
+                 "http://100.76.22.119:48080/api/health", timeout=10)
     st["a0win"] = out if rc == 0 else "DOWN"
     st["svc"] = {u: sysd(u) for u in (
         "money-health-nuvola", "zabbix-agent", "zabbix-tunnel")}

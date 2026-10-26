@@ -25,7 +25,7 @@ SOGLIA_S = 300  # 5 minuti di silenzio del master: allarme franco, niente falsi 
 
 # --- Notifica Telegram (zero silenzi): max 1 allarme/ora per guasto, + un messaggio di rientro ---
 TG_STATO = BASE / "log" / "watchdog_tg_stato.json"
-NOTIFICA_TG = Path("/home/sergio/alpha-omega-trading/tools/notifica_tg.py")  # il watchdog gira su mc2
+NOTIFICA_TG = Path("/home/sergio/money/ops/alerts/notifica_tg.py")  # il watchdog gira su mc2
 INTERVALLO_TG_S = 3600
 
 
@@ -80,6 +80,11 @@ def main() -> int:
                     nodo, "assente" if age is None else "fermo da %ds" % int(age)))
                 break
     if msg is None:
+        # Heartbeat: una riga ogni 6 ore (finestra di 60s) — così il cron resta
+        # verificabile dal log anche senza anomalie. "Zero silenzi" con prova.
+        if time.time() % 21600 < 60:
+            print("[%s] HEARTBEAT: watchdog attivo, master e shard ok" %
+                  datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'))
         stato = _leggi_stato_tg()
         if stato.get("ultimo_tg"):
             if _notifica_tg("\u2705 FABBRICA (mc2): watchdog rientrato — nastro di nuovo in movimento."):
