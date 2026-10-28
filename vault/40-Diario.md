@@ -207,3 +207,9 @@
 - **Da fare**: rivedere C1 DOGE canary (scaduto 15/10); verificare che il banco a secco rifletta
   la nuova allocazione; considerare un aumento del carry se il funding supera 0,00015
   (soglia carry_watch).
+
+## 2026-10-28 — Fix vigilanza (Artù)
+- a0win tornato 200 (era DOWN da giorni): root cause = doppio drift — container A0-win su porta 48080 mentre fabbrica.py/worker.py puntavano 50080, e i worker dei nodi girano da copie ~/fabbrica/worker.py FUORI repo (pull git non basta). Fix: costanti aggiornate (fabbrica.py A0WIN + worker.py), copie nodi aggiornate (backup .bak-20261028), restart unit di sistema fabbrica-worker. Verificato: shard nuvola a0win=200, master state a0win=200.
+- Watchdog fabbrica: era sano (log silenzioso = nessuna anomalia; shard freschi). Migliorato: notifier TG ri-puntato a money/ops/alerts/notifica_tg.py (puntava al repo legacy abbandonato) + heartbeat ogni 6h nel log (cron verificabile anche senza anomalie). Test boundary simulato: HEARTBEAT stampato, rc 0.
+- Git multi-nodo riallineato su 5c1b6bac (merge di main locale con origin che aveva PR console + P34 riapplicata). MARCODG1: wip preservato in /tmp/money_wip_1793200368.tar.gz + branch backup-09b6d99-20261028 (commit superseded).
+- Residuo dichiarato: migrazione dei worker nodi dalle copie standalone al repo (voce di cutover).
