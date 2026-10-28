@@ -34,3 +34,4 @@
 
 # Agenti — pannello /agenti: stato Hermes/A0/opencode/agy/DSH ogni minuto (read-only; ops/agents/agents_status.py) + sync JSON su MARCODG1
 * * * * * cd /home/sergio/money && /usr/bin/flock -n /tmp/agenti_status.lock /home/sergio/money/.venv/bin/python ops/agents/agents_status.py >> logs/agenti_status.log 2>&1 && scp -q -o BatchMode=yes -o ConnectTimeout=10 ops/dashboard/agenti.json MARCODG1:/home/marco/money/ops/dashboard/agenti.json
+13 * * * * /usr/bin/flock -n /tmp/denaro_channels_watch.lock /home/sergio/money/.venv/bin/python /home/sergio/money/ops/alerts/watch_channels.py >> /home/sergio/money/logs/channels_watch.log 2>&1
