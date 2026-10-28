@@ -37,3 +37,8 @@ ops/dashboard/scommessa.json
 
 # build artifacts
 *.egg-info/
+
+# artefatti operativi locali (non codice)
+publish.log
+*.bak-*
+.venv-onchain/
