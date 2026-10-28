@@ -1,0 +1,2031 @@
+{
+ "costi": {
+  "fee_taker": 0.001,
+  "fee_maker": 0.0008,
+  "slippage": 0.0004,
+  "rt_taker": 0.0028,
+  "rt_maker": 0.0024000000000000002
+ },
+ "ipotesi": {
+  "BTC/USDT|H1_reversal_z": {
+   "chosen_params": {
+    "param": 1.5,
+    "H": 3
+   },
+   "folds": [
+    {
+     "block": 0,
+     "train_sel": {
+      "param": 1.5,
+      "H": 3,
+      "train_tstat": -47.84,
+      "train_total": -13.29794
+     },
+     "verify": {
+      "n": 1952,
+      "total": -5.221995,
+      "tstat": -25.853816,
+      "winrate": 0.189037,
+      "mean": -0.002675,
+      "maxdd": 5.222573,
+      "profit_factor": 0.183258,
+      "daily_sharpe": -42.163746,
+      "n_days": 90,
+      "gross_total": 0.243605
+     }
+    },
+    {
+     "block": 1,
+     "train_sel": {
+      "param": 1.5,
+      "H": 3,
+      "train_tstat": -53.9,
+      "train_total": -18.52056
+     },
+     "verify": {
+      "n": 1994,
+      "total": -5.446541,
+      "tstat": -38.272444,
+      "winrate": 0.127884,
+      "mean": -0.002731,
+      "maxdd": 5.446541,
+      "profit_factor": 0.094252,
+      "daily_sharpe": -50.521547,
+      "n_days": 90,
+      "gross_total": 0.136659
+     }
+    },
+    {
+     "block": 2,
+     "train_sel": {
+      "param": 1.5,
+      "H": 3,
+      "train_tstat": -64.44,
+      "train_total": -23.9671
+     },
+     "verify": {
+      "n": 2073,
+      "total": -5.70347,
+      "tstat": -56.024417,
+      "winrate": 0.080077,
+      "mean": -0.002751,
+      "maxdd": 5.70347,
+      "profit_factor": 0.039903,
+      "daily_sharpe": -58.835018,
+      "n_days": 90,
+      "gross_total": 0.10093
+     }
+    },
+    {
+     "block": 3,
+     "train_sel": {
+      "param": 1.5,
+      "H": 3,
+      "train_tstat": -76.95,
+      "train_total": -29.67057
+     },
+     "verify": {
+      "n": 1987,
+      "total": -5.713202,
+      "tstat": -29.09361,
+      "winrate": 0.149975,
+      "mean": -0.002875,
+      "maxdd": 5.713202,
+      "profit_factor": 0.115317,
+      "daily_sharpe": -49.242429,
+      "n_days": 90,
+      "gross_total": -0.149602
+     }
+    },
+    {
+     "block": 4,
+     "train_sel": {
+      "param": 1.5,
+      "H": 3,
+      "train_tstat": -81.77,
+      "train_total": -35.38377
+     },
+     "verify": {
+      "n": 12373,
+      "total": -33.838322,
+      "tstat": -66.07692,
+      "winrate": 0.186778,
+      "mean": -0.002735,
+      "maxdd": 33.838322,
+      "profit_factor": 0.175916,
+      "daily_sharpe": -24.715383,
+      "n_days": 822,
+      "gross_total": 0.806078
+     }
+    },
+    {
+     "block": 5,
+     "train_sel": {
+      "param": 1.5,
+      "H": 3,
+      "train_tstat": -103.25,
+      "train_total": -69.22209
+     },
+     "verify": {
+      "n": 970,
+      "total": -2.783219,
+      "tstat": -20.766212,
+      "winrate": 0.184536,
+      "mean": -0.002869,
+      "maxdd": 2.787347,
+      "profit_factor": 0.154747,
+      "daily_sharpe": -33.473465,
+      "n_days": 90,
+      "gross_total": -0.067219
+     }
+    },
+    {
+     "block": 6,
+     "train_sel": {
+      "param": 1.5,
+      "H": 3,
+      "train_tstat": -105.32,
+      "train_total": -72.00531
+     },
+     "verify": {
+      "n": 709,
+      "total": -1.954909,
+      "tstat": -17.746737,
+      "winrate": 0.159379,
+      "mean": -0.002757,
+      "maxdd": 1.955837,
+      "profit_factor": 0.144969,
+      "daily_sharpe": -34.423427,
+      "n_days": 68,
+      "gross_total": 0.030291
+     }
+    }
+   ],
+   "oos": {
+    "n": 22058,
+    "total": -60.661658,
+    "tstat": -95.641,
+    "winrate": 0.1673,
+    "maxdd": 60.662777,
+    "daily_sharpe": -33.062,
+    "gross_total": 1.100742,
+    "mc_p5_total": -65.009519,
+    "mc_p5_mdd": 56.475314,
+    "mc_mean_total": -60.837301,
+    "fee150_total": -91.542858,
+    "blocks_positive": 0,
+    "n_blocks": 7
+   }
+  },
+  "BTC/USDT|H2_autocorr_contrarian": {
+   "chosen_params": {
+    "param": 0.0,
+    "H": 1
+   },
+   "folds": [
+    {
+     "block": 0,
+     "train_sel": {
+      "param": 0.0,
+      "H": 1,
+      "train_tstat": -196.62,
+      "train_total": -57.43133
+     },
+     "verify": {
+      "n": 8638,
+      "total": -24.229468,
+      "tstat": -113.462957,
+      "winrate": 0.062978,
+      "mean": -0.002805,
+      "maxdd": 24.229468,
+      "profit_factor": 0.039608,
+      "daily_sharpe": -276.024536,
+      "n_days": 90,
+      "gross_total": -0.043068
+     }
+    },
+    {
+     "block": 1,
+     "train_sel": {
+      "param": 0.0,
+      "H": 1,
+      "train_tstat": -225.7,
+      "train_total": -81.66373
+     },
+     "verify": {
+      "n": 8636,
+      "total": -23.988089,
+      "tstat": -167.807867,
+      "winrate": 0.030222,
+      "mean": -0.002778,
+      "maxdd": 23.988089,
+      "profit_factor": 0.016164,
+      "daily_sharpe": -372.308023,
+      "n_days": 90,
+      "gross_total": 0.192711
+     }
+    },
+    {
+     "block": 2,
+     "train_sel": {
+      "param": 0.0,
+      "H": 1,
+      "train_tstat": -271.58,
+      "train_total": -105.65548
+     },
+     "verify": {
+      "n": 8633,
+      "total": -24.136761,
+      "tstat": -205.279253,
+      "winrate": 0.018186,
+      "mean": -0.002796,
+      "maxdd": 24.136761,
+      "profit_factor": 0.007459,
+      "daily_sharpe": -416.742536,
+      "n_days": 90,
+      "gross_total": 0.035639
+     }
+    },
+    {
+     "block": 3,
+     "train_sel": {
+      "param": 0.0,
+      "H": 1,
+      "train_tstat": -319.42,
+      "train_total": -129.80512
+     },
+     "verify": {
+      "n": 8635,
+      "total": -23.938855,
+      "tstat": -129.291022,
+      "winrate": 0.05524,
+      "mean": -0.002772,
+      "maxdd": 23.938855,
+      "profit_factor": 0.029524,
+      "daily_sharpe": -255.013999,
+      "n_days": 90,
+      "gross_total": 0.239145
+     }
+    },
+    {
+     "block": 4,
+     "train_sel": {
+      "param": 0.0,
+      "H": 1,
+      "train_tstat": -344.28,
+      "train_total": -153.74734
+     },
+     "verify": {
+      "n": 55637,
+      "total": -154.100227,
+      "tstat": -278.867717,
+      "winrate": 0.063303,
+      "mean": -0.00277,
+      "maxdd": 154.100227,
+      "profit_factor": 0.04202,
+      "daily_sharpe": -39.23214,
+      "n_days": 822,
+      "gross_total": 1.683373
+     }
+    },
+    {
+     "block": 5,
+     "train_sel": {
+      "param": 0.0,
+      "H": 1,
+      "train_tstat": -433.29,
+      "train_total": -307.85046
+     },
+     "verify": {
+      "n": 4318,
+      "total": -12.018299,
+      "tstat": -81.804291,
+      "winrate": 0.066698,
+      "mean": -0.002783,
+      "maxdd": 12.018389,
+      "profit_factor": 0.04195,
+      "daily_sharpe": -154.700518,
+      "n_days": 90,
+      "gross_total": 0.072101
+     }
+    },
+    {
+     "block": 6,
+     "train_sel": {
+      "param": 0.0,
+      "H": 1,
+      "train_tstat": -440.84,
+      "train_total": -319.87999
+     },
+     "verify": {
+      "n": 3254,
+      "total": -9.334168,
+      "tstat": -82.373896,
+      "winrate": 0.045175,
+      "mean": -0.002869,
+      "maxdd": 9.334292,
+      "profit_factor": 0.020984,
+      "daily_sharpe": -160.750899,
+      "n_days": 68,
+      "gross_total": -0.222968
+     }
+    }
+   ],
+   "oos": {
+    "n": 97751,
+    "total": -271.745869,
+    "tstat": -403.332,
+    "winrate": 0.0552,
+    "maxdd": 271.745869,
+    "daily_sharpe": -52.693,
+    "gross_total": 1.956931,
+    "mc_p5_total": -289.236092,
+    "mc_p5_mdd": 254.412544,
+    "mc_mean_total": -272.204131,
+    "fee150_total": -408.597269,
+    "blocks_positive": 0,
+    "n_blocks": 7
+   }
+  },
+  "BTC/USDT|H2b_autocorr_momentum": {
+   "chosen_params": {
+    "param": 0.0,
+    "H": 3
+   },
+   "folds": [
+    {
+     "block": 0,
+     "train_sel": {
+      "param": 0.0,
+      "H": 3,
+      "train_tstat": -83.3,
+      "train_total": -28.87887
+     },
+     "verify": {
+      "n": 4319,
+      "total": -12.05483,
+      "tstat": -48.206084,
+      "winrate": 0.137763,
+      "mean": -0.002791,
+      "maxdd": 12.054867,
+      "profit_factor": 0.134186,
+      "daily_sharpe": -99.949245,
+      "n_days": 90,
+      "gross_total": 0.03837
+     }
+    },
+    {
+     "block": 1,
+     "train_sel": {
+      "param": 0.0,
+      "H": 3,
+      "train_tstat": -96.23,
+      "train_total": -41.04046
+     },
+     "verify": {
+      "n": 4319,
+      "total": -12.22422,
+      "tstat": -70.609674,
+      "winrate": 0.084279,
+      "mean": -0.00283,
+      "maxdd": 12.22422,
+      "profit_factor": 0.065305,
+      "daily_sharpe": -175.514117,
+      "n_days": 90,
+      "gross_total": -0.13102
+     }
+    },
+    {
+     "block": 2,
+     "train_sel": {
+      "param": 0.0,
+      "H": 3,
+      "train_tstat": -115.73,
+      "train_total": -53.26569
+     },
+     "verify": {
+      "n": 4318,
+      "total": -12.302428,
+      "tstat": -90.542159,
+      "winrate": 0.057202,
+      "mean": -0.002849,
+      "maxdd": 12.302428,
+      "profit_factor": 0.033755,
+      "daily_sharpe": -214.434852,
+      "n_days": 90,
+      "gross_total": -0.212028
+     }
+    },
+    {
+     "block": 3,
+     "train_sel": {
+      "param": 0.0,
+      "H": 3,
+      "train_tstat": -136.65,
+      "train_total": -65.63311
+     },
+     "verify": {
+      "n": 4318,
+      "total": -12.405874,
+      "tstat": -60.263063,
+      "winrate": 0.112552,
+      "mean": -0.002873,
+      "maxdd": 12.405874,
+      "profit_factor": 0.082416,
+      "daily_sharpe": -105.67683,
+      "n_days": 90,
+      "gross_total": -0.315474
+     }
+    },
+    {
+     "block": 4,
+     "train_sel": {
+      "param": 0.0,
+      "H": 3,
+      "train_tstat": -149.34,
+      "train_total": -78.04111
+     },
+     "verify": {
+      "n": 27825,
+      "total": -80.754298,
+      "tstat": -123.817651,
+      "winrate": 0.133477,
+      "mean": -0.002902,
+      "maxdd": 80.754298,
+      "profit_factor": 0.128225,
+      "daily_sharpe": -35.873889,
+      "n_days": 822,
+      "gross_total": -2.844298
+     }
+    },
+    {
+     "block": 5,
+     "train_sel": {
+      "param": 0.0,
+      "H": 3,
+      "train_tstat": -189.9,
+      "train_total": -158.76591
+     },
+     "verify": {
+      "n": 2159,
+      "total": -5.912683,
+      "tstat": -35.389075,
+      "winrate": 0.140806,
+      "mean": -0.002739,
+      "maxdd": 5.912683,
+      "profit_factor": 0.127769,
+      "daily_sharpe": -75.411642,
+      "n_days": 90,
+      "gross_total": 0.132517
+     }
+    },
+    {
+     "block": 6,
+     "train_sel": {
+      "param": 0.0,
+      "H": 3,
+      "train_tstat": -193.54,
+      "train_total": -165.05856
+     },
+     "verify": {
+      "n": 1628,
+      "total": -4.80254,
+      "tstat": -32.546827,
+      "winrate": 0.109337,
+      "mean": -0.00295,
+      "maxdd": 4.80254,
+      "profit_factor": 0.095427,
+      "daily_sharpe": -70.414499,
+      "n_days": 68,
+      "gross_total": -0.24414
+     }
+    }
+   ],
+   "oos": {
+    "n": 48886,
+    "total": -140.456873,
+    "tstat": -177.177,
+    "winrate": 0.1204,
+    "maxdd": 140.45691,
+    "daily_sharpe": -48.968,
+    "gross_total": -3.576073,
+    "mc_p5_total": -149.582374,
+    "mc_p5_mdd": 131.609429,
+    "mc_mean_total": -140.701362,
+    "fee150_total": -208.897273,
+    "blocks_positive": 0,
+    "n_blocks": 7
+   }
+  },
+  "BTC/USDT|H3_clv_volume": {
+   "chosen_params": {
+    "param": 0.5,
+    "H": 3
+   },
+   "folds": [
+    {
+     "block": 0,
+     "train_sel": {
+      "param": 0.5,
+      "H": 3,
+      "train_tstat": -36.53,
+      "train_total": -8.71326
+     },
+     "verify": {
+      "n": 1286,
+      "total": -3.730955,
+      "tstat": -20.535487,
+      "winrate": 0.186625,
+      "mean": -0.002901,
+      "maxdd": 3.730955,
+      "profit_factor": 0.202084,
+      "daily_sharpe": -33.081441,
+      "n_days": 90,
+      "gross_total": -0.130155
+     }
+    },
+    {
+     "block": 1,
+     "train_sel": {
+      "param": 0.5,
+      "H": 3,
+      "train_tstat": -41.51,
+      "train_total": -12.44422
+     },
+     "verify": {
+      "n": 1196,
+      "total": -3.33214,
+      "tstat": -28.35515,
+      "winrate": 0.148829,
+      "mean": -0.002786,
+      "maxdd": 3.33214,
+      "profit_factor": 0.113218,
+      "daily_sharpe": -37.864798,
+      "n_days": 90,
+      "gross_total": 0.01666
+     }
+    },
+    {
+     "block": 2,
+     "train_sel": {
+      "param": 0.5,
+      "H": 3,
+      "train_tstat": -49.0,
+      "train_total": -15.77636
+     },
+     "verify": {
+      "n": 1216,
+      "total": -3.409161,
+      "tstat": -38.047952,
+      "winrate": 0.096217,
+      "mean": -0.002804,
+      "maxdd": 3.409161,
+      "profit_factor": 0.060772,
+      "daily_sharpe": -40.185404,
+      "n_days": 90,
+      "gross_total": -0.004361
+     }
+    },
+    {
+     "block": 3,
+     "train_sel": {
+      "param": 0.5,
+      "H": 3,
+      "train_tstat": -57.41,
+      "train_total": -19.18552
+     },
+     "verify": {
+      "n": 1406,
+      "total": -4.001463,
+      "tstat": -24.31385,
+      "winrate": 0.159317,
+      "mean": -0.002846,
+      "maxdd": 4.001463,
+      "profit_factor": 0.143879,
+      "daily_sharpe": -35.56072,
+      "n_days": 90,
+      "gross_total": -0.064663
+     }
+    },
+    {
+     "block": 4,
+     "train_sel": {
+      "param": 0.5,
+      "H": 3,
+      "train_tstat": -62.25,
+      "train_total": -23.18698
+     },
+     "verify": {
+      "n": 8209,
+      "total": -23.87177,
+      "tstat": -51.327008,
+      "winrate": 0.184188,
+      "mean": -0.002908,
+      "maxdd": 23.87177,
+      "profit_factor": 0.199384,
+      "daily_sharpe": -20.415452,
+      "n_days": 822,
+      "gross_total": -0.88657
+     }
+    },
+    {
+     "block": 5,
+     "train_sel": {
+      "param": 0.5,
+      "H": 3,
+      "train_tstat": -78.97,
+      "train_total": -47.05875
+     },
+     "verify": {
+      "n": 624,
+      "total": -1.649702,
+      "tstat": -14.417614,
+      "winrate": 0.190705,
+      "mean": -0.002644,
+      "maxdd": 1.663279,
+      "profit_factor": 0.218098,
+      "daily_sharpe": -23.944075,
+      "n_days": 90,
+      "gross_total": 0.097498
+     }
+    },
+    {
+     "block": 6,
+     "train_sel": {
+      "param": 0.5,
+      "H": 3,
+      "train_tstat": -80.27,
+      "train_total": -48.70846
+     },
+     "verify": {
+      "n": 457,
+      "total": -1.302635,
+      "tstat": -13.397217,
+      "winrate": 0.166302,
+      "mean": -0.00285,
+      "maxdd": 1.317634,
+      "profit_factor": 0.168867,
+      "daily_sharpe": -21.000676,
+      "n_days": 68,
+      "gross_total": -0.023035
+     }
+    }
+   ],
+   "oos": {
+    "n": 14394,
+    "total": -41.297828,
+    "tstat": -72.921,
+    "winrate": 0.1713,
+    "maxdd": 41.297828,
+    "daily_sharpe": -27.652,
+    "gross_total": -0.994628,
+    "mc_p5_total": -44.161438,
+    "mc_p5_mdd": 38.469206,
+    "mc_mean_total": -41.35533,
+    "fee150_total": -61.449428,
+    "blocks_positive": 0,
+    "n_blocks": 7
+   }
+  },
+  "BTC/USDT|H4_hourly_k0.0": {
+   "folds": [
+    {
+     "block": 0,
+     "verify": {
+      "n": 8639,
+      "total": -24.341291,
+      "tstat": -106.95513,
+      "winrate": 0.072115,
+      "mean": -0.002818,
+      "maxdd": 24.341291,
+      "profit_factor": 0.05267,
+      "daily_sharpe": -236.760798,
+      "n_days": 90,
+      "gross_total": -0.152091
+     }
+    },
+    {
+     "block": 1,
+     "verify": {
+      "n": 8639,
+      "total": -24.281435,
+      "tstat": -150.952817,
+      "winrate": 0.037967,
+      "mean": -0.002811,
+      "maxdd": 24.281435,
+      "profit_factor": 0.021403,
+      "daily_sharpe": -279.738415,
+      "n_days": 90,
+      "gross_total": -0.092235
+     }
+    },
+    {
+     "block": 2,
+     "verify": {
+      "n": 8639,
+      "total": -24.115902,
+      "tstat": -196.404506,
+      "winrate": 0.020951,
+      "mean": -0.002792,
+      "maxdd": 24.115902,
+      "profit_factor": 0.010067,
+      "daily_sharpe": -341.533055,
+      "n_days": 90,
+      "gross_total": 0.073298
+     }
+    },
+    {
+     "block": 3,
+     "verify": {
+      "n": 8639,
+      "total": -24.076793,
+      "tstat": -112.979817,
+      "winrate": 0.061002,
+      "mean": -0.002787,
+      "maxdd": 24.076793,
+      "profit_factor": 0.035756,
+      "daily_sharpe": -215.805901,
+      "n_days": 90,
+      "gross_total": 0.112407
+     }
+    },
+    {
+     "block": 4,
+     "verify": {
+      "n": 55667,
+      "total": -154.970942,
+      "tstat": -278.195273,
+      "winrate": 0.065874,
+      "mean": -0.002784,
+      "maxdd": 154.970942,
+      "profit_factor": 0.047092,
+      "daily_sharpe": -37.750574,
+      "n_days": 822,
+      "gross_total": 0.896658
+     }
+    },
+    {
+     "block": 5,
+     "verify": {
+      "n": 4319,
+      "total": -12.104809,
+      "tstat": -88.491607,
+      "winrate": 0.057421,
+      "mean": -0.002803,
+      "maxdd": 12.104899,
+      "profit_factor": 0.038076,
+      "daily_sharpe": -195.159769,
+      "n_days": 90,
+      "gross_total": -0.011609
+     }
+    },
+    {
+     "block": 6,
+     "verify": {
+      "n": 3257,
+      "total": -9.082482,
+      "tstat": -83.822945,
+      "winrate": 0.046362,
+      "mean": -0.002789,
+      "maxdd": 9.082606,
+      "profit_factor": 0.031704,
+      "daily_sharpe": -187.828711,
+      "n_days": 68,
+      "gross_total": 0.037118
+     }
+    }
+   ],
+   "oos": {
+    "n": 97799,
+    "total": -272.730949,
+    "tstat": -394.101,
+    "winrate": 0.0589,
+    "maxdd": 272.730949,
+    "daily_sharpe": -52.429,
+    "mc_p5_total": -290.302212,
+    "fee150_total": -409.649549,
+    "blocks_positive": 0,
+    "n_blocks": 7
+   }
+  },
+  "BTC/USDT|H4_hourly_k1.0": {
+   "folds": [
+    {
+     "block": 0,
+     "verify": {
+      "n": 1439,
+      "total": -4.040026,
+      "tstat": -44.635795,
+      "winrate": 0.071577,
+      "mean": -0.002808,
+      "maxdd": 4.040026,
+      "profit_factor": 0.051515,
+      "daily_sharpe": -97.226374,
+      "n_days": 90,
+      "gross_total": -0.010826
+     }
+    },
+    {
+     "block": 1,
+     "verify": {
+      "n": 1799,
+      "total": -5.002477,
+      "tstat": -68.850938,
+      "winrate": 0.033908,
+      "mean": -0.002781,
+      "maxdd": 5.002477,
+      "profit_factor": 0.023066,
+      "daily_sharpe": -144.336486,
+      "n_days": 90,
+      "gross_total": 0.034723
+     }
+    },
+    {
+     "block": 2,
+     "verify": {
+      "n": 1799,
+      "total": -4.957326,
+      "tstat": -91.830744,
+      "winrate": 0.015564,
+      "mean": -0.002756,
+      "maxdd": 4.957326,
+      "profit_factor": 0.008561,
+      "daily_sharpe": -185.547232,
+      "n_days": 90,
+      "gross_total": 0.079874
+     }
+    },
+    {
+     "block": 3,
+     "verify": {
+      "n": 2879,
+      "total": -7.907226,
+      "tstat": -53.957906,
+      "winrate": 0.059743,
+      "mean": -0.002747,
+      "maxdd": 7.907226,
+      "profit_factor": 0.03824,
+      "daily_sharpe": -135.383756,
+      "n_days": 90,
+      "gross_total": 0.153974
+     }
+    },
+    {
+     "block": 4,
+     "verify": {
+      "n": 16227,
+      "total": -45.036295,
+      "tstat": -150.636823,
+      "winrate": 0.067234,
+      "mean": -0.002775,
+      "maxdd": 45.036295,
+      "profit_factor": 0.049077,
+      "daily_sharpe": -34.977715,
+      "n_days": 822,
+      "gross_total": 0.399305
+     }
+    },
+    {
+     "block": 5,
+     "verify": {
+      "n": 2339,
+      "total": -6.552764,
+      "tstat": -66.610186,
+      "winrate": 0.053442,
+      "mean": -0.002802,
+      "maxdd": 6.552854,
+      "profit_factor": 0.036419,
+      "daily_sharpe": -144.264467,
+      "n_days": 90,
+      "gross_total": -0.003564
+     }
+    },
+    {
+     "block": 6,
+     "verify": {
+      "n": 1626,
+      "total": -4.571862,
+      "tstat": -60.489797,
+      "winrate": 0.037515,
+      "mean": -0.002812,
+      "maxdd": 4.571862,
+      "profit_factor": 0.027671,
+      "daily_sharpe": -144.491187,
+      "n_days": 68,
+      "gross_total": -0.019062
+     }
+    }
+   ],
+   "oos": {
+    "n": 40736,
+    "total": -112.606541,
+    "tstat": -259.842,
+    "winrate": 0.0556,
+    "maxdd": 112.606541,
+    "daily_sharpe": -50.575,
+    "mc_p5_total": -119.933524,
+    "fee150_total": -169.636941,
+    "blocks_positive": 0,
+    "n_blocks": 7
+   }
+  },
+  "BTC/USDT|H4_hourly_k2.0": {
+   "folds": [
+    {
+     "block": 0,
+     "verify": {
+      "n": 360,
+      "total": -1.038889,
+      "tstat": -21.048526,
+      "winrate": 0.102778,
+      "mean": -0.002886,
+      "maxdd": 1.038889,
+      "profit_factor": 0.072983,
+      "daily_sharpe": -44.274151,
+      "n_days": 90,
+      "gross_total": -0.030889
+     }
+    },
+    {
+     "block": 1,
+     "verify": null
+    },
+    {
+     "block": 2,
+     "verify": null
+    },
+    {
+     "block": 3,
+     "verify": null
+    },
+    {
+     "block": 4,
+     "verify": {
+      "n": 2315,
+      "total": -6.357008,
+      "tstat": -66.761276,
+      "winrate": 0.053132,
+      "mean": -0.002746,
+      "maxdd": 6.357008,
+      "profit_factor": 0.039575,
+      "daily_sharpe": -28.384309,
+      "n_days": 821,
+      "gross_total": 0.124992
+     }
+    },
+    {
+     "block": 5,
+     "verify": {
+      "n": 539,
+      "total": -1.590517,
+      "tstat": -33.1804,
+      "winrate": 0.038961,
+      "mean": -0.002951,
+      "maxdd": 1.590517,
+      "profit_factor": 0.029695,
+      "daily_sharpe": -71.038452,
+      "n_days": 90,
+      "gross_total": -0.081317
+     }
+    },
+    {
+     "block": 6,
+     "verify": {
+      "n": 402,
+      "total": -1.13288,
+      "tstat": -36.042229,
+      "winrate": 0.037313,
+      "mean": -0.002818,
+      "maxdd": 1.133622,
+      "profit_factor": 0.023368,
+      "daily_sharpe": -73.059174,
+      "n_days": 67,
+      "gross_total": -0.00728
+     }
+    }
+   ],
+   "oos": {
+    "n": 8134,
+    "total": -22.302938,
+    "tstat": -105.316,
+    "winrate": 0.0508,
+    "maxdd": 22.303476,
+    "daily_sharpe": -41.398,
+    "mc_p5_total": -23.834702,
+    "fee150_total": -33.690538,
+    "blocks_positive": 0,
+    "n_blocks": 7
+   }
+  },
+  "ETH/USDT|H1_reversal_z": {
+   "chosen_params": {
+    "param": 1.5,
+    "H": 3
+   },
+   "folds": [
+    {
+     "block": 0,
+     "train_sel": {
+      "param": 1.5,
+      "H": 3,
+      "train_tstat": -40.76,
+      "train_total": -13.59119
+     },
+     "verify": {
+      "n": 1996,
+      "total": -5.955675,
+      "tstat": -20.868075,
+      "winrate": 0.235471,
+      "mean": -0.002984,
+      "maxdd": 5.955675,
+      "profit_factor": 0.232508,
+      "daily_sharpe": -38.363179,
+      "n_days": 90,
+      "gross_total": -0.366875
+     }
+    },
+    {
+     "block": 1,
+     "train_sel": {
+      "param": 1.5,
+      "H": 3,
+      "train_tstat": -44.54,
+      "train_total": -19.54761
+     },
+     "verify": {
+      "n": 2028,
+      "total": -5.631221,
+      "tstat": -23.217354,
+      "winrate": 0.242604,
+      "mean": -0.002777,
+      "maxdd": 5.633039,
+      "profit_factor": 0.212531,
+      "daily_sharpe": -33.442749,
+      "n_days": 90,
+      "gross_total": 0.047179
+     }
+    },
+    {
+     "block": 2,
+     "train_sel": {
+      "param": 1.5,
+      "H": 3,
+      "train_tstat": -50.21,
+      "train_total": -25.17883
+     },
+     "verify": {
+      "n": 2052,
+      "total": -5.835457,
+      "tstat": -27.248078,
+      "winrate": 0.22271,
+      "mean": -0.002844,
+      "maxdd": 5.835457,
+      "profit_factor": 0.177376,
+      "daily_sharpe": -47.872292,
+      "n_days": 90,
+      "gross_total": -0.089857
+     }
+    },
+    {
+     "block": 3,
+     "train_sel": {
+      "param": 1.5,
+      "H": 3,
+      "train_tstat": -56.89,
+      "train_total": -31.01684
+     },
+     "verify": {
+      "n": 2009,
+      "total": -5.962272,
+      "tstat": -21.75158,
+      "winrate": 0.22001,
+      "mean": -0.002968,
+      "maxdd": 5.962272,
+      "profit_factor": 0.203216,
+      "daily_sharpe": -41.041591,
+      "n_days": 90,
+      "gross_total": -0.337072
+     }
+    },
+    {
+     "block": 4,
+     "train_sel": {
+      "param": 1.5,
+      "H": 3,
+      "train_tstat": -60.6,
+      "train_total": -36.97912
+     },
+     "verify": {
+      "n": 12329,
+      "total": -33.679142,
+      "tstat": -45.682876,
+      "winrate": 0.248763,
+      "mean": -0.002732,
+      "maxdd": 33.679142,
+      "profit_factor": 0.273587,
+      "daily_sharpe": -21.303879,
+      "n_days": 822,
+      "gross_total": 0.842058
+     }
+    },
+    {
+     "block": 5,
+     "train_sel": {
+      "param": 1.5,
+      "H": 3,
+      "train_tstat": -73.83,
+      "train_total": -70.65826
+     },
+     "verify": {
+      "n": 936,
+      "total": -2.671108,
+      "tstat": -15.042943,
+      "winrate": 0.237179,
+      "mean": -0.002854,
+      "maxdd": 2.679013,
+      "profit_factor": 0.223507,
+      "daily_sharpe": -25.449171,
+      "n_days": 90,
+      "gross_total": -0.050308
+     }
+    },
+    {
+     "block": 6,
+     "train_sel": {
+      "param": 1.5,
+      "H": 3,
+      "train_tstat": -75.33,
+      "train_total": -73.32937
+     },
+     "verify": {
+      "n": 693,
+      "total": -1.840593,
+      "tstat": -11.521002,
+      "winrate": 0.252525,
+      "mean": -0.002656,
+      "maxdd": 1.844482,
+      "profit_factor": 0.231852,
+      "daily_sharpe": -20.25795,
+      "n_days": 68,
+      "gross_total": 0.099807
+     }
+    }
+   ],
+   "oos": {
+    "n": 22043,
+    "total": -61.575469,
+    "tstat": -66.327,
+    "winrate": 0.2416,
+    "maxdd": 61.579358,
+    "daily_sharpe": -27.109,
+    "gross_total": 0.144931,
+    "mc_p5_total": -66.226199,
+    "mc_p5_mdd": 57.172087,
+    "mc_mean_total": -61.730274,
+    "fee150_total": -92.435669,
+    "blocks_positive": 0,
+    "n_blocks": 7
+   }
+  },
+  "ETH/USDT|H2_autocorr_contrarian": {
+   "chosen_params": {
+    "param": 0.0,
+    "H": 1
+   },
+   "folds": [
+    {
+     "block": 0,
+     "train_sel": {
+      "param": 0.0,
+      "H": 1,
+      "train_tstat": -155.69,
+      "train_total": -58.05102
+     },
+     "verify": {
+      "n": 8631,
+      "total": -24.111939,
+      "tstat": -79.672234,
+      "winrate": 0.115166,
+      "mean": -0.002794,
+      "maxdd": 24.111939,
+      "profit_factor": 0.08599,
+      "daily_sharpe": -186.297311,
+      "n_days": 90,
+      "gross_total": 0.054861
+     }
+    },
+    {
+     "block": 1,
+     "train_sel": {
+      "param": 0.0,
+      "H": 1,
+      "train_tstat": -171.1,
+      "train_total": -82.16573
+     },
+     "verify": {
+      "n": 8633,
+      "total": -24.001035,
+      "tstat": -91.072386,
+      "winrate": 0.098112,
+      "mean": -0.00278,
+      "maxdd": 24.001035,
+      "profit_factor": 0.068803,
+      "daily_sharpe": -192.878136,
+      "n_days": 90,
+      "gross_total": 0.171365
+     }
+    },
+    {
+     "block": 2,
+     "train_sel": {
+      "param": 0.0,
+      "H": 1,
+      "train_tstat": -193.81,
+      "train_total": -106.16876
+     },
+     "verify": {
+      "n": 8635,
+      "total": -24.04063,
+      "tstat": -100.503931,
+      "winrate": 0.089519,
+      "mean": -0.002784,
+      "maxdd": 24.04063,
+      "profit_factor": 0.054269,
+      "daily_sharpe": -231.723205,
+      "n_days": 90,
+      "gross_total": 0.13737
+     }
+    },
+    {
+     "block": 3,
+     "train_sel": {
+      "param": 0.0,
+      "H": 1,
+      "train_tstat": -217.84,
+      "train_total": -130.21206
+     },
+     "verify": {
+      "n": 8636,
+      "total": -23.570773,
+      "tstat": -79.003497,
+      "winrate": 0.10931,
+      "mean": -0.002729,
+      "maxdd": 23.570773,
+      "profit_factor": 0.084499,
+      "daily_sharpe": -162.130159,
+      "n_days": 90,
+      "gross_total": 0.610027
+     }
+    },
+    {
+     "block": 4,
+     "train_sel": {
+      "param": 0.0,
+      "H": 1,
+      "train_tstat": -230.19,
+      "train_total": -153.7842
+     },
+     "verify": {
+      "n": 55628,
+      "total": -153.740987,
+      "tstat": -204.634643,
+      "winrate": 0.109226,
+      "mean": -0.002764,
+      "maxdd": 153.740987,
+      "profit_factor": 0.083377,
+      "daily_sharpe": -39.150743,
+      "n_days": 822,
+      "gross_total": 2.017413
+     }
+    },
+    {
+     "block": 5,
+     "train_sel": {
+      "param": 0.0,
+      "H": 1,
+      "train_tstat": -305.88,
+      "train_total": -307.52856
+     },
+     "verify": {
+      "n": 4316,
+      "total": -12.066077,
+      "tstat": -64.447682,
+      "winrate": 0.090361,
+      "mean": -0.002796,
+      "maxdd": 12.066325,
+      "profit_factor": 0.071728,
+      "daily_sharpe": -146.421735,
+      "n_days": 90,
+      "gross_total": 0.018723
+     }
+    },
+    {
+     "block": 6,
+     "train_sel": {
+      "param": 0.0,
+      "H": 1,
+      "train_tstat": -312.52,
+      "train_total": -319.59706
+     },
+     "verify": {
+      "n": 3255,
+      "total": -9.014287,
+      "tstat": -61.248646,
+      "winrate": 0.073118,
+      "mean": -0.002769,
+      "maxdd": 9.01434,
+      "profit_factor": 0.050652,
+      "daily_sharpe": -158.394547,
+      "n_days": 68,
+      "gross_total": 0.099713
+     }
+    }
+   ],
+   "oos": {
+    "n": 97734,
+    "total": -270.545727,
+    "tstat": -280.784,
+    "winrate": 0.105,
+    "maxdd": 270.545727,
+    "daily_sharpe": -51.589,
+    "gross_total": 3.109473,
+    "mc_p5_total": -288.209764,
+    "mc_p5_mdd": 253.338219,
+    "mc_mean_total": -271.020901,
+    "fee150_total": -407.373327,
+    "blocks_positive": 0,
+    "n_blocks": 7
+   }
+  },
+  "ETH/USDT|H2b_autocorr_momentum": {
+   "chosen_params": {
+    "param": 0.0,
+    "H": 3
+   },
+   "folds": [
+    {
+     "block": 0,
+     "train_sel": {
+      "param": 0.0,
+      "H": 3,
+      "train_tstat": -64.79,
+      "train_total": -28.811
+     },
+     "verify": {
+      "n": 4317,
+      "total": -12.406012,
+      "tstat": -33.545345,
+      "winrate": 0.200602,
+      "mean": -0.002874,
+      "maxdd": 12.40743,
+      "profit_factor": 0.209901,
+      "daily_sharpe": -70.078525,
+      "n_days": 90,
+      "gross_total": -0.318412
+     }
+    },
+    {
+     "block": 1,
+     "train_sel": {
+      "param": 0.0,
+      "H": 3,
+      "train_tstat": -71.16,
+      "train_total": -41.27619
+     },
+     "verify": {
+      "n": 4319,
+      "total": -12.331766,
+      "tstat": -38.278353,
+      "winrate": 0.19148,
+      "mean": -0.002855,
+      "maxdd": 12.333565,
+      "profit_factor": 0.200072,
+      "daily_sharpe": -73.116611,
+      "n_days": 90,
+      "gross_total": -0.238566
+     }
+    },
+    {
+     "block": 2,
+     "train_sel": {
+      "param": 0.0,
+      "H": 3,
+      "train_tstat": -81.1,
+      "train_total": -53.62297
+     },
+     "verify": {
+      "n": 4319,
+      "total": -12.162803,
+      "tstat": -47.244139,
+      "winrate": 0.171104,
+      "mean": -0.002816,
+      "maxdd": 12.163206,
+      "profit_factor": 0.147578,
+      "daily_sharpe": -107.196162,
+      "n_days": 90,
+      "gross_total": -0.069603
+     }
+    },
+    {
+     "block": 3,
+     "train_sel": {
+      "param": 0.0,
+      "H": 3,
+      "train_tstat": -92.62,
+      "train_total": -65.80382
+     },
+     "verify": {
+      "n": 4319,
+      "total": -12.104938,
+      "tstat": -36.95032,
+      "winrate": 0.188006,
+      "mean": -0.002803,
+      "maxdd": 12.104938,
+      "profit_factor": 0.201606,
+      "daily_sharpe": -82.016566,
+      "n_days": 90,
+      "gross_total": -0.011738
+     }
+    },
+    {
+     "block": 4,
+     "train_sel": {
+      "param": 0.0,
+      "H": 3,
+      "train_tstat": -98.72,
+      "train_total": -77.65538
+     },
+     "verify": {
+      "n": 27823,
+      "total": -80.055254,
+      "tstat": -87.280993,
+      "winrate": 0.18934,
+      "mean": -0.002877,
+      "maxdd": 80.064874,
+      "profit_factor": 0.214199,
+      "daily_sharpe": -33.213958,
+      "n_days": 822,
+      "gross_total": -2.150854
+     }
+    },
+    {
+     "block": 5,
+     "train_sel": {
+      "param": 0.0,
+      "H": 3,
+      "train_tstat": -130.52,
+      "train_total": -157.71425
+     },
+     "verify": {
+      "n": 2159,
+      "total": -6.007534,
+      "tstat": -26.409019,
+      "winrate": 0.187124,
+      "mean": -0.002783,
+      "maxdd": 6.01139,
+      "profit_factor": 0.200465,
+      "daily_sharpe": -52.600866,
+      "n_days": 90,
+      "gross_total": 0.037666
+     }
+    },
+    {
+     "block": 6,
+     "train_sel": {
+      "param": 0.0,
+      "H": 3,
+      "train_tstat": -133.26,
+      "train_total": -163.8511
+     },
+     "verify": {
+      "n": 1628,
+      "total": -4.862672,
+      "tstat": -25.901635,
+      "winrate": 0.15172,
+      "mean": -0.002987,
+      "maxdd": 4.862672,
+      "profit_factor": 0.147429,
+      "daily_sharpe": -50.435521,
+      "n_days": 68,
+      "gross_total": -0.304272
+     }
+    }
+   ],
+   "oos": {
+    "n": 48884,
+    "total": -139.930978,
+    "tstat": -120.776,
+    "winrate": 0.1874,
+    "maxdd": 139.932396,
+    "daily_sharpe": -43.879,
+    "gross_total": -3.055778,
+    "mc_p5_total": -149.123083,
+    "mc_p5_mdd": 130.731461,
+    "mc_mean_total": -140.184452,
+    "fee150_total": -208.368578,
+    "blocks_positive": 0,
+    "n_blocks": 7
+   }
+  },
+  "ETH/USDT|H3_clv_volume": {
+   "chosen_params": {
+    "param": 0.5,
+    "H": 3
+   },
+   "folds": [
+    {
+     "block": 0,
+     "train_sel": {
+      "param": 0.5,
+      "H": 3,
+      "train_tstat": -26.42,
+      "train_total": -8.27637
+     },
+     "verify": {
+      "n": 1254,
+      "total": -3.543096,
+      "tstat": -14.577985,
+      "winrate": 0.243222,
+      "mean": -0.002825,
+      "maxdd": 3.543096,
+      "profit_factor": 0.294469,
+      "daily_sharpe": -23.526317,
+      "n_days": 90,
+      "gross_total": -0.031896
+     }
+    },
+    {
+     "block": 1,
+     "train_sel": {
+      "param": 0.5,
+      "H": 3,
+      "train_tstat": -29.81,
+      "train_total": -11.81946
+     },
+     "verify": {
+      "n": 1229,
+      "total": -3.202666,
+      "tstat": -15.341412,
+      "winrate": 0.224573,
+      "mean": -0.002606,
+      "maxdd": 3.207807,
+      "profit_factor": 0.293632,
+      "daily_sharpe": -28.507449,
+      "n_days": 90,
+      "gross_total": 0.238534
+     }
+    },
+    {
+     "block": 2,
+     "train_sel": {
+      "param": 0.5,
+      "H": 3,
+      "train_tstat": -33.53,
+      "train_total": -15.02213
+     },
+     "verify": {
+      "n": 1335,
+      "total": -3.822821,
+      "tstat": -21.193002,
+      "winrate": 0.204494,
+      "mean": -0.002864,
+      "maxdd": 3.823224,
+      "profit_factor": 0.204558,
+      "daily_sharpe": -35.281541,
+      "n_days": 90,
+      "gross_total": -0.084821
+     }
+    },
+    {
+     "block": 3,
+     "train_sel": {
+      "param": 0.5,
+      "H": 3,
+      "train_tstat": -39.03,
+      "train_total": -18.85514
+     },
+     "verify": {
+      "n": 1376,
+      "total": -3.472529,
+      "tstat": -13.215784,
+      "winrate": 0.242733,
+      "mean": -0.002524,
+      "maxdd": 3.472529,
+      "profit_factor": 0.324131,
+      "daily_sharpe": -23.783832,
+      "n_days": 90,
+      "gross_total": 0.380271
+     }
+    },
+    {
+     "block": 4,
+     "train_sel": {
+      "param": 0.5,
+      "H": 3,
+      "train_tstat": -40.6,
+      "train_total": -22.32767
+     },
+     "verify": {
+      "n": 8131,
+      "total": -23.172975,
+      "tstat": -36.343106,
+      "winrate": 0.23392,
+      "mean": -0.00285,
+      "maxdd": 23.17839,
+      "profit_factor": 0.307569,
+      "daily_sharpe": -17.082079,
+      "n_days": 822,
+      "gross_total": -0.406175
+     }
+    },
+    {
+     "block": 5,
+     "train_sel": {
+      "param": 0.5,
+      "H": 3,
+      "train_tstat": -54.04,
+      "train_total": -45.50065
+     },
+     "verify": {
+      "n": 632,
+      "total": -1.607934,
+      "tstat": -10.100278,
+      "winrate": 0.238924,
+      "mean": -0.002544,
+      "maxdd": 1.607934,
+      "profit_factor": 0.329823,
+      "daily_sharpe": -18.298337,
+      "n_days": 90,
+      "gross_total": 0.161666
+     }
+    },
+    {
+     "block": 6,
+     "train_sel": {
+      "param": 0.5,
+      "H": 3,
+      "train_tstat": -54.97,
+      "train_total": -47.10858
+     },
+     "verify": {
+      "n": 457,
+      "total": -1.20638,
+      "tstat": -8.492058,
+      "winrate": 0.229759,
+      "mean": -0.00264,
+      "maxdd": 1.238807,
+      "profit_factor": 0.297349,
+      "daily_sharpe": -15.191034,
+      "n_days": 68,
+      "gross_total": 0.07322
+     }
+    }
+   ],
+   "oos": {
+    "n": 14414,
+    "total": -40.028402,
+    "tstat": -49.411,
+    "winrate": 0.2321,
+    "maxdd": 40.028402,
+    "daily_sharpe": -22.659,
+    "gross_total": 0.330798,
+    "mc_p5_total": -43.13411,
+    "mc_p5_mdd": 37.012524,
+    "mc_mean_total": -40.093399,
+    "fee150_total": -60.208002,
+    "blocks_positive": 0,
+    "n_blocks": 7
+   }
+  },
+  "ETH/USDT|H4_hourly_k0.0": {
+   "folds": [
+    {
+     "block": 0,
+     "verify": {
+      "n": 8639,
+      "total": -24.119269,
+      "tstat": -72.918272,
+      "winrate": 0.126635,
+      "mean": -0.002792,
+      "maxdd": 24.119269,
+      "profit_factor": 0.110351,
+      "daily_sharpe": -151.940521,
+      "n_days": 90,
+      "gross_total": 0.069931
+     }
+    },
+    {
+     "block": 1,
+     "verify": {
+      "n": 8639,
+      "total": -24.320663,
+      "tstat": -83.539661,
+      "winrate": 0.109851,
+      "mean": -0.002815,
+      "maxdd": 24.323977,
+      "profit_factor": 0.088229,
+      "daily_sharpe": -153.930548,
+      "n_days": 90,
+      "gross_total": -0.131463
+     }
+    },
+    {
+     "block": 2,
+     "verify": {
+      "n": 8639,
+      "total": -23.95095,
+      "tstat": -97.000452,
+      "winrate": 0.096655,
+      "mean": -0.002772,
+      "maxdd": 23.95095,
+      "profit_factor": 0.065622,
+      "daily_sharpe": -165.923069,
+      "n_days": 90,
+      "gross_total": 0.23825
+     }
+    },
+    {
+     "block": 3,
+     "verify": {
+      "n": 8639,
+      "total": -23.732645,
+      "tstat": -77.367818,
+      "winrate": 0.118069,
+      "mean": -0.002747,
+      "maxdd": 23.732645,
+      "profit_factor": 0.095858,
+      "daily_sharpe": -169.098203,
+      "n_days": 90,
+      "gross_total": 0.456555
+     }
+    },
+    {
+     "block": 4,
+     "verify": {
+      "n": 55667,
+      "total": -154.172159,
+      "tstat": -178.856188,
+      "winrate": 0.112401,
+      "mean": -0.00277,
+      "maxdd": 154.172159,
+      "profit_factor": 0.094991,
+      "daily_sharpe": -35.91519,
+      "n_days": 822,
+      "gross_total": 1.695441
+     }
+    },
+    {
+     "block": 5,
+     "verify": {
+      "n": 4319,
+      "total": -11.790497,
+      "tstat": -66.487676,
+      "winrate": 0.094929,
+      "mean": -0.00273,
+      "maxdd": 11.790497,
+      "profit_factor": 0.074573,
+      "daily_sharpe": -136.6678,
+      "n_days": 90,
+      "gross_total": 0.302703
+     }
+    },
+    {
+     "block": 6,
+     "verify": {
+      "n": 3257,
+      "total": -9.485316,
+      "tstat": -65.224792,
+      "winrate": 0.06724,
+      "mean": -0.002912,
+      "maxdd": 9.485316,
+      "profit_factor": 0.041232,
+      "daily_sharpe": -132.678133,
+      "n_days": 68,
+      "gross_total": -0.365716
+     }
+    }
+   ],
+   "oos": {
+    "n": 97799,
+    "total": -270.915056,
+    "tstat": -253.197,
+    "winrate": 0.11,
+    "maxdd": 270.915056,
+    "daily_sharpe": -49.86,
+    "mc_p5_total": -288.53774,
+    "fee150_total": -407.833656,
+    "blocks_positive": 0,
+    "n_blocks": 7
+   }
+  },
+  "ETH/USDT|H4_hourly_k1.0": {
+   "folds": [
+    {
+     "block": 0,
+     "verify": {
+      "n": 2519,
+      "total": -7.111274,
+      "tstat": -37.695068,
+      "winrate": 0.122271,
+      "mean": -0.002823,
+      "maxdd": 7.111274,
+      "profit_factor": 0.111381,
+      "daily_sharpe": -71.450147,
+      "n_days": 90,
+      "gross_total": -0.058074
+     }
+    },
+    {
+     "block": 1,
+     "verify": {
+      "n": 2159,
+      "total": -6.118175,
+      "tstat": -46.015568,
+      "winrate": 0.105604,
+      "mean": -0.002834,
+      "maxdd": 6.122154,
+      "profit_factor": 0.075438,
+      "daily_sharpe": -102.848843,
+      "n_days": 90,
+      "gross_total": -0.072975
+     }
+    },
+    {
+     "block": 2,
+     "verify": {
+      "n": 2520,
+      "total": -6.924342,
+      "tstat": -50.190447,
+      "winrate": 0.098413,
+      "mean": -0.002748,
+      "maxdd": 6.924342,
+      "profit_factor": 0.068475,
+      "daily_sharpe": -100.030817,
+      "n_days": 90,
+      "gross_total": 0.131658
+     }
+    },
+    {
+     "block": 3,
+     "verify": {
+      "n": 3239,
+      "total": -8.919055,
+      "tstat": -44.485245,
+      "winrate": 0.108984,
+      "mean": -0.002754,
+      "maxdd": 8.919055,
+      "profit_factor": 0.083134,
+      "daily_sharpe": -109.791687,
+      "n_days": 90,
+      "gross_total": 0.150145
+     }
+    },
+    {
+     "block": 4,
+     "verify": {
+      "n": 20867,
+      "total": -57.167877,
+      "tstat": -123.793792,
+      "winrate": 0.111899,
+      "mean": -0.00274,
+      "maxdd": 57.167877,
+      "profit_factor": 0.09703,
+      "daily_sharpe": -33.624025,
+      "n_days": 822,
+      "gross_total": 1.259723
+     }
+    },
+    {
+     "block": 5,
+     "verify": {
+      "n": 1799,
+      "total": -4.963758,
+      "tstat": -41.826265,
+      "winrate": 0.091718,
+      "mean": -0.002759,
+      "maxdd": 4.963758,
+      "profit_factor": 0.078556,
+      "daily_sharpe": -71.498532,
+      "n_days": 90,
+      "gross_total": 0.073442
+     }
+    },
+    {
+     "block": 6,
+     "verify": {
+      "n": 1490,
+      "total": -4.267039,
+      "tstat": -45.104644,
+      "winrate": 0.065772,
+      "mean": -0.002864,
+      "maxdd": 4.271473,
+      "profit_factor": 0.048514,
+      "daily_sharpe": -113.451036,
+      "n_days": 68,
+      "gross_total": -0.095039
+     }
+    }
+   ],
+   "oos": {
+    "n": 44812,
+    "total": -122.999244,
+    "tstat": -184.751,
+    "winrate": 0.108,
+    "maxdd": 123.000435,
+    "daily_sharpe": -47.065,
+    "mc_p5_total": -131.308229,
+    "fee150_total": -185.736044,
+    "blocks_positive": 0,
+    "n_blocks": 7
+   }
+  },
+  "ETH/USDT|H4_hourly_k2.0": {
+   "folds": [
+    {
+     "block": 0,
+     "verify": {
+      "n": 359,
+      "total": -1.035137,
+      "tstat": -19.521541,
+      "winrate": 0.097493,
+      "mean": -0.002883,
+      "maxdd": 1.035137,
+      "profit_factor": 0.065764,
+      "daily_sharpe": -43.329197,
+      "n_days": 90,
+      "gross_total": -0.029937
+     }
+    },
+    {
+     "block": 1,
+     "verify": null
+    },
+    {
+     "block": 2,
+     "verify": null
+    },
+    {
+     "block": 3,
+     "verify": null
+    },
+    {
+     "block": 4,
+     "verify": {
+      "n": 2316,
+      "total": -6.312802,
+      "tstat": -38.867349,
+      "winrate": 0.108377,
+      "mean": -0.002726,
+      "maxdd": 6.313524,
+      "profit_factor": 0.112613,
+      "daily_sharpe": -20.965565,
+      "n_days": 821,
+      "gross_total": 0.171998
+     }
+    },
+    {
+     "block": 5,
+     "verify": {
+      "n": 1079,
+      "total": -2.96776,
+      "tstat": -30.847823,
+      "winrate": 0.091752,
+      "mean": -0.00275,
+      "maxdd": 2.96776,
+      "profit_factor": 0.081723,
+      "daily_sharpe": -54.91501,
+      "n_days": 90,
+      "gross_total": 0.05344
+     }
+    },
+    {
+     "block": 6,
+     "verify": {
+      "n": 810,
+      "total": -2.300642,
+      "tstat": -30.688631,
+      "winrate": 0.069136,
+      "mean": -0.00284,
+      "maxdd": 2.328266,
+      "profit_factor": 0.059133,
+      "daily_sharpe": -67.39822,
+      "n_days": 68,
+      "gross_total": -0.032642
+     }
+    }
+   ],
+   "oos": {
+    "n": 24432,
+    "total": -66.611248,
+    "tstat": -130.255,
+    "winrate": 0.1145,
+    "maxdd": 66.612439,
+    "daily_sharpe": -43.363,
+    "mc_p5_total": -71.161311,
+    "fee150_total": -100.816048,
+    "blocks_positive": 0,
+    "n_blocks": 7
+   }
+  }
+ }
+}

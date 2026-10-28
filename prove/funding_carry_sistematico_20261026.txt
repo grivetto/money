@@ -1,0 +1,50 @@
+FUNDING CARRY SISTEMATICO MULTI-ASSET — backtest su dati reali Bybit
+generato: 2026-10-26T21:28:30.150423+00:00
+universo: 35 asset idonei (8h puro) su 58 file; esclusi 15 a intervalli misti + 8 dati
+costi: 0.0034/ciclo (giro 0.0018 + slip 4x0.0004)
+
+TOP FUNDING STORICO (annualizzato):
+  LINKUSDT          20.33%/anno
+  LTCUSDT           19.30%/anno
+  ETHUSDT           13.88%/anno
+  ADAUSDT           13.61%/anno
+  BTCUSDT           12.71%/anno
+  DOGEUSDT          11.68%/anno
+  FILUSDT           11.49%/anno
+  THETAUSDT         11.32%/anno
+  UNIUSDT           11.20%/anno
+  BCHUSDT           10.66%/anno
+TOP FUNDING OOS (2024-06-01 -> 2026-10-15):
+  YFIUSDT            6.62%/anno
+  1INCHUSDT          6.53%/anno
+  THETAUSDT          6.23%/anno
+  NEARUSDT           5.97%/anno
+  LINKUSDT           5.84%/anno
+  DOGEUSDT           5.80%/anno
+  LTCUSDT            5.60%/anno
+  CRVUSDT            5.50%/anno
+  SUSHIUSDT          5.47%/anno
+  AAVEUSDT           5.44%/anno
+
+K=3  L=7d  in>=3%/a  out<2%/a  (train CAGR 29.5%/a)
+  CAGR 6.65%/a  Sharpe 3.54  maxDD 0.9%  t-stat 5.45
+  eq_fin 1.1655  trades 153  turnover 21.4x/a  blocchi 30g+ 25/30  trim+ 9/10
+  sett. peggiore realizzata -0.48%  mediana griglia OOS 5.93%/a
+  MC p5: CAGR 3.61%  fin 8.8%  mdd 0.5%
+  fee+50%: CAGR 4.72%  Sharpe 2.37  maxDD 1.7%
+  senza top-3: CAGR 3.28%  (esclusi ['COMPUSDT', 'CHZUSDT', 'QTUMUSDT'])
+  inversione worst (simultanea): -1.79% in una settimana (['BATUSDT', 'COMPUSDT', 'THETAUSDT'])
+  GATES: {"blocchi_positivi_Nmeno1_su_N_trimestrali": true, "blocchi_mensili_positivi": "25/30", "fee_plus50_cagr_pos": true, "mc_p5_finale_positivo": true, "senza_top3_cagr_pos": true, "walkforward": "train<2024-06-01, verifica>=2024-06-01 (nessun lookahead)"}
+
+K=5  L=14d  in>=6%/a  out<1%/a  (train CAGR 26.8%/a)
+  CAGR 6.96%/a  Sharpe 4.99  maxDD 0.9%  t-stat 7.70
+  eq_fin 1.1736  trades 129  turnover 10.8x/a  blocchi 30g+ 27/30  trim+ 10/10
+  sett. peggiore realizzata -0.61%  mediana griglia OOS 5.60%/a
+  MC p5: CAGR 4.75%  fin 11.7%  mdd 0.1%
+  fee+50%: CAGR 5.98%  Sharpe 4.09  maxDD 1.0%
+  senza top-3: CAGR 5.69%  (esclusi ['CHZUSDT', 'NEARUSDT', 'ATOMUSDT'])
+  inversione worst (simultanea): -3.53% in una settimana (['NEARUSDT', 'QTUMUSDT', 'THETAUSDT', 'KSMUSDT', 'ICPUSDT'])
+  GATES: {"blocchi_positivi_Nmeno1_su_N_trimestrali": true, "blocchi_mensili_positivi": "27/30", "fee_plus50_cagr_pos": true, "mc_p5_finale_positivo": true, "senza_top3_cagr_pos": true, "walkforward": "train<2024-06-01, verifica>=2024-06-01 (nessun lookahead)"}
+
+confronto DOT/DOGE live: lordo 8.8%/11.7%/a, netto OOS backtest 3.32%/a (Sharpe 2.61)
+sizing: capitale 300.0 EUR -> nozionale totale 275 USD (K3: 92 USD/asset, K5: 55 USD/asset)
