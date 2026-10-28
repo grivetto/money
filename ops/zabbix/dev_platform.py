@@ -2,7 +2,7 @@
 """dev_platform.py — «Operai di sviluppo» (Hermes · A0 · DSH · agy · opencode) su Zabbix.
 
 Un unico host Zabbix `dev-platform` (gruppo Money) con item trapper + trigger per gli
-operai di sviluppo sui nodi mc2 · omarchy · nuvola · MARCODG1 · win. Il collector gira
+operai di sviluppo sui nodi mc2 · omarchy · nuvola · MARCODG1 · andromeda. Il collector gira
 SU MC2 (cron ogni minuto — vede tutti i nodi): legge lo stato locale e via ssh (una
 connessione per nodo), crea al volo host/item/trigger mancanti (idempotente, come
 zabbix_bots.py) e pusha i valori via history.push. API Zabbix su 127.0.0.1:1080
@@ -41,10 +41,10 @@ OPERAIO_ITEMS = (
     ("dev.hermes.omarchy", "Hermes su omarchy", "omarchy", "hermes"),
     ("dev.a0.mc2", "A0 su mc2", "mc2", "a0"),
     ("dev.a0.omarchy", "A0 su omarchy", "omarchy", "a0"),
-    ("dev.a0.win", "A0 su win", "win", "a0"),
+    ("dev.a0.win", "A0 su andromeda", "win", "a0"),
     ("dev.dsh.mc2", "DSH web su mc2", "mc2", "dsh"),
     ("dev.dsh.omarchy", "DSH web su omarchy", "omarchy", "dsh"),
-    ("dev.dsh.win", "DSH web su win", "win", "dsh"),
+    ("dev.dsh.win", "DSH web su andromeda", "win", "dsh"),
     ("dev.opencode.mc2", "opencode su mc2", "mc2", "opencode"),
     ("dev.opencode.omarchy", "opencode su omarchy", "omarchy", "opencode"),
     ("dev.opencode.nuvola", "opencode su nuvola", "nuvola", "opencode"),
