@@ -37,6 +37,27 @@ h1{font-size:22px;letter-spacing:6px;margin:0;color:#fff}
 .row .nome{min-width:86px;color:#dfe9ff}
 .row .det{color:var(--dim);font-size:10.5px;letter-spacing:.3px;flex:1;text-align:right}
 .row a{color:var(--cyan);text-decoration:none;font-size:11px;white-space:nowrap}
+.console{margin-top:26px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(180deg,#0a1020,#070c18);padding:16px}
+.chead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.chead h2{margin:0;font-size:13px;letter-spacing:3px;color:#fff}
+.csub{font-size:10px;letter-spacing:1px;color:var(--dim)}
+.cagents{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.cagent{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:8px;padding:7px 11px;font-size:11px;letter-spacing:1px;cursor:pointer;background:transparent;color:var(--txt);font-family:inherit}
+.cagent.on{border-color:var(--cyan);box-shadow:0 0 0 1px rgba(0,243,255,.35) inset;color:#fff}
+.cagent:disabled{opacity:.45;cursor:not-allowed}
+#cinput{width:100%;background:#050a14;border:1px solid var(--line);border-radius:8px;color:var(--txt);font-family:inherit;font-size:13px;padding:10px;resize:vertical;min-height:64px}
+#cinput:focus{outline:none;border-color:rgba(0,243,255,.45)}
+.cbar{display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap}
+#csend{background:var(--cyan);color:#04121a;border:none;border-radius:6px;padding:8px 14px;font-weight:700;letter-spacing:1px;cursor:pointer;font-size:11px;font-family:inherit}
+#csend:disabled{opacity:.5;cursor:wait}
+.cdim{color:var(--dim);font-size:10.5px;letter-spacing:.5px}
+.cout{margin-top:12px;display:flex;flex-direction:column;gap:8px;max-height:440px;overflow:auto}
+.msg{border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:12.5px;line-height:1.55;white-space:pre-wrap;word-break:break-word;background:#070d19}
+.msg.me{border-color:rgba(0,243,255,.35);align-self:flex-end;max-width:85%;color:#dff7ff}
+.msg.bot{max-width:92%;color:var(--txt)}
+.msg .who{display:block;font-size:9.5px;letter-spacing:2px;color:var(--dim);margin-bottom:4px}
+.msg.err{border-color:rgba(255,59,92,.5);color:#ffb3c1}
+.msg.work{border-style:dashed;color:var(--dim)}
 footer{margin-top:26px;color:var(--dim);font-size:11px;letter-spacing:1px;text-align:center;line-height:1.9}
 a.back{color:var(--cyan);text-decoration:none}
 .stale{color:var(--yellow)}
@@ -57,6 +78,20 @@ a.back{color:var(--cyan);text-decoration:none}
 
   <div class="chips" id="chips"></div>
   <div class="grid" id="grid"><div class="node off" style="padding:16px">caricamento…</div></div>
+
+  <section class="console" id="console">
+    <div class="chead">
+      <h2>CONSOLE</h2>
+      <div class="csub">interroga i 4 Hermes · riservata (Cloudflare Access)</div>
+    </div>
+    <div class="cagents" id="cagents"><span class="cdim">caricamento agenti…</span></div>
+    <textarea id="cinput" rows="3" placeholder="Scrivi un messaggio per l'agente selezionato…  (Invio invia, Shift+Invio va a capo)"></textarea>
+    <div class="cbar">
+      <button id="csend">INVIA ▸</button>
+      <span class="cdim" id="cstate">pronto</span>
+    </div>
+    <div class="cout" id="cout" aria-live="polite"></div>
+  </section>
 
   <footer>
     read-only · raccolta ogni minuto (cron su mc2) · niente ordini, niente chiavi<br/>
@@ -149,6 +184,87 @@ function render(d){
            '<div class="host">' + esc(n.host) + (off ? " · NODO NON RAGGIUNGIBILE" : "") + "</div>" + righe + "</div>";
   }).join("");
 }
+
+// ── console Hermes (async: POST job + polling result) ──────────────────
+const CONS = {agenti: [], scelto: null, sessioni: {}, busy: false};
+
+async function caricaConsole(){
+  try{
+    const r = await fetch("/api/console/agents", {cache:"no-store"});
+    if(!r.ok) throw new Error("http " + r.status);
+    const d = await r.json();
+    CONS.agenti = d.agents || [];
+    if(!CONS.scelto || !CONS.agenti.some(a => a.id === CONS.scelto))
+      CONS.scelto = ((CONS.agenti.find(a => a.ok) || CONS.agenti[0] || {}).id) || null;
+    renderConsole();
+  }catch(e){
+    $("cagents").innerHTML = '<span class="cdim">console non disponibile: ' + esc(e.message) + '</span>';
+  }
+}
+
+function renderConsole(){
+  $("cagents").innerHTML = CONS.agenti.map(a =>
+    '<button class="cagent' + (a.id === CONS.scelto ? " on" : "") + '" data-id="' + esc(a.id) + '"' +
+    (a.ok ? "" : " disabled") + ' title="' + (a.ok ? "online" : "non raggiungibile") + '">' +
+    '<span class="dot ' + (a.ok ? "up" : "down") + '"></span>' + esc(a.label) +
+    (a.version ? ' <span class="cdim">v' + esc(a.version) + '</span>' : "") + '</button>'
+  ).join("") || '<span class="cdim">nessun agente configurato</span>';
+  document.querySelectorAll(".cagent").forEach(b =>
+    b.addEventListener("click", () => { if(!b.disabled){ CONS.scelto = b.dataset.id; renderConsole(); } }));
+}
+
+function aggiungiMsg(cls, who, txt){
+  const d = document.createElement("div");
+  d.className = "msg " + cls;
+  d.innerHTML = '<span class="who">' + esc(who) + "</span>" + esc(txt);
+  $("cout").appendChild(d);
+  $("cout").scrollTop = $("cout").scrollHeight;
+  return d;
+}
+
+async function inviaConsole(){
+  const txt = $("cinput").value.trim();
+  if(!txt || !CONS.scelto || CONS.busy) return;
+  CONS.busy = true; $("csend").disabled = true;
+  const ag = CONS.agenti.find(a => a.id === CONS.scelto) || {label: CONS.scelto};
+  aggiungiMsg("me", "TU ▸ " + ag.label, txt);
+  $("cinput").value = "";
+  const work = aggiungiMsg("work", ag.label, "sto pensando…");
+  const t0 = Date.now();
+  $("cstate").textContent = "in corso · " + ag.label;
+  try{
+    const r = await fetch("/api/console/chat", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({agent: CONS.scelto, message: txt, session_id: CONS.sessioni[CONS.scelto] || ""})
+    });
+    const d = await r.json();
+    if(!r.ok || !d.job) throw new Error(d.error || ("http " + r.status));
+    let esito = null;
+    for(let i = 0; i < 200; i++){
+      await new Promise(res => setTimeout(res, 1500));
+      const pr = await fetch("/api/console/result?id=" + encodeURIComponent(d.job), {cache:"no-store"});
+      const pd = await pr.json();
+      if(pd.done){ esito = pd; break; }
+      work.lastChild.textContent = "sto pensando… " + Math.round((Date.now()-t0)/1000) + "s";
+    }
+    work.remove();
+    if(!esito) throw new Error("timeout: nessun esito dopo 5 minuti");
+    if(!esito.ok) throw new Error(esito.error || "errore dall'agente");
+    CONS.sessioni[CONS.scelto] = esito.session_id || CONS.sessioni[CONS.scelto];
+    aggiungiMsg("bot", ag.label + " ▸ " + ((Date.now()-t0)/1000).toFixed(1) + "s", esito.reply || "(risposta vuota)");
+    $("cstate").textContent = "pronto · sessione " + (esito.session_id || "—");
+  }catch(e){
+    work.remove();
+    aggiungiMsg("err", "ERRORE", e.message);
+    $("cstate").textContent = "errore";
+  }finally{
+    CONS.busy = false; $("csend").disabled = false; $("cinput").focus();
+  }
+}
+
+$("csend").addEventListener("click", inviaConsole);
+$("cinput").addEventListener("keydown", (e) => { if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); inviaConsole(); } });
+caricaConsole();
 
 setInterval(carica, 30000);
 carica();
