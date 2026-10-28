@@ -52,6 +52,14 @@ OKX_PUB = "https://eea.okx.com"
 #: i bills con pnl != 0 sono trade; questi tipi hanno pnl valorizzato
 TIPI_TRADE = {"3", "5"}
 TIPI_FEE = {"3", "5", "8", "9", "13", "26"}
+#: OKX public rifiuta l'User-Agent di default di urllib (403): serve un UA da browser
+UA_BROWSER = "Mozilla/5.0"
+
+
+def _get_json(url: str, timeout: int = 10) -> dict:
+    """GET pubblico con UA da browser (urllib di default prende 403 su OKX)."""
+    req = urllib.request.Request(url, headers={"User-Agent": UA_BROWSER})
+    return json.loads(urllib.request.urlopen(req, timeout=timeout).read())
 
 
 def leggi_env(path: str) -> dict:
@@ -73,12 +81,10 @@ def prezzo_eur(ccy: str) -> float:
         ccy = "USDT"  # USDC ~ USDT per il libro contabile
     for inst in (f"{ccy}-EUR", f"{ccy}-USDT"):
         try:
-            r = json.loads(urllib.request.urlopen(
-                f"{OKX_PUB}/api/v5/market/ticker?instId={inst}", timeout=10).read())
+            r = _get_json(f"{OKX_PUB}/api/v5/market/ticker?instId={inst}")
             px = float(r["data"][0]["last"])
             if inst.endswith("-USDT"):
-                e = json.loads(urllib.request.urlopen(
-                    f"{OKX_PUB}/api/v5/market/ticker?instId=USDT-EUR", timeout=10).read())
+                e = _get_json(f"{OKX_PUB}/api/v5/market/ticker?instId=USDT-EUR")
                 px *= float(e["data"][0]["last"])
             return px
         except Exception:
@@ -246,8 +252,7 @@ def tasso_earn_pubblico(ccy: str = "USDC") -> dict:
     out = {"ccy": ccy, "apy": None, "ts": None, "errore": None}
     try:
         url = f"{OKX_PUB}/api/v5/finance/savings/lending-rate-summary?ccy={ccy}"
-        payload = json.loads(urllib.request.urlopen(url, timeout=10).read())
-        parsed = parse_lending_rate(payload)
+        parsed = parse_lending_rate(_get_json(url))
         out["apy"] = parsed["apy"]
         out["errore"] = parsed["errore"]
         out["ts"] = time.strftime("%Y-%m-%d %H:%M")
