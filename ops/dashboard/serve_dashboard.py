@@ -140,6 +140,36 @@ FAVICON_MAP = {
 FAVICON_ROUTES = set(FAVICON_MAP.keys())  # retrocompatibilità
 FAVICON_CACHE_BUST = "v=trade"  # per forzare il refresh nei browser
 
+# ── Rendita netta (REQ-MERL-20261026-021) ──────────────────────────────────
+# Il calcolo vive in scripts/tabellone.py; su MARCODG1 la fonte e' il file
+# vendored in hermes-scratch (il tree ~/money e' sporco di WIP: mai importare
+# da li'). Il server lo esegue in un subprocesso col venv e serve il risultato
+# con una cache di processo: le API OKX non vanno martellate a ogni refresh.
+TABELLONE_RUNNER = os.environ.get("DASH_TABELLONE_RUNNER",
+                                  "/home/marco/hermes-scratch/p34-cruscotto/rendita_runner.py")
+TABELLONE_PY = os.environ.get("DASH_TABELLONE_PY", "/home/marco/money/.venv/bin/python")
+TABELLONE_ENV = os.environ.get("DASH_TABELLONE_ENV",
+                               "/home/marco/denaro/secrets/main_okx.env")
+TABELLONE_RECON = os.environ.get("DASH_TABELLONE_RECON",
+                                 "/home/marco/hermes-scratch/carry_recon/recon.jsonl")
+RENDITA_ROUTES = {"/api/rendita.json", "/rendita.json"}
+RENDITA_CACHE_TTL = 300  # secondi: ricalcolo al piu' ogni 5 minuti
+_RENDITA_CACHE: dict = {}
+_RENDITA_LOCK = threading.Lock()
+
+# ── Proxy Prometheus (serie equity della flotta paper) ─────────────────────
+# Query FISSE mappate da un nome: il browser non puo' iniettare PromQL.
+PROM_URL = "http://127.0.0.1:9090"
+PROM_SERIES = {
+    "paper_equity": "sum(denaro_bot_equity)",
+    "paper_pnl": "sum(denaro_bot_pnl)",
+    "node_equity": "sum(denaro_node_equity)",
+}
+PROM_RANGE_S = {"h24": 86400, "d7": 7 * 86400, "d14": 14 * 86400}
+PROM_CACHE_TTL = 60
+_PROM_CACHE: dict = {}
+_PROM_LOCK = threading.Lock()
+
 
 def log(msg: str) -> None:
     """Log su stderr -> journal systemd (flush immediato)."""
@@ -429,6 +459,101 @@ class DashboardHandler(BaseHTTPRequestHandler):
             return
         self._send(200, body, "application/json; charset=utf-8", head_only=head_only)
 
+    # ── Rendita netta + proxy Prometheus ───────────────────────────────────
+    def _serve_rendita(self, head_only: bool = False) -> None:
+        """GET /api/rendita.json — riga rendita EUR/giorno per EUR + benchmark Earn."""
+        with _RENDITA_LOCK:
+            now = time.time()
+            cached = _RENDITA_CACHE.get("payload")
+            if cached is not None and now - _RENDITA_CACHE.get("ts", 0.0) < RENDITA_CACHE_TTL:
+                body = cached
+                age = now - _RENDITA_CACHE["ts"]
+            else:
+                body = self._calc_rendita()
+                _RENDITA_CACHE["payload"] = body
+                _RENDITA_CACHE["ts"] = now
+                age = 0.0
+        self._send(200, body, "application/json; charset=utf-8",
+                   {"Cache-Control": "no-store", "X-Rendita-Age-S": str(int(age))},
+                   head_only=head_only)
+
+    def _calc_rendita(self) -> bytes:
+        """Calcola la riga rendita in un subprocesso (venv con ccxt).
+
+        Il processo server resta senza ccxt e senza blocchi lunghi sulle API
+        OKX: il runner stampa SOLO il JSON finale (nessun segreto, zero ordini).
+        """
+        import subprocess
+        raw, meta = self.agg.fetch()
+        equity = None
+        if raw:
+            try:
+                equity = json.loads(raw.decode("utf-8", "replace")).get("total_equity")
+            except ValueError:
+                equity = None
+        cmd = [TABELLONE_PY, TABELLONE_RUNNER,
+               "--env", TABELLONE_ENV, "--recon", TABELLONE_RECON,
+               "--giorni", "7",
+               "--equity", "" if equity is None else repr(float(equity))]
+        try:
+            pr = subprocess.run(cmd, capture_output=True, text=True, timeout=90)
+        except Exception as exc:
+            log("rendita: runner non eseguibile: %s" % exc)
+            return json.dumps({"error": "runner rendita non eseguibile"}).encode()
+        if pr.returncode != 0:
+            log("rendita: runner rc=%s stderr=%s" % (pr.returncode, pr.stderr.strip()[:200]))
+            return json.dumps({"error": "runner rendita fallito"}).encode()
+        try:
+            payload = json.loads(pr.stdout)
+        except ValueError:
+            log("rendita: output runner non JSON")
+            return json.dumps({"error": "output runner non JSON"}).encode()
+        payload["agg_source"] = meta.get("source")
+        return json.dumps(payload, ensure_ascii=False).encode()
+
+    def _serve_prom(self, head_only: bool = False) -> None:
+        """GET /api/prom?series=&range= — serie equity della flotta via Prometheus."""
+        from urllib.parse import parse_qs
+        qs = parse_qs(self.path.split("?", 1)[1] if "?" in self.path else "")
+        serie = (qs.get("series") or ["paper_equity"])[0]
+        rng = (qs.get("range") or ["h24"])[0]
+        if serie not in PROM_SERIES or rng not in PROM_RANGE_S:
+            self._send(400, b'{"error":"series/range non ammessi"}',
+                       "application/json; charset=utf-8", head_only=head_only)
+            return
+        with _PROM_LOCK:
+            cached = _PROM_CACHE.get((serie, rng))
+            if cached is not None and time.time() - cached[0] < PROM_CACHE_TTL:
+                body = cached[1]
+            else:
+                body = self._fetch_prom(serie, rng)
+                if body:
+                    _PROM_CACHE[(serie, rng)] = (time.time(), body)
+        if not body:
+            self._send(503, b'{"error":"prometheus non disponibile"}',
+                       "application/json; charset=utf-8", head_only=head_only)
+            return
+        self._send(200, body, "application/json; charset=utf-8",
+                   {"Cache-Control": "no-store"}, head_only=head_only)
+
+    def _fetch_prom(self, serie: str, rng: str) -> bytes:
+        import urllib.parse as _up
+        end = time.time()
+        start = end - PROM_RANGE_S[rng]
+        step = max(60, int(PROM_RANGE_S[rng] / 400))
+        q = _up.quote(PROM_SERIES[serie])
+        url = "%s/api/v1/query_range?query=%s&start=%d&end=%d&step=%d" % (
+            PROM_URL, q, int(start), int(end), step)
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "denaro-dashboard/2"})
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                raw = resp.read()
+            json.loads(raw.decode("utf-8", "replace"))
+            return raw
+        except Exception as exc:
+            log("prom fetch fallito: %s" % exc)
+            return b""
+
     # ---------- HTTP ----------
     def do_GET(self) -> None:  # noqa: N802
         path = self.path.split("?", 1)[0].rstrip("/") or "/"
@@ -464,6 +589,10 @@ class DashboardHandler(BaseHTTPRequestHandler):
             self._serve_airdrop_json()
         elif path in AGENTI_JSON_ROUTES:
             self._serve_agenti_json()
+        elif path in RENDITA_ROUTES:
+            self._serve_rendita()
+        elif path == "/api/prom":
+            self._serve_prom()
         elif path in SCOMMESSA_ROUTES:
             self._serve_scommessa()
         elif path in {"/api/dsh.json", "/dsh.json"}:
@@ -633,6 +762,10 @@ class DashboardHandler(BaseHTTPRequestHandler):
             self._serve_airdrop_json(head_only=True)
         elif path in AGENTI_JSON_ROUTES:
             self._serve_agenti_json(head_only=True)
+        elif path in RENDITA_ROUTES:
+            self._serve_rendita(head_only=True)
+        elif path == "/api/prom":
+            self._serve_prom(head_only=True)
         elif path in SCOMMESSA_ROUTES:
             self._serve_scommessa(head_only=True)
         elif path in {r.rstrip("/") or "/" for r in JSON_ROUTES}:
