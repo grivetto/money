@@ -44,3 +44,4 @@ publish.log
 .venv-onchain/
 ops/dashboard/airdrop_status.json
 ops/dashboard/landing.live-*.html
+ops/dashboard/landing.repo-backup.html
