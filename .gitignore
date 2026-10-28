@@ -42,3 +42,5 @@ ops/dashboard/scommessa.json
 publish.log
 *.bak-*
 .venv-onchain/
+ops/dashboard/airdrop_status.json
+ops/dashboard/landing.live-*.html
