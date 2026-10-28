@@ -1,0 +1,50 @@
+{
+  "posizioni": {
+    "BTC": {
+      "ingresso": "2026-10-26T22:23:52.562106+00:00",
+      "funding_pct": 23.28,
+      "funding_ora_pct": 0.00021259
+    },
+    "ETH": {
+      "ingresso": "2026-10-26T22:23:52.562106+00:00",
+      "funding_pct": 10.95,
+      "funding_ora_pct": 0.0001
+    },
+    "LINK": {
+      "ingresso": "2026-10-26T22:23:52.562106+00:00",
+      "funding_pct": 10.95,
+      "funding_ora_pct": 0.0001
+    },
+    "LTC": {
+      "ingresso": "2026-10-26T22:23:52.562106+00:00",
+      "funding_pct": 10.95,
+      "funding_ora_pct": 0.0001
+    },
+    "ADA": {
+      "ingresso": "2026-10-26T22:23:52.562106+00:00",
+      "funding_pct": 10.95,
+      "funding_ora_pct": 0.0001
+    }
+  },
+  "pnl_usd": -0.935,
+  "avviato": "2026-10-26T22:23:52.562106+00:00",
+  "ultimo_run": "2026-10-26T22:23:52.562106+00:00",
+  "funding_ora": {
+    "BTC": 23.279,
+    "ETH": 10.95,
+    "LINK": 10.95,
+    "LTC": 10.95,
+    "ADA": 10.95,
+    "DOGE": 10.95,
+    "FIL": 10.95,
+    "UNI": 10.95,
+    "BCH": 10.95,
+    "NEAR": 10.95,
+    "CRV": 10.95,
+    "AAVE": 10.95,
+    "SUSHI": 10.95,
+    "XRP": 10.95,
+    "SOL": 10.95,
+    "DOT": 10.95
+  }
+}
