@@ -235,7 +235,7 @@ async function inviaConsole(){
   const ag = CONS.agenti.find(a => a.id === CONS.scelto) || {label: CONS.scelto};
   aggiungiMsg("me", "TU ▸ " + ag.label, txt);
   $("cinput").value = "";
-  const work = aggiungiMsg("work", ag.label, "sto pensando…");
+  const work = aggiungiMsg("work", ag.label, "in lavorazione…");
   const t0 = Date.now();
   $("cstate").textContent = "in corso · " + ag.label;
   try{
@@ -246,15 +246,23 @@ async function inviaConsole(){
     const d = await r.json();
     if(!r.ok || !d.job) throw new Error(d.error || ("http " + r.status));
     let esito = null;
-    for(let i = 0; i < 200; i++){
-      await new Promise(res => setTimeout(res, 1500));
+    for(let i = 0; i < 600; i++){
+      await new Promise(res => setTimeout(res, 1000));
       const pr = await fetch("/api/console/result?id=" + encodeURIComponent(d.job), {cache:"no-store"});
       const pd = await pr.json();
       if(pd.done){ esito = pd; break; }
-      work.lastChild.textContent = "sto pensando… " + Math.round((Date.now()-t0)/1000) + "s";
+      const sec = Math.round((Date.now()-t0)/1000);
+      const p = pd.progress || {};
+      let vita = "";
+      if(p.in_corso === true)
+        vita = " · l'agente sta lavorando" + (typeof p.msg === "number" ? " (" + p.msg + " passi)" : "");
+      else if(p.in_corso === false)
+        vita = " · sessione ferma, turno in coda";
+      work.lastChild.textContent = "elaborazione… " + sec + "s" + vita;
+      $("cstate").textContent = "in corso · " + ag.label + " · " + sec + "s" + vita.replace(" · ", " — ");
     }
     work.remove();
-    if(!esito) throw new Error("timeout: nessun esito dopo 5 minuti");
+    if(!esito) throw new Error("timeout: nessun esito dopo 10 minuti");
     if(!esito.ok) throw new Error(esito.error || "errore dall'agente");
     CONS.sessioni[CONS.scelto] = esito.session_id || CONS.sessioni[CONS.scelto];
     aggiungiMsg("bot", ag.label + " ▸ " + ((Date.now()-t0)/1000).toFixed(1) + "s", esito.reply || "(risposta vuota)");
