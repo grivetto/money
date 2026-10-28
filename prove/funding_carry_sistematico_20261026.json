@@ -1,0 +1,560 @@
+{
+  "meta": {
+    "generato": "2026-10-26T21:28:30.150423+00:00",
+    "cutoff_train": 1717200000000,
+    "fine_dati": 1791993600000,
+    "costi": {
+      "ciclo": 0.0034000000000000002,
+      "entrata": 0.0017000000000000001,
+      "uscita": 0.0017000000000000001,
+      "nota": "giro 0.18% fee (4 lati) + 0.04% slippage/lato"
+    },
+    "k_richiesti": [
+      3,
+      5
+    ]
+  },
+  "universo": {
+    "n_file_bybit": 58,
+    "n_idonei": 35,
+    "esclusi_dati": [
+      "BNTUSDT",
+      "CFGUSDT",
+      "DGBUSDT",
+      "GASUSDT",
+      "ICXUSDT",
+      "UMAUSDT",
+      "USDCUSDT",
+      "VELOUSDT"
+    ],
+    "esclusi_intervalli_misti": [
+      "AXSUSDT",
+      "CTCUSDT",
+      "EGLDUSDT",
+      "FLOWUSDT",
+      "LRCUSDT",
+      "MANAUSDT",
+      "MASKUSDT",
+      "MINAUSDT",
+      "RVNUSDT",
+      "SANDUSDT",
+      "SOLUSDT",
+      "STXUSDT",
+      "XTZUSDT",
+      "ZILUSDT",
+      "ZRXUSDT"
+    ],
+    "nota": "universo finale: SOLO serie funding a intervallo 8h puro (senza epoche 1h/2h/4h non normalizzate), storia >= 1 anno pre-cutoff, non delistati",
+    "storia": {
+      "1INCHUSDT": {
+        "n_oss": 5320,
+        "primo": 1638748800000,
+        "ultimo": 1791936000000,
+        "giorni": 1774
+      },
+      "AAVEUSDT": {
+        "n_oss": 5941,
+        "primo": 1620864000000,
+        "ultimo": 1791936000000,
+        "giorni": 1981
+      },
+      "ADAUSDT": {
+        "n_oss": 6110,
+        "primo": 1616025600000,
+        "ultimo": 1791936000000,
+        "giorni": 2037
+      },
+      "ALGOUSDT": {
+        "n_oss": 5543,
+        "primo": 1632355200000,
+        "ultimo": 1791936000000,
+        "giorni": 1848
+      },
+      "ATOMUSDT": {
+        "n_oss": 5489,
+        "primo": 1633910400000,
+        "ultimo": 1791936000000,
+        "giorni": 1830
+      },
+      "AVAXUSDT": {
+        "n_oss": 5566,
+        "primo": 1631664000000,
+        "ultimo": 1791936000000,
+        "giorni": 1856
+      },
+      "BATUSDT": {
+        "n_oss": 5357,
+        "primo": 1637712000000,
+        "ultimo": 1791936000000,
+        "giorni": 1786
+      },
+      "BCHUSDT": {
+        "n_oss": 6392,
+        "primo": 1607904000000,
+        "ultimo": 1791936000000,
+        "giorni": 2131
+      },
+      "BTCUSDT": {
+        "n_oss": 7183,
+        "primo": 1585094400000,
+        "ultimo": 1791936000000,
+        "giorni": 2395
+      },
+      "CELOUSDT": {
+        "n_oss": 5230,
+        "primo": 1641340800000,
+        "ultimo": 1791936000000,
+        "giorni": 1744
+      },
+      "CHZUSDT": {
+        "n_oss": 5486,
+        "primo": 1633996800000,
+        "ultimo": 1791936000000,
+        "giorni": 1829
+      },
+      "COMPUSDT": {
+        "n_oss": 5611,
+        "primo": 1630368000000,
+        "ultimo": 1791936000000,
+        "giorni": 1871
+      },
+      "CRVUSDT": {
+        "n_oss": 5447,
+        "primo": 1635120000000,
+        "ultimo": 1791936000000,
+        "giorni": 1816
+      },
+      "DOGEUSDT": {
+        "n_oss": 5881,
+        "primo": 1622592000000,
+        "ultimo": 1791936000000,
+        "giorni": 1961
+      },
+      "DOTUSDT": {
+        "n_oss": 6110,
+        "primo": 1616025600000,
+        "ultimo": 1791936000000,
+        "giorni": 2037
+      },
+      "ETCUSDT": {
+        "n_oss": 5801,
+        "primo": 1624924800000,
+        "ultimo": 1791936000000,
+        "giorni": 1934
+      },
+      "ETHUSDT": {
+        "n_oss": 6554,
+        "primo": 1603238400000,
+        "ultimo": 1791936000000,
+        "giorni": 2185
+      },
+      "FILUSDT": {
+        "n_oss": 5801,
+        "primo": 1624924800000,
+        "ultimo": 1791936000000,
+        "giorni": 1934
+      },
+      "GRTUSDT": {
+        "n_oss": 5320,
+        "primo": 1638748800000,
+        "ultimo": 1791936000000,
+        "giorni": 1774
+      },
+      "HBARUSDT": {
+        "n_oss": 5447,
+        "primo": 1635120000000,
+        "ultimo": 1791936000000,
+        "giorni": 1816
+      },
+      "ICPUSDT": {
+        "n_oss": 5566,
+        "primo": 1631664000000,
+        "ultimo": 1791936000000,
+        "giorni": 1856
+      },
+      "KSMUSDT": {
+        "n_oss": 5486,
+        "primo": 1633996800000,
+        "ultimo": 1791936000000,
+        "giorni": 1829
+      },
+      "LINKUSDT": {
+        "n_oss": 6554,
+        "primo": 1603238400000,
+        "ultimo": 1791936000000,
+        "giorni": 2185
+      },
+      "LTCUSDT": {
+        "n_oss": 6554,
+        "primo": 1603238400000,
+        "ultimo": 1791936000000,
+        "giorni": 2185
+      },
+      "NEARUSDT": {
+        "n_oss": 5489,
+        "primo": 1633910400000,
+        "ultimo": 1791936000000,
+        "giorni": 1830
+      },
+      "QTUMUSDT": {
+        "n_oss": 5299,
+        "primo": 1639353600000,
+        "ultimo": 1791936000000,
+        "giorni": 1767
+      },
+      "SHIB1000USDT": {
+        "n_oss": 5462,
+        "primo": 1634688000000,
+        "ultimo": 1791936000000,
+        "giorni": 1821
+      },
+      "SNXUSDT": {
+        "n_oss": 5299,
+        "primo": 1639353600000,
+        "ultimo": 1791936000000,
+        "giorni": 1767
+      },
+      "SUSHIUSDT": {
+        "n_oss": 5941,
+        "primo": 1620864000000,
+        "ultimo": 1791936000000,
+        "giorni": 1981
+      },
+      "THETAUSDT": {
+        "n_oss": 5611,
+        "primo": 1630368000000,
+        "ultimo": 1791936000000,
+        "giorni": 1871
+      },
+      "TRXUSDT": {
+        "n_oss": 5611,
+        "primo": 1630368000000,
+        "ultimo": 1791936000000,
+        "giorni": 1871
+      },
+      "UNIUSDT": {
+        "n_oss": 6110,
+        "primo": 1616025600000,
+        "ultimo": 1791936000000,
+        "giorni": 2037
+      },
+      "XLMUSDT": {
+        "n_oss": 5611,
+        "primo": 1630368000000,
+        "ultimo": 1791936000000,
+        "giorni": 1871
+      },
+      "XRPUSDT": {
+        "n_oss": 5941,
+        "primo": 1620864000000,
+        "ultimo": 1791936000000,
+        "giorni": 1981
+      },
+      "YFIUSDT": {
+        "n_oss": 5309,
+        "primo": 1639094400000,
+        "ultimo": 1791936000000,
+        "giorni": 1770
+      }
+    }
+  },
+  "verifica": {
+    "3": {
+      "parametri": {
+        "K": 3,
+        "L": 7,
+        "soglia_entrata": 0.03,
+        "soglia_uscita": 0.02,
+        "train_cagr": 0.2953003269440573
+      },
+      "oos": {
+        "cagr": 0.06650564268959003,
+        "sharpe": 3.536465583885848,
+        "maxdd": 0.0085080409079236,
+        "t_stat": 5.453592551873265,
+        "n_settimane": 124,
+        "n_trades": 153,
+        "turnover_annuo": 21.44587016129032,
+        "blocchi": "25/30",
+        "blocchi_q": "9/10",
+        "mean_w": 0.0012387759076131631,
+        "sd_w": 0.0025294197490319838,
+        "eq_fin": 1.1654633807053476
+      },
+      "mc_p5": {
+        "cagr_p5": 0.036069498236169784,
+        "cagr_med": 0.06484113044764617,
+        "fin_p5": 0.08791762122470637,
+        "fin_med": 0.16114240549865633,
+        "mdd_p5": 0.004616371673012631,
+        "mdd_med": 0.008050558016992141
+      },
+      "fee_plus50": {
+        "cagr": 0.04722691656624489,
+        "sharpe": 2.3710254151674035,
+        "maxdd": 0.01652528996806909
+      },
+      "senza_top3": {
+        "asset_esclusi": [
+          [
+            "COMPUSDT",
+            0.042798546666666624
+          ],
+          [
+            "CHZUSDT",
+            0.03837051333333334
+          ],
+          [
+            "QTUMUSDT",
+            0.02249623333333327
+          ]
+        ],
+        "cagr": 0.03284471875253536,
+        "sharpe": 2.2505406323414694,
+        "maxdd": 0.018862772615831344
+      },
+      "inversione_worst": {
+        "asset": [
+          "BATUSDT",
+          "COMPUSDT",
+          "THETAUSDT"
+        ],
+        "worst_week_fraz": -0.017911596666666627,
+        "annualizzato_equivalente": -0.9339625938303312
+      },
+      "settimana_peggiore_realizzata": -0.00478084906506937,
+      "griglia_oos_mediana_cagr": 0.05926836970298344,
+      "gates": {
+        "blocchi_positivi_Nmeno1_su_N_trimestrali": true,
+        "blocchi_mensili_positivi": "25/30",
+        "fee_plus50_cagr_pos": true,
+        "mc_p5_finale_positivo": true,
+        "senza_top3_cagr_pos": true,
+        "walkforward": "train<2024-06-01, verifica>=2024-06-01 (nessun lookahead)"
+      }
+    },
+    "5": {
+      "parametri": {
+        "K": 5,
+        "L": 14,
+        "soglia_entrata": 0.06,
+        "soglia_uscita": 0.01,
+        "train_cagr": 0.2680116981015017
+      },
+      "oos": {
+        "cagr": 0.0696157373803239,
+        "sharpe": 4.9909002071688695,
+        "maxdd": 0.008669229687432639,
+        "t_stat": 7.696479875551774,
+        "n_settimane": 124,
+        "n_trades": 129,
+        "turnover_annuo": 10.849087258064516,
+        "blocchi": "27/30",
+        "blocchi_q": "10/10",
+        "mean_w": 0.0012932524726657956,
+        "sd_w": 0.001871121641550243,
+        "eq_fin": 1.1735619384501204
+      },
+      "mc_p5": {
+        "cagr_p5": 0.04748681111745712,
+        "cagr_med": 0.06885173702509761,
+        "fin_p5": 0.11664442147547538,
+        "fin_med": 0.1715695018163197,
+        "mdd_p5": 0.0013517893701163516,
+        "mdd_med": 0.008669229687432504
+      },
+      "fee_plus50": {
+        "cagr": 0.05979322139512799,
+        "sharpe": 4.085429541697844,
+        "maxdd": 0.010353775663115643
+      },
+      "senza_top3": {
+        "asset_esclusi": [
+          [
+            "CHZUSDT",
+            0.021724353999999977
+          ],
+          [
+            "NEARUSDT",
+            0.019658030000000003
+          ],
+          [
+            "ATOMUSDT",
+            0.017212342000000002
+          ]
+        ],
+        "cagr": 0.05693964897761261,
+        "sharpe": 4.631380943174148,
+        "maxdd": 0.009399445802337182
+      },
+      "inversione_worst": {
+        "asset": [
+          "NEARUSDT",
+          "QTUMUSDT",
+          "THETAUSDT",
+          "KSMUSDT",
+          "ICPUSDT"
+        ],
+        "worst_week_fraz": -0.035304915999999964,
+        "annualizzato_equivalente": -1.840900704496398
+      },
+      "settimana_peggiore_realizzata": -0.006076452628409945,
+      "griglia_oos_mediana_cagr": 0.05604366005447137,
+      "gates": {
+        "blocchi_positivi_Nmeno1_su_N_trimestrali": true,
+        "blocchi_mensili_positivi": "27/30",
+        "fee_plus50_cagr_pos": true,
+        "mc_p5_finale_positivo": true,
+        "senza_top3_cagr_pos": true,
+        "walkforward": "train<2024-06-01, verifica>=2024-06-01 (nessun lookahead)"
+      }
+    }
+  },
+  "rischi": {
+    "inversione_worst_K3": {
+      "asset": [
+        "BATUSDT",
+        "COMPUSDT",
+        "THETAUSDT"
+      ],
+      "worst_week_fraz": -0.017911596666666627,
+      "annualizzato_equivalente": -0.9339625938303312
+    },
+    "inversione_worst_K5": {
+      "asset": [
+        "NEARUSDT",
+        "QTUMUSDT",
+        "THETAUSDT",
+        "KSMUSDT",
+        "ICPUSDT"
+      ],
+      "worst_week_fraz": -0.035304915999999964,
+      "annualizzato_equivalente": -1.840900704496398
+    },
+    "settimana_peggiore_realizzata_K3": -0.00478084906506937,
+    "settimana_peggiore_realizzata_K5": -0.006076452628409945,
+    "nota_inversione": "worst = K asset piu' tenuti OOS, tutti alla loro peggiore settimana NEGATIVA storica simultanea (scenario di non-exit; la strategia esce a segnale < soglia o inversione, quindi e' un upper bound di tail)",
+    "vol_spike_rebalance": {
+      "nota": "rotazione completa di K slot con slippage 3x (0.12%/lato): costo ciclo 0.66% vs 0.34% normale",
+      "extra_costo_portafoglio": 0.0032,
+      "frequenza_attesa": "rara: durante vol spike il funding spinge POSITIVO (si incassa di piu', non si perde)"
+    },
+    "margin_stress": {
+      "nota": "delta-neutral in cross-margin (UTA): a +50% spot il perp perde 50%xN ma lo spot guadagna 50%xN -> equity ~flat; serve solo margine iniziale + buffer. Sizing N=0.85xC lascia 15% di cassa >= IM (5-10% alt) + headroom"
+    },
+    "basis_exit": {
+      "nota": "rischio base perp-vs-spot all'uscita: non backtestabile (niente serie prezzi perp Bybit nei dati). Stress +/-20bps per ciclo su nozionale; su OKX EEA xperp (long-dated) basis_pp osservato p90=3.2pp, max=36.8pp: perp standard molto piu' stretti",
+      "stress_20bps_per_ciclo": 0.002
+    }
+  },
+  "confronto_live": {
+    "dot_doge_gross_storico": {
+      "DOT": 0.08753525147275405,
+      "DOGE": 0.11684280048444672
+    },
+    "dot_doge_oos_netto_annualizzato": 0.033175049583675564,
+    "dot_doge_oos_sharpe": 2.611828752776099,
+    "nota": "live attuale ~11%/anno LORDO su DOT/DOGE (funding 0.01%/8h, venue OKX EEA xperp). Su Bybit, stesso schema DOT/DOGE rende NETTO OOS 0.03%/a con costi pieni: il multi-asset sistematico (K=5: 0.07%/a netto) raddoppia il carry statico sulla stessa base dati"
+  },
+  "note": [],
+  "top_funding": {
+    "storico_annualizzato": [
+      [
+        "LINKUSDT",
+        0.2032953295881007
+      ],
+      [
+        "LTCUSDT",
+        0.19301028942791762
+      ],
+      [
+        "ETHUSDT",
+        0.13883831578947367
+      ],
+      [
+        "ADAUSDT",
+        0.13608112231222388
+      ],
+      [
+        "BTCUSDT",
+        0.127092474217119
+      ],
+      [
+        "DOGEUSDT",
+        0.11684280048444672
+      ],
+      [
+        "FILUSDT",
+        0.11490367213029991
+      ],
+      [
+        "THETAUSDT",
+        0.11319651165152325
+      ],
+      [
+        "UNIUSDT",
+        0.11199986116838488
+      ],
+      [
+        "BCHUSDT",
+        0.10656666062881277
+      ]
+    ],
+    "oos_annualizzato": [
+      [
+        "YFIUSDT",
+        0.06621872147806004
+      ],
+      [
+        "1INCHUSDT",
+        0.06527047592378753
+      ],
+      [
+        "THETAUSDT",
+        0.06229922419168591
+      ],
+      [
+        "NEARUSDT",
+        0.05973830242494227
+      ],
+      [
+        "LINKUSDT",
+        0.058403295958429566
+      ],
+      [
+        "DOGEUSDT",
+        0.05802014289838337
+      ],
+      [
+        "LTCUSDT",
+        0.056009035046189384
+      ],
+      [
+        "CRVUSDT",
+        0.05497060161662818
+      ],
+      [
+        "SUSHIUSDT",
+        0.05469146512702079
+      ],
+      [
+        "AAVEUSDT",
+        0.05444011247113165
+      ]
+    ]
+  },
+  "sizing": {
+    "capitale_eur": 300.0,
+    "capitale_usd": 324.0,
+    "formula": "nozionale_tot = C/(1+IM+buffer), IM alt ~10%, buffer 15%",
+    "nozionale_tot_eur": 255.0,
+    "nozionale_tot_usd": 275.4,
+    "per_asset_K3_usd": 91.8,
+    "per_asset_K5_usd": 55.08,
+    "raccomandazione": "a 300 EUR: K=3 (92 USD/asset, sopra min ordine per la maggior parte degli asset; asset a nozionale minimo alto come YFI vanno esclusi). A >=1000 EUR: K=5 (184 USD/asset)",
+    "scala_1000eur": {
+      "per_asset_K5_usd": 183.6,
+      "nozionale_tot_usd": 918.0
+    }
+  }
+}
