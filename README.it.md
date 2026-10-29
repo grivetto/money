@@ -47,7 +47,7 @@ sua storia, come memoria di cosa è stato provato — non come base su cui costr
 
 | | |
 | :--- | :--- |
-| **Test** | **1.004 passati**, `ruff` pulito |
+| **Test** | **1.052 passati**, `ruff` pulito |
 | **Esperimenti misurati** | tutte le famiglie classiche (trend, breakout, rotazione, reversal, weekend, capitolazione…) più la serie pre-registrata P fino a P19b — 20+ misurati, ogni verdetto congelato in `prove/` |
 | **Verdetti** | **nessuna famiglia promossa** — tutte archiviate ai costi reali (il filone trend è chiuso con prova multipla: DD di portafoglio mai sotto il 41,5%, soglia cancello 25%); **S4 caccia continua esaurita** (316k tentativi, 0 candidati — fermata il 15/10); l'unico sopravvissuto è il **carry**: review di C1 **PASS** (15/10) → live su due coppie in più |
 | **Carry live (C1 + DOT+ADA)** | C1 (DOGE, delta-neutral, dal 01/10): funding **+0,045 USDC** (~118% del minimo atteso), netto coppia ≈ +0,05 USDC; **DOT+ADA** (aperti il 15/10 23:00 UTC): nozionale ≈ **180 EUR**, uPL +0,36 — taglia minima, tutto riconciliato |

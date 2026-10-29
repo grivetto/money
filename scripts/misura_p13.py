@@ -82,7 +82,8 @@ def main() -> int:
     for r in scelte:
         d = allineate[r["coppia"]]
         ts_ver = d["ts"] if ts_ver is None else _np.intersect1d(ts_ver, d["ts"])
-    assert ts_ver is not None and len(ts_ver) > 0
+    if ts_ver is None or len(ts_ver) == 0:
+        raise RuntimeError("P13: nessuna serie temporale allineata (verifica dati/coppie)")
     fondi = p13.carica_funding(funding_path)
     if fondi:
         copertura = _np.intersect1d(ts_ver, _np.array(

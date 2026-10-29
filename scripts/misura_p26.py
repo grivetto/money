@@ -165,7 +165,8 @@ def main() -> int:
     for r in scelte:
         d = allineate[r["coppia"]]
         ts_ver = d["ts"] if ts_ver is None else np.intersect1d(ts_ver, d["ts"])
-    assert ts_ver is not None and len(ts_ver) > 0
+    if ts_ver is None or len(ts_ver) == 0:
+        raise RuntimeError("P26: nessuna serie temporale allineata (verifica dati/coppie)")
 
     print("P26 — ricalcolo rolling della relazione (stop-di-relazione)...")
     relazione = {r["coppia"]: p26.serie_relazione(allineate[r["coppia"]], r["W"])

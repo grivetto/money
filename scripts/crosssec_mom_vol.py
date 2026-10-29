@@ -642,9 +642,11 @@ def scrivi_report(ris: dict, path_md: Path, path_json: Path) -> None:
               "maxDD full | turn/ann | costo ann |")
             A("|---|---|---|---|---|---|---|---|---|---|---|")
             for r in sorted(rr, key=lambda r: -(r["cagr_train"] or -9)):
+                sharpe = "%.2f" % r["sharpe_oos"] if r["sharpe_oos"] else "n/d"
+                t_oos = "%+.2f" % r["t_oos"] if r["t_oos"] else "n/d"
+                t_nw = "%+.2f" % r["t_nw_oos"] if r["t_nw_oos"] else "n/d"
                 A(f"| {r['L']} | {r['V']} | {r['pesi']} | {fmt(r['cagr_train'])} | {fmt(r['cagr_oos'])} | "
-                  f"{fmt(r['cagr_full'])} | {r['sharpe_oos'] and f'{r['sharpe_oos']:.2f}' or 'n/d'} | "
-                  f"{r['t_oos'] and f'{r['t_oos']:+.2f}' or 'n/d'} | {r['t_nw_oos'] and f'{r['t_nw_oos']:+.2f}' or 'n/d'} | "
+                  f"{fmt(r['cagr_full'])} | {sharpe} | {t_oos} | {t_nw} | "
                   f"{fmt(r['dd_full'], dec=1, segno=False)} | {r['turnover_ann']:.2f} | {fmt(r['costo_ann'])} |")
             A("")
     A("## 4. Varianti promosse e cancello OOS")
@@ -653,7 +655,11 @@ def scrivi_report(ris: dict, path_md: Path, path_json: Path) -> None:
     A("|---|---|---|---|---|---|---|---|")
     for chiave_r, r in ris["cancelli"].items():
         g2, g3, g4, g5 = r["G2_blocchi"], r["G3_fee150"], r["G4_mc"], r["G5_senza_top3"]
-        g4s = f"CAGR {g4.get('p5_cagr') and fmt(g4['p5_cagr'])} / term {g4.get('p5_term') and f'{g4['p5_term']:.2f}'}" if "p5_cagr" in g4 else g4.get("nota", "n/d")
+        if "p5_cagr" in g4:
+            p5_term = "%.2f" % g4["p5_term"] if g4.get("p5_term") else "n/d"
+            g4s = "CAGR %s / term %s" % (fmt(g4["p5_cagr"]), p5_term)
+        else:
+            g4s = g4.get("nota", "n/d")
         A(f"| {r['pannello']} | {r['direzione'].upper()} | {r['variante']} | "
           f"{'OK' if r['G1_no_lookahead']['ok'] else 'FAIL'} | {g2['positivi']}/{g2['su']} | "
           f"{fmt(g3['cagr_oos'])} ({'OK' if g3['ok'] else 'FAIL'}) | {g4s} ({'OK' if g4['ok'] else 'FAIL'}) | "
@@ -665,18 +671,21 @@ def scrivi_report(ris: dict, path_md: Path, path_json: Path) -> None:
         st = r["oos"]
         A(f"### {r['pannello']} — {r['direzione'].upper()} — {r['variante']}")
         A("")
-        A(f"- CAGR OOS **{fmt(st['cagr_oos'])}** · Sharpe OOS **{st['sharpe_oos'] and f'{st['sharpe_oos']:.2f}' or 'n/d'}** · "
-          f"t **{st['t_oos'] and f'{st['t_oos']:+.2f}' or 'n/d'}** · t NW(7) **{st['t_nw_oos'] and f'{st['t_nw_oos']:+.2f}' or 'n/d'}** · "
+        sharpe_o = "%.2f" % st["sharpe_oos"] if st["sharpe_oos"] else "n/d"
+        t_o = "%+.2f" % st["t_oos"] if st["t_oos"] else "n/d"
+        t_nw_o = "%+.2f" % st["t_nw_oos"] if st["t_nw_oos"] else "n/d"
+        A(f"- CAGR OOS **{fmt(st['cagr_oos'])}** · Sharpe OOS **{sharpe_o}** · "
+          f"t **{t_o}** · t NW(7) **{t_nw_o}** · "
           f"maxDD OOS **{fmt(st['dd_oos'], dec=1, segno=False)}**")
         A(f"- CAGR train {fmt(st['cagr_train'])} · CAGR full {fmt(st['cagr_full'])} · "
           f"turnover annuo **{st['turnover_ann']:.2f}** capitali/anno · "
           f"costo annuo {fmt(st['costo_ann'])} · {st['n_rib']} ribilanciamenti")
-        A(f"- blocchi OOS: " + " | ".join(
+        A("- blocchi OOS: " + " | ".join(
             f"{b['da']}→{b['a']} {fmt(b['cum'])}" for b in st["blocchi"]))
-        A(f"- per anno (full): " + " ".join(f"{a}:{v*100:+.1f}%" for a, v in st["per_anno"].items()))
+        A("- per anno (full): " + " ".join(f"{a}:{v*100:+.1f}%" for a, v in st["per_anno"].items()))
+        p5_term_mc = "%.3f" % r["G4_mc"]["p5_term"] if r["G4_mc"].get("p5_term") else "n/d"
         A(f"- MC OOS (block-bootstrap 7g, {MC_N} percorsi): p5 CAGR {fmt(r['G4_mc'].get('p5_cagr'))}, "
-          f"p50 CAGR {fmt(r['G4_mc'].get('p50_cagr'))}, p5 terminale "
-          f"{r['G4_mc'].get('p5_term') and f'{r['G4_mc']['p5_term']:.3f}' or 'n/d'}.")
+          f"p50 CAGR {fmt(r['G4_mc'].get('p50_cagr'))}, p5 terminale {p5_term_mc}.")
         A(f"- senza i 3 asset migliori OOS (`{', '.join(r['G5_senza_top3']['top3'])}`): "
           f"CAGR OOS {fmt(r['G5_senza_top3']['cagr_oos'])}, "
           f"blocchi positivi {r['G5_senza_top3']['blocchi_pos']}/{N_BLOCCHI}.")
@@ -786,9 +795,10 @@ def main() -> int:
                                                       if (b["cum"] or -9) > 0)}
             cancelli[f"{nome_pan}|{direzione}"] = gate
             g = gate
+            oos_s = "%+.2f%%" % (g["oos"]["cagr_oos"] * 100) if g["oos"]["cagr_oos"] else "n/d"
             print(f"    G1={g['G1_no_lookahead']['ok']} G2={g['G2_blocchi']['positivi']}/{N_BLOCCHI} "
                   f"G3={g['G3_fee150']['ok']} G4={g['G4_mc']['ok']} G5={g['G5_senza_top3']['ok']} | "
-                  f"OOS {g['oos']['cagr_oos'] and f'{g['oos']['cagr_oos']*100:+.2f}%'}")
+                  f"OOS {oos_s}")
 
     # --- sensibilità report-only: igiene_stretta sul 1d (varianti congelate)
     sens: list[str] = []
@@ -826,7 +836,7 @@ def main() -> int:
     parti.append(f"**Long-only 1d (promossa `{v['variante']}`)**: cancello "
                  f"{'SUPERATO' if gate_lo_ok else 'NON superato'} — G2 {g2['positivi']}/{N_BLOCCHI} blocchi, "
                  f"G3 fee+50% CAGR OOS {fmt(g3['cagr_oos'])}, G4 MC p5 CAGR {fmt(g4.get('p5_cagr'))} "
-                 f"(terminale p5 {g4.get('p5_term') and f'{g4['p5_term']:.2f}'}), "
+                 f"(terminale p5 {'%.2f' % g4['p5_term'] if g4.get('p5_term') else 'n/d'}), "
                  f"G5 senza top-3 {fmt(g5['cagr_oos'])}.")
     parti.append(f"**Long-short 1d (promossa `{vls['variante']}`)**: cancello "
                  f"{'SUPERATO' if gate_ls_ok else 'NON superato'} — G2 {g2s['positivi']}/{N_BLOCCHI} blocchi, "

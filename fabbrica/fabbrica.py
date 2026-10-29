@@ -295,7 +295,8 @@ def _jobstore():
     if _JOBSTORE is None:
         import importlib.util
         sp = importlib.util.spec_from_file_location("fabbrica_jobs", BASE / "jobs.py")
-        assert sp is not None and sp.loader is not None
+        if sp is None or sp.loader is None:
+            raise RuntimeError("fabbrica: jobs.py non importabile (spec/loader assenti)")
         mod = importlib.util.module_from_spec(sp)
         sp.loader.exec_module(mod)
         _JOBSTORE = mod.JobStore

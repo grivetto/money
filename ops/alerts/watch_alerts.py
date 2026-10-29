@@ -493,7 +493,8 @@ def check_flotta() -> int:
                             "--host", "nuvola", "--json"],
                            capture_output=True, text=True, timeout=240)
         dati = json.loads(r.stdout)
-        assert isinstance(dati, list)
+        if not isinstance(dati, list):
+            raise ValueError("flotta:check: payload JSON non e' una lista")
     except Exception:  # noqa: BLE001
         return gestisci("flotta:check", True,
                         "⚠️ fleet_integrity: output non leggibile (check rotto?)",
