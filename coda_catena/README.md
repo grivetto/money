@@ -100,3 +100,7 @@ STATO DELLA CODA
 
 ## Aggiornamento 2026-10-29 (5) — E11 misurata: lane TSMOM chiusa in questa forma
 - E11_tsmom_btc_eth.md ... **MISURATA E ARCHIVIATA (Artù 29/10)**: OOS −0,0192%/g t −0,31; TRAIN +0,203%/g t 2,57; T4 PASS (DD 43,6% vs 60,2%); DSR 0,361 → **2/5 NON PROMOSSA**. Smoke Merlino (omarchy) == misura Artù (mc2), numeri identici; spot-check indipendente R12 ok. Prossimi: E10 (Morgana, in misura) · RANK 3 listing event-driven.
+
+## Aggiornamento 2026-10-29 (6) — RANK 3: dati PRONTI + E12 pre-registrata
+- Ricognizione REQ-MERL-20261029-026: **DATI PRONTI per OKX+Bybit** (annunci a data+ora, ground truth primo giorno via listTime+candele 8/8 OKX · 7/7 Bybit, delay annuncio→trading 4–24h); Bitvavo parziale; handoff 64/64.
+- E12_listing_drift.md ... **PRE-REGISTRATA (Artù)**: «listing drift 24h long-only OKX EEA» — LONG open(t0) → FLAT close 24° bar 1H; costi RT 0,30% (+stress ×2); volume 24h ≥ 50k USDT; TRAIN 2023-06→2025-06 / OOS 2025-06→2026-10; gate T1 (t≥2,7 Bonferroni) · T2 · T3 · T4 (Bybit) · T5 (split-half). In esecuzione: Merlino (engine+test+smoke) → misura ufficiale Artù.
