@@ -6,21 +6,20 @@
 * * * * * cd /home/marco/money && /usr/bin/flock -n /tmp/denaro_snapshot_mcdg1.lock /usr/bin/env HEALTH_DIR=/home/marco/denaro/health NODE_DIR=/home/marco/alpha-omega-trading/node_data /home/marco/money/.venv/bin/python3 /home/marco/money/ops/aggregator/infra_snapshot.py >> /home/marco/money/logs/infra_snapshot.log 2>&1
 # */15 * * * * [sospeso 07/10] mkdir -p /home/marco/denaro2/reports/quality_shadow && cd /home/marco/denaro && DENARO2_SECRETS=/home/marco/denaro/secrets /home/marco/denaro/venv/bin/python -m denaro2.cli quality --symbol BTC/EUR --timeframe 1h --json >> /home/marco/denaro2/reports/quality_shadow/quality_shadow_$(date +\%Y\%m\%d).log 2>&1
 */10 * * * * cd /home/marco/canary && /home/marco/money/.venv/bin/python3 canary_carry.py status --quiet >> /home/marco/canary/canary.log 2>&1
-*/5 * * * * cd /home/marco/money && /home/marco/money/.venv/bin/python3 scripts/genera_carry.py >> /home/marco/money/logs/genera_carry.log 2>&1
 * * * * * /usr/bin/flock -n /tmp/zabbix_bots.lock /usr/bin/python3 /home/marco/money/ops/zabbix/zabbix_bots.py >> /home/marco/denaro/logs/zabbix_bots.log 2>&1
-
-# [09/10/26] tabellone contabile: versato->equity->fee->realizzato (ownership: proprietario)
-0 8 * * * cd /home/marco/money && /usr/bin/python3 scripts/tabellone.py --env /home/marco/denaro/secrets/main_okx.env --equity-url http://127.0.0.1:8912/api/infra.json --versato 1067 >> /home/marco/money/logs/tabellone.log 2>&1
-
-# [18/10/26] Collector fee ledger (P25) - lunedi 08:50, read-only, prima del KPI
-50 8 * * 1 cd /home/marco/money && /home/marco/money/.venv/bin/python3 scripts/raccogli_fee_ledger.py --env-file config/.env_banco >> /home/marco/money/logs/raccogli_fee_ledger.log 2>&1
+# [09/10/26] tabellone contabile
+0 8 * * * cd /home/marco/money && /home/marco/money/.venv/bin/python scripts/tabellone.py --env /home/marco/denaro/secrets/main_okx.env --equity-url http://127.0.0.1:8912/api/infra.json --versato 1067 >> /home/marco/money/logs/tabellone.log 2>&1
+*/5 * * * * cd /home/marco/money && /home/marco/money/.venv/bin/python3 scripts/genera_carry.py >> /home/marco/money/logs/genera_carry.log 2>&1
+# [18/10/26] Collector fee ledger (P25) - giornaliero 08:50, read-only, prima del KPI
+50 8 * * * /usr/bin/flock -n /tmp/raccogli_fee_ledger.lock /home/marco/money/.venv/bin/python3 /home/marco/money/scripts/raccogli_fee_ledger.py --env-file /home/marco/money/config/.env_banco >> /home/marco/money/logs/raccogli_fee_ledger.log 2>&1
 
 # [18/10/26] Watchdog raccolta tick (tick_watch.py) - 10:00 giornaliero; verdetto in logs/tick_watch/
 0 10 * * * mkdir -p /home/marco/money/logs/tick_watch && cd /home/marco/money && TICK_WATCH_OUT=/home/marco/money/logs/tick_watch /home/marco/money/.venv/bin/python3 scripts/tick_watch.py >> /home/marco/money/logs/tick_watch/cron.log 2>&1
-
 # [18/10/26] Ricerca: riepilogo verdetti per dashboard/Zabbix (ogni 30') — il file era fermo al 15/10
 */30 * * * * cd /home/marco/money && /home/marco/money/.venv/bin/python3 scripts/genera_ricerca.py >> /home/marco/money/logs/genera_ricerca.log 2>&1
-
-# [23/10/26] Raccoglitore L2 BTC-EUR (feed pubblico EEA, books+trades) — singleton via flock,
-# il cron ogni 5 minuti agisce da supervisore: se il collector e' morto, riparte. Lane MM1.
+1-59/5 * * * * /usr/bin/flock -n /tmp/carry_watch.lock /usr/bin/python3 /home/marco/hermes-scratch/carry_watch/carry_watch.py --alert >> /home/marco/hermes-scratch/carry_watch/carry_watch.log 2>&1
+10 7 * * * /usr/bin/flock -n /tmp/recon_giornaliero.lock /home/marco/money/.venv/bin/python3 /home/marco/hermes-scratch/carry_recon/recon_giornaliero.py --env-file /home/marco/money/config/.env_banco >> /home/marco/hermes-scratch/carry_recon/recon_giornaliero.log 2>&1
+20 7 * * 1 /usr/bin/flock -n /tmp/report_settimanale.lock /usr/bin/python3 /home/marco/hermes-scratch/carry_recon/report_settimanale.py >> /home/marco/hermes-scratch/carry_recon/report_settimanale.log 2>&1
 */5 * * * * /home/marco/money/scripts/l2_start.sh >> /home/marco/money/logs/raccoglitore_l2.log 2>&1
+5,20,35,50 * * * * cd /home/marco/money && /usr/bin/python3 ops/zabbix/push_airdrop.py >> /home/marco/money/ops/zabbix/push_airdrop.log 2>&1
+0 4 * * * docker pull agent0ai/agent-zero:latest && docker restart agent-zero

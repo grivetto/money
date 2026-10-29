@@ -34,4 +34,11 @@
 
 # Agenti — pannello /agenti: stato Hermes/A0/opencode/agy/DSH ogni minuto (read-only; ops/agents/agents_status.py) + sync JSON su MARCODG1
 * * * * * cd /home/sergio/money && /usr/bin/flock -n /tmp/agenti_status.lock /home/sergio/money/.venv/bin/python ops/agents/agents_status.py >> logs/agenti_status.log 2>&1 && scp -q -o BatchMode=yes -o ConnectTimeout=10 ops/dashboard/agenti.json MARCODG1:/home/marco/money/ops/dashboard/agenti.json
+*/5 * * * * /usr/bin/flock -n /tmp/denaro_handoff_watch.lock /home/sergio/money/.venv/bin/python /home/sergio/money/ops/alerts/watch_handoff.py check >> /home/sergio/money/logs/handoff_watch.log 2>&1
+# [18/10/26] KPI settimanali (P25) — lunedi 09:00, legge banco+ledger via ssh da MARCODG1, invia Telegram
+0 9 * * 1 cd /home/sergio/money && /home/sergio/money/.venv/bin/python ops/kpi_settimanali.py --settimanale --invia >> /home/sergio/money/logs/kpi_settimanali.log 2>&1
+*/15 * * * * /home/sergio/money/ops/airdrop/publish_status.sh >/dev/null 2>&1
+30 9 * * 1 cd /home/sergio/money && /usr/bin/python3 ops/carry_sistematico/paper_track.py >> logs/carry_paper.log 2>&1
+0 4 * * * docker pull agent0ai/agent-zero:latest && docker restart agent-zero
 13 * * * * /usr/bin/flock -n /tmp/denaro_channels_watch.lock /home/sergio/money/.venv/bin/python /home/sergio/money/ops/alerts/watch_channels.py >> /home/sergio/money/logs/channels_watch.log 2>&1
+* * * * * /usr/bin/python3 /home/sergio/agents-dashboard/collect.py >/dev/null 2>&1
