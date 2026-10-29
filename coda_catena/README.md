@@ -92,3 +92,6 @@ STATO DELLA CODA
 ## Aggiornamento 2026-10-29 (3) — E10 pre-registrata (stablecoin issuance) + preflight on-chain di Morgana
 - **Preflight on-chain (REQ-NUV-20261029-005, Morgana)**: DATI PRONTI con qualificazione — stablecoin flows (DefiLlama, 8 major, 2017→, 1d, gate 8/8) sì; exchange netflows free (CoinMetrics) solo BTC/ETH (2/5, niente USDT, 1d vs 1–6h del paper) → il paper NON è replicabile gratis. Handoff verificato (15/15 + 11/11).
 - E10_stablecoin_issuance.md ... **PRE-REGISTRATA (Artù 29/10)** — proxy dichiarato: net issuance nucleo USDT+USDC+DAI; regola congelata (z trailing causale, long-only con isteresi, costi RT 0,20%/switch), TRAIN 2020-02→2024-06 / OOS 2024-06→2026-10, criteri T1–T3 + DSR N=2. Implementazione: Morgana (REQ-NUV-20261029-006). Se fallisce: famiglia on-chain chiusa.
+
+## Aggiornamento 2026-10-29 (4) — E11 pre-registrata (TSMOM long-only BTC/ETH)
+- E11_tsmom_btc_eth.md ... **PRE-REGISTRATA (Artù 29/10)** — la baseline time-series momentum 12M/1M nella variante long-only (imposta dalle venue spot-only; short negativi in E6/E8): R12M mensile, pesi uguali BTC/ETH, costi RT 0,20%; criteri T1–T3 + **T4 value-add (DD OOS ≤ DD buy&hold)** + DSR N=5. Implementazione: Merlino (REQ-MERL-20261029-025). Se fallisce: lane chiusa in questa forma.
