@@ -28,7 +28,7 @@ chiavi, niente I/O.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Tuple
+from typing import Mapping, Tuple
 
 from money.statistica import _quantile
 
@@ -149,3 +149,50 @@ def verifica_tariffa_xperp(corrente: float,
         return True, ""
     return False, (f"tariffa X-Perp corrente {corrente:.8%} != dichiarata "
                    f"{dichiarata:.8%}")
+
+
+# ── Watchdog: tariffa X-Perp solo per coppie con posizione aperta ───────────
+# Review P34 (29/10): il confronto tariffa va fatto SOLO per le coppie con
+# posizione aperta nello stato (carry_stato.json): una coppia chiusa non deve
+# generare ALERT/RECOVERY (spam reale su ADA chiusa dal 26/10: 11 alert in
+# ~6h mentre la sua tariffa di mercato oscillava).
+
+
+def coppie_con_posizione_aperta(stato: dict) -> set[str]:
+    """Nomi (MAIUSCOLI) delle coppie con posizione APERTA secondo lo stato:
+    campo `coppie.<nome>.aperta is True`. Coppia assente o non marcata
+    aperta = NON aperta (il watchdog tariffa non la legge)."""
+    out: set[str] = set()
+    for nome, v in ((stato or {}).get("coppie") or {}).items():
+        if isinstance(v, dict) and v.get("aperta") is True:
+            out.add(str(nome).upper())
+    return out
+
+
+def _coppia_da_inst(inst_id: str) -> str:
+    """'DOT-USD_UM_XPERP-310808' -> 'DOT' (primo token dell'instId)."""
+    return (inst_id or "").split("-", 1)[0].upper()
+
+
+def alert_tariffa_xperp_solo_aperte(
+        stato: dict,
+        correnti: Mapping[str, float],
+        dichiarate: Mapping[str, float] | None = None,
+        eps: float = EPS_TARIFFA) -> list[tuple[str, str]]:
+    """Review P34-F3: come `verifica_tariffa_xperp`, ma SOLO per le coppie
+    con posizione aperta (stato carry_stato.json). Gli strumenti di coppie
+    chiuse o assenti dallo stato NON vengono confrontati. `correnti` = tariffa
+    letta per instId; un instId assente da `correnti` non e' un alert
+    (illeggibile = WARN, gestito dal chiamante). Ritorna [(inst_id, motivo)]."""
+    dich = (dict(dichiarate) if dichiarate is not None
+            else {i: TARIFFA_XPERP_DICHIARATA for i in correnti})
+    aperte = coppie_con_posizione_aperta(stato)
+    out: list[tuple[str, str]] = []
+    for inst, corrente in correnti.items():
+        if _coppia_da_inst(inst) not in aperte:
+            continue
+        ok, motivo = verifica_tariffa_xperp(
+            float(corrente), dich.get(inst, TARIFFA_XPERP_DICHIARATA), eps)
+        if not ok:
+            out.append((inst, motivo))
+    return out

@@ -11,6 +11,7 @@ import pytest
 
 from money.funding_carry import (
     TARIFFA_XPERP_DICHIARATA,
+    alert_tariffa_xperp_solo_aperte,
     stima_funding,
     verifica_tariffa_xperp,
 )
@@ -115,3 +116,38 @@ def test_verifica_tariffa_scostata_allarme():
     ok, motivo = verifica_tariffa_xperp(0.0002)
     assert not ok
     assert "0.02000000%" in motivo and "0.01000000%" in motivo
+
+
+# ── Review P34 29/10 (F3): tariffa SOLO per coppie con posizione aperta ─────
+
+def test_watch_tariffa_solo_coppie_aperte():
+    """Review F3: con ADA chiusa e DOT aperta nello stato, uno scostamento
+    tariffa genera UN solo alert (DOT). ADA — chiusa dal 26/10 — NON viene
+    nemmeno confrontata: era lo spam di ALERT/RECOVERY su coppia chiusa."""
+    stato = {"coppie": {
+        "DOT": {"aperta": True, "ct_perp": 253.0},
+        "ADA": {"aperta": False, "ct_perp": 0.0},
+    }}
+    correnti = {
+        "DOT-USD_UM_XPERP-310808": 0.00015,   # scostata + aperta → 1 alert
+        "ADA-USD_UM_XPERP-310404": 0.0002,    # scostata MA chiusa → 0 alert
+        "DOGE-USD_UM_XPERP-310404": 0.0002,   # non tracciata nello stato → skip
+        "LINK-USD_UM_XPERP-310523": 0.0001,
+        "LTC-USD_UM_XPERP-310404": 0.0001,
+        "AVAX-USD_UM_XPERP-310530": 0.0001,
+    }
+    alert = alert_tariffa_xperp_solo_aperte(stato, correnti)
+    assert [a[0] for a in alert] == ["DOT-USD_UM_XPERP-310808"]
+    assert "0.01500000%" in alert[0][1]
+    assert "0.01000000%" in alert[0][1]
+
+
+def test_watch_tariffa_nessuna_coppia_aperta_nessun_alert():
+    """Stato senza coppie aperte (o illeggibile → coppie {}): nessun
+    confronto, nessun alert — l'allarme tariffa non esiste dove il carry
+    non esiste."""
+    stato = {"coppie": {"DOT": {"aperta": False}, "ADA": {"aperta": False}}}
+    alert = alert_tariffa_xperp_solo_aperte(
+        stato, {"DOT-USD_UM_XPERP-310808": 0.0002})
+    assert alert == []
+    assert alert_tariffa_xperp_solo_aperte({}, {}) == []
