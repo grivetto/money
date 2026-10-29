@@ -12,6 +12,8 @@ import pytest
 from money.funding_carry import (
     TARIFFA_XPERP_DICHIARATA,
     alert_tariffa_xperp_solo_aperte,
+    coppia_canary_aperta,
+    coppie_con_posizione_aperta,
     stima_funding,
     verifica_tariffa_xperp,
 )
@@ -151,3 +153,67 @@ def test_watch_tariffa_nessuna_coppia_aperta_nessun_alert():
         stato, {"DOT-USD_UM_XPERP-310808": 0.0002})
     assert alert == []
     assert alert_tariffa_xperp_solo_aperte({}, {}) == []
+
+
+# ── Review P34 follow-up REQ-024 (29/10): copertura tariffa CANARY DOGE ─────
+
+CANARY_APERTO_REQ24 = {"status": "open",
+                       "inst": "DOGE-USD_UM_XPERP-310404",
+                       "last_delta": 0.11}
+
+
+def test_watch_tariffa_canary_aperto_copre_doge():
+    """REQ-024: con DOT aperta (carry_stato) e canary DOGE aperto
+    (canary_state.json) il filtro copre ESATTAMENTE {DOT, DOGE} (ok=2) e ADA
+    chiusa resta saltata: DOGE era il buco di F3, ora e' di nuovo nel watch."""
+    stato = {"coppie": {"DOT": {"aperta": True}, "ADA": {"aperta": False}}}
+    assert coppie_con_posizione_aperta(
+        stato, CANARY_APERTO_REQ24) == {"DOT", "DOGE"}
+    correnti = {
+        "DOT-USD_UM_XPERP-310808": 0.0001,
+        "DOGE-USD_UM_XPERP-310404": 0.0001,
+        "ADA-USD_UM_XPERP-310404": 0.0002,   # chiusa: MAI confrontata
+    }
+    assert alert_tariffa_xperp_solo_aperte(
+        stato, correnti, canary_stato=CANARY_APERTO_REQ24) == []
+
+
+def test_watch_tariffa_canary_scostato_allarma():
+    """Il canary e' lo strumento su cui si incassa funding: uno scostamento
+    della sua tariffa DEVE produrre l'alert (prima di REQ-024 era saltato)."""
+    stato = {"coppie": {"DOT": {"aperta": True}}}
+    correnti = {
+        "DOT-USD_UM_XPERP-310808": 0.0001,    # in linea
+        "DOGE-USD_UM_XPERP-310404": 0.00015,  # scostata + canary aperto
+    }
+    alert = alert_tariffa_xperp_solo_aperte(
+        stato, correnti, canary_stato=CANARY_APERTO_REQ24)
+    assert [a[0] for a in alert] == ["DOGE-USD_UM_XPERP-310404"]
+    assert "0.01500000%" in alert[0][1]
+
+
+def test_watch_tariffa_canary_chiuso_mai_confrontato():
+    """Canary chiuso: la coppia NON entra nel filtro (coppie chiuse mai) e
+    non c'e' nulla da segnalare (nessun WARN)."""
+    stato = {"coppie": {"DOT": {"aperta": True}}}
+    chiuso = {"status": "closed", "inst": "DOGE-USD_UM_XPERP-310404"}
+    assert coppia_canary_aperta(chiuso) == (None, None)
+    assert coppie_con_posizione_aperta(stato, chiuso) == {"DOT"}
+    assert alert_tariffa_xperp_solo_aperte(
+        stato, {"DOGE-USD_UM_XPERP-310404": 0.0002},
+        canary_stato=chiuso) == []
+
+
+def test_watch_tariffa_canary_assente_o_illeggibile_warn():
+    """Stato canary assente/illeggibile -> (None, motivo) per il WARN del
+    watchdog, MAI eccezioni e MAI alert finto: senza stato verificabile la
+    copertura DOGE non si inventa (la tariffa scostata qui sotto non deve
+    produrre alcun alert)."""
+    stato = {"coppie": {"DOT": {"aperta": True}}}
+    correnti = {"DOGE-USD_UM_XPERP-310404": 0.0002}
+    for rotto in (None, "stringa-non-dict", {}, {"status": ""},
+                  {"status": "open"}):   # inst mancante
+        coppia, motivo = coppia_canary_aperta(rotto)
+        assert coppia is None and motivo
+        assert alert_tariffa_xperp_solo_aperte(
+            stato, correnti, canary_stato=rotto) == []
