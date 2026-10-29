@@ -1,0 +1,21 @@
+E12 — listing drift 24h long-only (smoke da dati CONGELATI)
+costi: base RT 0.30% | stress 0.60% | vol24 min 50000
+[okx] inclusi=50 esclusi=27
+  TRAIN: n=27 mean=+356.180% t=3.838
+  OOS  : n=23 mean=+69.990% t=2.024
+  OOS stress: n=23 mean=+69.690% t=2.015
+  OOS half1: n=11 mean=+47.521% t=1.673 | half2: n=12 mean=+90.588% t=1.463
+  esclusioni per motivo: {'zero': 23, 'volume': 4}
+[bybit] inclusi=323 esclusi=3
+  TRAIN: n=266 mean=+573.056% t=7.723
+  OOS  : n=57 mean=+346.338% t=4.957
+  OOS stress: n=57 mean=+346.038% t=4.953
+  OOS half1: n=28 mean=+296.076% t=2.416 | half2: n=29 mean=+394.867% t=5.568
+  esclusioni per motivo: {'zero': 3}
+--- GATE ---
+  T1: pass=False [n OOS 23 < 60] | n=23 mean=+69.990% t=2.024
+  T2: pass=True | n=23 mean=+69.690% t=2.015
+  T3: pass=True | n=27 mean=+356.180% t=3.838
+  T4: pass=True [intero periodo (n OOS < 60)] | n=323 mean=+533.047% t=8.530
+  T5: pass=True | 
+VERDETTO: promossa=False {'T1': False, 'T2': True, 'T3': True, 'T4': True, 'T5': True}
