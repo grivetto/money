@@ -42,3 +42,6 @@
 0 4 * * * docker pull agent0ai/agent-zero:latest && docker restart agent-zero
 13 * * * * /usr/bin/flock -n /tmp/denaro_channels_watch.lock /home/sergio/money/.venv/bin/python /home/sergio/money/ops/alerts/watch_channels.py >> /home/sergio/money/logs/channels_watch.log 2>&1
 * * * * * /usr/bin/python3 /home/sergio/agents-dashboard/collect.py >/dev/null 2>&1
+
+# [29/10/26] Postino di squadra: auto-sveglia i nodi su nuovi messaggi in requests.md (grace 120s, check lock, fusibile 3 lanci/ora), inbox Artu' + Telegram riassuntivo — ogni minuto (ops/squadra/postino.py)
+* * * * * /usr/bin/flock -n /tmp/denaro_postino.lock /home/sergio/money/.venv/bin/python /home/sergio/money/ops/squadra/postino.py >> /home/sergio/money/logs/postino.log 2>&1
