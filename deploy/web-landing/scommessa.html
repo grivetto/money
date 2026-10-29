@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scommessa asimmetrica — web.grivetto.eu</title>
+<meta name="description" content="Scommessa asimmetrica (airdrop farming): stato del wallet, valore, fase e prossimo passo. Dati dal feed pubblico denaro.">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#05070c">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://web.grivetto.eu/scommessa.html">
+<meta property="og:title" content="Scommessa asimmetrica — web.grivetto.eu">
+<link rel="canonical" href="https://web.grivetto.eu/scommessa.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23070b12'/%3E%3Cpath d='M16 6l9 10-9 10-9-10z' fill='none' stroke='%2358c8ff' stroke-width='2.4'/%3E%3Ccircle cx='16' cy='16' r='2.6' fill='%23b18cff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#05070c; --panel:rgba(10,16,26,.80); --border:rgba(124,170,255,.16);
+    --border-strong:rgba(124,170,255,.42); --ink:#e9eff7; --soft:#c3cfdd;
+    --muted:#8fa1b8; --muted-2:#67788f; --cyan:#58c8ff; --blue:#58a6ff;
+    --violet:#b18cff; --green:#2fe3a4; --amber:#ffb454;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    min-height:100vh; font-family:'Space Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    color:var(--ink); background:var(--bg);
+    padding:clamp(20px,4vw,48px) clamp(16px,3vw,36px);
+  }
+  body::before{
+    content:"";position:fixed;inset:0;z-index:-2;
+    background:
+      radial-gradient(1000px 520px at 50% 0%, rgba(88,166,255,.10), transparent 62%),
+      linear-gradient(180deg, rgba(5,7,12,.35) 0%, rgba(5,7,12,.85) 60%, rgba(5,7,12,.97) 100%);
+  }
+  body::after{
+    content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(120,170,255,.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(120,170,255,.045) 1px, transparent 1px);
+    background-size:44px 44px;
+    -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 30%, #000 30%, transparent 80%);
+    mask-image:radial-gradient(ellipse 80% 60% at 50% 30%, #000 30%, transparent 80%);
+  }
+  a{color:var(--muted);text-decoration:none;transition:color .15s}
+  a:hover{color:#cfe0f5}
+  a:focus-visible{outline:2px solid rgba(88,200,255,.75);outline-offset:3px;border-radius:10px}
+  .frame{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:clamp(20px,3.4vh,32px)}
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:14px;
+    font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--muted-2);border-bottom:1px solid var(--border);padding-bottom:12px}
+  .brand{color:var(--muted);display:inline-flex;align-items:center;gap:8px}
+  .brand svg{width:11px;height:11px;color:var(--cyan)}
+  header.hero{display:flex;flex-direction:column;gap:8px}
+  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--cyan)}
+  h1{font-size:clamp(30px,5vw,44px);font-weight:700;letter-spacing:.02em;line-height:1.05}
+  .sub{color:var(--muted);font-size:14px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px;
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  .card h2{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted-2);margin-bottom:10px}
+  .row{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid rgba(124,170,255,.08);font-size:14px}
+  .row:last-child{border-bottom:none}
+  .row .k{color:var(--muted)}
+  .row .v{font-family:var(--mono);font-size:13px;color:var(--soft);text-align:right;word-break:break-all}
+  .v.big{font-size:20px;color:var(--ink)}
+  .v.pos{color:#5ff0bd}.v.neg{color:#ff9d9d}
+  .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 13px;border-radius:999px;
+    font-family:var(--mono);font-size:12px;letter-spacing:.04em;border:1px solid var(--border);color:var(--muted)}
+  .pill.ok{background:rgba(47,227,164,.09);border-color:rgba(47,227,164,.34);color:#5ff0bd}
+  .pill.warn{background:rgba(255,180,84,.08);border-color:rgba(255,180,84,.35);color:#ffc98a}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px rgba(47,227,164,.9)}
+  .note{font-family:var(--mono);font-size:12px;color:var(--muted);line-height:1.6}
+  footer{border-top:1px solid var(--border);padding-top:14px;display:flex;flex-wrap:wrap;gap:10px 22px;
+    justify-content:space-between;font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--muted-2)}
+  .err{color:#ff9d9d}
+</style>
+</head>
+<body>
+<div class="frame">
+  <header class="topbar">
+    <span class="brand">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="3"><path d="M16 5l10 11-10 11L6 16z"/></svg>
+      <a href="/">web.grivetto.eu</a>
+    </span>
+    <span>scommessa asimmetrica</span>
+  </header>
+
+  <header class="hero">
+    <p class="kicker">airdrop farming · capitale a rischio zero</p>
+    <h1>Scommessa asimmetrica</h1>
+    <p class="sub">Wallet separato, tetto di perdita dichiarato, nessun seed condiviso. Dati letti dal feed pubblico <span style="font-family:var(--mono);font-size:12px">scommessa.json</span>.</p>
+  </header>
+
+  <section class="card">
+    <h2>Stato</h2>
+    <div class="row"><span class="k">progetto</span><span class="v" id="sProg">—</span></div>
+    <div class="row"><span class="k">fase</span><span class="v" id="sFase">—</span></div>
+    <div class="row"><span class="k">prossimo passo</span><span class="v" id="sNext">—</span></div>
+    <div class="row"><span class="k">aggiornato</span><span class="v" id="sTs">—</span></div>
+  </section>
+
+  <section class="grid">
+    <div class="card">
+      <h2>Capitale</h2>
+      <div class="row"><span class="k">valore</span><span class="v big" id="sVal">—</span></div>
+      <div class="row"><span class="k">tetto perdita</span><span class="v" id="sTetto">—</span></div>
+      <div class="row"><span class="k">sopravvivenza</span><span class="v" id="sSop">—</span></div>
+      <div class="row"><span class="k">gas sufficiente</span><span class="v" id="sGas">—</span></div>
+    </div>
+    <div class="card">
+      <h2>Wallet</h2>
+      <div class="row"><span class="k">rete</span><span class="v" id="sRete">—</span></div>
+      <div class="row"><span class="k">indirizzo</span><span class="v" id="sWallet">—</span></div>
+      <div class="row"><span class="k">ETH</span><span class="v" id="sEth">—</span></div>
+      <div class="row"><span class="k">USDC</span><span class="v" id="sUsdc">—</span></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Note</h2>
+    <p class="note" id="sNota">—</p>
+  </section>
+
+  <footer>
+    <span id="sFoot">dati live · in attesa</span>
+    <span><a href="https://denaro.grivetto.eu/scommessa.json">json grezzo ▸</a></span>
+    <span>© 2026 Sergio Grivetto · nessun cookie</span>
+  </footer>
+</div>
+<script>
+(function(){
+  "use strict";
+  var FEED="https://denaro.grivetto.eu/scommessa.json";
+  function $(id){return document.getElementById(id);}
+  function eur(n){try{return new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR"}).format(n);}catch(e){return n+" €";}}
+  function set(id,v){var el=$(id); if(el) el.textContent=v;}
+  function render(d){
+    set("sProg", d.progetto||"—");
+    set("sFase", d.fase||"—");
+    set("sNext", d.prossimo_passo||"—");
+    var tms = d.ts ? d.ts*1000 : Date.parse(d.ts_iso||"");
+    if(tms && !isNaN(tms)){
+      var t=new Date(tms);
+      set("sTs", t.toISOString().replace("T"," ").slice(0,16)+" UTC");
+      set("sFoot","dati live · "+t.toISOString().slice(11,16)+" UTC");
+    }
+    set("sVal", typeof d.valore_eur==="number"? eur(d.valore_eur) : "—");
+    set("sTetto", typeof d.tetto_perdita_eur==="number"? eur(d.tetto_perdita_eur) : "—");
+    set("sSop", typeof d.sopravvivenza_pct==="number"? d.sopravvivenza_pct+"%" : "—");
+    set("sGas", d.gas_sufficiente===true?"sì":(d.gas_sufficiente===false?"no":"—"));
+    set("sRete", d.rete||"—");
+    set("sWallet", d.wallet||"—");
+    set("sEth", typeof d.eth==="number"? d.eth.toFixed(8) : "—");
+    set("sUsdc", typeof d.usdc==="number"? d.usdc.toFixed(4) : "—");
+    set("sNota", d.nota||"—");
+    if(d.ok===false && d.errore){ set("sFoot","errore feed: "+d.errore); }
+  }
+  function offline(){ set("sFoot","dati live non disponibili"); }
+  function load(attempt){
+    attempt=attempt||0;
+    var ctl=new AbortController(), t=setTimeout(function(){ctl.abort();},9000);
+    fetch(FEED,{cache:"no-store",signal:ctl.signal})
+      .then(function(r){clearTimeout(t); if(!r.ok) throw new Error("http "+r.status); return r.json();})
+      .then(render)
+      .catch(function(){clearTimeout(t); if(attempt<2){setTimeout(function(){load(attempt+1);},4000+attempt*5000);} else {offline();}});
+  }
+  load(0);
+  setInterval(function(){load(0);},60000);
+})();
+</script>
+</body>
+</html>
