@@ -1,0 +1,23 @@
+S2 — FUNDING SCAN X-PERP OKX EEA (scansione descrittiva — NON promozione)
+==============================================================================
+Dati: /home/marco/money/data/funding_xperp.jsonl | righe lette: 840 | malformate: 0 | simboli: 10
+Costi: okx_eea (conto OKX EEA con X-Perps aperti (KYC + appropriateness assessment)) | giro misto 0.180% | slippage 0.040%/lato | ciclo 0.260% x 12/anno (1 apertura/chiusura al mese)
+
+simbolo                      n giorni   media/g annuo lordo annuo NETTO  lato %g+short autocorr payback criteri
+AVAX/USD:USD-310530         84    28  +0.0328%   +11.96%     +8.84% short   100.0%  +0.066      8g P-N
+LTC/USD:USD-310404          84    28  +0.0300%   +10.95%     +7.83% short   100.0%  +0.988      9g P-N
+ADA/USD:USD-310404          84    28  +0.0298%   +10.87%     +7.75% short   100.0%  -0.030      9g --N
+DOT/USD:USD-310808          84    28  +0.0296%   +10.82%     +7.70% short   100.0%  +0.463      9g P-N
+DOGE/USD:USD-310404         84    28  +0.0292%   +10.67%     +7.55% short   100.0%  +0.007      9g P-N
+BTC/USD:USD-310404          84    28  +0.0292%   +10.66%     +7.54% short    82.1%  +0.824      9g P-N
+XRP/USD:USD-310404          84    28  +0.0278%   +10.15%     +7.03% short   100.0%  +0.526      9g P-N
+ETH/USD:USD-310404          84    28  +0.0271%    +9.89%     +6.77% short   100.0%  +0.658     10g P-N
+SOL/USD:USD-310404          84    28  +0.0268%    +9.77%     +6.65% short   100.0%  +0.442     10g P-N
+LINK/USD:USD-310523         84    28  +0.0254%    +9.27%     +6.15% short    96.4%  +0.307     10g P-N
+
+Criteri (NON promozione): persistenza > 0 [P] | n_giorni >= 60 [S] | netto > 0 dopo costi [N]; ! = anomalia
+CANDIDATI (0/10): nessuno
+DA VERIFICARE: nessun simbolo oltre la soglia del canary (0.50% giornaliero)
+
+L'output e' DESCRITTIVO: i candidati si pre-registrano come esperimenti (spec propria) e passano da money.cancello.
+Nessuna promozione automatica. La classifica mescola lati diversi: controllare il campo 'lato' prima di confrontare.

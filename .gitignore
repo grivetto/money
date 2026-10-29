@@ -45,3 +45,4 @@ publish.log
 ops/dashboard/airdrop_status.json
 ops/dashboard/landing.live-*.html
 ops/dashboard/landing.repo-backup.html
+ops/zabbix/push_airdrop.log

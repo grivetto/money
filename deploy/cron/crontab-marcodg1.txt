@@ -23,3 +23,6 @@
 */5 * * * * /home/marco/money/scripts/l2_start.sh >> /home/marco/money/logs/raccoglitore_l2.log 2>&1
 5,20,35,50 * * * * cd /home/marco/money && /usr/bin/python3 ops/zabbix/push_airdrop.py >> /home/marco/money/ops/zabbix/push_airdrop.log 2>&1
 0 4 * * * docker pull agent0ai/agent-zero:latest && docker restart agent-zero
+
+# [29/10/26] Sala: live dashboard sul nodo, ogni minuto (riga allineata dal crontab vivo 29/10)
+* * * * * cd /home/marco/hermes-scratch/sala && /usr/bin/python3 live_trading.py >> live.log 2>&1
