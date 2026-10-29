@@ -88,3 +88,7 @@ STATO DELLA CODA
 
 ## Aggiornamento 2026-10-29 — E8 misurata: famiglia «estremi di prezzo» CHIUSA DEFINITIVAMENTE
 - E8_momentum_estremo_holdout_bitvavo.md ... **MISURATA E ARCHIVIATA (Artù 29/10)** — Bitvavo 1h, 7 coppie congelate, 594 trade: aggregato +0,444% t 1,30 (CI90 [−0,10%, +1,02%]), stress −0,056%, LONG +1,917% t 3,50 (T3 PASS), SHORT −1,12% t −3,02, DSR 0,24 → **1/4: NON PROMOSSA**. Famiglia E2/E4/E5/E6/E8 chiusa: nessuna variante. Test anti-look-ahead 5/5 prima dei numeri; due run a sha identico. Artefatti `prove/e8_bitvavo.*`; motore `scripts/e8_momentum_bitvavo.py`; dati `scripts/scarica_bitvavo_1h.py`. Prossima lane: TSMOM 12M/1M long-only BTC/ETH (da pre-registrare).
+
+## Aggiornamento 2026-10-29 (3) — E10 pre-registrata (stablecoin issuance) + preflight on-chain di Morgana
+- **Preflight on-chain (REQ-NUV-20261029-005, Morgana)**: DATI PRONTI con qualificazione — stablecoin flows (DefiLlama, 8 major, 2017→, 1d, gate 8/8) sì; exchange netflows free (CoinMetrics) solo BTC/ETH (2/5, niente USDT, 1d vs 1–6h del paper) → il paper NON è replicabile gratis. Handoff verificato (15/15 + 11/11).
+- E10_stablecoin_issuance.md ... **PRE-REGISTRATA (Artù 29/10)** — proxy dichiarato: net issuance nucleo USDT+USDC+DAI; regola congelata (z trailing causale, long-only con isteresi, costi RT 0,20%/switch), TRAIN 2020-02→2024-06 / OOS 2024-06→2026-10, criteri T1–T3 + DSR N=2. Implementazione: Morgana (REQ-NUV-20261029-006). Se fallisce: famiglia on-chain chiusa.
