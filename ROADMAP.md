@@ -61,7 +61,7 @@ Fee di trading: contate e incluse in ogni misura (criterio del cancello: rendita
 - Da 180 € → **400 €** di nozionale, a step di +100 €, solo con gate verdi:
   funding medio 7g ≥ 2%/anno netto per coppia · nessuna inversione continua >24h ·
   distanza di liquidazione ≥ 40% · banco riconciliato. **Stop al primo rosso.**
-- Atteso: +≈20 €/anno. Cap: carry ≤ 30% del capitale.
+- Atteso: +≈20 €/anno. Cap: carry ≤ 40% del capitale (aggiornato 29/10/2026 da 30%: due coppie a tasso fisso X-Perp, liq ≥95%, nozionale totale ≈38% del capitale).
 
 ## 3. FASE 1 — entro fine novembre: la macchina si prende cura di sé
 

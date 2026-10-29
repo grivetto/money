@@ -42,3 +42,6 @@ Dry-run gate (SOLO Artù, da MARCODG1): `carry_apri.py --coppia LTC` e `--coppia
 
 ## Fuori scope
 - Modifiche al gate o al calcolo; l'esecuzione dell'apertura (di Artù, dopo il redeem e il dry-run); DOGE (escluso: canary C1 sullo stesso conto); XRP (funding attuale sotto gate).
+
+## Addendum 2026-10-29 — STEP D3 ESEGUITO (LTC)
+LTC aperta da Artù (direttiva proprietario 29/10, decisione capitale in capo ad Artù): spot 1,6 LTC @ 57,67 (92,27€) + perp short 16 ct @ 57,6225, **1x isolated**, collaterale 92,29, **liq +95,9%** (fix da 3x nativo → 1x verificato). Redeem 175 USDC Simple Earn→trading (savings 372,16→197,16). Cap carry portato a **40%** (nozionale totale ≈38%). AVAX resta candidato per lo step successivo (gate verde 29/10: 10,78%/anno). Evidenze: `prove/REGISTRO_ESPERIMENTI.md` voce 29/10; plumbing (recon/watch/panel) in follow-up su canali merlino/marcodg1.
