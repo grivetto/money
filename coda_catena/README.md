@@ -81,7 +81,7 @@ STATO DELLA CODA
 
 ## Aggiornamento 2026-10-29 14:58 — P34 in review + incidente riconciliazione (29/10)
 - P34_gate_funding_conservativo.md ... **IN REVIEW (Artù 29/10)** — gate sul branch PASS (1065 verdi, ruff pulito, deploy MARCODG1 == handoff hash-per-hash) MA 3 finding reali trovati coi dati di produzione → REQ-MERL-20261029-023 in coda alla PR #11 (aggregazione multi-riga del recon: con 2 righe posizione pubblicava delta +253,46 e netto −53 falsi; flag ledger↔saldi; watch tariffa solo coppie aperte) PRIMA del merge. Dettagli: voce 29/10 nel REGISTRO.
-- fee_ledger: backfill dei 4 fill del 26/10 + cadenza giornaliera (REQ-MD1-20261029-001, Lancillotto) — sblocca il realizzato ADA (~−0,157 USDC) e il basis della tranche DOT del 26/10.
+- fee_ledger: **FATTA 29/10** (Lancillotto, REQ-MD1-20261029-001; review Artù indipendente): backfill 33→43 righe (4 fill del 26/10 presenti, 0 duplicati), **realizzato ADA = −0,1565 USDC** valorizzato dal recon, cron portato a giornaliero (50 8 * * * + flock), canonico repo allineato. Resta: netto DOT condizionato dal fix F1 (REQ-MERL-023).
 
 ## Aggiornamento 2026-10-29 15:00 — 021 chiusa (cruscotto: rendita netta/giorno + benchmark Earn)
 - 021 (riga "rendita netta €/giorno per € impegnato" + benchmark Earn su scripts/tabellone.py) ... **REVIEW PASS + INTEGRATA + DEPLOYATA (Artù)**: gate branch 1053 verdi; PR #12 mergiata (main eb32d5fe); deploy su MARCODG1 (sha 454b0dd5…) e verifica di esecuzione reale con gli stessi argomenti del cron — riga presente e datata. Follow-up: mappatura conto/endpoint della stima Earn.
