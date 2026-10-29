@@ -1,0 +1,427 @@
+{
+  "DOT": {
+    "venue_a": "bybit",
+    "venue_b": "okx",
+    "universe": [
+      "DOT",
+      "ADA",
+      "LTC",
+      "AVAX",
+      "DOGE"
+    ],
+    "total_epochs": 283,
+    "total_open_epochs": 247,
+    "n_positions": 10,
+    "total_gross": 0.0109909009616297,
+    "total_costs_normal": 0.02,
+    "total_costs_stress": 0.041999999999999996,
+    "mean_gross_per_epoch": 4.449757474344009e-05,
+    "mean_net_per_epoch": -3.647408517558826e-05,
+    "mean_stress_per_epoch": -0.0001255429110865194,
+    "t_stat": 7.519779957866724,
+    "ci90": {
+      "lo": 1.7746199748123965e-05,
+      "hi": 2.7671499712813016e-05
+    },
+    "dsr": 6.486801144795988,
+    "monthly_sign_persistence_pct": {
+      "(2026, 7)": 50.0,
+      "(2026, 8)": 32.26,
+      "(2026, 9)": 35.56,
+      "(2026, 10)": 46.97
+    },
+    "positions": [
+      {
+        "start_ts": 1784793600000,
+        "end_ts": 1784851200000,
+        "direction": -1,
+        "n_epochs": 3,
+        "gross": -8.83685680841e-05
+      },
+      {
+        "start_ts": 1784937600000,
+        "end_ts": 1785139200000,
+        "direction": 1,
+        "n_epochs": 8,
+        "gross": 5.816074692899994e-06
+      },
+      {
+        "start_ts": 1785196800000,
+        "end_ts": 1785830400000,
+        "direction": 1,
+        "n_epochs": 23,
+        "gross": 0.0006085229208981
+      },
+      {
+        "start_ts": 1785888000000,
+        "end_ts": 1787500800000,
+        "direction": -1,
+        "n_epochs": 57,
+        "gross": 0.00016979409257559996
+      },
+      {
+        "start_ts": 1787760000000,
+        "end_ts": 1788451200000,
+        "direction": 1,
+        "n_epochs": 25,
+        "gross": 0.0003160685180986
+      },
+      {
+        "start_ts": 1788739200000,
+        "end_ts": 1788940800000,
+        "direction": 1,
+        "n_epochs": 8,
+        "gross": 0.0
+      },
+      {
+        "start_ts": 1789027200000,
+        "end_ts": 1789948800000,
+        "direction": 1,
+        "n_epochs": 33,
+        "gross": 0.0014173944202811
+      },
+      {
+        "start_ts": 1790006400000,
+        "end_ts": 1790812800000,
+        "direction": 1,
+        "n_epochs": 29,
+        "gross": 0.0006999150432746
+      },
+      {
+        "start_ts": 1790899200000,
+        "end_ts": 1791273600000,
+        "direction": 1,
+        "n_epochs": 14,
+        "gross": 0.00034849513326860003
+      },
+      {
+        "start_ts": 1791360000000,
+        "end_ts": 1792684800000,
+        "direction": 1,
+        "n_epochs": 47,
+        "gross": 0.0023507070678955
+      }
+    ],
+    "symbol": "DOT",
+    "n_aligned_epochs": 283
+  },
+  "ADA": {
+    "venue_a": "bybit",
+    "venue_b": "okx",
+    "universe": [
+      "DOT",
+      "ADA",
+      "LTC",
+      "AVAX",
+      "DOGE"
+    ],
+    "total_epochs": 283,
+    "total_open_epochs": 246,
+    "n_positions": 6,
+    "total_gross": 0.0058719974045679,
+    "total_costs_normal": 0.012,
+    "total_costs_stress": 0.0252,
+    "mean_gross_per_epoch": 2.386990814865e-05,
+    "mean_net_per_epoch": -2.491057965622805e-05,
+    "mean_stress_per_epoch": -7.85691162415939e-05,
+    "t_stat": 3.757252459518092,
+    "ci90": {
+      "lo": 6.729162812196502e-06,
+      "hi": 1.7373302571285187e-05
+    },
+    "dsr": 2.890140482809369,
+    "monthly_sign_persistence_pct": {
+      "(2026, 7)": 38.24,
+      "(2026, 8)": 70.97,
+      "(2026, 9)": 82.22,
+      "(2026, 10)": 69.7
+    },
+    "positions": [
+      {
+        "start_ts": 1784764800000,
+        "end_ts": 1786838400000,
+        "direction": 1,
+        "n_epochs": 73,
+        "gross": 0.00013317900056000002
+      },
+      {
+        "start_ts": 1786896000000,
+        "end_ts": 1787126400000,
+        "direction": 1,
+        "n_epochs": 9,
+        "gross": 7.0060733237e-05
+      },
+      {
+        "start_ts": 1787212800000,
+        "end_ts": 1787414400000,
+        "direction": 1,
+        "n_epochs": 8,
+        "gross": 0.0
+      },
+      {
+        "start_ts": 1787760000000,
+        "end_ts": 1789891200000,
+        "direction": -1,
+        "n_epochs": 75,
+        "gross": 0.0018308432691605
+      },
+      {
+        "start_ts": 1790208000000,
+        "end_ts": 1791360000000,
+        "direction": -1,
+        "n_epochs": 41,
+        "gross": 0.0006075870919285
+      },
+      {
+        "start_ts": 1791561600000,
+        "end_ts": 1792684800000,
+        "direction": -1,
+        "n_epochs": 40,
+        "gross": 0.0005204971562895999
+      }
+    ],
+    "symbol": "ADA",
+    "n_aligned_epochs": 283
+  },
+  "LTC": {
+    "venue_a": "bybit",
+    "venue_b": "okx",
+    "universe": [
+      "DOT",
+      "ADA",
+      "LTC",
+      "AVAX",
+      "DOGE"
+    ],
+    "total_epochs": 283,
+    "total_open_epochs": 262,
+    "n_positions": 4,
+    "total_gross": 0.0097338960797548,
+    "total_costs_normal": 0.008,
+    "total_costs_stress": 0.0168,
+    "mean_gross_per_epoch": 3.715227511356794e-05,
+    "mean_net_per_epoch": 6.617923968529773e-06,
+    "mean_stress_per_epoch": -2.6969862291012206e-05,
+    "t_stat": 7.2525261839075235,
+    "ci90": {
+      "lo": 1.4459112809636154e-05,
+      "hi": 2.298297504255269e-05
+    },
+    "dsr": 6.250219804452096,
+    "monthly_sign_persistence_pct": {
+      "(2026, 7)": 73.53,
+      "(2026, 8)": 77.42,
+      "(2026, 9)": 76.67,
+      "(2026, 10)": 59.09
+    },
+    "positions": [
+      {
+        "start_ts": 1784764800000,
+        "end_ts": 1787155200000,
+        "direction": -1,
+        "n_epochs": 84,
+        "gross": 0.0026157391881136
+      },
+      {
+        "start_ts": 1787241600000,
+        "end_ts": 1787558400000,
+        "direction": -1,
+        "n_epochs": 12,
+        "gross": 3.91489192782e-05
+      },
+      {
+        "start_ts": 1787644800000,
+        "end_ts": 1788220800000,
+        "direction": -1,
+        "n_epochs": 21,
+        "gross": 0.00041963646438990005
+      },
+      {
+        "start_ts": 1788537600000,
+        "end_ts": 1792684800000,
+        "direction": -1,
+        "n_epochs": 145,
+        "gross": 0.0019266283247712
+      }
+    ],
+    "symbol": "LTC",
+    "n_aligned_epochs": 283
+  },
+  "AVAX": {
+    "venue_a": "bybit",
+    "venue_b": "okx",
+    "universe": [
+      "DOT",
+      "ADA",
+      "LTC",
+      "AVAX",
+      "DOGE"
+    ],
+    "total_epochs": 283,
+    "total_open_epochs": 239,
+    "n_positions": 10,
+    "total_gross": -0.0016056206595636998,
+    "total_costs_normal": 0.02,
+    "total_costs_stress": 0.041999999999999996,
+    "mean_gross_per_epoch": -6.718078073488284e-06,
+    "mean_net_per_epoch": -9.040008644168912e-05,
+    "mean_stress_per_epoch": -0.00018245029564671,
+    "t_stat": -1.243236166542639,
+    "ci90": {
+      "lo": -7.98483955160171e-06,
+      "hi": 1.0837143637401715e-06
+    },
+    "dsr": -2.087713135620607,
+    "monthly_sign_persistence_pct": {
+      "(2026, 7)": 50.0,
+      "(2026, 8)": 32.26,
+      "(2026, 9)": 62.22,
+      "(2026, 10)": 39.39
+    },
+    "positions": [
+      {
+        "start_ts": 1784764800000,
+        "end_ts": 1785484800000,
+        "direction": -1,
+        "n_epochs": 26,
+        "gross": -0.0005800575590488
+      },
+      {
+        "start_ts": 1785571200000,
+        "end_ts": 1786032000000,
+        "direction": -1,
+        "n_epochs": 17,
+        "gross": -0.00011576473293859996
+      },
+      {
+        "start_ts": 1786118400000,
+        "end_ts": 1786924800000,
+        "direction": -1,
+        "n_epochs": 29,
+        "gross": 0.00013539581908370008
+      },
+      {
+        "start_ts": 1786982400000,
+        "end_ts": 1787126400000,
+        "direction": 1,
+        "n_epochs": 6,
+        "gross": 4.294123099000133e-07
+      },
+      {
+        "start_ts": 1787731200000,
+        "end_ts": 1788163200000,
+        "direction": 1,
+        "n_epochs": 16,
+        "gross": 0.0002619285624959
+      },
+      {
+        "start_ts": 1788278400000,
+        "end_ts": 1788307200000,
+        "direction": -1,
+        "n_epochs": 2,
+        "gross": 5.26855202174e-05
+      },
+      {
+        "start_ts": 1788393600000,
+        "end_ts": 1789632000000,
+        "direction": -1,
+        "n_epochs": 44,
+        "gross": -9.512039706880001e-05
+      },
+      {
+        "start_ts": 1789689600000,
+        "end_ts": 1790208000000,
+        "direction": 1,
+        "n_epochs": 19,
+        "gross": -0.00023308235290190002
+      },
+      {
+        "start_ts": 1790294400000,
+        "end_ts": 1791216000000,
+        "direction": 1,
+        "n_epochs": 33,
+        "gross": 3.0437032060200042e-05
+      },
+      {
+        "start_ts": 1791360000000,
+        "end_ts": 1792684800000,
+        "direction": 1,
+        "n_epochs": 47,
+        "gross": -0.00011024650371249998
+      }
+    ],
+    "symbol": "AVAX",
+    "n_aligned_epochs": 283
+  },
+  "DOGE": {
+    "venue_a": "bybit",
+    "venue_b": "okx",
+    "universe": [
+      "DOT",
+      "ADA",
+      "LTC",
+      "AVAX",
+      "DOGE"
+    ],
+    "total_epochs": 283,
+    "total_open_epochs": 262,
+    "n_positions": 5,
+    "total_gross": 0.0122644401164263,
+    "total_costs_normal": 0.01,
+    "total_costs_stress": 0.020999999999999998,
+    "mean_gross_per_epoch": 4.681084013903168e-05,
+    "mean_net_per_epoch": 8.64290120773397e-06,
+    "mean_stress_per_epoch": -3.33418316166935e-05,
+    "t_stat": 10.791099342038907,
+    "ci90": {
+      "lo": 2.0080434546685166e-05,
+      "hi": 2.7184696438063197e-05
+    },
+    "dsr": 9.430004794960784,
+    "monthly_sign_persistence_pct": {
+      "(2026, 7)": 70.59,
+      "(2026, 8)": 69.89,
+      "(2026, 9)": 85.56,
+      "(2026, 10)": 83.33
+    },
+    "positions": [
+      {
+        "start_ts": 1784764800000,
+        "end_ts": 1787385600000,
+        "direction": -1,
+        "n_epochs": 92,
+        "gross": 0.0017831051773211
+      },
+      {
+        "start_ts": 1787731200000,
+        "end_ts": 1790150400000,
+        "direction": -1,
+        "n_epochs": 85,
+        "gross": 0.0019838775909183
+      },
+      {
+        "start_ts": 1790208000000,
+        "end_ts": 1791273600000,
+        "direction": -1,
+        "n_epochs": 38,
+        "gross": 0.0012691873426555
+      },
+      {
+        "start_ts": 1791331200000,
+        "end_ts": 1791388800000,
+        "direction": -1,
+        "n_epochs": 3,
+        "gross": -3.475439607369999e-05
+      },
+      {
+        "start_ts": 1791446400000,
+        "end_ts": 1792684800000,
+        "direction": -1,
+        "n_epochs": 44,
+        "gross": 0.0011789185524223001
+      }
+    ],
+    "symbol": "DOGE",
+    "n_aligned_epochs": 283
+  }
+}

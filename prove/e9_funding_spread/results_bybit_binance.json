@@ -1,0 +1,1046 @@
+{
+  "DOT": {
+    "venue_a": "bybit",
+    "venue_b": "binance",
+    "universe": [
+      "DOT",
+      "ADA",
+      "LTC",
+      "AVAX",
+      "DOGE"
+    ],
+    "total_epochs": 1095,
+    "total_open_epochs": 1020,
+    "n_positions": 25,
+    "total_gross": 0.027545880000000002,
+    "total_costs_normal": 0.05,
+    "total_costs_stress": 0.105,
+    "mean_gross_per_epoch": 2.7005764705882353e-05,
+    "mean_net_per_epoch": -2.2013843137254903e-05,
+    "mean_stress_per_epoch": -7.593541176470587e-05,
+    "t_stat": 6.471682274513368,
+    "ci90": {
+      "lo": 1.019949875930521e-05,
+      "hi": 1.716016377171216e-05
+    },
+    "dsr": 5.596476131358043,
+    "monthly_sign_persistence_pct": {
+      "(2025, 10)": 59.26,
+      "(2025, 11)": 45.56,
+      "(2025, 12)": 53.76,
+      "(2026, 1)": 61.29,
+      "(2026, 2)": 44.05,
+      "(2026, 3)": 58.06,
+      "(2026, 4)": 50.0,
+      "(2026, 5)": 46.24,
+      "(2026, 6)": 56.67,
+      "(2026, 7)": 45.16,
+      "(2026, 8)": 35.48,
+      "(2026, 9)": 34.44,
+      "(2026, 10)": 46.97
+    },
+    "positions": [
+      {
+        "start_ts": 1761379200000,
+        "end_ts": 1763049600000,
+        "direction": 1,
+        "n_epochs": 59,
+        "gross": 0.0005627500000000001
+      },
+      {
+        "start_ts": 1763107200000,
+        "end_ts": 1764662400000,
+        "direction": 1,
+        "n_epochs": 55,
+        "gross": 0.00037912000000000004
+      },
+      {
+        "start_ts": 1764748800000,
+        "end_ts": 1767830400000,
+        "direction": 1,
+        "n_epochs": 108,
+        "gross": 0.00218796
+      },
+      {
+        "start_ts": 1767888000000,
+        "end_ts": 1768233600000,
+        "direction": -1,
+        "n_epochs": 13,
+        "gross": 0.00029294
+      },
+      {
+        "start_ts": 1768291200000,
+        "end_ts": 1768809600000,
+        "direction": -1,
+        "n_epochs": 19,
+        "gross": -5.292e-05
+      },
+      {
+        "start_ts": 1768867200000,
+        "end_ts": 1770364800000,
+        "direction": -1,
+        "n_epochs": 53,
+        "gross": -0.0008533400000000001
+      },
+      {
+        "start_ts": 1770422400000,
+        "end_ts": 1776816000000,
+        "direction": 1,
+        "n_epochs": 223,
+        "gross": 0.00808223
+      },
+      {
+        "start_ts": 1776873600000,
+        "end_ts": 1776988800000,
+        "direction": -1,
+        "n_epochs": 5,
+        "gross": -8.105999999999996e-05
+      },
+      {
+        "start_ts": 1777046400000,
+        "end_ts": 1778054400000,
+        "direction": 1,
+        "n_epochs": 36,
+        "gross": 0.0006058600000000001
+      },
+      {
+        "start_ts": 1778342400000,
+        "end_ts": 1780588800000,
+        "direction": -1,
+        "n_epochs": 79,
+        "gross": -0.0013063
+      },
+      {
+        "start_ts": 1780646400000,
+        "end_ts": 1782086400000,
+        "direction": 1,
+        "n_epochs": 51,
+        "gross": 0.00057416
+      },
+      {
+        "start_ts": 1782259200000,
+        "end_ts": 1784188800000,
+        "direction": 1,
+        "n_epochs": 68,
+        "gross": 0.00010710999999999994
+      },
+      {
+        "start_ts": 1784246400000,
+        "end_ts": 1784419200000,
+        "direction": 1,
+        "n_epochs": 7,
+        "gross": 6.050000000000002e-05
+      },
+      {
+        "start_ts": 1784534400000,
+        "end_ts": 1784649600000,
+        "direction": 1,
+        "n_epochs": 5,
+        "gross": 8.99000000000002e-06
+      },
+      {
+        "start_ts": 1784707200000,
+        "end_ts": 1785830400000,
+        "direction": 1,
+        "n_epochs": 40,
+        "gross": 0.00083907
+      },
+      {
+        "start_ts": 1785888000000,
+        "end_ts": 1787068800000,
+        "direction": -1,
+        "n_epochs": 42,
+        "gross": 0.00014067000000000002
+      },
+      {
+        "start_ts": 1787126400000,
+        "end_ts": 1787270400000,
+        "direction": -1,
+        "n_epochs": 6,
+        "gross": -7.347e-05
+      },
+      {
+        "start_ts": 1787328000000,
+        "end_ts": 1787500800000,
+        "direction": 1,
+        "n_epochs": 7,
+        "gross": 0.0
+      },
+      {
+        "start_ts": 1787760000000,
+        "end_ts": 1788796800000,
+        "direction": 1,
+        "n_epochs": 37,
+        "gross": 0.00098656
+      },
+      {
+        "start_ts": 1789142400000,
+        "end_ts": 1789200000000,
+        "direction": -1,
+        "n_epochs": 3,
+        "gross": 2.256000000000002e-05
+      },
+      {
+        "start_ts": 1789344000000,
+        "end_ts": 1790467200000,
+        "direction": 1,
+        "n_epochs": 40,
+        "gross": 0.00093389
+      },
+      {
+        "start_ts": 1790553600000,
+        "end_ts": 1790784000000,
+        "direction": -1,
+        "n_epochs": 9,
+        "gross": 0.0
+      },
+      {
+        "start_ts": 1791014400000,
+        "end_ts": 1791273600000,
+        "direction": -1,
+        "n_epochs": 10,
+        "gross": -0.00022348000000000002
+      },
+      {
+        "start_ts": 1791360000000,
+        "end_ts": 1792252800000,
+        "direction": 1,
+        "n_epochs": 32,
+        "gross": 0.00134818
+      },
+      {
+        "start_ts": 1792339200000,
+        "end_ts": 1792684800000,
+        "direction": -1,
+        "n_epochs": 13,
+        "gross": -0.00067669
+      }
+    ],
+    "symbol": "DOT",
+    "n_aligned_epochs": 1095
+  },
+  "ADA": {
+    "venue_a": "bybit",
+    "venue_b": "binance",
+    "universe": [
+      "DOT",
+      "ADA",
+      "LTC",
+      "AVAX",
+      "DOGE"
+    ],
+    "total_epochs": 1095,
+    "total_open_epochs": 1040,
+    "n_positions": 22,
+    "total_gross": 0.02032705,
+    "total_costs_normal": 0.044,
+    "total_costs_stress": 0.0924,
+    "mean_gross_per_epoch": 1.9545240384615384e-05,
+    "mean_net_per_epoch": -2.2762451923076923e-05,
+    "mean_stress_per_epoch": -6.930091346153846e-05,
+    "t_stat": 6.058528136360753,
+    "ci90": {
+      "lo": 7.1762342079689025e-06,
+      "hi": 1.2555874635568514e-05
+    },
+    "dsr": 5.189241124328227,
+    "monthly_sign_persistence_pct": {
+      "(2025, 10)": 59.26,
+      "(2025, 11)": 70.0,
+      "(2025, 12)": 56.99,
+      "(2026, 1)": 66.67,
+      "(2026, 2)": 63.1,
+      "(2026, 3)": 59.14,
+      "(2026, 4)": 42.22,
+      "(2026, 5)": 53.76,
+      "(2026, 6)": 64.44,
+      "(2026, 7)": 47.31,
+      "(2026, 8)": 70.97,
+      "(2026, 9)": 73.33,
+      "(2026, 10)": 60.61
+    },
+    "positions": [
+      {
+        "start_ts": 1761408000000,
+        "end_ts": 1763164800000,
+        "direction": -1,
+        "n_epochs": 62,
+        "gross": 0.00082735
+      },
+      {
+        "start_ts": 1763222400000,
+        "end_ts": 1763308800000,
+        "direction": -1,
+        "n_epochs": 4,
+        "gross": -0.00012191
+      },
+      {
+        "start_ts": 1763366400000,
+        "end_ts": 1764086400000,
+        "direction": 1,
+        "n_epochs": 26,
+        "gross": -0.00048023
+      },
+      {
+        "start_ts": 1764172800000,
+        "end_ts": 1765123200000,
+        "direction": 1,
+        "n_epochs": 34,
+        "gross": -0.00066153
+      },
+      {
+        "start_ts": 1765180800000,
+        "end_ts": 1765670400000,
+        "direction": 1,
+        "n_epochs": 18,
+        "gross": 2.3240000000000004e-05
+      },
+      {
+        "start_ts": 1765756800000,
+        "end_ts": 1765785600000,
+        "direction": 1,
+        "n_epochs": 2,
+        "gross": -9.166e-05
+      },
+      {
+        "start_ts": 1765900800000,
+        "end_ts": 1770681600000,
+        "direction": -1,
+        "n_epochs": 167,
+        "gross": 0.00027868000000000006
+      },
+      {
+        "start_ts": 1770739200000,
+        "end_ts": 1771372800000,
+        "direction": 1,
+        "n_epochs": 23,
+        "gross": 0.00040219
+      },
+      {
+        "start_ts": 1771459200000,
+        "end_ts": 1771545600000,
+        "direction": -1,
+        "n_epochs": 4,
+        "gross": -9.556e-05
+      },
+      {
+        "start_ts": 1771603200000,
+        "end_ts": 1775779200000,
+        "direction": 1,
+        "n_epochs": 146,
+        "gross": 0.00366444
+      },
+      {
+        "start_ts": 1775923200000,
+        "end_ts": 1780387200000,
+        "direction": 1,
+        "n_epochs": 156,
+        "gross": 0.00072254
+      },
+      {
+        "start_ts": 1780444800000,
+        "end_ts": 1782547200000,
+        "direction": 1,
+        "n_epochs": 74,
+        "gross": 0.00267027
+      },
+      {
+        "start_ts": 1782604800000,
+        "end_ts": 1782633600000,
+        "direction": 1,
+        "n_epochs": 2,
+        "gross": 6.241000000000002e-05
+      },
+      {
+        "start_ts": 1782691200000,
+        "end_ts": 1783497600000,
+        "direction": 1,
+        "n_epochs": 29,
+        "gross": -9.198999999999999e-05
+      },
+      {
+        "start_ts": 1783555200000,
+        "end_ts": 1785542400000,
+        "direction": 1,
+        "n_epochs": 70,
+        "gross": 0.00226772
+      },
+      {
+        "start_ts": 1785600000000,
+        "end_ts": 1786608000000,
+        "direction": -1,
+        "n_epochs": 36,
+        "gross": 0.0008351200000000001
+      },
+      {
+        "start_ts": 1786694400000,
+        "end_ts": 1787414400000,
+        "direction": 1,
+        "n_epochs": 26,
+        "gross": 0.00031397
+      },
+      {
+        "start_ts": 1787731200000,
+        "end_ts": 1787788800000,
+        "direction": 1,
+        "n_epochs": 3,
+        "gross": 7.0900000000000016e-06
+      },
+      {
+        "start_ts": 1787846400000,
+        "end_ts": 1789920000000,
+        "direction": 1,
+        "n_epochs": 73,
+        "gross": -0.00035409000000000005
+      },
+      {
+        "start_ts": 1790208000000,
+        "end_ts": 1790870400000,
+        "direction": -1,
+        "n_epochs": 24,
+        "gross": 0.00065096
+      },
+      {
+        "start_ts": 1790928000000,
+        "end_ts": 1791331200000,
+        "direction": -1,
+        "n_epochs": 15,
+        "gross": -0.00030428000000000003
+      },
+      {
+        "start_ts": 1791388800000,
+        "end_ts": 1792684800000,
+        "direction": 1,
+        "n_epochs": 46,
+        "gross": -0.0002836699999999999
+      }
+    ],
+    "symbol": "ADA",
+    "n_aligned_epochs": 1095
+  },
+  "LTC": {
+    "venue_a": "bybit",
+    "venue_b": "binance",
+    "universe": [
+      "DOT",
+      "ADA",
+      "LTC",
+      "AVAX",
+      "DOGE"
+    ],
+    "total_epochs": 1095,
+    "total_open_epochs": 1033,
+    "n_positions": 27,
+    "total_gross": 0.00867789,
+    "total_costs_normal": 0.054,
+    "total_costs_stress": 0.11339999999999999,
+    "mean_gross_per_epoch": 8.400667957405615e-06,
+    "mean_net_per_epoch": -4.3874259438528556e-05,
+    "mean_stress_per_epoch": -0.00010137667957405613,
+    "t_stat": 3.302321081771629,
+    "ci90": {
+      "lo": 2.1606424717999016e-06,
+      "hi": 6.389215301618441e-06
+    },
+    "dsr": 2.4528435932610226,
+    "monthly_sign_persistence_pct": {
+      "(2025, 10)": 44.44,
+      "(2025, 11)": 48.89,
+      "(2025, 12)": 62.37,
+      "(2026, 1)": 58.06,
+      "(2026, 2)": 63.1,
+      "(2026, 3)": 60.22,
+      "(2026, 4)": 54.44,
+      "(2026, 5)": 64.52,
+      "(2026, 6)": 56.67,
+      "(2026, 7)": 58.06,
+      "(2026, 8)": 59.14,
+      "(2026, 9)": 74.44,
+      "(2026, 10)": 46.97
+    },
+    "positions": [
+      {
+        "start_ts": 1761379200000,
+        "end_ts": 1762704000000,
+        "direction": -1,
+        "n_epochs": 47,
+        "gross": -0.00034683
+      },
+      {
+        "start_ts": 1762761600000,
+        "end_ts": 1765152000000,
+        "direction": 1,
+        "n_epochs": 84,
+        "gross": -0.00064893
+      },
+      {
+        "start_ts": 1765267200000,
+        "end_ts": 1767340800000,
+        "direction": -1,
+        "n_epochs": 73,
+        "gross": 0.00152008
+      },
+      {
+        "start_ts": 1767456000000,
+        "end_ts": 1767686400000,
+        "direction": -1,
+        "n_epochs": 9,
+        "gross": 0.00017387999999999998
+      },
+      {
+        "start_ts": 1767744000000,
+        "end_ts": 1769011200000,
+        "direction": -1,
+        "n_epochs": 45,
+        "gross": -0.00017936000000000002
+      },
+      {
+        "start_ts": 1769068800000,
+        "end_ts": 1769731200000,
+        "direction": 1,
+        "n_epochs": 24,
+        "gross": -0.00035298
+      },
+      {
+        "start_ts": 1769788800000,
+        "end_ts": 1771401600000,
+        "direction": 1,
+        "n_epochs": 57,
+        "gross": 0.00057466
+      },
+      {
+        "start_ts": 1771545600000,
+        "end_ts": 1772236800000,
+        "direction": 1,
+        "n_epochs": 25,
+        "gross": 0.00047604
+      },
+      {
+        "start_ts": 1772294400000,
+        "end_ts": 1772380800000,
+        "direction": 1,
+        "n_epochs": 4,
+        "gross": -1.1050000000000016e-05
+      },
+      {
+        "start_ts": 1772438400000,
+        "end_ts": 1772496000000,
+        "direction": 1,
+        "n_epochs": 3,
+        "gross": 6.138000000000001e-05
+      },
+      {
+        "start_ts": 1772553600000,
+        "end_ts": 1775606400000,
+        "direction": 1,
+        "n_epochs": 107,
+        "gross": 0.0007553799999999999
+      },
+      {
+        "start_ts": 1775692800000,
+        "end_ts": 1775865600000,
+        "direction": -1,
+        "n_epochs": 7,
+        "gross": -5.953999999999999e-05
+      },
+      {
+        "start_ts": 1776009600000,
+        "end_ts": 1776268800000,
+        "direction": 1,
+        "n_epochs": 10,
+        "gross": 0.00012298
+      },
+      {
+        "start_ts": 1776355200000,
+        "end_ts": 1777190400000,
+        "direction": 1,
+        "n_epochs": 30,
+        "gross": -0.00045356
+      },
+      {
+        "start_ts": 1777248000000,
+        "end_ts": 1777564800000,
+        "direction": -1,
+        "n_epochs": 12,
+        "gross": 0.00015168
+      },
+      {
+        "start_ts": 1777651200000,
+        "end_ts": 1778371200000,
+        "direction": 1,
+        "n_epochs": 26,
+        "gross": 0.00010401999999999997
+      },
+      {
+        "start_ts": 1778486400000,
+        "end_ts": 1779033600000,
+        "direction": -1,
+        "n_epochs": 20,
+        "gross": -0.00042685000000000005
+      },
+      {
+        "start_ts": 1779091200000,
+        "end_ts": 1781280000000,
+        "direction": 1,
+        "n_epochs": 77,
+        "gross": 0.00139659
+      },
+      {
+        "start_ts": 1781337600000,
+        "end_ts": 1782460800000,
+        "direction": 1,
+        "n_epochs": 40,
+        "gross": 0.00021810000000000007
+      },
+      {
+        "start_ts": 1782547200000,
+        "end_ts": 1782633600000,
+        "direction": 1,
+        "n_epochs": 4,
+        "gross": -5.3279999999999985e-05
+      },
+      {
+        "start_ts": 1782777600000,
+        "end_ts": 1782864000000,
+        "direction": 1,
+        "n_epochs": 4,
+        "gross": -3.379e-05
+      },
+      {
+        "start_ts": 1783036800000,
+        "end_ts": 1785542400000,
+        "direction": 1,
+        "n_epochs": 88,
+        "gross": -0.00141361
+      },
+      {
+        "start_ts": 1785657600000,
+        "end_ts": 1785974400000,
+        "direction": 1,
+        "n_epochs": 12,
+        "gross": 6.016000000000002e-05
+      },
+      {
+        "start_ts": 1786032000000,
+        "end_ts": 1787270400000,
+        "direction": -1,
+        "n_epochs": 44,
+        "gross": 0.00078175
+      },
+      {
+        "start_ts": 1787328000000,
+        "end_ts": 1787472000000,
+        "direction": -1,
+        "n_epochs": 6,
+        "gross": 0.0
+      },
+      {
+        "start_ts": 1787644800000,
+        "end_ts": 1790582400000,
+        "direction": -1,
+        "n_epochs": 103,
+        "gross": 0.0021718500000000003
+      },
+      {
+        "start_ts": 1790640000000,
+        "end_ts": 1792684800000,
+        "direction": -1,
+        "n_epochs": 72,
+        "gross": -0.00014046000000000002
+      }
+    ],
+    "symbol": "LTC",
+    "n_aligned_epochs": 1095
+  },
+  "AVAX": {
+    "venue_a": "bybit",
+    "venue_b": "binance",
+    "universe": [
+      "DOT",
+      "ADA",
+      "LTC",
+      "AVAX",
+      "DOGE"
+    ],
+    "total_epochs": 1095,
+    "total_open_epochs": 1041,
+    "n_positions": 16,
+    "total_gross": 0.02243591,
+    "total_costs_normal": 0.032,
+    "total_costs_stress": 0.0672,
+    "mean_gross_per_epoch": 2.1552267050912582e-05,
+    "mean_net_per_epoch": -9.187406340057637e-06,
+    "mean_stress_per_epoch": -4.3001047070124874e-05,
+    "t_stat": 8.395447060015353,
+    "ci90": {
+      "lo": 8.756113262342692e-06,
+      "hi": 1.2989603097773477e-05
+    },
+    "dsr": 7.485671847350474,
+    "monthly_sign_persistence_pct": {
+      "(2025, 10)": 48.15,
+      "(2025, 11)": 65.56,
+      "(2025, 12)": 70.97,
+      "(2026, 1)": 68.82,
+      "(2026, 2)": 76.19,
+      "(2026, 3)": 48.39,
+      "(2026, 4)": 37.78,
+      "(2026, 5)": 49.46,
+      "(2026, 6)": 60.0,
+      "(2026, 7)": 49.46,
+      "(2026, 8)": 65.59,
+      "(2026, 9)": 73.33,
+      "(2026, 10)": 50.0
+    },
+    "positions": [
+      {
+        "start_ts": 1761494400000,
+        "end_ts": 1771747200000,
+        "direction": 1,
+        "n_epochs": 357,
+        "gross": 0.0150074
+      },
+      {
+        "start_ts": 1771804800000,
+        "end_ts": 1772841600000,
+        "direction": 1,
+        "n_epochs": 37,
+        "gross": 0.00065319
+      },
+      {
+        "start_ts": 1772985600000,
+        "end_ts": 1773100800000,
+        "direction": 1,
+        "n_epochs": 5,
+        "gross": -2.6049999999999996e-05
+      },
+      {
+        "start_ts": 1773302400000,
+        "end_ts": 1774224000000,
+        "direction": 1,
+        "n_epochs": 33,
+        "gross": 0.00029512
+      },
+      {
+        "start_ts": 1774281600000,
+        "end_ts": 1775808000000,
+        "direction": -1,
+        "n_epochs": 54,
+        "gross": -0.00060017
+      },
+      {
+        "start_ts": 1775923200000,
+        "end_ts": 1776470400000,
+        "direction": 1,
+        "n_epochs": 20,
+        "gross": -3.356e-05
+      },
+      {
+        "start_ts": 1776528000000,
+        "end_ts": 1776585600000,
+        "direction": -1,
+        "n_epochs": 3,
+        "gross": -5.587999999999999e-05
+      },
+      {
+        "start_ts": 1776643200000,
+        "end_ts": 1776787200000,
+        "direction": 1,
+        "n_epochs": 6,
+        "gross": -8.779999999999999e-05
+      },
+      {
+        "start_ts": 1776844800000,
+        "end_ts": 1776988800000,
+        "direction": -1,
+        "n_epochs": 6,
+        "gross": 5.7799999999999995e-05
+      },
+      {
+        "start_ts": 1777132800000,
+        "end_ts": 1782864000000,
+        "direction": -1,
+        "n_epochs": 200,
+        "gross": -0.00295187
+      },
+      {
+        "start_ts": 1782979200000,
+        "end_ts": 1784016000000,
+        "direction": 1,
+        "n_epochs": 37,
+        "gross": -9.924e-05
+      },
+      {
+        "start_ts": 1784102400000,
+        "end_ts": 1786924800000,
+        "direction": -1,
+        "n_epochs": 99,
+        "gross": 0.00012313
+      },
+      {
+        "start_ts": 1787040000000,
+        "end_ts": 1787241600000,
+        "direction": 1,
+        "n_epochs": 8,
+        "gross": -1.551999999999999e-05
+      },
+      {
+        "start_ts": 1787299200000,
+        "end_ts": 1787414400000,
+        "direction": 1,
+        "n_epochs": 5,
+        "gross": 0.0
+      },
+      {
+        "start_ts": 1787760000000,
+        "end_ts": 1792483200000,
+        "direction": 1,
+        "n_epochs": 165,
+        "gross": -0.00146137
+      },
+      {
+        "start_ts": 1792540800000,
+        "end_ts": 1792684800000,
+        "direction": 1,
+        "n_epochs": 6,
+        "gross": 0.00040141
+      }
+    ],
+    "symbol": "AVAX",
+    "n_aligned_epochs": 1095
+  },
+  "DOGE": {
+    "venue_a": "bybit",
+    "venue_b": "binance",
+    "universe": [
+      "DOT",
+      "ADA",
+      "LTC",
+      "AVAX",
+      "DOGE"
+    ],
+    "total_epochs": 1095,
+    "total_open_epochs": 1020,
+    "n_positions": 27,
+    "total_gross": 0.00479633,
+    "total_costs_normal": 0.054,
+    "total_costs_stress": 0.11339999999999999,
+    "mean_gross_per_epoch": 4.70228431372549e-06,
+    "mean_net_per_epoch": -4.8238892156862744e-05,
+    "mean_stress_per_epoch": -0.00010647418627450978,
+    "t_stat": 1.972925108109288,
+    "ci90": {
+      "lo": 3.9721808246398367e-07,
+      "hi": 4.361291604570293e-06
+    },
+    "dsr": 1.126180830297044,
+    "monthly_sign_persistence_pct": {
+      "(2025, 10)": 59.26,
+      "(2025, 11)": 47.78,
+      "(2025, 12)": 59.14,
+      "(2026, 1)": 48.39,
+      "(2026, 2)": 63.1,
+      "(2026, 3)": 58.06,
+      "(2026, 4)": 62.22,
+      "(2026, 5)": 50.54,
+      "(2026, 6)": 48.89,
+      "(2026, 7)": 59.14,
+      "(2026, 8)": 76.34,
+      "(2026, 9)": 81.11,
+      "(2026, 10)": 62.12
+    },
+    "positions": [
+      {
+        "start_ts": 1761638400000,
+        "end_ts": 1762128000000,
+        "direction": -1,
+        "n_epochs": 18,
+        "gross": 3.178999999999999e-05
+      },
+      {
+        "start_ts": 1762185600000,
+        "end_ts": 1763366400000,
+        "direction": -1,
+        "n_epochs": 42,
+        "gross": 0.00030022999999999996
+      },
+      {
+        "start_ts": 1763539200000,
+        "end_ts": 1764115200000,
+        "direction": -1,
+        "n_epochs": 21,
+        "gross": -5.193999999999999e-05
+      },
+      {
+        "start_ts": 1764201600000,
+        "end_ts": 1765065600000,
+        "direction": 1,
+        "n_epochs": 31,
+        "gross": 0.00059453
+      },
+      {
+        "start_ts": 1765123200000,
+        "end_ts": 1765958400000,
+        "direction": 1,
+        "n_epochs": 30,
+        "gross": -0.00041498
+      },
+      {
+        "start_ts": 1766016000000,
+        "end_ts": 1766188800000,
+        "direction": -1,
+        "n_epochs": 7,
+        "gross": 2.3229999999999996e-05
+      },
+      {
+        "start_ts": 1766361600000,
+        "end_ts": 1766563200000,
+        "direction": -1,
+        "n_epochs": 8,
+        "gross": 0.00010265999999999998
+      },
+      {
+        "start_ts": 1766707200000,
+        "end_ts": 1770940800000,
+        "direction": 1,
+        "n_epochs": 148,
+        "gross": 0.00176099
+      },
+      {
+        "start_ts": 1770998400000,
+        "end_ts": 1773360000000,
+        "direction": -1,
+        "n_epochs": 83,
+        "gross": -0.00175888
+      },
+      {
+        "start_ts": 1773417600000,
+        "end_ts": 1775808000000,
+        "direction": 1,
+        "n_epochs": 84,
+        "gross": 0.0007177300000000001
+      },
+      {
+        "start_ts": 1775865600000,
+        "end_ts": 1776240000000,
+        "direction": 1,
+        "n_epochs": 14,
+        "gross": 0.00012623000000000002
+      },
+      {
+        "start_ts": 1776326400000,
+        "end_ts": 1777766400000,
+        "direction": 1,
+        "n_epochs": 51,
+        "gross": -0.00104334
+      },
+      {
+        "start_ts": 1777824000000,
+        "end_ts": 1779638400000,
+        "direction": -1,
+        "n_epochs": 64,
+        "gross": -0.0005271100000000001
+      },
+      {
+        "start_ts": 1779696000000,
+        "end_ts": 1779782400000,
+        "direction": -1,
+        "n_epochs": 4,
+        "gross": -3.3400000000000087e-06
+      },
+      {
+        "start_ts": 1779840000000,
+        "end_ts": 1781395200000,
+        "direction": -1,
+        "n_epochs": 55,
+        "gross": 8.353999999999994e-05
+      },
+      {
+        "start_ts": 1781452800000,
+        "end_ts": 1781510400000,
+        "direction": 1,
+        "n_epochs": 3,
+        "gross": 5.084000000000001e-05
+      },
+      {
+        "start_ts": 1781568000000,
+        "end_ts": 1781798400000,
+        "direction": 1,
+        "n_epochs": 9,
+        "gross": -0.00013670999999999998
+      },
+      {
+        "start_ts": 1781913600000,
+        "end_ts": 1784390400000,
+        "direction": 1,
+        "n_epochs": 87,
+        "gross": -0.00070562
+      },
+      {
+        "start_ts": 1784448000000,
+        "end_ts": 1785456000000,
+        "direction": -1,
+        "n_epochs": 36,
+        "gross": -7.120000000000023e-06
+      },
+      {
+        "start_ts": 1785513600000,
+        "end_ts": 1785830400000,
+        "direction": 1,
+        "n_epochs": 12,
+        "gross": -0.00030689000000000004
+      },
+      {
+        "start_ts": 1785888000000,
+        "end_ts": 1786752000000,
+        "direction": -1,
+        "n_epochs": 31,
+        "gross": 0.00024814
+      },
+      {
+        "start_ts": 1786838400000,
+        "end_ts": 1787212800000,
+        "direction": -1,
+        "n_epochs": 14,
+        "gross": 0.00015433
+      },
+      {
+        "start_ts": 1787270400000,
+        "end_ts": 1787385600000,
+        "direction": 1,
+        "n_epochs": 5,
+        "gross": 0.0
+      },
+      {
+        "start_ts": 1787702400000,
+        "end_ts": 1790553600000,
+        "direction": -1,
+        "n_epochs": 100,
+        "gross": 0.00279289
+      },
+      {
+        "start_ts": 1790697600000,
+        "end_ts": 1791302400000,
+        "direction": -1,
+        "n_epochs": 22,
+        "gross": 0.00048997
+      },
+      {
+        "start_ts": 1791388800000,
+        "end_ts": 1792339200000,
+        "direction": 1,
+        "n_epochs": 34,
+        "gross": -0.00014905000000000002
+      },
+      {
+        "start_ts": 1792512000000,
+        "end_ts": 1792684800000,
+        "direction": -1,
+        "n_epochs": 7,
+        "gross": 0.00020433000000000002
+      }
+    ],
+    "symbol": "DOGE",
+    "n_aligned_epochs": 1095
+  }
+}
