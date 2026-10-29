@@ -314,8 +314,30 @@ footer { margin-top: 34px; text-align: center; color: var(--dim2); font-size: 11
         <div class="alloc" id="mot-alloc"></div>
         <div class="mot-stats" id="mot-banco"></div>
       </div>
+    <div id="rendita-box" style="margin-top:18px;border:1px solid rgba(176,38,255,.28);border-radius:10px;padding:14px 16px;background:linear-gradient(180deg,rgba(176,38,255,.06),rgba(3,6,20,.5))">
+      <div class="lbl" style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px">
+        <span>RENDITA NETTA — €/GIORNO PER € (funding + earn − fee)</span><span id="rendita-calc">—</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:14px;margin-top:10px" id="rendita-body">—</div>
     </div>
   </div>
+
+<!-- FLOTTA PAPER — EQUITY AGGREGATA (28/10/26): serie reale dall'exporter denaro
+     via Prometheus, servita dal proxy /api/prom. Nessuna stima, nessun numero
+     inventato: se la serie manca, lo si dice. -->
+<div class="board" id="board-paper" style="border-color:rgba(10,255,157,.28)">
+  <div class="bd-head">
+    <div class="orb" id="orb-paper"></div>
+    <div>
+      <h2 style="color:var(--neon-green);text-shadow:0 0 12px rgba(10,255,157,.4)">FLOTTA PAPER — EQUITY AGGREGATA</h2>
+      <div style="font-size:10px;color:var(--dim);letter-spacing:2px" id="paper-nota">—</div>
+    </div>
+    <div class="seg" id="paper-range" style="margin-left:auto">
+      <button data-r="h24" class="on">24H</button><button data-r="d7">7G</button><button data-r="d14">14G</button>
+    </div>
+  </div>
+  <svg id="paper-chart" viewBox="0 0 1000 200" preserveAspectRatio="none" style="width:100%;height:215px;display:block;background:rgba(0,243,255,0.03);border:1px solid rgba(0,243,255,0.15);border-radius:10px;margin-top:14px"></svg>
+</div>
 
   <div class="board" id="board">
     <div class="bd-head">
@@ -542,6 +564,8 @@ async function load() {
     renderRicerca(d);
     renderCarry(d);
     loadScommessa();
+    loadRendita();
+    loadPaper();
   } catch (e) {
     $('sysstatus').textContent = 'SIGNAL LOST';
     $('dot').className = 'pulse warn';
@@ -1031,6 +1055,100 @@ function renderMotore(d) {
         '<span>ESITO <b style="color:' + (b.esito === 'PASS' ? 'var(--neon-green)' : 'var(--neon-yellow)') + '">' + esc(b.esito || '?') + '</b></span>' +
         '<span>CHIAVE <b>' + esc(b.chiave_solo_lettura === 'si' ? 'SOLO LETTURA' : (b.chiave_solo_lettura || '?')) + '</b></span>'
       : '';
+  }
+}
+
+/* ── RENDITA NETTA (28/10/26): riga dal tabellone (REQ-MERL-20261026-021) ── */
+async function loadRendita() {
+  const box = $('rendita-body'), calc = $('rendita-calc');
+  try {
+    const r = await fetch('/api/rendita.json', {cache: 'no-store'});
+    const d = await r.json();
+    const g = d.rendita || {};
+    if (!box) return;
+    if (g.eur_giorno != null) {
+      const col = g.eur_giorno >= 0 ? 'var(--neon-green)' : 'var(--neon-red)';
+      box.innerHTML =
+        '<div><div class="k" style="color:var(--dim);font-size:9.5px;letter-spacing:2px;margin-bottom:4px">RENDITA NETTA (' + esc(g.giorni) + 'g)</div>' +
+        '<div style="font-size:22px;font-weight:900;font-family:Orbitron,sans-serif;color:' + col + '">' +
+        (g.eur_giorno >= 0 ? '+' : '') + fmt(g.eur_giorno, 4) + ' €/giorno</div>' +
+        '<div style="font-size:10px;color:var(--dim);margin-top:4px">' +
+        (g.pct_giorno >= 0 ? '+' : '') + fmt(g.pct_giorno, 5) + ' %/giorno · su ' + fmt(g.equity_eur) + ' €</div></div>' +
+        '<div><div class="k" style="color:var(--dim);font-size:9.5px;letter-spacing:2px;margin-bottom:4px">COMPOSIZIONE (USDC)</div>' +
+        '<div style="font-size:12px">funding <b>' + (g.funding_usdc >= 0 ? '+' : '') + fmt(g.funding_usdc, 4) + '</b> · fee <b>−' + fmt(g.fee_usdc, 4) + '</b> · earn <b>+' + fmt(g.earn_stimato_usdc, 4) + '</b></div>' +
+        '<div style="font-size:10px;color:var(--dim);margin-top:4px">tasso conto ' + fmt((g.tasso_conto_apy || 0) * 100, 2) + ' %/anno su ' + fmt(g.saldo_earn_usdc) + ' USDC' +
+        (g.nota_earn ? ' · <span style="color:var(--neon-yellow)">' + esc(g.nota_earn) + '</span>' : '') + '</div></div>' +
+        '<div><div class="k" style="color:var(--dim);font-size:9.5px;letter-spacing:2px;margin-bottom:4px">BENCHMARK PASSIVO</div>' +
+        '<div style="font-size:22px;font-weight:900;font-family:Orbitron,sans-serif;color:var(--neon-yellow)">' +
+        (d.benchmark_earn && d.benchmark_earn.apy != null ? fmt(d.benchmark_earn.apy * 100, 2) + ' %/anno' : 'n/d') + '</div>' +
+        '<div style="font-size:10px;color:var(--dim);margin-top:4px">OKX ' + esc((d.benchmark_earn && d.benchmark_earn.ccy) || 'USDC') +
+        ' · letto ' + esc((d.benchmark_earn && d.benchmark_earn.ts) || '—') + '</div></div>';
+      if (calc) calc.textContent = 'calcolo ' + (g.data_calcolo || '—');
+    } else {
+      box.innerHTML = '<div class="skeleton" style="grid-column:1/-1">rendita n/d — ' +
+        esc((g.motivo || d.error || 'dato non disponibile')) + '</div>';
+      if (calc) calc.textContent = 'n/d';
+    }
+  } catch (e) {
+    if (box) box.innerHTML = '<div class="skeleton" style="grid-column:1/-1">rendita non disponibile</div>';
+    if (calc) calc.textContent = 'n/d';
+  }
+}
+
+/* ── FLOTTA PAPER (28/10/26): equity aggregata da Prometheus ── */
+let paperRange = 'h24';
+document.addEventListener('click', (ev) => {
+  const b = ev.target.closest('#paper-range button');
+  if (!b) return;
+  paperRange = b.dataset.r;
+  document.querySelectorAll('#paper-range button').forEach(x => x.classList.toggle('on', x === b));
+  loadPaper();
+});
+
+async function loadPaper() {
+  const svg = $('paper-chart'), nota = $('paper-nota'), orb = $('orb-paper');
+  try {
+    const r = await fetch('/api/prom?series=paper_equity&range=' + paperRange, {cache: 'no-store'});
+    const d = await r.json();
+    if (d.status !== 'success' || !(d.data && d.data.result && d.data.result.length)) {
+      if (svg) svg.innerHTML = '<text x="500" y="104" fill="#5f6fa6" font-size="15" text-anchor="middle">SERIE NON DISPONIBILE</text>';
+      if (nota) nota.textContent = 'prometheus senza campioni per questa finestra';
+      if (orb) orb.className = 'orb bad';
+      return;
+    }
+    const vals = (d.data.result[0].values || []).map(p => [Number(p[0]), Number(p[1])]);
+    if (vals.length < 2) {
+      if (svg) svg.innerHTML = '<text x="500" y="104" fill="#5f6fa6" font-size="15" text-anchor="middle">RACCOLTA STORIA IN CORSO…</text>';
+      if (nota) nota.textContent = 'primi campioni in arrivo (scrape 30s)';
+      return;
+    }
+    const W = 1000, H = 200, PAD = 12;
+    const ys = vals.map(p => p[1]);
+    const lo = Math.min(...ys), hi = Math.max(...ys);
+    const rng = (hi - lo) || 1;
+    const px = i => PAD + (i / (vals.length - 1)) * (W - PAD * 2);
+    const py = v => H - PAD - ((v - lo) / rng) * (H - PAD * 2);
+    const line = vals.map((p, i) => px(i).toFixed(1) + ',' + py(p[1]).toFixed(1)).join(' ');
+    const area = PAD + ',' + (H - PAD) + ' ' + line + ' ' + (W - PAD) + ',' + (H - PAD);
+    const t0 = vals[0][0], t1 = vals[vals.length - 1][0];
+    const last = vals[vals.length - 1][1], first = vals[0][1];
+    const delta = last - first;
+    if (svg) svg.innerHTML =
+      '<defs><linearGradient id="pg" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0%" stop-color="rgba(10,255,157,0.28)"/><stop offset="100%" stop-color="rgba(10,255,157,0.02)"/></linearGradient></defs>' +
+      '<polygon points="' + area + '" fill="url(#pg)" stroke="none"/>' +
+      '<polyline points="' + line + '" fill="none" stroke="var(--neon-green)" stroke-width="2.2"/>' +
+      '<text x="14" y="20" fill="#5a6a9e" font-size="13">MAX €' + hi.toFixed(2) + '</text>' +
+      '<text x="14" y="' + (H - 8) + '" fill="#5a6a9e" font-size="13">MIN €' + lo.toFixed(2) + '</text>' +
+      '<text x="' + (W - 14) + '" y="20" fill="#5a6a9e" font-size="13" text-anchor="end">' + _fmtTs(t1) + '</text>' +
+      '<text x="' + (W - 14) + '" y="' + (H - 8) + '" fill="#5a6a9e" font-size="13" text-anchor="end">' + _fmtTs(t0) + '</text>';
+    if (nota) nota.textContent = 'equity aggregata dei bot paper (Prometheus, exporter denaro) · ' +
+      vals.length + ' campioni · Δ ' + (delta >= 0 ? '+' : '') + fmt(delta, 2) + ' € nella finestra · ultimo ' + fmt(last, 2) + ' €';
+    if (orb) orb.className = 'orb';
+  } catch (e) {
+    if (svg) svg.innerHTML = '<text x="500" y="104" fill="#5f6fa6" font-size="15" text-anchor="middle">PROMETHEUS NON RAGGIUNGIBILE</text>';
+    if (nota) nota.textContent = 'proxy /api/prom in errore';
+    if (orb) orb.className = 'orb bad';
   }
 }
 
