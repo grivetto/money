@@ -262,7 +262,12 @@ def tasso_earn_pubblico(ccy: str = "USDC") -> dict:
 
 
 def earn_conto(ex) -> dict:
-    """Saldo e tasso effettivi di Simple Earn (lettura privata, nessun ordine)."""
+    """Saldo e tasso effettivi di Simple Earn (lettura privata, nessun ordine).
+
+    Saldo = TOTALE (`amt`), con fallback `loanAmt + pendingAmt`: `loanAmt` da
+    solo puo' essere 0/parziale durante i (ri)prestiti e produrrebbe una
+    stima Earn a 0,00 con saldo non nullo (il banco legge `amt`).
+    """
     out = {"saldo_usdc": None, "apy": None, "errore": None}
     try:
         d = ex.privateGetFinanceSavingsBalance()
@@ -272,7 +277,9 @@ def earn_conto(ex) -> dict:
             if r.get("ccy") != "USDC":
                 continue
             try:
-                amt = float(r.get("loanAmt") or 0)
+                amt = float(r.get("amt") or 0)   # TOTALE (prestato + in attesa)
+                if amt <= 0:                     # fallback se 'amt' assente
+                    amt = float(r.get("loanAmt") or 0) + float(r.get("pendingAmt") or 0)
             except (TypeError, ValueError):
                 amt = 0.0
             if migliore is None or amt > migliore[0]:
@@ -285,6 +292,14 @@ def earn_conto(ex) -> dict:
             out["errore"] = "nessuna riga USDC in financeSavingsBalance"
             return out
         out["saldo_usdc"] = round(migliore[0], 6)
+        if out["saldo_usdc"] <= 0:
+            # fail-visible: riga presente ma saldo letto 0 (prima: +0.00 silenzioso)
+            out["errore"] = "saldo USDC letto 0 in financeSavingsBalance"
+            return out
+        if migliore[1] <= 0:
+            # rate assente/0: non stimare 0,00 in silenzio
+            out["errore"] = "rate assente o 0 in financeSavingsBalance"
+            return out
         out["apy"] = migliore[1]
     except Exception as e:
         out["errore"] = f"{type(e).__name__}: {e}"

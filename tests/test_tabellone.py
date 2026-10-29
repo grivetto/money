@@ -5,6 +5,8 @@ Test OFFLINE (zero rete, zero chiavi) delle funzioni pure della riga rendita:
 - finestra_recon: delta funding/fee tra ultima riga e riga ~N giorni prima
   (i campi delle righe sono CUMULATIVI: il delta e' il contributo della finestra)
 - earn_stimato_usdc / rendita_riga: aritmetica con numeri noti
+- earn_conto: saldo dal campo 'amt' (fallback loanAmt+pendingAmt) e
+  fail-visible su saldo/rate 0 (mai +0.00 silenzioso)
 - calcola_rendita end-to-end con fixture (jsonl + exchange finto + cambio fisso)
 - fail-closed: serie corta, finestra < 1 giorno, equity assente, righe corrotte
 
@@ -194,8 +196,9 @@ class MockEarnEx:
     def privateGetFinanceSavingsBalance(self):
         if self.fallisce:
             raise ConnectionError("rate limit finto")
-        riga = {"ccy": "USDC", "rate": self.tasso, "loanAmt": str(self.saldo),
-                "earnings": "0.74531944", "pendingAmt": "0", "redemptAmt": ""}
+        riga = {"ccy": "USDC", "rate": self.tasso, "amt": str(self.saldo),
+                "loanAmt": str(self.saldo), "earnings": "0.74531944",
+                "pendingAmt": "0", "redemptAmt": ""}
         return {"data": [riga] if self.riga_usdc else [{"ccy": "BTC", "rate": "0", "loanAmt": "0"}]}
 
 
@@ -261,3 +264,78 @@ def test_calcola_rendita_earn_errore_rete_assume_zero(cartella):
     assert out["motivo"] is None
     assert out["earn_stimato_usdc"] == 0.0
     assert "nota_earn" in out and "rate limit finto" in out["nota_earn"]
+
+
+# ---------------------------------------------------------------------------
+# earn_conto: campo 'amt' totale + fail-visible (review REQ-MD1-20261029-002)
+# ---------------------------------------------------------------------------
+
+class MockEarnExRiga:
+    """Exchange finto con la riga USDC pilotabile campo per campo (forma reale)."""
+
+    def __init__(self, riga: dict):
+        self._riga = riga
+
+    def privateGetFinanceSavingsBalance(self):
+        return {"data": [dict(self._riga)]}
+
+
+def test_earn_conto_saldo_da_amt_totale():
+    tb = _carica_tabellone()
+    # in finestra di (ri)prestito loanAmt puo' essere 0 mentre amt resta il totale
+    riga = {"ccy": "USDC", "amt": "372.16481559", "rate": "0.01",
+            "loanAmt": "0", "pendingAmt": "372.16481559",
+            "earnings": "0.77", "redemptAmt": ""}
+    out = tb.earn_conto(MockEarnExRiga(riga))
+    assert out["errore"] is None
+    assert out["saldo_usdc"] == pytest.approx(372.16481559)
+    assert out["apy"] == pytest.approx(0.01)
+
+
+def test_earn_conto_fallback_loan_piu_pending_senza_amt():
+    tb = _carica_tabellone()
+    riga = {"ccy": "USDC", "rate": "0.01", "loanAmt": "372.1637828",
+            "pendingAmt": "0.00103279", "earnings": "0.77", "redemptAmt": ""}
+    out = tb.earn_conto(MockEarnExRiga(riga))
+    assert out["errore"] is None
+    assert out["saldo_usdc"] == pytest.approx(372.16481559)
+
+
+def test_earn_conto_saldo_zero_fail_visible():
+    tb = _carica_tabellone()
+    riga = {"ccy": "USDC", "amt": "0", "rate": "0.01", "loanAmt": "0",
+            "pendingAmt": "0", "earnings": "0", "redemptAmt": ""}
+    out = tb.earn_conto(MockEarnExRiga(riga))
+    assert out["saldo_usdc"] == 0.0
+    assert out["apy"] is None
+    assert out["errore"] and "saldo" in out["errore"]
+
+
+def test_earn_conto_rate_zero_fail_visible():
+    tb = _carica_tabellone()
+    riga = {"ccy": "USDC", "amt": "372.16481559", "rate": "0",
+            "loanAmt": "372.16481559", "pendingAmt": "0",
+            "earnings": "0", "redemptAmt": ""}
+    out = tb.earn_conto(MockEarnExRiga(riga))
+    assert out["saldo_usdc"] == pytest.approx(372.16481559)
+    assert out["apy"] is None
+    assert out["errore"] and "rate" in out["errore"]
+
+
+def test_calcola_rendita_loanamt_zero_non_stima_zero_silenzioso(cartella):
+    """Caso B della diagnosi: loanAmt=0 con amt>0 -> earn NON 0,00 silenzioso."""
+    tb = _carica_tabellone()
+    tb.prezzo_eur = lambda ccy: 0.92
+    giorni = 86400.0
+    righe = [_riga(1000.0, 0.10, 0.05), _riga(1000.0 + 7 * giorni, 0.40, 0.17)]
+    f = cartella / "recon.jsonl"
+    f.write_text("\n".join(json.dumps(r) for r in righe) + "\n")
+
+    riga = {"ccy": "USDC", "amt": "372.16481559", "rate": "0.01",
+            "loanAmt": "0", "pendingAmt": "372.16481559",
+            "earnings": "0.77", "redemptAmt": ""}
+    out = tb.calcola_rendita(MockEarnExRiga(riga), str(f), 7.0, 1066.30, "d")
+    assert out["motivo"] is None
+    earn = round(372.16481559 * 0.01 * 7.0 / 365.0, 6)
+    assert out["earn_stimato_usdc"] == pytest.approx(earn)
+    assert "nota_earn" not in out

@@ -42,7 +42,7 @@ cimiento sobre el que construir.
 
 | | |
 | :--- | :--- |
-| **Tests** | **1.052 superados**, `ruff` limpio |
+| **Tests** | **1.135 superados**, `ruff` limpio |
 | **Experimentos medidos** | todas las familias clásicas (tendencia, breakout, rotación, reversal, weekend, capitulación…) y la serie pre-registrada P hasta P19b — 20+ medidos, cada veredicto congelado en `prove/` |
 | **Veredictos** | **ninguna familia promovida** — todas archivadas a costes reales (el filón tendencia cerrado con prueba múltiple: DD de cartera nunca por debajo del 41,5%; umbral del cancello 25%); **S4 caza continua agotada** (316k intentos, 0 candidatos — detenida el 15/10); la única superviviente es el **carry**: revisión de C1 **PASS** (15/10) → en vivo sobre dos pares más |
 | **Carry en vivo (C1 + DOT+ADA)** | C1 (DOGE, delta-neutral, desde 01/10): funding **+0,045 USDC** (~118% del mínimo esperado); **DOT+ADA** (abiertos el 15/10 23:00 UTC): nocional ≈ **180 EUR**, uPL +0,36 — tamaño mínimo, todo reconciliado |
