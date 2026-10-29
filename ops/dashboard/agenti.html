@@ -28,6 +28,7 @@ h1{font-size:22px;letter-spacing:6px;margin:0;color:#fff}
 .chip b{color:#fff}
 .chip .ko{color:var(--red)}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.grid.solo{grid-template-columns:repeat(auto-fill,minmax(230px,1fr));margin-bottom:14px}
 .node{background:linear-gradient(180deg,#0a1020,#070c18);border:1px solid var(--line);border-radius:10px;padding:14px 14px 8px}
 .node.off{opacity:.55;border-color:rgba(255,59,92,.35)}
 .node h2{margin:0 0 2px;font-size:13px;letter-spacing:3px;color:#fff;text-transform:uppercase}
@@ -77,6 +78,7 @@ a.back{color:var(--cyan);text-decoration:none}
   </header>
 
   <div class="chips" id="chips"></div>
+  <div class="grid solo" id="grid-solo"></div>
   <div class="grid" id="grid"><div class="node off" style="padding:16px">caricamento…</div></div>
 
   <section class="console" id="console">
@@ -104,11 +106,11 @@ a.back{color:var(--cyan);text-decoration:none}
 "use strict";
 // ── i 5 nodi e chi ci gira ──────────────────────────────────────────────
 const NODI = [
+  {id:"win",      label:"andromeda", host:"100.76.22.119 · tailscale", operai:["a0","dsh"],                       ip:"100.76.22.119", porte:{a0:50080, dsh:3080}},
   {id:"mc2",      label:"mc2",      host:"192.168.1.99 · LAN",      operai:["hermes","a0","dsh","opencode","agy"], ip:"192.168.1.99",  porte:{a0:50080, dsh:4080}},
   {id:"omarchy",  label:"omarchy",  host:"192.168.1.98 · LAN",      operai:["hermes","a0","dsh","opencode","agy"], ip:"192.168.1.98",  porte:{a0:50080, dsh:5080}},
-  {id:"win",      label:"win",      host:"100.76.22.119 · tailscale",operai:["a0","dsh"],                          ip:"100.76.22.119", porte:{a0:50080, dsh:3080}},
-  {id:"nuvola",   label:"nuvola",   host:"87.106.3.15 · VPS",       operai:["a0","opencode","agy"],               ip:"87.106.3.15",   porte:{a0:50080}},
-  {id:"marcodg1", label:"marcodg1", host:"87.106.222.123 · VPS",    operai:["a0","opencode","agy"],               ip:"87.106.222.123",porte:{a0:50080}},
+  {id:"nuvola",   label:"nuvola",   host:"87.106.3.15 · VPS",       operai:["hermes","a0","opencode","agy"],   ip:"87.106.3.15",   porte:{a0:50080}},
+  {id:"marcodg1", label:"marcodg1", host:"87.106.222.123 · VPS",    operai:["hermes","a0","opencode","agy"],   ip:"87.106.222.123",porte:{a0:50080}},
 ];
 // Officina in TLS sul tailnet di mc2 (nginx :8443-8450, cert tailscale).
 // Dal 21/10 i link http://LAN venivano bloccati da Chrome (HTTPS-Only mode) da pagina https.
@@ -167,8 +169,8 @@ function render(d){
     return '<span class="chip"><b>' + NOMI_STRUMENTO[k] + "</b> " + (v.su|0) + "/" + att + ko + "</span>";
   }).join("");
 
-  // ── card per nodo ──
-  $("grid").innerHTML = NODI.map(n => {
+  // ── card per nodo: andromeda da sola nella prima riga, gli altri 4 sotto ──
+  const cardNodo = n => {
     const nd = nodi[n.id] || {ok:false, operai:{}};
     const off = !nd.ok;
     const righe = n.operai.map(wk => {
@@ -182,7 +184,11 @@ function render(d){
     }).join("");
     return '<div class="node' + (off ? " off" : "") + '"><h2>' + esc(n.label) + "</h2>" +
            '<div class="host">' + esc(n.host) + (off ? " · NODO NON RAGGIUNGIBILE" : "") + "</div>" + righe + "</div>";
-  }).join("");
+  };
+  const solo = NODI.filter(n => n.id === "win");
+  const altre = NODI.filter(n => n.id !== "win");
+  $("grid-solo").innerHTML = solo.map(cardNodo).join("");
+  $("grid").innerHTML = altre.map(cardNodo).join("");
 }
 
 // ── console Hermes (async: POST job + polling result) ──────────────────
