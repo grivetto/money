@@ -69,15 +69,17 @@ def _sha(s: str) -> str:
     return hashlib.sha1(s.encode("utf-8", errors="replace")).hexdigest()[:16]
 
 
-def leggi_blocchi(path: Path) -> list[tuple[str, int]]:
-    """[(header, offset)] dei blocchi '## ' del file, in ordine di apparizione."""
-    blocchi: list[tuple[str, int]] = []
+def leggi_blocchi(path: Path) -> list[tuple[str, str]]:
+    """[(header, testo_completo_del_blocco)] dei blocchi '## ' del file, in ordine."""
+    blocchi: list[tuple[str, str]] = []
     try:
         testo = path.read_text(encoding="utf-8", errors="replace")
     except OSError:
         return blocchi
-    for m in re.finditer(r"^##\s+.*$", testo, flags=re.M):
-        blocchi.append((m.group(0).strip(), m.start()))
+    match = list(re.finditer(r"^##\s+.*$", testo, flags=re.M))
+    for i, m in enumerate(match):
+        fine = match[i + 1].start() if i + 1 < len(match) else len(testo)
+        blocchi.append((m.group(0).strip(), testo[m.start():fine]))
     return blocchi
 
 
@@ -231,18 +233,19 @@ def processa_requests(canale: str, stato: dict, ora: float, dry: bool, seed: boo
 
 
 def processa_results(canale: str, stato: dict, ora: float, dry: bool, seed: bool) -> tuple[list[str], list[str]]:
-    """Blocchi nuovi di results.md -> righe inbox (e report)."""
+    """Blocchi nuovi di results.md -> righe inbox (e report). I blocchi firmati da Artu' si saltano."""
     res = BRIDGE / canale / "results.md"
     blocchi = leggi_blocchi(res)
     inbox: list[str] = []
     out: list[str] = []
-    for hdr, _ in blocchi:
+    for hdr, chunk in blocchi:
         key = "%s|results|%s" % (canale, _sha(hdr))
         if key in stato["blocchi"]:
             continue
+        mio = "[hermes]" in chunk  # firma di Artu': niente inbox/TG per i miei stessi blocchi
         stato["blocchi"][key] = {"first_seen": ora,
-                                 "status": "seed" if seed else "inbox", "sig": hdr[:90]}
-        if not seed:
+                                 "status": "seed" if (seed or mio) else "inbox", "sig": hdr[:90]}
+        if not seed and not mio:
             inbox.append("- `%s` · **%s** · %s" % (_ora_iso(ora), canale, hdr[:150]))
     if inbox:
         _appendi_inbox(inbox, dry)

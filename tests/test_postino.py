@@ -128,6 +128,16 @@ def test_results_inbox_dedup(env):
     assert inbox2 == []  # dedup
 
 
+def test_results_firma_artu_saltata(env):
+    bridge, ch = env
+    (bridge / "merlino" / "results.md").write_text(
+        "## DONE | REQ-9 | MERLINO\nfatto\n-- MERLINO\n"
+        "## REVIEW | REQ-8\nok\n-- [hermes] ARTÙ\n", encoding="utf-8")
+    st = _stato()
+    inbox, _ = postino.processa_results("merlino", st, time.time(), dry=False, seed=False)
+    assert len(inbox) == 1  # il blocco firmato da Artu' non entra in inbox/TG
+
+
 def test_seed_non_agisce(env):
     bridge, ch = env
     _scrivi_requests(env, ["## REQ-MERL-S | PENDING", ""])
