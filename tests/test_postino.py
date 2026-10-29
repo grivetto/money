@@ -66,16 +66,35 @@ def test_grace_e_wake(env):
     assert ch["wake"] == ["merlino"]
 
 
-def test_lock_occupato_non_rilancia(env):
+def test_lock_occupato_con_turno_coperto_noop(env):
     bridge, ch = env
     _scrivi_requests(env, ["## REQ-MERL-Y | 2026-10-29 17:00 UTC | PENDING", ""])
     t0 = time.time()
     st = _stato()
     postino.processa_requests("merlino", st, t0, dry=False, seed=False)
-    ch["lock"] = False  # un turno (di Artu') e' in corso
+    ch["lock"] = False  # un turno e' in corso...
+    # ...e il log di lancio prova che e' partito DOPO la vista del blocco (coperto)
+    postino.DIR_LOG.mkdir(parents=True, exist_ok=True)
+    ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t0 + 5))
+    (postino.DIR_LOG / "log_omarchy_x.txt").write_text(
+        "START %s nodo=omarchy prompt=/x\n" % ts, encoding="utf-8")
     postino.processa_requests("merlino", st, t0 + postino.GRACE_S + 5, dry=False, seed=False)
     assert ch["wake"] == []
     assert list(v["status"] for v in st["blocchi"].values()) == ["noop"]
+
+
+def test_busy_non_coperto_riprova(env):
+    bridge, ch = env
+    _scrivi_requests(env, ["## REQ-MERL-B | PENDING", ""])
+    t0 = time.time()
+    st = _stato()
+    postino.processa_requests("merlino", st, t0, dry=False, seed=False)
+    ch["lock"] = False  # occupato su un ALTRO lavoro: la coda non va persa
+    postino.processa_requests("merlino", st, t0 + postino.GRACE_S + 5, dry=False, seed=False)
+    assert list(v["status"] for v in st["blocchi"].values()) == ["pending"]
+    ch["lock"] = True  # appena libero, il blocco parte da solo
+    postino.processa_requests("merlino", st, t0 + postino.GRACE_S + 65, dry=False, seed=False)
+    assert ch["wake"] == ["merlino"]
 
 
 def test_nodo_giu_riprova(env):

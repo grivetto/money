@@ -173,6 +173,32 @@ def _appendi_inbox(righe: list[str], dry: bool) -> None:
             f.write(r + "\n")
 
 
+def _turno_copre(nodo: str, prima_vista: float) -> bool:
+    """True se un turno del nodo e' PARTITO dopo la prima vista del blocco (blocco coperto).
+    I log di lancio (manuali e auto) stanno in DIR_LOG con righe `START <ISO> nodo=<Nodo>`."""
+    try:
+        for f in sorted(DIR_LOG.glob("*"), key=lambda p: p.stat().st_mtime, reverse=True)[:40]:
+            try:
+                if time.time() - f.stat().st_mtime > 4 * 3600:
+                    break
+                testo = f.read_text(encoding="utf-8", errors="replace")
+            except OSError:
+                continue
+            for m in re.finditer(r"^START (\S+) nodo=(\S+)", testo, flags=re.M):
+                if m.group(2) != nodo:
+                    continue
+                try:
+                    ts = datetime.strptime(m.group(1), "%Y-%m-%dT%H:%M:%SZ").replace(
+                        tzinfo=timezone.utc).timestamp()
+                except ValueError:
+                    continue
+                if ts >= prima_vista - 120:
+                    return True
+    except Exception:
+        return False
+    return False
+
+
 def processa_requests(canale: str, stato: dict, ora: float, dry: bool, seed: bool) -> list[str]:
     """Gestisce il/new block di requests.md del canale. Ritorna righe di report."""
     req = BRIDGE / canale / "requests.md"
@@ -211,8 +237,11 @@ def processa_requests(canale: str, stato: dict, ora: float, dry: bool, seed: boo
         return out
     nodo = NODI[canale]["nodo"]
     if not lock_libero(nodo):
-        v["status"] = "noop"
-        out.append("requests: lock %s occupato (turno gia' in corso) -> noop %s" % (nodo, v["sig"][:70]))
+        if _turno_copre(nodo, float(v.get("first_seen", ora))):
+            v["status"] = "noop"
+            out.append("requests: lock %s occupato, turno recente copre il blocco -> noop %s" % (nodo, v["sig"][:70]))
+        else:
+            out.append("requests: lock %s occupato ma nessun turno copre il blocco: riprovo al prossimo giro" % nodo)
         return out
     if not nodo_raggiungibile(nodo):
         out.append("requests: %s non raggiungibile, riprovo al prossimo giro" % nodo)
