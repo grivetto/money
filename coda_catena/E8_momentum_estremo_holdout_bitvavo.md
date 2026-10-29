@@ -1,6 +1,6 @@
 # E8 — «momentum estremo sui major liquidi» — hold-out Bitvavo (pre-registrazione)
 
-**Data:** 2026-10-28 · **Autore:** Artù · **Stato:** PRE-REGISTRATA + PRESA_DA Artù (universo e finestra congelati PRIMA dei numeri)
+**Data:** 2026-10-28 · **Autore:** Artù · **Stato:** PRE-REGISTRATA + PRESA_DA Artù (universo e finestra congelati PRIMA dei numeri) → **MISURATA 29/10: NON PROMOSSA (1/4 — T1 FAIL t 1,30, T2 FAIL, DSR 0,24; T3 long PASS). FAMIGLIA «estremi di prezzo» CHIUSA DEFINITIVAMENTE. Artefatti `prove/e8_bitvavo.{json,txt}`.**
 
 ## Come nasce (dichiarato)
 
@@ -94,4 +94,22 @@ sizing 0,25% di rischio per trade (mandato), e solo dopo go esplicito dell'owner
 Famiglia «estremi di prezzo» CHIUSA DEFINITIVAMENTE: nessuna variante ulteriore. La ricerca
 direzionale su OHLCV si riorienta sulla prossima lane pre-registrata: baseline TSMOM 12M/1M
 long-only BTC/ETH (raccomandazione n.4 del report A0-Win 21/10).
+
+## Esito (misura ufficiale 29/10/2026, Artù)
+
+**NON PROMOSSA — famiglia chiusa.** Misura dal repo canonico (mc2), test anti-look-ahead
+`tests/ricerca/test_e8_antilookahead.py` 5/5 verdi PRIMA dei numeri; due run a **sha256 identico**
+(`prove/e8_bitvavo.json` = 6ad446b7444e1f2e86652e0610498512c791af12cf01a865650c0e369f2a0d2d).
+Dati: `scripts/scarica_bitvavo_1h.py` (API pubblica v2, 7 coppie, 1h, 2024-06-01→2026-10-28;
+HYPE dal listing 18/12/24).
+
+- **AGGREGATO: n=594 · media +0,444%/trade · t 1,30 · CI90 bootstrap [−0,103%, +1,016%]** → T1 FAIL (t<2)
+- **T2 (costi ×2 = 1,00% RT): media −0,056%** → FAIL
+- **T3 LONG: n=306 · +1,917% · t 3,50** → PASS (unico; coerente con l'osservazione E6, non sufficiente)
+- SHORT (descrittivo): n=288 · −1,122% · t −3,02 (negativo come in E6)
+- **DSR 0,2416** (N=5; var 0,004761 dai look storici E5×2+E6×2 ricalcolati: sr [−0,1655, −0,0461, −0,0806, +0,0264]) → FAIL
+
+Per coppia (base): ETH +1,606% (t 2,24), PEPE +1,836% (t 1,40), ADA +0,403%, HYPE +0,168%,
+SOL +0,054%, BTC −0,318%, XRP −0,574% — nessuna coppia da sola giustifica una deroga.
+Prossimo fronte: **TSMOM 12M/1M long-only BTC/ETH** (da pre-registrare come nuovo esperimento).
 

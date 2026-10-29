@@ -85,3 +85,6 @@ STATO DELLA CODA
 
 ## Aggiornamento 2026-10-29 15:00 — 021 chiusa (cruscotto: rendita netta/giorno + benchmark Earn)
 - 021 (riga "rendita netta €/giorno per € impegnato" + benchmark Earn su scripts/tabellone.py) ... **REVIEW PASS + INTEGRATA + DEPLOYATA (Artù)**: gate branch 1053 verdi; PR #12 mergiata (main eb32d5fe); deploy su MARCODG1 (sha 454b0dd5…) e verifica di esecuzione reale con gli stessi argomenti del cron — riga presente e datata. Follow-up: mappatura conto/endpoint della stima Earn.
+
+## Aggiornamento 2026-10-29 — E8 misurata: famiglia «estremi di prezzo» CHIUSA DEFINITIVAMENTE
+- E8_momentum_estremo_holdout_bitvavo.md ... **MISURATA E ARCHIVIATA (Artù 29/10)** — Bitvavo 1h, 7 coppie congelate, 594 trade: aggregato +0,444% t 1,30 (CI90 [−0,10%, +1,02%]), stress −0,056%, LONG +1,917% t 3,50 (T3 PASS), SHORT −1,12% t −3,02, DSR 0,24 → **1/4: NON PROMOSSA**. Famiglia E2/E4/E5/E6/E8 chiusa: nessuna variante. Test anti-look-ahead 5/5 prima dei numeri; due run a sha identico. Artefatti `prove/e8_bitvavo.*`; motore `scripts/e8_momentum_bitvavo.py`; dati `scripts/scarica_bitvavo_1h.py`. Prossima lane: TSMOM 12M/1M long-only BTC/ETH (da pre-registrare).

@@ -1,0 +1,26 @@
+=== E8 momentum estremo | hold-out Bitvavo 1h | z>=+3 long, z<=-3 short ===
+finestra: 2024-06-01 -> 2026-10-28 | coppie: BTC-EUR, XRP-EUR, ETH-EUR, SOL-EUR, HYPE-EUR, ADA-EUR, PEPE-EUR
+costi: RT 0.50% (taker 0,25%/lato) | stress 1.00% | maker (descrittivo) 0.30%
+
+AGGREGATO  n= 594  media +0.444%  t  1.30  pos 37%  CI90boot [-0.103%, +1.016%]  stress -0.056%  maker +0.644%
+LONG       n= 306  media +1.917%  t  3.50  pos 43%  CI90boot [+1.051%, +2.846%]  stress +1.417%  maker +2.117%
+SHORT      n= 288  media -1.122%  t -3.02  pos 31%  CI90boot [-1.720%, -0.494%]  stress -1.622%  maker -0.922%
+
+per coppia (costi base):
+  BTC-EUR   n= 90  media -0.318%  t -0.77  stress -0.818%
+  XRP-EUR   n=109  media -0.574%  t -0.76  stress -1.074%
+  ETH-EUR   n= 90  media +1.606%  t  2.24  stress +1.106%
+  SOL-EUR   n= 78  media +0.054%  t  0.07  stress -0.446%
+  HYPE-EUR  n= 55  media +0.168%  t  0.14  stress -0.332%
+  ADA-EUR   n= 83  media +0.403%  t  0.40  stress -0.097%
+  PEPE-EUR  n= 89  media +1.836%  t  1.40  stress +1.336%
+
+--- verdetto (spec E8) ---
+  T1_bitvavo: FAIL
+  T2_costi_x2: FAIL
+  T3_long: PASS
+  DSR: FAIL
+  DSR=0.2416 (N=5, var=0.004761, sr_visti=[-0.1655, -0.0461, -0.0806, 0.0264])
+
+=== ESITO: NON PROMOSSO — vedi spec: se fallisce, famiglia chiusa ===
+(runtime 16.8s)
