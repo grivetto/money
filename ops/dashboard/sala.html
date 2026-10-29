@@ -1,0 +1,74 @@
+<!doctype html><html lang="it"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SALA OPERATIVA — la squadra all'opera</title>
+<style>
+:root{--bg:#070c18;--card:#0e1526;--line:#1d2a44;--text:#e6edf3;--dim:#8b98ab;--cy:#39d0ff;--gr:#3fb950;--rd:#f85149;--am:#d29922;--vio:#b18cff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;padding:18px}
+h1{font-size:18px;letter-spacing:3px;color:var(--cy);margin:0 0 2px}
+.sub{color:var(--dim);font-size:11px;margin-bottom:14px}
+a.back{color:var(--dim);text-decoration:none;font-size:11px} a.back:hover{color:var(--cy)}
+.wrap{display:grid;gap:14px;max-width:1400px}
+section.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+section.card h2{font-size:12px;letter-spacing:2px;color:var(--cy);margin:0 0 8px;font-weight:600}
+.chan{display:grid;grid-template-columns:150px 1fr;gap:10px;padding:8px 0;border-top:1px dashed var(--line)}
+.chan:first-of-type{border-top:0}
+.chan .nome{color:var(--vio);font-weight:700}
+.eta{color:var(--dim);font-size:11px}
+.msg{background:#0a1020;border:1px solid var(--line);border-radius:8px;padding:6px 8px;margin-top:5px;font-size:11.5px;white-space:pre-wrap;overflow-wrap:anywhere}
+.msg b{color:var(--cy)} .pend{color:var(--am)} .ok{color:var(--gr)} .ko{color:var(--rd)} .t{color:var(--dim)}
+.gw{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px}
+.box{background:#0a1020;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.box h3{margin:0 0 4px;font-size:12.5px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
+.sline{border-top:1px dashed var(--line);padding-top:5px;margin-top:5px;font-size:11px}
+.chip{border:1px solid var(--line);border-radius:20px;padding:2px 9px;color:var(--dim);display:inline-block;margin:2px 3px 2px 0}
+.chip.up{color:var(--gr);border-color:#1d4429}.chip.down{color:var(--rd);border-color:#4a1d1d}
+footer{color:var(--dim);font-size:10.5px;margin-top:14px;max-width:1400px}
+</style></head><body>
+<div class="wrap">
+<header>
+<h1>SALA OPERATIVA</h1>
+<div class="sub">la squadra che progetta, all'opera · canali Artù↔nodi · sessioni dei 4 Hermes · operai &nbsp;·&nbsp; <span id="ts">…</span><br>
+<a class="back" href="/agenti">▸ console agenti</a> &nbsp; <a class="back" href="/trading-live">▸ squadra trading live</a> &nbsp; <a class="back" href="/dashboard">▸ dashboard denaro</a></div>
+</header>
+<section class="card"><h2>CANALI — chat Artù ↔ Merlino / Lancillotto / Morgana · DSH</h2><div id="canali">caricamento…</div></section>
+<section class="card"><h2>HERMES — chi sta lavorando adesso</h2><div class="gw" id="hermes">caricamento…</div></section>
+<section class="card"><h2>OPERAI — A0 · DSH · OPENCODE · AGY</h2><div id="operai">caricamento…</div></section>
+</div>
+<footer>read-only · sorgenti: hermes_bridge (mc2) + /api/sessions dei gateway + agenti.json · aggiornamento automatico ogni 30s (collector 1 min) · riservata (Cloudflare Access)</footer>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const eta=s=>{if(s==null||isNaN(s))return'n/d';s=Math.round(s);if(s<90)return s+'s';if(s<5400)return Math.round(s/60)+'m';if(s<172800)return (s/3600).toFixed(1)+'h';return (s/86400).toFixed(1)+'g';};
+function render(d){
+  $('ts').textContent='agg. '+(d.ts_iso||'n/d');
+  $('canali').innerHTML=(d.canali||[]).map(ch=>{
+    const pend=(ch.pending_n? (ch.pending||[]).map(p=>'<span class="pend">'+esc(p.id)+'</span>').join(' · ') : '<span class="ok">nessuna REQ pendente</span>');
+    const ult=(ch.ultime||[]).slice().reverse().map(u=>'<div class="msg"><b>'+esc(u.titolo)+'</b>\n'+esc(u.estratto)+'</div>').join('');
+    return '<div class="chan"><div><div class="nome">'+esc(ch.id)+'</div><div class="eta">attività '+eta(ch.eta_s)+' fa</div><div class="eta" style="margin-top:4px">'+pend+'</div></div><div>'+(ult||'<div class="msg">(nessun contenuto)</div>')+'</div></div>';
+  }).join('')||'<span class="t">nessun canale</span>';
+  $('hermes').innerHTML=(d.hermes||[]).map(h=>{
+    const dot=h.ok?'<span class="dot" style="background:var(--gr)"></span>':'<span class="dot" style="background:var(--rd)"></span>';
+    const stato=h.ok?(h.in_corso?'<span class="ok">('+h.in_corso+' in corso)</span>':'<span class="t">(idle)</span>'):'<span class="ko">(non raggiungibile'+(h.errore?' '+esc(h.errore):'')+')</span>';
+    const ses=(h.sessioni||[]).slice(0,6).map(s=>'<div class="sline">'+(s.in_corso?'<b class="ok">IN CORSO</b>':'<span class="t">recente</span>')+' · '+esc(s.title)+' · msg '+(s.messaggi==null?'–':s.messaggi)+' / tool '+(s.tools==null?'–':s.tools)+' · '+eta(Date.now()/1000-(s.last_active||0))+' fa</div>').join('');
+    return '<div class="box"><h3>'+dot+esc(h.label)+' '+stato+'</h3>'+(ses||'<div class="sline t">nessuna sessione</div>')+'</div>';
+  }).join('')||'<span class="t">nessun gateway</span>';
+  const op=d.operai||{};
+  if(op.riepilogo){
+    const r=op.riepilogo;
+    const nodi=Object.keys(op.nodi||{}).map(n=>{
+      const v=op.nodi[n];
+      const chips=Object.keys(v.operai||{}).map(k=>{const ov=v.operai[k];return '<span class="chip '+(ov.up?'up':'down')+'">'+esc(k)+(ov.up?'':' ✗')+'</span>';}).join('');
+      return '<div class="sline"><b>'+esc(n)+'</b> '+(v.ok?'':'<span class="ko">(nodo KO)</span> ')+chips+'</div>';
+    }).join('');
+    $('operai').innerHTML='<div class="sline">su <b>'+r.su+'</b>/'+r.attesi+' operai · '+(r.giu?'<span class="ko">giù: '+r.giu+'</span>':'<span class="ok">0 giù</span>')+' · fonte '+(esc(op.generated_at_iso||''))+'</div>'+nodi;
+  } else { $('operai').innerHTML='<span class="t">dati operai non disponibili</span>'; }
+}
+async function carica(){
+  try{const r=await fetch('/api/sala.json',{cache:'no-store'});
+    if(!r.ok)throw new Error('http '+r.status);
+    render(await r.json());
+  }catch(e){$('ts').textContent='dati non disponibili: '+e.message;}
+}
+carica();setInterval(carica,30000);
+</script></body></html>

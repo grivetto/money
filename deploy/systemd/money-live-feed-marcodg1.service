@@ -1,0 +1,18 @@
+[Unit]
+Description=Money - Live feed trading attivi MARCODG1 (OKX read-only, ~5s)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=marco
+WorkingDirectory=/home/marco/money
+Environment=LIVE_FEED_INTERVAL=5
+ExecStart=/home/marco/money/.venv/bin/python3 /home/marco/money/ops/dashboard/live_feed.py
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

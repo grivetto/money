@@ -1,0 +1,108 @@
+<!doctype html><html lang="it"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SQUADRA TRADING LIVE — denaro reale</title>
+<style>
+:root{--bg:#070c18;--card:#0e1526;--line:#1d2a44;--text:#e6edf3;--dim:#8b98ab;--cy:#39d0ff;--gr:#3fb950;--rd:#f85149;--am:#d29922;--vio:#b18cff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;padding:18px}
+h1{font-size:18px;letter-spacing:3px;color:var(--am);margin:0 0 2px}
+.sub{color:var(--dim);font-size:11px;margin-bottom:14px}
+a.back{color:var(--dim);text-decoration:none;font-size:11px} a.back:hover{color:var(--cy)}
+.wrap{display:grid;gap:14px;max-width:1400px}
+section.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+section.card h2{font-size:12px;letter-spacing:2px;color:var(--am);margin:0 0 8px;font-weight:600}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.kpi{background:#0a1020;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.kpi .k{color:var(--dim);font-size:10.5px;letter-spacing:1px}
+.kpi .v{font-size:20px;font-weight:700;margin-top:2px}
+.pos{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:10px}
+.box{background:#0a1020;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.box h3{margin:0 0 6px;font-size:12.5px}
+.row{display:flex;justify-content:space-between;border-top:1px dashed var(--line);padding:4px 0;font-size:11.5px}
+.row .k{color:var(--dim)}
+.gr{color:var(--gr)}.rd{color:var(--rd)}.am{color:var(--am)}.t{color:var(--dim)}.cy{color:var(--cy)}
+footer{color:var(--dim);font-size:10.5px;margin-top:14px;max-width:1400px}
+</style></head><body>
+<div class="wrap">
+<header>
+<h1>SQUADRA TRADING — LIVE</h1>
+<div class="sub">solo denaro reale (OKX main): carry market-neutral + canary funding · niente paper &nbsp;·&nbsp; <span id="ts">…</span><br>
+<a class="back" href="/trading-live/console">▸ console live (tempo reale)</a> &nbsp; <a class="back" href="/sala">▸ sala operativa</a> &nbsp; <a class="back" href="/dashboard">▸ dashboard denaro</a> &nbsp; <a class="back" href="/agenti">▸ agenti</a></div>
+</header>
+<section class="card"><h2>EQUITY</h2><div class="kpis" id="kpi">caricamento…</div></section>
+<section class="card"><h2>POSIZIONI LIVE</h2><div class="pos" id="pos">caricamento…</div></section>
+<section class="card"><h2>ECONOMIA (funding · fee · netto)</h2><div id="econ">caricamento…</div></section>
+</div>
+<footer>read-only · fonti: carry_stato.json, recon.jsonl (recon 07:10 + watch), canary.log, banco_history.json, fee_ledger.jsonl (MARCODG1) · aggiornamento 30s · riservata (Cloudflare Access)</footer>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const eta=s=>{if(s==null||isNaN(s))return'n/d';s=Math.round(s);if(s<90)return s+'s';if(s<5400)return Math.round(s/60)+'m';if(s<172800)return (s/3600).toFixed(1)+'h';return (s/86400).toFixed(1)+'g';};
+const eur=n=>n==null?'–':n.toFixed(2)+' €';
+const usd=n=>n==null?'–':(n>=0?'+':'')+Number(n).toFixed(4)+' USDC';
+const cls=n=>n==null?'':(n>=0?'gr':'rd');
+function render(d){
+  $('ts').textContent='agg. '+(d.ts_iso||'n/d');
+  const eq=d.equity||{};
+  $('kpi').innerHTML=
+    '<div class="kpi"><div class="k">EQUITY TOTALE</div><div class="v">'+eur(eq.totale_eur)+'</div><div class="t">'+(eq.delta24_eur==null?'':('24h: <span class="'+cls(eq.delta24_eur)+'">'+eur(eq.delta24_eur)+' ('+(eq.delta24_pct==null?'–':eq.delta24_pct+'%')+')</span>'))+'</div></div>'+
+    '<div class="kpi"><div class="k">RISPARMI (savings)</div><div class="v">'+eur(eq.risparmi_eur)+'</div></div>'+
+    '<div class="kpi"><div class="k">FEE PAGATE (ledger)</div><div class="v">'+(d.fee_ledger&&d.fee_ledger.righe!=null?d.fee_ledger.righe+' righe':'–')+'</div></div>';
+  const c=d.carry||{};const cp=c.coppie||{};
+  const card=(titolo,inner)=>'<div class="box"><h3>'+titolo+'</h3>'+inner+'</div>';
+  const r=(k,v,cl)=>'<div class="row"><span class="k">'+k+'</span><span class="'+(cl||'')+'">'+v+'</span></div>';
+  let pos='';
+  Object.keys(cp).forEach(sym=>{
+    const p=cp[sym];
+    if(p.aperta){
+      pos+=card('<span class="cy">CARRY '+esc(sym)+'</span> <span class="gr">APERTA</span>',
+        r('nozionale',eur(p.nozionale_eur))+
+        r('qty spot',p.qty_spot!=null?Number(p.qty_spot).toFixed(3)+' '+esc(sym):'–')+
+        r('contract perp',p.ct_perp!=null?p.ct_perp+' ct':'–')+
+        r('prezzo ora',p.prezzo_ora!=null?p.prezzo_ora:'–')+
+        r('uPL',usd(p.upl),cls(p.upl))+
+        r('leva',p.leva==null?'–':p.leva)+
+        r('liq',p.liq==null?'–':Number(p.liq).toFixed(4),'am')+
+        r('aperta il',esc((p.ts_apri||'').replace('T',' ').replace('+00:00','Z'))));
+    } else {
+      pos+=card('<span class="cy">CARRY '+esc(sym)+'</span> <span class="t">CHIUSA</span>',
+        r('nozionale',eur(p.nozionale_eur))+r('prezzo chiusura',p.prezzo_ora==null?'–':p.prezzo_ora));
+      const ada=(d.recon&&d.recon.coppie&&d.recon.coppie[sym])||{};
+      pos+=card('<span class="t">— esito '+esc(sym)+' —</span>',
+        r('netto realizzato',usd(ada.netto_usdc),cls(ada.netto_usdc))+
+        r('funding',usd(ada.funding_usdc),cls(ada.funding_usdc))+
+        r('fee',usd(ada.fee_usdc),cls(ada.fee_usdc))+
+        r('chiusa il','2026-10-26'));
+    }
+  });
+  const k=d.canary;
+  if(k){
+    pos+=card('<span class="am">CANARY FUNDING DOGE</span> <span class="gr">LIVE</span>'+
+      (k.age_s!=null?' <span class="t">('+eta(k.age_s)+' fa)</span>':''),
+      r('perp',(k.ct||'–')+' ct @ '+(k.entry==null?'–':k.entry)+' · mark '+(k.mark==null?'–':k.mark))+
+      r('uPL perp',usd(k.upl),cls(k.upl))+
+      r('funding incassato',usd(k.funding),cls(k.funding))+
+      r('spot',k.spot_doge==null?'–':k.spot_doge+' DOGE')+
+      r('liq',k.liq==null?'–':Number(k.liq).toFixed(4),'am')+
+      r('net stimato',usd(k.net_stimato),cls(k.net_stimato)));
+  } else { pos+=card('<span class="am">CANARY DOGE</span>','<div class="t">nessun dato</div>'); }
+  $('pos').innerHTML=pos;
+  const rec=d.recon||{};const rt=rec.totale||{};
+  $('econ').innerHTML=
+    r('funding cumulato (tutte le coppie)','<span class="'+cls(rt.funding_usdc)+'">'+usd(rt.funding_usdc)+'</span>')+
+    r('funding 7g','<span class="'+cls(rt.funding_7d_usdc)+'">'+usd(rt.funding_7d_usdc)+'</span>')+
+    r('fee pagate','<span class="'+cls(-(rt.fee_pagate_usdc||0))+'">'+usd(rt.fee_usdc!=null?rt.fee_usdc:-(rt.fee_pagate_usdc||0))+'</span>')+
+    r('uPL complessivo','<span class="'+cls(rt.upl_usdc)+'">'+usd(rt.upl_usdc)+'</span>')+
+    r('<b>NETTO carry</b>','<b class="'+cls(rt.netto_usdc)+'">'+usd(rt.netto_usdc)+'</b>')+
+    r('netto 7g','<span class="'+cls(rt.netto_7g_usdc)+'">'+usd(rt.netto_7g_usdc)+'</span>')+
+    r('liq distanza min','<span class="am">'+(rt.min_liq_dist_pct==null?'–':rt.min_liq_dist_pct+'%')+'</span>')+
+    r('recon aggiornato',esc(rec.checked_at||'n/d')+' (stato '+esc(rec.status||'?')+')')+
+    '<div class="row t">nota: ADA chiusa il 26/10 a '+usd((rec.coppie&&rec.coppie.ADA||{}).netto_usdc)+' — mostrata per intero</div>';
+}
+async function carica(){
+  try{const r=await fetch('/api/live-trading.json',{cache:'no-store'});
+    if(!r.ok)throw new Error('http '+r.status);
+    render(await r.json());
+  }catch(e){$('ts').textContent='dati non disponibili: '+e.message;}
+}
+carica();setInterval(carica,30000);
+</script></body></html>

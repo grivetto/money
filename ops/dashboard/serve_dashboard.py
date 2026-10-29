@@ -29,6 +29,10 @@ Cosa fa adesso:
   GET /agenti           -> pannello «Agenti» (agenti.html, no-store): operai su tutti i nodi
   GET /api/agenti.json  -> stato operai (Hermes/A0/opencode/agy/DSH) dal file agenti.json
   GET /squadra          -> pagina «La squadra» (squadra.html, no-store): nodi e agenti del progetto
+  GET /sala             -> Sala Operativa di squadra (sala.html, no-store)
+  GET /trading-live     -> Squadra Trading Live: carry+canary reali (trading-live.html)
+  GET /live             -> Console LIVE: trading attivi OKX in tempo reale (live.html, no-store)
+  GET /api/livefeed.json -> feed live dei trading attivi (daemon live_feed su MARCODG1)
   GET /healthz          -> stato del servizio in JSON
 
 Configurazione (env var, override da riga di comando):
@@ -83,7 +87,7 @@ JSON_ROUTES = {"/api/infra.json", "/infra.json", "/api/infra", "/infra", "/api/d
 # Proxy server-side verso gli API server dei 4 Hermes. Le chiavi NON arrivano
 # mai al browser: stanno in un file 600 sul nodo (CONSOLE_KEYS).
 CONSOLE_KEYS_FILE = os.environ.get("CONSOLE_KEYS", "/home/marco/denaro/console/keys.json")
-CONSOLE_TIMEOUT = int(os.environ.get("CONSOLE_TIMEOUT", "300"))
+CONSOLE_TIMEOUT = int(os.environ.get("CONSOLE_TIMEOUT", "600"))
 CONSOLE_HEALTH_TIMEOUT = 3
 CONSOLE_JOBS: dict = {}
 CONSOLE_JOBS_LOCK = threading.Lock()
@@ -130,6 +134,24 @@ SCOMMESSA_ROUTES = {"/scommessa.json", "/api/scommessa.json"}
 # copiato qui ogni minuto; su MARCODG1 arriva via scp dal cron di mc2).
 AGENTI_ROUTES = {"/agenti"}
 AGENTI_JSON_ROUTES = {"/api/agenti.json", "/agenti.json"}
+# ── Sala Operativa (29/10/2026) ────────────────────────────────────────────
+# Pagina «Sala Operativa»: canali Artù<->nodi + sessioni dei 4 Hermes + operai.
+# JSON scritto dal cron su mc2 (~/sala-operativa/sala_operativa.py) e copiato qui.
+SALA_ROUTES = {"/sala"}
+SALA_JSON_ROUTES = {"/api/sala.json", "/sala.json"}
+# ── Squadra Trading Live (29/10/2026) ─────────────────────────────────────
+# Pagina «Trading Live»: carry + canary reali (OKX main). JSON scritto dal
+# cron su MARCODG1 (~/hermes-scratch/sala/live_trading.py).
+LIVE_TR_ROUTES = {"/trading-live"}
+LIVE_TR_JSON_ROUTES = {"/api/live-trading.json", "/live-trading.json"}
+# ── Console LIVE dei trading attivi (29/10/2026, direttiva owner) ──────────
+# Pagina «denaro LIVE»: posizioni reali OKX aggiornate ogni ~4s. Il JSON e'
+# scritto dal daemon live_feed.py su MARCODG1 (systemd money-live-feed-marcodg1).
+# Montata SOTTO /trading-live/ per stare dentro la app Cloudflare Access gia'
+# attiva su /trading-live* (verificato: sottopath anonimo -> 302 Access).
+# Qui niente guard JWT lato server: la protezione e' l'app Access, come /sala.
+LIVE_ROUTES = {"/trading-live/console"}
+LIVE_JSON_ROUTES = {"/trading-live/api/livefeed.json"}
 # favicon a tema trading (candele neon) — ogni estensione serve il file corretto
 FAVICON_MAP = {
     "/favicon.svg":     ("favicon.svg",     "image/svg+xml"),
@@ -139,6 +161,36 @@ FAVICON_MAP = {
 }
 FAVICON_ROUTES = set(FAVICON_MAP.keys())  # retrocompatibilità
 FAVICON_CACHE_BUST = "v=trade"  # per forzare il refresh nei browser
+
+# ── Rendita netta (REQ-MERL-20261026-021) ──────────────────────────────────
+# Il calcolo vive in scripts/tabellone.py; su MARCODG1 la fonte e' il file
+# vendored in hermes-scratch (il tree ~/money e' sporco di WIP: mai importare
+# da li'). Il server lo esegue in un subprocesso col venv e serve il risultato
+# con una cache di processo: le API OKX non vanno martellate a ogni refresh.
+TABELLONE_RUNNER = os.environ.get("DASH_TABELLONE_RUNNER",
+                                  "/home/marco/hermes-scratch/p34-cruscotto/rendita_runner.py")
+TABELLONE_PY = os.environ.get("DASH_TABELLONE_PY", "/home/marco/money/.venv/bin/python")
+TABELLONE_ENV = os.environ.get("DASH_TABELLONE_ENV",
+                               "/home/marco/denaro/secrets/main_okx.env")
+TABELLONE_RECON = os.environ.get("DASH_TABELLONE_RECON",
+                                 "/home/marco/hermes-scratch/carry_recon/recon.jsonl")
+RENDITA_ROUTES = {"/api/rendita.json", "/rendita.json"}
+RENDITA_CACHE_TTL = 300  # secondi: ricalcolo al piu' ogni 5 minuti
+_RENDITA_CACHE: dict = {}
+_RENDITA_LOCK = threading.Lock()
+
+# ── Proxy Prometheus (serie equity della flotta paper) ─────────────────────
+# Query FISSE mappate da un nome: il browser non puo' iniettare PromQL.
+PROM_URL = "http://127.0.0.1:9090"
+PROM_SERIES = {
+    "paper_equity": "sum(denaro_bot_equity)",
+    "paper_pnl": "sum(denaro_bot_pnl)",
+    "node_equity": "sum(denaro_node_equity)",
+}
+PROM_RANGE_S = {"h24": 86400, "d7": 7 * 86400, "d14": 14 * 86400}
+PROM_CACHE_TTL = 60
+_PROM_CACHE: dict = {}
+_PROM_LOCK = threading.Lock()
 
 
 def log(msg: str) -> None:
@@ -398,6 +450,50 @@ class DashboardHandler(BaseHTTPRequestHandler):
         self._serve_file(Path(self.html_dir) / "agenti.html", "text/html; charset=utf-8",
                          head_only=head_only)
 
+    def _serve_sala(self, head_only: bool = False) -> None:
+        """Serve /sala — Sala Operativa (sala.html)."""
+        self._serve_file(Path(self.html_dir) / "sala.html", "text/html; charset=utf-8",
+                         head_only=head_only)
+
+    def _serve_trading_live(self, head_only: bool = False) -> None:
+        """Serve /trading-live — Squadra Trading Live (trading-live.html)."""
+        self._serve_file(Path(self.html_dir) / "trading-live.html", "text/html; charset=utf-8",
+                         head_only=head_only)
+
+    def _serve_sala_json(self, head_only: bool = False) -> None:
+        """Serve /api/sala.json — dal collector su mc2 (scp ogni minuto)."""
+        self._serve_dash_json("sala.json", "sala", head_only=head_only)
+
+    def _serve_live_tr_json(self, head_only: bool = False) -> None:
+        """Serve /api/live-trading.json — dal collector su MARCODG1."""
+        self._serve_dash_json("live_trading.json", "live trading", head_only=head_only)
+
+    def _serve_live(self, head_only: bool = False) -> None:
+        """Serve /live — Console LIVE dei trading attivi (live.html)."""
+        self._serve_file(Path(self.html_dir) / "live.html", "text/html; charset=utf-8",
+                         head_only=head_only)
+
+    def _serve_livefeed_json(self, head_only: bool = False) -> None:
+        """Serve /api/livefeed.json — dal daemon live_feed su MARCODG1 (~5s)."""
+        self._serve_dash_json("livefeed.json", "live feed", head_only=head_only)
+
+    def _serve_dash_json(self, nome: str, etichetta: str, head_only: bool = False) -> None:
+        """JSON dalla dir html (pattern agenti.json): 404 se manca, 500 se illeggibile."""
+        path = Path(self.html_dir) / nome
+        try:
+            body = path.read_bytes()
+            json.loads(body.decode("utf-8", "replace"))
+        except FileNotFoundError:
+            self._send(404, b'{"error":"nessun dato"}',
+                       "application/json; charset=utf-8", head_only=head_only)
+            return
+        except Exception as exc:
+            log("%s illeggibile (%s): %s" % (nome, path, exc))
+            self._send(500, json.dumps({"error": "%s illeggibile" % etichetta}).encode(),
+                       "application/json; charset=utf-8", head_only=head_only)
+            return
+        self._send(200, body, "application/json; charset=utf-8", head_only=head_only)
+
     def _serve_squadra(self, head_only: bool = False) -> None:
         """Serve /squadra — pagina «La squadra» (squadra.html)."""
         self._serve_file(Path(self.html_dir) / "squadra.html", "text/html; charset=utf-8",
@@ -428,6 +524,101 @@ class DashboardHandler(BaseHTTPRequestHandler):
                        "application/json; charset=utf-8", head_only=head_only)
             return
         self._send(200, body, "application/json; charset=utf-8", head_only=head_only)
+
+    # ── Rendita netta + proxy Prometheus ───────────────────────────────────
+    def _serve_rendita(self, head_only: bool = False) -> None:
+        """GET /api/rendita.json — riga rendita EUR/giorno per EUR + benchmark Earn."""
+        with _RENDITA_LOCK:
+            now = time.time()
+            cached = _RENDITA_CACHE.get("payload")
+            if cached is not None and now - _RENDITA_CACHE.get("ts", 0.0) < RENDITA_CACHE_TTL:
+                body = cached
+                age = now - _RENDITA_CACHE["ts"]
+            else:
+                body = self._calc_rendita()
+                _RENDITA_CACHE["payload"] = body
+                _RENDITA_CACHE["ts"] = now
+                age = 0.0
+        self._send(200, body, "application/json; charset=utf-8",
+                   {"Cache-Control": "no-store", "X-Rendita-Age-S": str(int(age))},
+                   head_only=head_only)
+
+    def _calc_rendita(self) -> bytes:
+        """Calcola la riga rendita in un subprocesso (venv con ccxt).
+
+        Il processo server resta senza ccxt e senza blocchi lunghi sulle API
+        OKX: il runner stampa SOLO il JSON finale (nessun segreto, zero ordini).
+        """
+        import subprocess
+        raw, meta = self.agg.fetch()
+        equity = None
+        if raw:
+            try:
+                equity = json.loads(raw.decode("utf-8", "replace")).get("total_equity")
+            except ValueError:
+                equity = None
+        cmd = [TABELLONE_PY, TABELLONE_RUNNER,
+               "--env", TABELLONE_ENV, "--recon", TABELLONE_RECON,
+               "--giorni", "7",
+               "--equity", "" if equity is None else repr(float(equity))]
+        try:
+            pr = subprocess.run(cmd, capture_output=True, text=True, timeout=90)
+        except Exception as exc:
+            log("rendita: runner non eseguibile: %s" % exc)
+            return json.dumps({"error": "runner rendita non eseguibile"}).encode()
+        if pr.returncode != 0:
+            log("rendita: runner rc=%s stderr=%s" % (pr.returncode, pr.stderr.strip()[:200]))
+            return json.dumps({"error": "runner rendita fallito"}).encode()
+        try:
+            payload = json.loads(pr.stdout)
+        except ValueError:
+            log("rendita: output runner non JSON")
+            return json.dumps({"error": "output runner non JSON"}).encode()
+        payload["agg_source"] = meta.get("source")
+        return json.dumps(payload, ensure_ascii=False).encode()
+
+    def _serve_prom(self, head_only: bool = False) -> None:
+        """GET /api/prom?series=&range= — serie equity della flotta via Prometheus."""
+        from urllib.parse import parse_qs
+        qs = parse_qs(self.path.split("?", 1)[1] if "?" in self.path else "")
+        serie = (qs.get("series") or ["paper_equity"])[0]
+        rng = (qs.get("range") or ["h24"])[0]
+        if serie not in PROM_SERIES or rng not in PROM_RANGE_S:
+            self._send(400, b'{"error":"series/range non ammessi"}',
+                       "application/json; charset=utf-8", head_only=head_only)
+            return
+        with _PROM_LOCK:
+            cached = _PROM_CACHE.get((serie, rng))
+            if cached is not None and time.time() - cached[0] < PROM_CACHE_TTL:
+                body = cached[1]
+            else:
+                body = self._fetch_prom(serie, rng)
+                if body:
+                    _PROM_CACHE[(serie, rng)] = (time.time(), body)
+        if not body:
+            self._send(503, b'{"error":"prometheus non disponibile"}',
+                       "application/json; charset=utf-8", head_only=head_only)
+            return
+        self._send(200, body, "application/json; charset=utf-8",
+                   {"Cache-Control": "no-store"}, head_only=head_only)
+
+    def _fetch_prom(self, serie: str, rng: str) -> bytes:
+        import urllib.parse as _up
+        end = time.time()
+        start = end - PROM_RANGE_S[rng]
+        step = max(60, int(PROM_RANGE_S[rng] / 400))
+        q = _up.quote(PROM_SERIES[serie])
+        url = "%s/api/v1/query_range?query=%s&start=%d&end=%d&step=%d" % (
+            PROM_URL, q, int(start), int(end), step)
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "denaro-dashboard/2"})
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                raw = resp.read()
+            json.loads(raw.decode("utf-8", "replace"))
+            return raw
+        except Exception as exc:
+            log("prom fetch fallito: %s" % exc)
+            return b""
 
     # ---------- HTTP ----------
     def do_GET(self) -> None:  # noqa: N802
@@ -464,6 +655,22 @@ class DashboardHandler(BaseHTTPRequestHandler):
             self._serve_airdrop_json()
         elif path in AGENTI_JSON_ROUTES:
             self._serve_agenti_json()
+        elif path in SALA_ROUTES:
+            self._serve_sala()
+        elif path in SALA_JSON_ROUTES:
+            self._serve_sala_json()
+        elif path in LIVE_TR_ROUTES:
+            self._serve_trading_live()
+        elif path in LIVE_TR_JSON_ROUTES:
+            self._serve_live_tr_json()
+        elif path in LIVE_ROUTES:
+            self._serve_live()
+        elif path in LIVE_JSON_ROUTES:
+            self._serve_livefeed_json()
+        elif path in RENDITA_ROUTES:
+            self._serve_rendita()
+        elif path == "/api/prom":
+            self._serve_prom()
         elif path in SCOMMESSA_ROUTES:
             self._serve_scommessa()
         elif path in {"/api/dsh.json", "/dsh.json"}:
@@ -515,10 +722,16 @@ class DashboardHandler(BaseHTTPRequestHandler):
 
     def _console_job_run(self, jid: str, agente: str, base: str, key: str,
                          sessione: str, messaggio: str) -> None:
-        """Esegue il turno in background: session (se serve) + chat + risultato."""
+        """Esegue il turno in background: session (se serve) + chat + risultato.
+
+        Durante la chat (che puo' durare minuti) un thread di monitoraggio
+        interroga la sessione dell'agente e pubblica `progress` nel job: la
+        console mostra cosi' che l'agente sta davvero lavorando, invece di un
+        contatore muto.
+        """
         t0 = time.time()
         esito = {"done": True, "ok": False, "agent": agente, "session_id": sessione,
-                 "reply": "", "error": "", "elapsed": 0.0}
+                 "reply": "", "error": "", "elapsed": 0.0, "progress": {}}
         if not sessione:
             st, corpo = console_http(base + "/api/sessions", "POST",
                                      {}, key, 30)
@@ -528,6 +741,34 @@ class DashboardHandler(BaseHTTPRequestHandler):
                 with CONSOLE_JOBS_LOCK:
                     CONSOLE_JOBS[jid] = esito
                 return
+            esito["session_id"] = sessione
+
+        def _monitora() -> None:
+            """Aggiorna `progress` del job con il segno di vita dell'agente."""
+            while True:
+                with CONSOLE_JOBS_LOCK:
+                    job = CONSOLE_JOBS.get(jid)
+                if not job or job.get("done"):
+                    return
+                st2, corpo2 = console_http(base + "/api/sessions/" + sessione,
+                                           "GET", key=key, timeout=5)
+                in_corso = None
+                msg = tools = None
+                if st2 == 200 and isinstance(corpo2, dict):
+                    s2 = corpo2.get("session") or corpo2
+                    if s2.get("started_at") and s2.get("ended_at") is None:
+                        in_corso = True
+                    msg = s2.get("message_count")
+                    tools = s2.get("tool_call_count")
+                with CONSOLE_JOBS_LOCK:
+                    job = CONSOLE_JOBS.get(jid)
+                    if job and not job.get("done"):
+                        job["progress"] = {"in_corso": in_corso, "msg": msg,
+                                           "tools": tools,
+                                           "in_corso_da_s": round(time.time() - t0, 1)}
+                time.sleep(5)
+
+        threading.Thread(target=_monitora, daemon=True).start()
         st, corpo = console_http(base + "/api/sessions/" + sessione + "/chat", "POST",
                                  {"message": messaggio}, key, CONSOLE_TIMEOUT)
         risposta = ""
@@ -537,6 +778,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
                      error="" if st in (200, 201) else "http %s" % st,
                      elapsed=round(time.time() - t0, 1))
         with CONSOLE_JOBS_LOCK:
+            esito["progress"] = {}
             CONSOLE_JOBS[jid] = esito
 
     def _serve_console_chat(self) -> None:
@@ -633,6 +875,22 @@ class DashboardHandler(BaseHTTPRequestHandler):
             self._serve_airdrop_json(head_only=True)
         elif path in AGENTI_JSON_ROUTES:
             self._serve_agenti_json(head_only=True)
+        elif path in SALA_ROUTES:
+            self._serve_sala(head_only=True)
+        elif path in SALA_JSON_ROUTES:
+            self._serve_sala_json(head_only=True)
+        elif path in LIVE_TR_ROUTES:
+            self._serve_trading_live(head_only=True)
+        elif path in LIVE_TR_JSON_ROUTES:
+            self._serve_live_tr_json(head_only=True)
+        elif path in LIVE_ROUTES:
+            self._serve_live(head_only=True)
+        elif path in LIVE_JSON_ROUTES:
+            self._serve_livefeed_json(head_only=True)
+        elif path in RENDITA_ROUTES:
+            self._serve_rendita(head_only=True)
+        elif path == "/api/prom":
+            self._serve_prom(head_only=True)
         elif path in SCOMMESSA_ROUTES:
             self._serve_scommessa(head_only=True)
         elif path in {r.rstrip("/") or "/" for r in JSON_ROUTES}:

@@ -1,0 +1,142 @@
+<!doctype html><html lang="it"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DENARO — LIVE · trading attivi</title>
+<style>
+:root{--bg:#070c18;--card:#0e1526;--line:#1d2a44;--text:#e6edf3;--dim:#8b98ab;--cy:#39d0ff;--gr:#3fb950;--rd:#f85149;--am:#d29922;--vio:#b18cff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;padding:18px}
+h1{font-size:18px;letter-spacing:3px;color:var(--am);margin:0 0 2px}
+.sub{color:var(--dim);font-size:11px;margin-bottom:14px}
+a.back{color:var(--dim);text-decoration:none;font-size:11px} a.back:hover{color:var(--cy)}
+.wrap{display:grid;gap:14px;max-width:1400px}
+section.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+section.card h2{font-size:12px;letter-spacing:2px;color:var(--am);margin:0 0 8px;font-weight:600}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.kpi{background:#0a1020;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.kpi .k{color:var(--dim);font-size:10.5px;letter-spacing:1px}
+.kpi .v{font-size:20px;font-weight:700;margin-top:2px}
+.pos{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:10px}
+.box{background:#0a1020;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.box h3{margin:0 0 6px;font-size:14px;display:flex;align-items:center;gap:8px}
+.badge{font-size:10px;letter-spacing:1px;border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--dim)}
+.badge.sh{color:var(--rd);border-color:#43262b}.badge.lo{color:var(--gr);border-color:#1e3a24}
+.badge.tag{color:var(--vio);border-color:#33284d}
+.mark{font-size:26px;font-weight:700}
+.upl{font-size:15px;font-weight:700}
+.row{display:flex;justify-content:space-between;border-top:1px dashed var(--line);padding:4px 0;font-size:11.5px}
+.row .k{color:var(--dim)}
+.gr{color:var(--gr)}.rd{color:var(--rd)}.am{color:var(--am)}.t{color:var(--dim)}.cy{color:var(--cy)}.vi{color:var(--vio)}
+.bar{height:6px;background:#101b31;border-radius:4px;overflow:hidden;margin-top:4px}
+.bar>i{display:block;height:100%}
+canvas{width:100%;height:56px;display:block;margin-top:8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:#0a1020;border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:11.5px}
+.chip b{color:var(--cy)}
+#stato{font-size:11px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle}
+footer{color:var(--dim);font-size:10.5px;margin-top:14px;max-width:1400px}
+</style></head><body>
+<div class="wrap">
+<header>
+<h1>DENARO — LIVE</h1>
+<div class="sub">trading attivi su OKX main · dati REALI dall'exchange (read-only) · refresh 4s &nbsp;·&nbsp; <span id="ts">…</span> &nbsp;<span id="stato"></span><br>
+<a class="back" href="/trading-live">▸ squadra trading live (economia)</a> &nbsp; <a class="back" href="/sala">▸ sala operativa</a> &nbsp; <a class="back" href="/dashboard">▸ dashboard denaro</a></div>
+</header>
+<section class="card"><h2>QUADRO</h2><div class="kpis" id="kpi">caricamento…</div></section>
+<section class="card"><h2>POSIZIONI ATTIVE (adesso)</h2><div class="pos" id="pos">caricamento…</div></section>
+<section class="card" id="sec-saldi" style="display:none"><h2>SALDI OKX</h2><div class="chips" id="saldi"></div></section>
+<section class="card" id="sec-ordini" style="display:none"><h2>ORDINI APERTI</h2><div id="ordini"></div></section>
+</div>
+<footer>read-only, nessun ordine · fonte: daemon live_feed (posizioni/balance/funding OKX EEA) · riferimento equity dal tabellone · riservata (Cloudflare Access)</footer>
+<script>
+const $=id=>document.getElementById(id);
+const FEED_URL = location.pathname.startsWith('/trading-live') ? '/trading-live/api/livefeed.json' : '/api/livefeed.json';
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fx=(v,d=2)=>(v==null||isNaN(v))?'n/d':Number(v).toFixed(d);
+const sgn=(v,d=2)=>(v==null||isNaN(v))?'n/d':(v>=0?'+':'')+Number(v).toFixed(d);
+let last=null, lastAt=0;
+
+function fmtEta(s){if(s==null||isNaN(s))return'n/d';s=Math.round(s);if(s<0)s=0;if(s<90)return s+'s';if(s<5400)return Math.round(s/60)+'m';const h=Math.floor(s/3600),m=Math.round((s%3600)/60);return h+'h '+m+'m';}
+
+function liqColor(d){if(d==null)return'var(--dim)';if(d<40)return'var(--rd)';if(d<60)return'var(--am)';return'var(--gr)';}
+
+function drawSpark(cv, vals){
+  if(!cv||!vals||vals.length<2)return;
+  const dpr=window.devicePixelRatio||1, w=cv.clientWidth, h=56;
+  cv.width=w*dpr; cv.height=h*dpr;
+  const ctx=cv.getContext('2d'); ctx.scale(dpr,dpr); ctx.clearRect(0,0,w,h);
+  const mn=Math.min(...vals), mx=Math.max(...vals), rg=(mx-mn)||1;
+  const up=vals[vals.length-1]>=vals[0], col=up?'#3fb950':'#f85149';
+  ctx.beginPath();
+  vals.forEach((v,i)=>{const x=i/(vals.length-1)*(w-2)+1, y=h-4-(v-mn)/rg*(h-10); i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
+  ctx.strokeStyle=col; ctx.lineWidth=1.6; ctx.stroke();
+  ctx.lineTo(w-1,h); ctx.lineTo(1,h); ctx.closePath();
+  ctx.fillStyle=up?'rgba(63,185,80,.12)':'rgba(248,81,73,.12)'; ctx.fill();
+}
+
+function renderFeed(d){
+  last=d; lastAt=Date.now();
+  const st=$('stato');
+  const staleS=d.stale&&d.stale.posizioni_s!=null?d.stale.posizioni_s:null;
+  if(d.ok&&(staleS==null||staleS<30)){st.innerHTML='<span class="dot" style="background:var(--gr)"></span>LIVE';}
+  else if(d.ok){st.innerHTML='<span class="dot" style="background:var(--am)"></span>STALE '+fmtEta(staleS);}
+  else {st.innerHTML='<span class="dot" style="background:var(--rd)"></span>FEED DEGRADATO';}
+  $('ts').textContent='aggiornato '+(d.ts_iso||'?');
+  const ref=d.ref||{};
+  const kpi=[
+    ['uPL live perp', '$'+sgn(d.upl_totale_usd), d.upl_totale_usd>=0?'gr':'rd'],
+    ['funding atteso/giorno','$'+sgn(d.funding_giorno_usd,3),'am'],
+    ['posizioni attive',String(d.n_posizioni),'cy'],
+    ['equity totale (tabellone)',ref.equity_eur!=null?fx(ref.equity_eur)+' €':'n/d',ref.delta24_eur>=0?'gr':'rd'],
+    ['delta 24h',ref.delta24_eur!=null?sgn(ref.delta24_eur)+' € ('+sgn(ref.delta24_pct,2)+'%)':'n/d',ref.delta24_eur>=0?'gr':'rd'],
+  ];
+  $('kpi').innerHTML=kpi.map(k=>`<div class="kpi"><div class="k">${esc(k[0])}</div><div class="v ${k[2]}">${esc(k[1])}</div></div>`).join('');
+  const ps=d.posizioni||[];
+  if(!ps.length){$('pos').innerHTML='<div class="t">nessuna posizione aperta — il sistema è flat</div>';return;}
+  $('pos').innerHTML=ps.map((p,i)=>{
+    const f=p.funding||{}, now=Date.now();
+    const count=f.next_ms?fmtEta((f.next_ms-now)/1000):'n/d';
+    const lc=liqColor(p.liq_dist_pct);
+    const barW=p.liq_dist_pct==null?0:Math.max(0,Math.min(100,p.liq_dist_pct));
+    const dc=(p.delta_base==null)?'t':(Math.abs(p.delta_pct||0)<2?'gr':'am');
+    return `<div class="box">
+      <h3>${esc(p.base)} <span class="badge tag">${esc(String(p.tag).toUpperCase())}</span>
+        <span class="badge ${p.side=='short'?'sh':'lo'}">${esc(String(p.side).toUpperCase())}</span>
+        <span class="t" style="font-size:10.5px">${esc(p.instId)}</span></h3>
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <div class="mark">${fx(p.mark, p.mark<10?4:2)}</div>
+        <div class="upl ${p.upl_usd>=0?'gr':'rd'}">${sgn(p.upl_usd,3)} $ <span class="t">(${sgn(p.upl_pct,2)}%)</span></div>
+      </div>
+      <div class="row"><span class="k">contratto</span><span>${fx(p.ct,4)} ct @ ${fx(p.entry, p.entry<10?4:2)} · noz. $${fx(p.nozionale_usd,0)}</span></div>
+      <div class="row"><span class="k">liquidazione</span><span style="color:${lc}">${fx(p.liq,4)} · ${sgn(p.liq_dist_pct,1)}% <span class="t">(${fx(p.lev,0)}x ${esc(p.mgn)})</span></span></div>
+      <div class="bar"><i style="width:${barW}%;background:${lc}"></i></div>
+      <div class="row"><span class="k">hedge spot</span><span class="${dc}">${p.spot_qty!=null?fx(p.spot_qty,4):'n/d'} ${esc(p.base)} · delta ${sgn(p.delta_base,4)}</span></div>
+      <div class="row"><span class="k">funding</span><span>${f.rate_8h_pct!=null?sgn(f.rate_8h_pct,5)+'%/8h':'n/d'} · <b class="am">${f.anno_pct!=null?sgn(f.anno_pct,2)+'%/anno':''}</b> · prossimo in ${count}</span></div>
+      <canvas data-ci="${i}"></canvas>
+    </div>`;
+  }).join('');
+  ps.forEach((p,i)=>{const cv=document.querySelector(`canvas[data-ci="${i}"]`); if(cv&&d.spark&&d.spark[p.base])drawSpark(cv,d.spark[p.base]);});
+}
+
+function renderSaldi(d){
+  const s=d.saldi||{}, keys=Object.keys(s);
+  if(!keys.length){$('sec-saldi').style.display='none';return;}
+  $('sec-saldi').style.display='';
+  $('saldi').innerHTML=keys.map(k=>`<div class="chip"><b>${esc(k)}</b> ${fx(s[k].total, s[k].total<100?6:2)}</div>`).join('');
+  const or=(d.ordini||[]);
+  $('sec-ordini').style.display=or.length?'':'none';
+  $('ordini').innerHTML=or.map(o=>`<div class="row"><span class="k">${esc(o.instId)}</span><span>${esc(o.side)} ${esc(o.type)} ${fx(o.amount,4)} @ ${fx(o.price,4)}</span></div>`).join('');
+}
+
+async function tick(){
+  try{
+    const r=await fetch('/api/livefeed.json?t='+Date.now(),{cache:'no-store'});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    renderFeed(await r.json());
+  }catch(e){
+    $('stato').innerHTML='<span class="dot" style="background:var(--rd)"></span>FEED DOWN';
+    const ts=$('ts'); if(lastAt)ts.textContent='ultimo buono '+Math.round((Date.now()-lastAt)/1000)+'s fa';
+  }
+}
+tick(); setInterval(tick,4000);
+setInterval(()=>{ if(lastAt){const s=Math.round((Date.now()-lastAt)/1000); const el=$('ts'); if(el&&el.textContent.startsWith('aggiornato')) el.textContent=el.textContent.replace(/·\d+s fa|· ?$/, '')+' · '+s+'s fa';} },1000);
+</script></body></html>
