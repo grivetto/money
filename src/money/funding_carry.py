@@ -156,17 +156,11 @@ def verifica_tariffa_xperp(corrente: float,
 # posizione aperta nello stato (carry_stato.json): una coppia chiusa non deve
 # generare ALERT/RECOVERY (spam reale su ADA chiusa dal 26/10: 11 alert in
 # ~6h mentre la sua tariffa di mercato oscillava).
-
-
-def coppie_con_posizione_aperta(stato: dict) -> set[str]:
-    """Nomi (MAIUSCOLI) delle coppie con posizione APERTA secondo lo stato:
-    campo `coppie.<nome>.aperta is True`. Coppia assente o non marcata
-    aperta = NON aperta (il watchdog tariffa non la legge)."""
-    out: set[str] = set()
-    for nome, v in ((stato or {}).get("coppie") or {}).items():
-        if isinstance(v, dict) and v.get("aperta") is True:
-            out.add(str(nome).upper())
-    return out
+# REQ-024 (29/10): il canary DOGE e' una posizione VIVA che vive in una fonte
+# di stato DEDICATA (canary_state.json, campo `status`), NON in
+# carry_stato.json: senza questa fonte il filtro di F3 lo escluderebbe dal
+# watch (buco misurato il 29/10 su uno strumento che incassa funding). Il
+# filtro resta una funzione PURA con l'input iniettato: qui niente I/O.
 
 
 def _coppia_da_inst(inst_id: str) -> str:
@@ -174,19 +168,64 @@ def _coppia_da_inst(inst_id: str) -> str:
     return (inst_id or "").split("-", 1)[0].upper()
 
 
+def coppia_canary_aperta(canary_stato) -> tuple[str | None, str | None]:
+    """REQ-024: coppia (MAIUSCOLA) del canary se lo stato la dichiara APERTA.
+    Ritorna:
+    - (coppia, None)  se `status == "open"` e `inst` leggibile;
+    - (None, motivo)  se lo stato e' assente/illeggibile — il chiamante emette
+      un WARN (mai crash, mai un alert finto su una posizione non verificata);
+    - (None, None)    se il canary e' dichiaratamente chiuso (nessun WARN)."""
+    if canary_stato is None:
+        return None, "stato canary assente o illeggibile"
+    if not isinstance(canary_stato, Mapping):
+        return None, (f"stato canary illeggibile "
+                      f"(tipo {type(canary_stato).__name__})")
+    status = canary_stato.get("status")
+    if status == "open":
+        inst = canary_stato.get("inst")
+        coppia = _coppia_da_inst(str(inst)) if inst else ""
+        if not coppia:
+            return None, "stato canary aperto ma campo inst mancante"
+        return coppia, None
+    if status == "closed":
+        return None, None
+    return None, f"campo status inatteso o mancante: {status!r}"
+
+
+def coppie_con_posizione_aperta(stato: dict,
+                                canary_stato=None) -> set[str]:
+    """Nomi (MAIUSCOLI) delle coppie con posizione APERTA secondo lo stato:
+    campo `coppie.<nome>.aperta is True` — PIU' la coppia del canary se il suo
+    stato (input INIETTATO, niente I/O qui) la dichiara aperta (REQ-024). Il
+    canary assente/illeggibile NON aggiunge coppie: il motivo e' il secondo
+    elemento del ritorno di `coppia_canary_aperta`, il WARN lo gestisce il
+    chiamante."""
+    out: set[str] = set()
+    for nome, v in ((stato or {}).get("coppie") or {}).items():
+        if isinstance(v, dict) and v.get("aperta") is True:
+            out.add(str(nome).upper())
+    coppia, _ = coppia_canary_aperta(canary_stato)
+    if coppia:
+        out.add(coppia)
+    return out
+
+
 def alert_tariffa_xperp_solo_aperte(
         stato: dict,
         correnti: Mapping[str, float],
         dichiarate: Mapping[str, float] | None = None,
-        eps: float = EPS_TARIFFA) -> list[tuple[str, str]]:
-    """Review P34-F3: come `verifica_tariffa_xperp`, ma SOLO per le coppie
-    con posizione aperta (stato carry_stato.json). Gli strumenti di coppie
-    chiuse o assenti dallo stato NON vengono confrontati. `correnti` = tariffa
-    letta per instId; un instId assente da `correnti` non e' un alert
-    (illeggibile = WARN, gestito dal chiamante). Ritorna [(inst_id, motivo)]."""
+        eps: float = EPS_TARIFFA,
+        canary_stato=None) -> list[tuple[str, str]]:
+    """Review P34-F3 + REQ-024: come `verifica_tariffa_xperp`, ma SOLO per le
+    coppie con posizione aperta: quelle di carry_stato.json PIU' la coppia del
+    canary quando il suo stato (input iniettato, niente I/O qui) la dichiara
+    aperta. Gli strumenti di coppie chiuse o assenti da ENTRAMBE le fonti NON
+    vengono confrontati. `correnti` = tariffa letta per instId; un instId
+    assente da `correnti` non e' un alert (illeggibile = WARN, gestito dal
+    chiamante). Ritorna [(inst_id, motivo)]."""
     dich = (dict(dichiarate) if dichiarate is not None
             else {i: TARIFFA_XPERP_DICHIARATA for i in correnti})
-    aperte = coppie_con_posizione_aperta(stato)
+    aperte = coppie_con_posizione_aperta(stato, canary_stato)
     out: list[tuple[str, str]] = []
     for inst, corrente in correnti.items():
         if _coppia_da_inst(inst) not in aperte:
