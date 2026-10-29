@@ -1,0 +1,36 @@
+{
+  "descrizione": "P34 review (Artù 29/10) — fixture REALE multi-riga: due righe di posizione sulla stessa instId (mgnMode cross + isolated), il caso che lettura_saldi_reali sbaglia pre-fix prendendo una sola riga.",
+  "fonte": "OKX EEA, letture read-only 2026-10-29 ~15:50 UTC (fetch_balance + fetch_positions via chiavi banco, mai stampate)",
+  "exchange_rows_dot": [
+    {
+      "symbol": "DOT/USD:USD-310808", "contracts": 84.0, "side": "short",
+      "unrealizedPnl": -0.1541999999999897, "contractSize": 1.0, "leverage": 1.0,
+      "liquidationPrice": 2.2844063266751733,
+      "info": {"instId": "DOT-USD_UM_XPERP-310808", "pos": "-84", "mgnMode": "cross",
+               "liqPx": "2.2844063266751733", "cTime": "1793047307515"}
+    },
+    {
+      "symbol": "DOT/USD:USD-310808", "contracts": 253.0, "side": "short",
+      "unrealizedPnl": 35.73780000000005, "contractSize": 1.0, "leverage": 1.0,
+      "liquidationPrice": 2.2660372694212083,
+      "info": {"instId": "DOT-USD_UM_XPERP-310808", "pos": "-253", "mgnMode": "isolated",
+               "liqPx": "2.2660372694212083", "cTime": "1792105199641"}
+    }
+  ],
+  "fetch_balance_total_DOT": 337.4586036,
+  "attesi_aggregati_post_fix": {
+    "ct_perp": -337.0,
+    "upl_usdc": 35.58360000000006,
+    "liq_px": 2.2660372694212083,
+    "qty_spot": 337.4586036,
+    "delta_q": 0.4586036,
+    "nota": "liq_px = distanza minima dal prezzo corrente (per short: la più bassa); uPL somma delle righe"
+  },
+  "lettura_pre_fix_riprodotta": {
+    "ct_perp": -84.0,
+    "upl_usdc": -0.1541999999999897,
+    "liq_px": 2.2844063266751733,
+    "delta_q": 253.4586036,
+    "nota": "è il valore che il recon pubblica dalla tranche del 26/10 20:41: delta +253,46 e netto falso −53 USDC"
+  }
+}
