@@ -7,6 +7,11 @@ Ogni run (cron 1/min su MARCODG1):
   3. pusha i valori via API history.push (cosi' nasce la storia di trading)
   4. disabilita i host "bot-*" non piu' presenti (la storia resta)
 
+Le metriche sono PARLANTI, non flag secchi: equity e PnL in EUR, rendimento e
+drawdown in %, Sharpe/Sortino/Calmar/profit factor/Kelly, win rate, trade
+vincenti/perdenti, volume, capitale, uptime in giorni, strategia. I flag 0/1
+(running/stale/in_pos) hanno una value map che li mostra come testo.
+
 Scala a qualunque numero di bot: le entita' mancanti vengono create al volo.
 
 Sicurezza: credenziali SOLO in ~/.zbx_cred (formato "Utente:Password").
@@ -28,16 +33,32 @@ GROUP_MONEY = "28"   # gruppo Money (unico gruppo di progetto, dal 02/10)
 PREFIX = "bot-"
 GRAPH_NAME = "Trading (equity/pnl/trades)"
 
-# key, nome, value_type (2=trapper; 0=float, 3=unsigned), history, trends
+# key, nome, value_type (2=trapper; 0=float, 3=unsigned, 4=text), history, trends, units
 ITEMS = [
-    ("bot.running",  "bot attivo (0/1)",       3, "30d", "365d"),
-    ("bot.stale",    "bot fermo/stale (0/1)",  3, "30d", "365d"),
-    ("bot.age_s",    "eta' ultimo tick (s)",   3, "7d",  "30d"),
-    ("bot.equity",   "equity (EUR)",           0, "90d", "365d"),
-    ("bot.pnl",      "PnL realizzato (EUR)",   0, "90d", "365d"),
-    ("bot.trades",   "numero trade",           3, "30d", "365d"),
-    ("bot.win_rate", "win rate (%)",           0, "30d", "365d"),
-    ("bot.in_pos",   "in posizione (0/1)",     3, "30d", "365d"),
+    ("bot.running",        "Bot attivo",                3, "30d", "365d", ""),
+    ("bot.stale",          "Bot fermo/stale",           3, "30d", "365d", ""),
+    ("bot.age_s",          "Eta' ultimo tick",          3, "7d",  "30d",  "s"),
+    ("bot.equity",         "Equity",                    0, "90d", "365d", "EUR"),
+    ("bot.pnl",            "PnL realizzato",            0, "90d", "365d", "EUR"),
+    ("bot.trades",         "Trade completati",          3, "30d", "365d", ""),
+    ("bot.wins",           "Trade vincenti",            3, "30d", "365d", ""),
+    ("bot.losses",         "Trade perdenti",            3, "30d", "365d", ""),
+    ("bot.win_rate",       "Win rate",                  0, "30d", "365d", "%"),
+    ("bot.in_pos",         "In posizione",              3, "30d", "365d", ""),
+    ("bot.return_pct",     "Rendimento (equity)",       0, "90d", "365d", "%"),
+    ("bot.max_dd",         "Drawdown massimo",          0, "90d", "365d", "%"),
+    ("bot.sharpe",         "Sharpe (equity)",           0, "90d", "365d", ""),
+    ("bot.sortino",        "Sortino (equity)",          0, "90d", "365d", ""),
+    ("bot.calmar",         "Calmar (equity)",           0, "90d", "365d", ""),
+    ("bot.profit_factor",  "Profit factor",             0, "90d", "365d", ""),
+    ("bot.kelly",          "Kelly fraction",            0, "90d", "365d", ""),
+    ("bot.volume",         "Volume scambiato",          0, "90d", "365d", "EUR"),
+    ("bot.capital",        "Capitale configurato",      0, "30d", "365d", "EUR"),
+    ("bot.uptime_d",       "Uptime",                    0, "90d", "365d", "d"),
+    ("bot.strategy",       "Strategia",                 4, "30d", "0",    ""),
+    ("bot.stato",          "Stato",                     4, "30d", "0",    ""),
+    ("bot.freschezza",     "Freschezza",                4, "30d", "0",    ""),
+    ("bot.posizione",      "Posizione",                 4, "30d", "0",    ""),
 ]
 
 
@@ -122,17 +143,40 @@ def ensure_items(auth, wanted):
     for meta in wanted.values():
         if not meta.get("hostid"):
             continue
-        for key, name, vt, hist, trend in ITEMS:
+        for key, name, vt, hist, trend, units in ITEMS:
             if (meta["hostid"], key) in have:
                 continue
-            missing.append({"name": name, "key_": key, "hostid": meta["hostid"],
-                            "type": 2, "value_type": vt, "history": hist, "trends": trend})
+            item = {"name": name, "key_": key, "hostid": meta["hostid"],
+                    "type": 2, "value_type": vt, "history": hist, "trends": trend}
+            if units:
+                item["units"] = units
+            missing.append(item)
     made = 0
     for batch in chunked(missing):
         r = rpc("item.create", batch, auth)
         if r:
             made += len(r.get("itemids") or [])
     return made
+
+
+def ensure_renames(auth, wanted):
+    """Allinea i NOMI degli item esistenti ai nomi nuovi (una tantum)."""
+    hostids = [m["hostid"] for m in wanted.values() if m.get("hostid")]
+    if not hostids:
+        return 0
+    nomi = {key: name for key, name, *_ in ITEMS}
+    got = rpc("item.get", {"hostids": hostids, "output": ["itemid", "key_", "name"]}, auth) or []
+    updates = []
+    for i in got:
+        target = nomi.get(i["key_"])
+        if target and i.get("name") != target:
+            updates.append({"itemid": i["itemid"], "name": target})
+    n = 0
+    for batch in chunked(updates):
+        r = rpc("item.update", batch, auth)
+        if r:
+            n += len(batch)
+    return n
 
 
 def ensure_graphs(auth, wanted):
@@ -185,6 +229,11 @@ def ensure_triggers(auth, wanted):
     return made
 
 
+def _num(v):
+    """v numerico (int/float, non bool) o None."""
+    return v if isinstance(v, (int, float)) and not isinstance(v, bool) else None
+
+
 def push_values(auth, wanted):
     now = int(time.time())
     data = []
@@ -197,15 +246,38 @@ def push_values(auth, wanted):
         age = b.get("age_s")
         stale = 1 if (b.get("stale") or (isinstance(age, (int, float)) and age > 300)) else 0
         data += [{"host": host, "key": "bot.running", "value": running},
-                 {"host": host, "key": "bot.stale", "value": stale}]
-        if isinstance(age, (int, float)):
+                 {"host": host, "key": "bot.stale", "value": stale},
+                 {"host": host, "key": "bot.stato",
+                  "value": "ATTIVO" if running else "FERMO"},
+                 {"host": host, "key": "bot.freschezza",
+                  "value": "STALE" if stale else "FRESCO"},
+                 {"host": host, "key": "bot.posizione",
+                  "value": "IN POSIZIONE" if b.get("in_posizione") else "FLAT"}]
+        if _num(age) is not None:
             data.append({"host": host, "key": "bot.age_s", "value": int(age)})
         for field, key in (("total_equity", "bot.equity"), ("pnl", "bot.pnl"),
-                           ("trades", "bot.trades"), ("win_rate_pct", "bot.win_rate"),
-                           ("in_posizione", "bot.in_pos")):
-            v = b.get(field)
-            if isinstance(v, (int, float)):
+                           ("trades", "bot.trades"), ("wins", "bot.wins"),
+                           ("losses", "bot.losses"), ("win_rate_pct", "bot.win_rate"),
+                           ("in_posizione", "bot.in_pos"),
+                           ("eq_return_pct", "bot.return_pct"),
+                           ("eq_max_dd", "bot.max_dd"),
+                           ("eq_sharpe", "bot.sharpe"),
+                           ("eq_sortino", "bot.sortino"),
+                           ("eq_calmar", "bot.calmar"),
+                           ("eq_profit_factor", "bot.profit_factor"),
+                           ("kelly", "bot.kelly"),
+                           ("volume", "bot.volume"),
+                           ("capital", "bot.capital")):
+            v = _num(b.get(field))
+            if v is not None:
                 data.append({"host": host, "key": key, "value": v})
+        uptime = _num(b.get("uptime"))
+        if uptime is not None:
+            data.append({"host": host, "key": "bot.uptime_d",
+                         "value": round(uptime / 86400.0, 2)})
+        strategy = b.get("strategy")
+        if isinstance(strategy, str) and strategy.strip():
+            data.append({"host": host, "key": "bot.strategy", "value": strategy})
     for d in data:
         d["clock"] = now
     res = rpc("history.push", data, auth)
@@ -288,12 +360,13 @@ def main():
     hc = ensure_hosts(auth, wanted, byhost)
     refresh_hostids(auth, wanted)
     ic = ensure_items(auth, wanted)
+    rn = ensure_renames(auth, wanted)
     gc = ensure_graphs(auth, wanted)
     tc = ensure_triggers(auth, wanted)
     pushed = push_values(auth, wanted)
     off, re_on = sync_host_status(auth, wanted)
-    print(f"BOTS SYNC OK: bot={len(wanted)} host+{hc} item+{ic} grafi+{gc} "
-          f"trigger+{tc} push={pushed} off={off} riabili={re_on}")
+    print(f"BOTS SYNC OK: bot={len(wanted)} host+{hc} item+{ic} rename+{rn} "
+          f"grafi+{gc} trigger+{tc} push={pushed} off={off} riabili={re_on}")
     return 0
 
 
