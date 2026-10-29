@@ -13,6 +13,7 @@ from money.recon_carry import (
     ct_firmato,
     delta_qty,
     delta_spot_mtm_usdc,
+    flag_ledger_disallineato,
     lettura_saldi_reali,
     netto_usdc,
 )
@@ -144,3 +145,23 @@ def test_lettura_saldi_reali_singola_riga_regressione():
     assert s.upl_usdc == pytest.approx(-1.25)
     assert s.liq_px == pytest.approx(2.1)
     assert delta_qty(s.qty_spot, s.ct_perp, 1.0) == pytest.approx(-0.253)
+
+
+# ── Review P34 29/10 (F2): flag ledger <-> saldi reali nel recon ────────────
+
+def test_flag_ledger_disallineato_fixture_e_allineato():
+    """Fixture: ledger 252,747 (senza la tranche del 26/10) vs reale 337,4586
+    → flag ATTIVO con la riga leggibile; ledger allineato → nessun flag;
+    dentro la tolleranza max(1% della reale, 1 unita') → nessun flag."""
+    flag = flag_ledger_disallineato(252.747, 337.4586036)
+    assert flag is not None
+    assert "ledger non allineato" in flag
+    assert "252.747" in flag
+    assert "337.4586" in flag
+    assert flag_ledger_disallineato(337.4586036, 337.4586036) is None
+    assert flag_ledger_disallineato(0.0, 0.0) is None
+    # tolleranza = max(1% della quantita' reale, 1 unita')
+    assert flag_ledger_disallineato(201.5, 200.0) is None        # 0,75% → dentro
+    assert flag_ledger_disallineato(203.0, 200.0) is not None    # 1,5% → oltre
+    assert flag_ledger_disallineato(10.5, 10.0) is None          # < 1 unita' → dentro
+    assert flag_ledger_disallineato(11.5, 10.0) is not None      # > 1 unita' → oltre

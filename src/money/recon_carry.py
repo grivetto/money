@@ -110,3 +110,28 @@ def netto_usdc(funding_usdc: float, fee_signed_usdc: float, upl_usdc: float,
                delta_spot_usdc: float) -> float:
     """Netto = funding incassato + fee (negative) + uPnl perp + delta spot."""
     return funding_usdc + fee_signed_usdc + upl_usdc + delta_spot_usdc
+
+
+#: Review P34-F2 (29/10): tolleranza ledger<->saldi. |diff| > max(1% della
+#: quantita' reale, 1 unita') = il ledger (spot gross netto fee) non copre i
+#: saldi reali: il netto misto (costo ledger x quantita' reale) NON va
+#: pubblicato in silenzio — il recon lo marca con un campo dedicato.
+TOLLERANZA_LEDGER_REL = 0.01
+TOLLERANZA_LEDGER_ASSOLUTA = 1.0
+
+
+def flag_ledger_disallineato(
+        qty_net_ledger: float, qty_spot_reale: float,
+        tolleranza_rel: float = TOLLERANZA_LEDGER_REL,
+        tolleranza_assoluta: float = TOLLERANZA_LEDGER_ASSOLUTA) -> Optional[str]:
+    """Review P34-F2: None se la quantita' del ledger (gross netto fee) copre
+    la qty_spot reale entro max(1% della reale, 1 unita'); altrimenti la
+    riga leggibile del disallineamento (es. «ledger non allineato: 252.747
+    vs 337.4586»), da pubblicare come campo dedicato invece di un netto
+    misto silenzioso."""
+    diff = abs(qty_net_ledger - qty_spot_reale)
+    tolleranza = max(abs(qty_spot_reale) * tolleranza_rel, tolleranza_assoluta)
+    if diff <= tolleranza:
+        return None
+    return (f"ledger non allineato: {qty_net_ledger:.3f} vs "
+            f"{qty_spot_reale:.4f}")
