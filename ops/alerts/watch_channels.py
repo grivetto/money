@@ -8,6 +8,11 @@ senza esito in results.md.
 - Alert (Telegram + log) se una REQ PENDING ha più di SOGLIA_REQ_S (default 24h) dall'header.
 Sempre: riga di stato in log (append) — il silenzio del guardiano stesso è verificabile.
 
+Dedup e formato: UNA chiave STABILE per condizione (mai il testo: contiene numeri che
+drifttano a ogni giro) e UN messaggio consolidato per giro — max 1 invio/giorno per
+condizione. Il testo intero come chiave azzerava il dedup (~10 msg/ora; incidente
+28-29/10/26: 227 messaggi in 24h) — non tornare indietro.
+
 Stdlib only. Nessuna chiave, nessuna scrittura fuori dal log.
 """
 from __future__ import annotations
@@ -40,6 +45,21 @@ def _notifica_tg(testo: str) -> bool:
         return r.returncode == 0
     except Exception:
         return False
+
+
+def _chiave_alert(a: str) -> str:
+    """Chiave STABILE dell'alert per il dedup (il testo 'drifta' ogni giro).
+
+    Mai usare il testo intero come chiave: '10.5 giorni' / '251.8h fa' cambiano a ogni
+    giro e il dedup non scatta mai (bug 28-29/10/26: ~10 messaggi/ora per ~24h).
+    """
+    m = re.search(r"canale '([^']+)' muto", a)
+    if m:
+        return "muto:%s" % m.group(1)
+    m = re.search(r"(REQ-[\w-]+)\s+PENDING", a, re.I)
+    if m:
+        return "req:%s" % m.group(1).upper()
+    return "raw:%s" % a[:80]
 
 
 def eta_canale(dir_canale: Path, now: float) -> float | None:
@@ -114,12 +134,21 @@ def main() -> int:
         pass
     if alert and not args.dry:
         stato_tg = _leggi_stato_alert()
+        da_inviare = []
         for a in alert:
-            ultimo = float(stato_tg.get(a, 0))
-            if now - ultimo < 86400:  # max 1 messaggio/giorno per alert
+            chiave = _chiave_alert(a)
+            ultimo = float(stato_tg.get(chiave, 0))
+            if now - ultimo < 86400:  # max 1 messaggio/giorno per CONDIZIONE
                 continue
-            if _notifica_tg("⚠️ " + a):
-                stato_tg[a] = now
+            da_inviare.append((chiave, a))
+        if da_inviare:
+            righe = [a for _, a in da_inviare[:15]]
+            testo = "⚠️ CANALI — %d problemi aperti:\n" % len(da_inviare) + "\n".join("- " + r for r in righe)
+            if len(da_inviare) > 15:
+                testo += "\n…e altri %d" % (len(da_inviare) - 15)
+            if _notifica_tg(testo):
+                for chiave, _ in da_inviare:
+                    stato_tg[chiave] = now
         _scrivi_stato_alert(stato_tg)
     return 0
 

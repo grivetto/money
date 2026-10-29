@@ -65,6 +65,36 @@ def test_req_pendenti_case_insensitive(cartella):
     assert wc.req_pendenti(d, time.time()) == []
 
 
+def test_chiave_alert_stabile_sul_drift():
+    """La chiave di dedup non deve cambiare quando il testo 'drifta' (numeri che si muovono)."""
+    a1 = "CANALI: canale 'dsh' muto da 10.4 giorni (ultima attivita' 250.8h fa)"
+    a2 = "CANALI: canale 'dsh' muto da 10.5 giorni (ultima attivita' 251.8h fa)"
+    assert wc._chiave_alert(a1) == wc._chiave_alert(a2) == "muto:dsh"
+    r1 = "CANALI: REQ-20260928-222647-941241 PENDING da 741.8h senza esito in results.md"
+    r2 = "CANALI: REQ-20260928-222647-941241 PENDING da 742.8h senza esito in results.md"
+    assert wc._chiave_alert(r1) == wc._chiave_alert(r2) == "req:REQ-20260928-222647-941241"
+
+
+def test_dedup_tra_giri_con_testo_driftato(cartella, monkeypatch):
+    """Il secondo giro (testo driftato di un'ora) NON deve rinviare nulla: chiave stabile."""
+    inviati: list[str] = []
+    monkeypatch.setattr(wc, "BRIDGE", cartella)
+    monkeypatch.setattr(wc, "LOG", cartella / "log.txt")
+    monkeypatch.setattr(wc, "_notifica_tg", lambda t: inviati.append(t) or True)
+    d = _mkcanale(cartella, "dsh", req_txt=_req("REQ-D-20261020-001", "2026-10-20"),
+                  age_req_s=8 * 86400, age_res_s=8 * 86400)
+    sys.argv = ["watch_channels", "--canali", "dsh"]
+    wc.main()
+    assert len(inviati) == 1  # UN messaggio consolidato (muto + REQ vecchia)
+    assert "muto" in inviati[0] and "REQ-D-20261020-001" in inviati[0]
+    now = time.time()
+    for nome_f in ("requests.md", "results.md"):
+        p = d / nome_f
+        os.utime(p, (now - 8 * 86400 - 3600, now - 8 * 86400 - 3600))
+    wc.main()  # testo driftato di un'ora: chiave uguale -> niente secondo invio
+    assert len(inviati) == 1
+
+
 def test_main_dry_tmp(cartella, monkeypatch):
     monkeypatch.setattr(wc, "BRIDGE", cartella)
     monkeypatch.setattr(wc, "LOG", cartella / "log.txt")

@@ -43,6 +43,38 @@ def test_rendimento_su_capitale_leva():
     assert fw.rendimento_su_capitale(10.0, 2.0) == pytest.approx(10.0 / 1.5)
 
 
+def test_silenzio_notte_confini(monkeypatch):
+    monkeypatch.delenv("DENARO_TG_SILENZIO", raising=False)
+    import datetime as dt
+
+    assert fw.in_silenzio(dt.datetime(2026, 10, 30, 22, 29)) is False
+    assert fw.in_silenzio(dt.datetime(2026, 10, 30, 22, 30)) is True
+    assert fw.in_silenzio(dt.datetime(2026, 10, 30, 3, 0)) is True
+    assert fw.in_silenzio(dt.datetime(2026, 10, 30, 7, 29)) is True
+    assert fw.in_silenzio(dt.datetime(2026, 10, 30, 7, 30)) is False
+    assert fw.in_silenzio(dt.datetime(2026, 10, 30, 12, 0)) is False
+
+
+def test_silenzio_disattivabile_con_env(monkeypatch):
+    import datetime as dt
+
+    monkeypatch.setenv("DENARO_TG_SILENZIO", "off")
+    assert fw.in_silenzio(dt.datetime(2026, 10, 30, 3, 0)) is False
+
+
+def test_alert_soppresso_in_finestra(monkeypatch, tmp_path):
+    """In finestra di silenzio non parte nulla e lo stato anti-spam NON viene toccato."""
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "finto")
+    monkeypatch.setenv("TELEGRAM_CHAT_ID", "123")
+    monkeypatch.setattr(fw, "STATO_ALERT", tmp_path / "stato_alert.json")
+    monkeypatch.setattr(fw, "in_silenzio", lambda adesso=None: True)
+    out = {"sopra_soglia": [{"instId": "X-USD_UM_XPERP-310404", "lordo_annuo_pct": 20.0,
+                             "netto_annuo_pct": 19.0, "rend_capitale_leva1_pct": 9.5}],
+           "ts": "t", "soglia_pct": 12.0, "giorni_tenuta": 30.0}
+    assert fw.invia_alert(out) is False
+    assert not (tmp_path / "stato_alert.json").exists()
+
+
 def test_alert_senza_token_non_invia(monkeypatch):
     """Senza credenziali Telegram non parte nessuna chiamata."""
     monkeypatch.delenv("TELEGRAM_BOT_TOKEN", raising=False)
@@ -69,6 +101,7 @@ def test_alert_invia_e_dedup(monkeypatch, tmp_path):
         return _R()
 
     monkeypatch.setattr(fw.urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(fw, "in_silenzio", lambda adesso=None: False)  # il test non dipende dall'ora
     out = {"sopra_soglia": [{"instId": "X-USD_UM_XPERP-310404", "lordo_annuo_pct": 20.0,
                              "netto_annuo_pct": 19.0, "rend_capitale_leva1_pct": 9.5}],
            "ts": "t", "soglia_pct": 12.0, "giorni_tenuta": 30.0}

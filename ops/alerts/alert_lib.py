@@ -52,10 +52,17 @@ def _registra_inviato(testo: str) -> None:
 
 
 def invia_o_spool(testo: str) -> bool:
-    """Invia; se fallisce accoda nello spool (riprovato al prossimo giro)."""
-    if notifica_tg.invia(testo):
+    """Invia; se FALLISCE accoda nello spool (riprovato al prossimo giro).
+
+    Finestra di silenzio notturna: esito 'suppressed' => NON si accoda (il messaggio
+    e' gia' tracciato in tg_notte.log): accodarlo produrrebbe un burst di invii alle 07:30.
+    """
+    esito = notifica_tg.invia_con_esito(testo)
+    if esito == "sent":
         _registra_inviato(testo)
         return True
+    if esito == "suppressed":
+        return False
     try:
         DIR.mkdir(parents=True, exist_ok=True)
         with SPOOL.open("a", encoding="utf-8") as f:

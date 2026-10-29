@@ -49,6 +49,18 @@ VOL_MIN = 100_000.0
 OUTDIR = Path("prove/funding_watch")
 STATO_ALERT = OUTDIR / "stato_alert.json"
 COOLDOWN_ALERT_S = 6 * 3600
+#: Finestra di silenzio notturna — STESSA di ops/alerts/notifica_tg.py (tenerle allineate).
+SILENZIO_DA, SILENZIO_A = "22:30", "07:30"
+
+
+def in_silenzio(adesso: "datetime | None" = None) -> bool:
+    """True se l'ora LOCALE e' nella finestra 22:30-07:30 (DENARO_TG_SILENZIO=off la disattiva)."""
+    if (os.environ.get("DENARO_TG_SILENZIO") or "").strip().lower() in {"off", "0", "no"}:
+        return False
+    t = (adesso or datetime.now()).strftime("%H:%M")
+    if SILENZIO_DA <= SILENZIO_A:
+        return SILENZIO_DA <= t < SILENZIO_A
+    return t >= SILENZIO_DA or t < SILENZIO_A
 
 
 def get(path: str, params: dict | None = None) -> list:
@@ -140,6 +152,9 @@ def invia_alert(out: dict, cooldown_s: int = COOLDOWN_ALERT_S) -> bool:
     token = os.environ.get("TELEGRAM_BOT_TOKEN")
     chat = os.environ.get("TELEGRAM_CHAT_ID")
     if not token or not chat or not out["sopra_soglia"]:
+        return False
+    if in_silenzio():
+        print("alert soppresso (silenzio notturno 22:30-07:30): riprovo dopo la finestra", file=sys.stderr)
         return False
     firma = ",".join(f"{r['instId']}:{round(r['lordo_annuo_pct'])}" for r in out["sopra_soglia"][:5])
     try:

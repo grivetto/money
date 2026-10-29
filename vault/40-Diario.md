@@ -213,3 +213,8 @@
 - Watchdog fabbrica: era sano (log silenzioso = nessuna anomalia; shard freschi). Migliorato: notifier TG ri-puntato a money/ops/alerts/notifica_tg.py (puntava al repo legacy abbandonato) + heartbeat ogni 6h nel log (cron verificabile anche senza anomalie). Test boundary simulato: HEARTBEAT stampato, rc 0.
 - Git multi-nodo riallineato su 5c1b6bac (merge di main locale con origin che aveva PR console + P34 riapplicata). MARCODG1: wip preservato in /tmp/money_wip_1793200368.tar.gz + branch backup-09b6d99-20261028 (commit superseded).
 - Residuo dichiarato: migrazione dei worker nodi dalle copie standalone al repo (voce di cutover).
+
+## 2026-10-29 (sera) — Notifiche TG: silenzio notturno 22:30-07:30 + fix dedup «guardiano canali»
+- **Incidente spam (segnalato dall'owner)**: il guardiano canali (`ops/alerts/watch_channels.py`, cron orario dal 28/10) ha inviato **227 messaggi in ~24h** (~10/ora; ~80 nella finestra notturna). Root cause: dedup con il TESTO dell'alert come chiave — i numeri driftano a ogni giro («muto da 10.5 giorni», «251.8h fa») ⇒ chiave sempre nuova ⇒ mai deduplicato. Fix: chiave stabile per condizione (`muto:<canale>` / `req:<ID>`) + un solo messaggio consolidato per giro (max 1/giorno per condizione).
+- **Silenzio notturno 22:30-07:30** (direttiva owner): gate centrale in `notifica_tg.invia_con_esito()` + copia in `funding_watch.invia_alert()`; in finestra non si invia → riga in `logs/tg_notte.log` e CLI rc=5; bypass `--urgente` (non usato da nessun sender) e `DENARO_TG_SILENZIO=off`. `alert_lib` distingue sent/failed/suppressed: i soppressi NON finiscono nello spool (niente burst alle 07:30).
+- Evidenze: prova viva CLI in finestra (rc=5, riga in tg_notte.log, zero invii TG); suite **1167 passed**; ruff pulito.
