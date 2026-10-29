@@ -95,3 +95,5 @@ STATO DELLA CODA
 
 ## Aggiornamento 2026-10-29 (4) — E11 pre-registrata (TSMOM long-only BTC/ETH)
 - E11_tsmom_btc_eth.md ... **PRE-REGISTRATA (Artù 29/10)** — la baseline time-series momentum 12M/1M nella variante long-only (imposta dalle venue spot-only; short negativi in E6/E8): R12M mensile, pesi uguali BTC/ETH, costi RT 0,20%; criteri T1–T3 + **T4 value-add (DD OOS ≤ DD buy&hold)** + DSR N=5. Implementazione: Merlino (REQ-MERL-20261029-025). Se fallisce: lane chiusa in questa forma.
+
+- REQ-MERL-20261029-024 (follow-up F3): copertura tariffa **canary DOGE ripristinata** (canary_state.json, status=open) — REVIEW PASS + PR #18 → main d4ade17a + deploy MARCODG1; runtime «ok=2/2, skip=4, canary_state(DOGE), alert=NONE».
