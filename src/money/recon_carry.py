@@ -12,6 +12,10 @@ o prezzi.
 
 Qui vivono le funzioni pure di lettura/calcolo, con l'exchange INIETTATO:
 il cron su MARCODG1 le usa con il client ccxt reale, i test con un mock.
+
+Review P34 (29/10): la lettura aggrega TUTTE le righe di posizione per
+instId (isolated + cross: ct/uPL sommati, liq piu' vicina al prezzo) e il
+recon ha un flag per il caso ledger non allineato ai saldi reali.
 """
 from __future__ import annotations
 
@@ -57,23 +61,39 @@ def lettura_saldi_reali(ex, *, nome: str, sym_perp: str, sym_spot: str,
                         ct_val: float) -> SaldoReale:
     """Fotografia reale di una gamba carry: saldo spot da fetch_balance
     (total), perp/uPL/liq da fetch_positions, prezzi da fetch_ticker.
-    Mai i numeri dello stato."""
+    Mai i numeri dello stato.
+
+    Multi-riga (review P34 29/10): la stessa instId puo' avere PIU' righe di
+    posizione (mgnMode cross + isolated): i contratti si SOMMANO con segno,
+    gli uPL si sommano, la liq e' quella a distanza minima dal prezzo corrente
+    (per uno short: la piu' bassa). Pre-review veniva letta UNA sola riga e in
+    produzione il delta usciva gonfiato (+253,46 invece di +0,46)."""
     b = ex.fetch_balance()
     qty_spot = _f((b.get("total") or {}).get(nome))
-    ct, upl, liq = 0.0, 0.0, None
+    ct, upl = 0.0, 0.0
+    liqs: list[float] = []
     for p in (ex.fetch_positions([sym_perp]) or []):
-        if abs(ct_firmato(p)) > 0:
-            ct = ct_firmato(p)
-            upl = _f(p.get("unrealizedPnl"))
-            raw = (p.get("info") or {}).get("liqPx")
-            if raw not in (None, ""):
-                liq = _f(raw)
-            break
+        c = ct_firmato(p)
+        if abs(c) <= 0:
+            continue
+        ct += c
+        upl += _f(p.get("unrealizedPnl"))
+        raw = (p.get("info") or {}).get("liqPx")
+        if raw not in (None, ""):
+            liqs.append(_f(raw))
     t_s = ex.fetch_ticker(sym_spot)
     t_p = ex.fetch_ticker(sym_perp)
+    px_spot = _f(t_s.get("last"))
+    px_perp = _f(t_p.get("last"))
+    liq = None
+    if liqs:
+        ref = px_perp if px_perp > 0 else (px_spot if px_spot > 0 else None)
+        if ref is not None:
+            liq = min(liqs, key=lambda v: abs(v - ref))
+        else:
+            liq = min(liqs) if ct < 0 else max(liqs)
     return SaldoReale(qty_spot=qty_spot, ct_perp=ct, upl_usdc=upl,
-                      liq_px=liq, px_spot=_f(t_s.get("last")),
-                      px_perp=_f(t_p.get("last")))
+                      liq_px=liq, px_spot=px_spot, px_perp=px_perp)
 
 
 def delta_qty(qty_spot: float, ct_perp: float, ct_val: float) -> float:

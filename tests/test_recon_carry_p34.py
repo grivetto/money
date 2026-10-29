@@ -23,7 +23,7 @@ class MockReconEx:
 
     def __init__(self, *, nome="DOT", total_spot=0.0, contracts=0.0,
                  side="short", upl=0.0, liq_px=None, px_spot=1.0,
-                 px_perp=1.0):
+                 px_perp=1.0, rows=None):
         self.nome = nome
         self.total_spot = total_spot
         self.contracts = contracts
@@ -32,11 +32,14 @@ class MockReconEx:
         self.liq_px = liq_px
         self.px_spot = px_spot
         self.px_perp = px_perp
+        self.rows = rows
 
     def fetch_balance(self):
         return {"total": {self.nome: self.total_spot}}
 
     def fetch_positions(self, syms=None):
+        if self.rows is not None:
+            return [dict(r) for r in self.rows]
         if abs(self.contracts) <= 0:
             return []
         info = {}
@@ -94,3 +97,50 @@ def test_lettura_pair_chiusa_zero():
     assert s.ct_perp == 0.0
     assert s.upl_usdc == 0.0
     assert s.liq_px is None
+
+
+# ── Review P34 29/10 (F1): aggregazione multi-riga sulla stessa instId ──────
+
+def _righe_fixture_multiriga_dot():
+    """Fixture REALE 29/10 (prove/p34_fixture_multiriga_20261029.json): DUE
+    righe di posizione sulla stessa instId DOT — cross -84 + isolated -253,
+    il caso che pre-fix faceva leggere una sola riga (delta +253,46)."""
+    return [
+        {"contracts": 84.0, "side": "short",
+         "unrealizedPnl": -0.1541999999999897,
+         "info": {"instId": "DOT-USD_UM_XPERP-310808", "pos": "-84",
+                  "mgnMode": "cross", "liqPx": "2.2844063266751733"}},
+        {"contracts": 253.0, "side": "short",
+         "unrealizedPnl": 35.73780000000005,
+         "info": {"instId": "DOT-USD_UM_XPERP-310808", "pos": "-253",
+                  "mgnMode": "isolated", "liqPx": "2.2660372694212083"}},
+    ]
+
+
+def test_lettura_saldi_reali_multiriga_fixture_reale():
+    """Review F1: ct = SOMMA firmata delle righe, uPL = somma, liq = quella a
+    distanza minima dal prezzo (per lo short: la piu' bassa). Pre-fix la
+    prima riga veniva presa da sola: ct -84 e delta +253,4586 (bug vero)."""
+    ex = MockReconEx(nome="DOT", total_spot=337.4586036,
+                     rows=_righe_fixture_multiriga_dot(),
+                     px_spot=1.0, px_perp=1.0)
+    s = lettura_saldi_reali(ex, nome="DOT", sym_perp="DOT/USD:USD-310808",
+                            sym_spot="DOT/USDC", ct_val=1.0)
+    assert s.qty_spot == pytest.approx(337.4586036)
+    assert s.ct_perp == pytest.approx(-337.0)
+    assert s.upl_usdc == pytest.approx(35.58360000000006)
+    assert s.liq_px == pytest.approx(2.2660372694212083)
+    assert delta_qty(s.qty_spot, s.ct_perp, 1.0) == pytest.approx(0.4586036)
+
+
+def test_lettura_saldi_reali_singola_riga_regressione():
+    """Regressione: con UNA sola riga l'aggregazione non cambia il risultato
+    del comportamento pre-review (caso scaling DOT 23/10)."""
+    ex = MockReconEx(total_spot=252.747, contracts=253, side="short",
+                     upl=-1.25, liq_px=2.1, px_spot=1.141, px_perp=1.1405)
+    s = lettura_saldi_reali(ex, nome="DOT", sym_perp="DOT/USD:USD-310808",
+                            sym_spot="DOT/USDC", ct_val=1.0)
+    assert s.ct_perp == pytest.approx(-253.0)
+    assert s.upl_usdc == pytest.approx(-1.25)
+    assert s.liq_px == pytest.approx(2.1)
+    assert delta_qty(s.qty_spot, s.ct_perp, 1.0) == pytest.approx(-0.253)
