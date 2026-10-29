@@ -39,7 +39,7 @@ footer{color:var(--dim);font-size:10.5px;margin-top:14px;max-width:1400px}
 <header>
 <h1>DENARO — LIVE</h1>
 <div class="sub">trading attivi su OKX main · dati REALI dall'exchange (read-only) · refresh 4s &nbsp;·&nbsp; <span id="ts">…</span> &nbsp;<span id="stato"></span><br>
-<a class="back" href="/trading-live">▸ squadra trading live (economia)</a> &nbsp; <a class="back" href="/sala">▸ sala operativa</a> &nbsp; <a class="back" href="/dashboard">▸ dashboard denaro</a></div>
+<a class="back" href="/trading-live">▸ squadra trading live (economia)</a> &nbsp; <a class="back" href="#" onclick="location.reload();return false;">▸ ricarica</a> &nbsp; <a class="back" href="/sala">▸ sala operativa</a> &nbsp; <a class="back" href="/dashboard">▸ dashboard denaro</a></div>
 </header>
 <section class="card"><h2>QUADRO</h2><div class="kpis" id="kpi">caricamento…</div></section>
 <section class="card"><h2>POSIZIONI ATTIVE (adesso)</h2><div class="pos" id="pos">caricamento…</div></section>
@@ -115,6 +115,7 @@ function renderFeed(d){
     </div>`;
   }).join('');
   ps.forEach((p,i)=>{const cv=document.querySelector(`canvas[data-ci="${i}"]`); if(cv&&d.spark&&d.spark[p.base])drawSpark(cv,d.spark[p.base]);});
+  renderSaldi(d);
 }
 
 function renderSaldi(d){
@@ -127,16 +128,20 @@ function renderSaldi(d){
   $('ordini').innerHTML=or.map(o=>`<div class="row"><span class="k">${esc(o.instId)}</span><span>${esc(o.side)} ${esc(o.type)} ${fx(o.amount,4)} @ ${fx(o.price,4)}</span></div>`).join('');
 }
 
+let errCount=0;
 async function tick(){
   try{
-    const r=await fetch('/api/livefeed.json?t='+Date.now(),{cache:'no-store'});
+    const r=await fetch(FEED_URL+'?t='+Date.now(),{cache:'no-store'});
     if(!r.ok)throw new Error('HTTP '+r.status);
     renderFeed(await r.json());
+    errCount=0;
   }catch(e){
-    $('stato').innerHTML='<span class="dot" style="background:var(--rd)"></span>FEED DOWN';
+    errCount++;
+    $('stato').innerHTML='<span class="dot" style="background:var(--rd)"></span>FEED DOWN ['+esc(e.message||e.name||'errore')+'] · retry';
     const ts=$('ts'); if(lastAt)ts.textContent='ultimo buono '+Math.round((Date.now()-lastAt)/1000)+'s fa';
   }
+  setTimeout(tick, errCount?1500:4000);
 }
-tick(); setInterval(tick,4000);
+tick();
 setInterval(()=>{ if(lastAt){const s=Math.round((Date.now()-lastAt)/1000); const el=$('ts'); if(el&&el.textContent.startsWith('aggiornato')) el.textContent=el.textContent.replace(/·\d+s fa|· ?$/, '')+' · '+s+'s fa';} },1000);
 </script></body></html>
