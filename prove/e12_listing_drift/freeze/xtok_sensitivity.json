@@ -1,0 +1,293 @@
+{
+ "n_xtok_events": 25,
+ "n_included": 3,
+ "n_excluded": 22,
+ "included_stats": {
+  "n": 3,
+  "mean": 0.005532020482278673,
+  "sd": 0.017803623780929548,
+  "t": 0.5381904640156394
+ },
+ "oos_after_filters": {
+  "n": 3,
+  "mean": 0.005532020482278673,
+  "sd": 0.017803623780929548,
+  "t": 0.5381904640156394
+ },
+ "excluded_reasons": [
+  "zero al bar 0",
+  "zero al bar 14",
+  "zero al bar 0",
+  "zero al bar 6",
+  "zero al bar 0",
+  "zero al bar 0",
+  "zero al bar 0",
+  "zero al bar 0",
+  "zero al bar 0",
+  "zero al bar 0",
+  "zero al bar 0",
+  "zero al bar 0",
+  "zero al bar 0",
+  "zero al bar 0",
+  "zero al bar 0",
+  "zero al bar 0",
+  "zero al bar 0",
+  "zero al bar 0",
+  "zero al bar 0",
+  "zero al bar 0",
+  "zero al bar 2",
+  "zero al bar 2"
+ ],
+ "rows": [
+  {
+   "instId": "XSNDK-USDC",
+   "ann_utc": "2026-09-10 08:00",
+   "band": "OOS",
+   "first_utc": "2026-09-07 02:00",
+   "ok": false,
+   "reason": "zero al bar 0",
+   "ret_base": null,
+   "qvol24": null
+  },
+  {
+   "instId": "XMU-USDC",
+   "ann_utc": "2026-09-10 08:00",
+   "band": "OOS",
+   "first_utc": "2026-09-08 01:00",
+   "ok": false,
+   "reason": "zero al bar 14",
+   "ret_base": null,
+   "qvol24": null
+  },
+  {
+   "instId": "XSPCX-USDC",
+   "ann_utc": "2026-09-10 08:00",
+   "band": "OOS",
+   "first_utc": "2026-09-08 01:00",
+   "ok": true,
+   "reason": null,
+   "ret_base": 0.022457225162457187,
+   "qvol24": 357991.7983197
+  },
+  {
+   "instId": "XSOXL-USDC",
+   "ann_utc": "2026-09-10 08:00",
+   "band": "OOS",
+   "first_utc": "2026-09-08 01:00",
+   "ok": true,
+   "reason": null,
+   "ret_base": -0.013036130068245663,
+   "qvol24": 529678.7636303998
+  },
+  {
+   "instId": "XSKHY-USDC",
+   "ann_utc": "2026-09-10 08:00",
+   "band": "OOS",
+   "first_utc": "2026-09-08 01:00",
+   "ok": true,
+   "reason": null,
+   "ret_base": 0.007174966352624493,
+   "qvol24": 2021694.1144722
+  },
+  {
+   "instId": "XCRCL-USDC",
+   "ann_utc": "2026-09-10 08:00",
+   "band": "OOS",
+   "first_utc": "2026-09-08 01:00",
+   "ok": false,
+   "reason": "zero al bar 0",
+   "ret_base": null,
+   "qvol24": null
+  },
+  {
+   "instId": "XMSTR-USDC",
+   "ann_utc": "2026-09-10 08:00",
+   "band": "OOS",
+   "first_utc": "2026-09-08 01:00",
+   "ok": false,
+   "reason": "zero al bar 6",
+   "ret_base": null,
+   "qvol24": null
+  },
+  {
+   "instId": "XMRVL-USDC",
+   "ann_utc": "2026-09-10 08:00",
+   "band": "OOS",
+   "first_utc": "2026-09-08 01:00",
+   "ok": false,
+   "reason": "zero al bar 0",
+   "ret_base": null,
+   "qvol24": null
+  },
+  {
+   "instId": "XINTC-USDC",
+   "ann_utc": "2026-09-10 08:00",
+   "band": "OOS",
+   "first_utc": "2026-09-08 01:00",
+   "ok": false,
+   "reason": "zero al bar 0",
+   "ret_base": null,
+   "qvol24": null
+  },
+  {
+   "instId": "XTSLA-USDC",
+   "ann_utc": "2026-09-10 08:00",
+   "band": "OOS",
+   "first_utc": "2026-09-08 01:00",
+   "ok": false,
+   "reason": "zero al bar 0",
+   "ret_base": null,
+   "qvol24": null
+  },
+  {
+   "instId": "XQQQ-USDC",
+   "ann_utc": "2026-09-10 08:00",
+   "band": "OOS",
+   "first_utc": "2026-09-08 01:00",
+   "ok": false,
+   "reason": "zero al bar 0",
+   "ret_base": null,
+   "qvol24": null
+  },
+  {
+   "instId": "XSPY-USDC",
+   "ann_utc": "2026-09-10 08:00",
+   "band": "OOS",
+   "first_utc": "2026-09-07 02:00",
+   "ok": false,
+   "reason": "zero al bar 0",
+   "ret_base": null,
+   "qvol24": null
+  },
+  {
+   "instId": "XLITE-USDC",
+   "ann_utc": "2026-09-10 08:00",
+   "band": "OOS",
+   "first_utc": "2026-09-08 01:00",
+   "ok": false,
+   "reason": "zero al bar 0",
+   "ret_base": null,
+   "qvol24": null
+  },
+  {
+   "instId": "XNVDA-USDC",
+   "ann_utc": "2026-09-10 08:00",
+   "band": "OOS",
+   "first_utc": "2026-09-08 01:00",
+   "ok": false,
+   "reason": "zero al bar 0",
+   "ret_base": null,
+   "qvol24": null
+  },
+  {
+   "instId": "XAMD-USDC",
+   "ann_utc": "2026-09-10 08:00",
+   "band": "OOS",
+   "first_utc": "2026-09-08 01:00",
+   "ok": false,
+   "reason": "zero al bar 0",
+   "ret_base": null,
+   "qvol24": null
+  },
+  {
+   "instId": "XEWY-USDC",
+   "ann_utc": "2026-09-10 08:00",
+   "band": "OOS",
+   "first_utc": "2026-09-08 01:00",
+   "ok": false,
+   "reason": "zero al bar 0",
+   "ret_base": null,
+   "qvol24": null
+  },
+  {
+   "instId": "XCBRS-USDC",
+   "ann_utc": "2026-09-10 08:00",
+   "band": "OOS",
+   "first_utc": "2026-09-08 01:00",
+   "ok": false,
+   "reason": "zero al bar 0",
+   "ret_base": null,
+   "qvol24": null
+  },
+  {
+   "instId": "XCOIN-USDC",
+   "ann_utc": "2026-09-10 08:00",
+   "band": "OOS",
+   "first_utc": "2026-09-08 01:00",
+   "ok": false,
+   "reason": "zero al bar 0",
+   "ret_base": null,
+   "qvol24": null
+  },
+  {
+   "instId": "XNBIS-USDC",
+   "ann_utc": "2026-09-10 08:00",
+   "band": "OOS",
+   "first_utc": "2026-09-08 01:00",
+   "ok": false,
+   "reason": "zero al bar 0",
+   "ret_base": null,
+   "qvol24": null
+  },
+  {
+   "instId": "XCRWV-USDC",
+   "ann_utc": "2026-09-10 08:00",
+   "band": "OOS",
+   "first_utc": "2026-09-08 01:00",
+   "ok": false,
+   "reason": "zero al bar 0",
+   "ret_base": null,
+   "qvol24": null
+  },
+  {
+   "instId": "XGOOGL-USDC",
+   "ann_utc": "2026-09-16 07:00",
+   "band": "OOS",
+   "first_utc": "2026-09-16 10:00",
+   "ok": false,
+   "reason": "zero al bar 0",
+   "ret_base": null,
+   "qvol24": null
+  },
+  {
+   "instId": "XHOOD-USDC",
+   "ann_utc": "2026-09-16 07:00",
+   "band": "OOS",
+   "first_utc": "2026-09-16 10:00",
+   "ok": false,
+   "reason": "zero al bar 0",
+   "ret_base": null,
+   "qvol24": null
+  },
+  {
+   "instId": "XMETA-USDC",
+   "ann_utc": "2026-09-17 04:00",
+   "band": "OOS",
+   "first_utc": "2026-09-17 10:00",
+   "ok": false,
+   "reason": "zero al bar 0",
+   "ret_base": null,
+   "qvol24": null
+  },
+  {
+   "instId": "XAAPL-USDC",
+   "ann_utc": "2026-09-18 03:30",
+   "band": "OOS",
+   "first_utc": "2026-09-18 10:00",
+   "ok": false,
+   "reason": "zero al bar 2",
+   "ret_base": null,
+   "qvol24": null
+  },
+  {
+   "instId": "XAMZN-USDC",
+   "ann_utc": "2026-09-18 03:30",
+   "band": "OOS",
+   "first_utc": "2026-09-18 10:00",
+   "ok": false,
+   "reason": "zero al bar 2",
+   "ret_base": null,
+   "qvol24": null
+  }
+ ]
+}

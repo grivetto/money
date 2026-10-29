@@ -33,3 +33,7 @@ riapre gate e fix per quella spec.
 - P26_cointegrazione_rolling.md — ARCHIVIATA DEFINITIVA (19/10: screening ufficiale 0/435 coppie eleggibili, exit 2; run indipendente concorde; verdetto nel registro) — lane pairs chiusa
 
 - **E7 — funding_extreme_contrarian** (22/10) — NON PROMOSSA, 6/6 criteri colpiti: n=4332, netto −0,2213%/trade (t −1,49), lordo +0,0787% (t +0,53, cioè zero), PF netto 0,93, maxDD 102%, IC90 attraversa lo zero. Artefatti: `prove/REGISTRO_ESPERIMENTI.md` (voce 22/10), handoff `hermes_bridge/merlino/handoff/E7/`, spec `docs/ipotesi/funding_extreme_contrarian.md`. Il funding non è un segnale direzionale: è una rendita da incassare (carry).
+- E8_momentum_estremo_holdout_bitvavo.md — MISURATA e archiviata (29/10): NON PROMOSSA (1/4); famiglia «estremi di prezzo» chiusa definitivamente
+- E9_funding_spread_crossvenue.md — MISURATA e archiviata (29/10): NON PROMOSSA (0/5 su 12m); filone funding cross-venue chiuso
+- E11_tsmom_btc_eth.md — MISURATA e archiviata (29/10): NON PROMOSSA (2/5); lane TSMOM chiusa in questa forma
+- E12_listing_drift.md — MISURATA e archiviata (29/10): NON PROMOSSA (4/5; T1 n=23<60, segno OOS positivo t=2,02); lane listing chiusa in questa forma

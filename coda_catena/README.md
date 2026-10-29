@@ -104,3 +104,6 @@ STATO DELLA CODA
 ## Aggiornamento 2026-10-29 (6) — RANK 3: dati PRONTI + E12 pre-registrata
 - Ricognizione REQ-MERL-20261029-026: **DATI PRONTI per OKX+Bybit** (annunci a data+ora, ground truth primo giorno via listTime+candele 8/8 OKX · 7/7 Bybit, delay annuncio→trading 4–24h); Bitvavo parziale; handoff 64/64.
 - E12_listing_drift.md ... **PRE-REGISTRATA (Artù)**: «listing drift 24h long-only OKX EEA» — LONG open(t0) → FLAT close 24° bar 1H; costi RT 0,30% (+stress ×2); volume 24h ≥ 50k USDT; TRAIN 2023-06→2025-06 / OOS 2025-06→2026-10; gate T1 (t≥2,7 Bonferroni) · T2 · T3 · T4 (Bybit) · T5 (split-half). In esecuzione: Merlino (engine+test+smoke) → misura ufficiale Artù.
+
+## Aggiornamento 2026-10-29 (7) — E12 misurata: lane listing chiusa in questa forma
+- E12_listing_drift.md ... **MISURATA E ARCHIVIATA (Artù 29/10)**: 4/5 — **T1 FALSE per numerosità OOS (n=23 < 60)**; media OOS +69,99% (t 2,02); T2/T3/T4/T5 PASS (Bybit intero n=323, +533,05%, t 8,53). Review consegna Merlino: MANIFEST **37/37**, test **14/14** PRIMA dei numeri, mutate **3/3**, rerun determinismo ok, **misura == smoke bit-a-bit**. Engine+test+freeze nel repo (`scripts/e12_listing_drift.py`, `prove/e12_listing_drift/`); suite 1155. Seguito: eventuale nuova pre-registrazione (universo più ampio per potenza) = decisione Artù; la lane resta chiusa in questa forma.
