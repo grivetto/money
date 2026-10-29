@@ -97,3 +97,6 @@ STATO DELLA CODA
 - E11_tsmom_btc_eth.md ... **PRE-REGISTRATA (Artù 29/10)** — la baseline time-series momentum 12M/1M nella variante long-only (imposta dalle venue spot-only; short negativi in E6/E8): R12M mensile, pesi uguali BTC/ETH, costi RT 0,20%; criteri T1–T3 + **T4 value-add (DD OOS ≤ DD buy&hold)** + DSR N=5. Implementazione: Merlino (REQ-MERL-20261029-025). Se fallisce: lane chiusa in questa forma.
 
 - REQ-MERL-20261029-024 (follow-up F3): copertura tariffa **canary DOGE ripristinata** (canary_state.json, status=open) — REVIEW PASS + PR #18 → main d4ade17a + deploy MARCODG1; runtime «ok=2/2, skip=4, canary_state(DOGE), alert=NONE».
+
+## Aggiornamento 2026-10-29 (5) — E11 misurata: lane TSMOM chiusa in questa forma
+- E11_tsmom_btc_eth.md ... **MISURATA E ARCHIVIATA (Artù 29/10)**: OOS −0,0192%/g t −0,31; TRAIN +0,203%/g t 2,57; T4 PASS (DD 43,6% vs 60,2%); DSR 0,361 → **2/5 NON PROMOSSA**. Smoke Merlino (omarchy) == misura Artù (mc2), numeri identici; spot-check indipendente R12 ok. Prossimi: E10 (Morgana, in misura) · RANK 3 listing event-driven.

@@ -1,6 +1,6 @@
 # E11 — «TSMOM 12M/1M long-only BTC/ETH» (pre-registrazione)
 
-**Data:** 2026-10-29 · **Autore:** Artù · **Stato:** PRE-REGISTRATA (universo, regola e finestre congelati PRIMA dei numeri)
+**Data:** 2026-10-29 · **Autore:** Artù · **Stato:** PRE-REGISTRATA (universo, regola e finestre congelati PRIMA dei numeri) → **MISURATA 29/10: NON PROMOSSA (2/5 — T1/T2/DSR FAIL; T3/T4 PASS). Lane trend/TSMOM chiusa in questa forma. Artefatti `prove/e11_tsmom.{json,txt}`.**
 
 ## Come nasce (dichiarato)
 
@@ -75,3 +75,15 @@ rischio (mandato), e solo dopo go esplicito dell'owner.
 
 La lane trend/TSMOM si chiude in questa forma. Nessuna variante: la ricerca si riorienta sulle lane in apertura
 (E10 in misura; RANK 3 della missione: listing event-driven).
+
+## Esito (misura ufficiale 29/10/2026, Artù)
+
+**NON PROMOSSA (2/5) — lane chiusa in questa forma.** Misura dal repo canonico (mc2); smoke di Merlino
+(omarchy) identico al bit; test anti-look-ahead 7/7 PRIMA dei numeri; dati OKX 1D 2019→2026-10-28
+(2858 barre/asset, zero gap/duplicati/null; griglia 16:00 UTC dichiarata e verificata). **OOS (880 giorni):
+aggregato −0,0192%/giorno, t −0,31, CI90 [−0,122%, +0,083%] → T1 FAIL; stress (costi ×2) −0,0199% → T2 FAIL.
+TRAIN (2020-02→2024-06): +0,203%/giorno, t 2,57 → T3 PASS. T4 PASS (maxDD strategia 43,6% ≤ buy&hold 60,2%).
+DSR 0,361 (N=5) → FAIL.** Switch: BTC 6 · ETH 12; ultimo ribilanciamento 2026-10: BTC FLAT, ETH FLAT.
+Il momentum 12M ha reso nel train e si è spento nell'OOS recente; l'unico valore misurato è la riduzione
+del drawdown rispetto al passivo. Artefatti `prove/e11_tsmom.{json,txt}`; motore `scripts/e11_tsmom.py`;
+spot-check indipendente R12 ok. Fronti aperti: E10 (stablecoin) e RANK 3 (listing event-driven).

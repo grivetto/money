@@ -1,0 +1,242 @@
+{
+ "spec": "coda_catena/E11_tsmom_btc_eth.md",
+ "data_utc": "2026-10-29 16:07",
+ "dati": {
+  "prezzi_dir": "/home/sergio/money/data/cache",
+  "n_barre": 2858,
+  "range": [
+   "2019-01-01",
+   "2026-10-28"
+  ],
+  "lookback_barre": 365
+ },
+ "finestre": {
+  "train": [
+   "2020-02-01",
+   "2024-06-01"
+  ],
+  "oos": [
+   "2024-06-01",
+   "2026-10-28"
+  ]
+ },
+ "costi": {
+  "rt_base": 0.002,
+  "rt_stress": 0.004
+ },
+ "per_asset": {
+  "BTC-USDT": {
+   "train": {
+    "n": 1582,
+    "media_giornaliera": 0.0017767885070681063,
+    "t": 2.364715214242552,
+    "ci90_boot": [
+     0.000525256681835118,
+     0.0030326883482171395
+    ],
+    "sharpe_giornaliero": 0.05945325078895464,
+    "sharpe_annuo": 1.135852761462344,
+    "max_dd": 0.5279862058511448,
+    "quota_in_posizione": 0.672566371681416,
+    "stress_media_giornaliera": 0.0017704673945523033,
+    "stress_t": 2.356098858870197
+   },
+   "oos": {
+    "n": 880,
+    "media_giornaliera": 0.00040853481012370516,
+    "t": 0.6861155648027373,
+    "ci90_boot": [
+     -0.0005719976377236005,
+     0.001387182717889995
+    ],
+    "sharpe_giornaliero": 0.023128950971194755,
+    "sharpe_annuo": 0.44187798785999144,
+    "max_dd": 0.33649253838806137,
+    "quota_in_posizione": 0.6227272727272727,
+    "stress_media_giornaliera": 0.0004062620828509779,
+    "stress_t": 0.682281674816343
+   },
+   "n_switch": 6,
+   "switch_log": [
+    {
+     "data": "2020-02-01",
+     "a": "LONG"
+    },
+    {
+     "data": "2020-07-01",
+     "a": "FLAT"
+    },
+    {
+     "data": "2020-08-01",
+     "a": "LONG"
+    },
+    {
+     "data": "2022-03-01",
+     "a": "FLAT"
+    },
+    {
+     "data": "2023-07-01",
+     "a": "LONG"
+    },
+    {
+     "data": "2025-12-01",
+     "a": "FLAT"
+    }
+   ]
+  },
+  "ETH-USDT": {
+   "train": {
+    "n": 1582,
+    "media_giornaliera": 0.002275543813512725,
+    "t": 2.467914491067573,
+    "ci90_boot": [
+     0.0007463960966358863,
+     0.0037890977551020937
+    ],
+    "sharpe_giornaliero": 0.062047868715613526,
+    "sharpe_annuo": 1.1854228673493499,
+    "max_dd": 0.5897105649171765,
+    "quota_in_posizione": 0.6731984829329962,
+    "stress_media_giornaliera": 0.0022666942559906016,
+    "stress_t": 2.4584674896632293
+   },
+   "oos": {
+    "n": 880,
+    "media_giornaliera": -0.0007932288893675062,
+    "t": -1.042327969120034,
+    "ci90_boot": [
+     -0.002053087859413054,
+     0.00045825287962056413
+    ],
+    "sharpe_giornaliero": -0.035136868671115866,
+    "sharpe_annuo": -0.6712889333991019,
+    "max_dd": 0.6237976717799283,
+    "quota_in_posizione": 0.5181818181818182,
+    "stress_media_giornaliera": -0.0008045925257311426,
+    "stress_t": -1.0568377308518335
+   },
+   "n_switch": 12,
+   "switch_log": [
+    {
+     "data": "2020-02-01",
+     "a": "LONG"
+    },
+    {
+     "data": "2020-04-01",
+     "a": "FLAT"
+    },
+    {
+     "data": "2020-05-01",
+     "a": "LONG"
+    },
+    {
+     "data": "2020-06-01",
+     "a": "FLAT"
+    },
+    {
+     "data": "2020-08-01",
+     "a": "LONG"
+    },
+    {
+     "data": "2022-05-01",
+     "a": "FLAT"
+    },
+    {
+     "data": "2023-07-01",
+     "a": "LONG"
+    },
+    {
+     "data": "2025-03-01",
+     "a": "FLAT"
+    },
+    {
+     "data": "2025-08-01",
+     "a": "LONG"
+    },
+    {
+     "data": "2025-12-01",
+     "a": "FLAT"
+    },
+    {
+     "data": "2026-04-01",
+     "a": "LONG"
+    },
+    {
+     "data": "2026-06-01",
+     "a": "FLAT"
+    }
+   ]
+  }
+ },
+ "aggregato": {
+  "train": {
+   "n": 1582,
+   "media_giornaliera": 0.0020261661602904157,
+   "t": 2.5699747827437527,
+   "ci90_boot": [
+    0.0007179954937685364,
+    0.003339633358626749
+   ],
+   "sharpe_giornaliero": 0.06461385047953658,
+   "sharpe_annuo": 1.2344458801154656,
+   "max_dd": 0.5418838717829451,
+   "quota_in_posizione": 0.672882427307206,
+   "stress_media_giornaliera": 0.002018580825271452,
+   "stress_t": 2.5604542716853795
+  },
+  "oos": {
+   "n": 880,
+   "media_giornaliera": -0.00019234703962190048,
+   "t": -0.30997113800694687,
+   "ci90_boot": [
+    -0.001220078301755504,
+    0.0008270692988527471
+   ],
+   "sharpe_giornaliero": -0.010449124930592909,
+   "sharpe_annuo": -0.1996302514964239,
+   "max_dd": 0.4361553320529322,
+   "quota_in_posizione": 0.5704545454545454,
+   "stress_media_giornaliera": -0.00019916522144008232,
+   "stress_t": -0.32090988743889665
+  }
+ },
+ "buyhold_5050_oos": {
+  "n": 880,
+  "media_giornaliera": 0.00021861578193245663,
+  "sharpe_giornaliero": 0.008435754612415164,
+  "sharpe_annuo": 0.1611648655772174,
+  "max_dd": 0.6018050705677873
+ },
+ "esiti": {
+  "T1_oos": false,
+  "T2_costi_x2": false,
+  "T3_train": true,
+  "T4_dd_vs_buyhold": true,
+  "DSR": false
+ },
+ "promossa": false,
+ "dsr": {
+  "dsr": 0.361049308430469,
+  "sr_osservato_oos": -0.010449124930592909,
+  "sr_visti_train": [
+   0.05945325078895464,
+   0.062047868715613526
+  ],
+  "var": 1.6830105463349178e-06,
+  "n_look": 5,
+  "n_osservazioni": 880
+ },
+ "ultimo_ribilanciamento": {
+  "mese": "2026-10",
+  "posizioni": {
+   "BTC-USDT": "FLAT",
+   "ETH-USDT": "FLAT"
+  }
+ },
+ "limiti": [
+  "candele OKX 1D con timestamp a 16:00 UTC (griglia UTC+8), coprono [ts, ts+24h); giorno/mese = data UTC del timestamp",
+  "giorno di ribilanciamento scomposto close(i-1)->open(i) (posizione precedente) + open(i)->close(i) (nuova), sub-rendimenti composti",
+  "costi pagati interamente per switch (nessun netting); slippage non modellato oltre lo stress x2",
+  "aggregato = media dei rendimenti netti delle due gambe (pesi uguali, capitali separati)"
+ ]
+}
