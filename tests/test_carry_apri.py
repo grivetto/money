@@ -166,23 +166,57 @@ def _eventi(ca, cartella):
 # Fix 1 — AUDIT carry_apri.py:62-66: funding_atteso NON deve fare abs()
 # ---------------------------------------------------------------------------
 
-def test_funding_negativo_mantiene_segno_e_gate_rifiuta():
-    """Il segno del funding va conservato: il gate deve vedere il valore negativo."""
+def test_funding_swap_p10_negativo_mantiene_segno_e_gate_rifiuta():
+    """P34-F1: il segno si conserva (lezione fix audit 19/10) — sul percorso
+    SWAP il p10 negativo arriva NEGATIVO al gate, che lo rifiuta."""
     ca = _carica_carry_apri()
-    ex = MockFundingEx(["-0.000200", "-0.000100", "0.000100"])
-    f = ca.funding_atteso(ex, "DOT-USD_UM_XPERP-310808")
-    assert f < 0, f"funding_atteso deve conservare il segno, ricevuto {f}"
-    dec = ca.gate_carry(nozionale=90.0, funding_atteso=f, costo_ciclo=0.0034,
-                        delta_relativo=0.0, leva=1.0)
+    ex = MockFundingEx(["-0.000200", "-0.000100", "0.000100"] * 12)
+    s = ca.stima_funding(ex, "DOT-USDT-SWAP")
+    assert s.valore < 0, f"il p10 deve conservare il segno, ricevuto {s.valore}"
+    assert not s.ok
+    dec = ca.gate_carry(nozionale=90.0, funding_atteso=s.valore,
+                        costo_ciclo=0.0034, delta_relativo=0.0, leva=1.0)
     assert not dec.ok
     assert any("funding" in m for m in dec.motivi)
 
 
-def test_funding_positivo_min_con_segno():
-    """Regressione: con valori positivi resta il minimo (invariante del fix)."""
+def test_funding_xperp_tariffa_fissa_dichiarata():
+    """P34-F1: su X-Perp la stima e' la tariffa fissa dichiarata (0,0001),
+    non il minimo dei recenti (il min su 3 periodi non e' piu' il criterio)."""
     ca = _carica_carry_apri()
     ex = MockFundingEx(["0.000300", "0.000200", "0.000100", "0.000400"])
-    assert ca.funding_atteso(ex, "X") == pytest.approx(0.0001, abs=1e-12)
+    s = ca.stima_funding(ex, "DOT-USD_UM_XPERP-310808")
+    assert s.ok
+    assert s.valore == pytest.approx(0.0001, abs=1e-12)
+    assert "tariffa fissa" in s.fonte
+
+
+def test_main_stampa_fonte_funding(monkeypatch, cartella, capsys):
+    """P34-F1: il dry-run stampa la stima funding E la sua fonte."""
+    ca = _carica_carry_apri()
+    c = ca.COPPIE["DOT"]
+    ex = MockApriEx(nome=c.nome)
+    rc = _main_con(ca, monkeypatch, cartella, ex,
+                   ["carry_apri.py", "--coppia", "DOT"])
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert "fonte: tariffa fissa X-Perp" in out
+
+
+def test_main_xperp_tariffa_scostata_rifiuta_zero_ordini(monkeypatch, cartella,
+                                                          capsys):
+    """P34-F1: tariffa X-Perp scostata dalla dichiarata -> nessuna apertura."""
+    ca = _carica_carry_apri()
+    c = ca.COPPIE["DOT"]
+    ex = MockApriEx(nome=c.nome)
+    ex.publicGetPublicFundingRate = lambda params: {"data": [{"fundingRate": "0.00015"}]}
+    rc = _main_con(ca, monkeypatch, cartella, ex,
+                   ["carry_apri.py", "--coppia", "DOT", "--execute"])
+    assert rc == 1
+    assert ex.ordini == [], "nessun ordine con tariffa scostata"
+    out = capsys.readouterr().out
+    assert "RIFIUTA" in out
+    assert "cambiata" in out
 
 
 # ---------------------------------------------------------------------------

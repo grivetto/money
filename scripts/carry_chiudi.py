@@ -23,6 +23,13 @@ DIFFERENZE DICHIARATE rispetto a C1
    posizione/saldi puo' avere latenza). Timeout -> FAIL_CHIUSURA con nota
    esplicita, nessuna azione correttiva automatica oltre il reprice previsto.
 
+P34 (REQ-MERL-20261026-020):
+  - verdetto di CHIUSURA ECONOMICA (P34-F2): con --netto-stimato (dalla
+    riconciliazione su saldi reali) il piano stampa ok/soglia
+    (fee_uscita+basis+margine, tariffe di money.costi + spread del book);
+    --solo-economica rifiuta l'esecuzione sotto soglia (exit 2, zero ordini).
+    Le chiusure di emergenza/kill switch restano INCONDIZIONATE.
+
 MECCANICA (dichiarata)
 ======================
 - Ordini LIMIT con reprice (pattern C1, coerente con la regola di progetto
@@ -70,6 +77,8 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 
 from money.esecuzione.invio import Gamba, invia_gamba  # noqa: E402
+from money.chiusura_carry import (  # noqa: E402  (P34-F2)
+    chiusura_economica, stima_costi_uscita)
 from scripts.carry_multi import COPPIE, DIR_STATO, ENV_FILE, leggi_env, ora  # noqa: E402
 
 STATO_FILE = "stato.json"
@@ -131,6 +140,12 @@ class Config:
     motivo: str = ""
     execute: bool = False
     stato_dir: Path = DIR_STATO
+    #: P34-F2: verdetto della chiusura economica. netto_stimato arriva dalla
+    #: riconciliazione su saldi REALI (mai da uno stato); solo_economica
+    #: rifiuta l'esecuzione sotto soglia (fee_uscita+basis+margine).
+    netto_stimato: Optional[float] = None
+    solo_economica: bool = False
+    margine: float = 0.0
 
 
 # ---------------------------------------------------------------------------
@@ -741,6 +756,40 @@ def esegui(ex, cfg: Config, sleep_fn=time.sleep, out=print) -> int:
             "il sell potrebbe fallire — verifica ordini aperti.")
 
     stampa_piano(c, cfg, ct, q_spot, t_p, t_s, mgn, side_perp, out)
+
+    # -- P34-F2: verdetto della chiusura ECONOMICA. Il netto stimato NON si
+    # calcola qui (la fonte e' la riconciliazione su saldi reali, P34-F3):
+    # chi chiude per convenienza lo passa con --netto-stimato. Le chiusure di
+    # emergenza/kill switch NON passano di qui (restano incondizionate). --
+    if cfg.netto_stimato is not None:
+        try:
+            costi = stima_costi_uscita(
+                noz_spot=q_spot * float(t_s["last"]),
+                noz_perp=abs(ct) * c.ct_val * float(t_p["last"]),
+                bid_spot=float(t_s["bid"]), ask_spot=float(t_s["ask"]),
+                bid_perp=float(t_p["bid"]), ask_perp=float(t_p["ask"]))
+        except ValueError as e:  # noqa: BLE001
+            out(f"RIFIUTO: stima costi di uscita impossibile: {e}")
+            return 2
+        dec = chiusura_economica(cfg.netto_stimato, costi.fee_uscita,
+                                 costi.basis_uscita, margine=cfg.margine)
+        out(f"chiusura economica: ok={dec.ok} | netto stimato "
+            f"{dec.netto_stimato:.4f} vs soglia {dec.soglia:.4f} USDC "
+            f"(fee {costi.fee_uscita:.4f} + basis {costi.basis_uscita:.4f} "
+            f"+ margine {cfg.margine:.4f})")
+        out(f"  fonte costi: {costi.fonte}")
+        if not dec.ok:
+            out("  motivo: " + "; ".join(dec.motivi))
+            if cfg.solo_economica:
+                out("RIFIUTO (--solo-economica): nessun ordine inviato.")
+                return 2
+        elif cfg.solo_economica:
+            out("  (--solo-economica: criterio soddisfatto, si procede)")
+    elif cfg.solo_economica:
+        out("RIFIUTO: --solo-economica richiede --netto-stimato "
+            "(fail-closed). Nessun ordine inviato.")
+        return 2
+
     if not cfg.execute:
         out("DRY-RUN: 0 ordini inviati, 0 scritture (stato/eventi intatti).")
         return 0
@@ -850,6 +899,16 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--coppia", required=True, help="coppia carry (es. DOT)")
     p.add_argument("--motivo", default="", help="motivo della chiusura "
                                                 "(registrato negli eventi)")
+    p.add_argument("--netto-stimato", type=float, default=None,
+                   help="P34-F2: netto stimato in USDC dalla riconciliazione "
+                        "su saldi reali (attiva il verdetto di chiusura "
+                        "economica nel piano)")
+    p.add_argument("--solo-economica", action="store_true",
+                   help="P34-F2: esegue SOLO se il criterio economico e' "
+                        "soddisfatto (netto >= fee_uscita+basis+margine); "
+                        "sotto soglia rifiuta (exit 2, zero ordini)")
+    p.add_argument("--margine", type=float, default=0.0,
+                   help="P34-F2: margine USDC oltre fee+basis (default 0)")
     p.add_argument("--env-file", default=None,
                    help="env-file con le chiavi OKX (default: quello del "
                         "carry multi su MARCODG1)")
