@@ -47,3 +47,4 @@ ops/dashboard/landing.live-*.html
 ops/dashboard/landing.repo-backup.html
 ops/zabbix/push_airdrop.log
 .keys
+.cf_token
