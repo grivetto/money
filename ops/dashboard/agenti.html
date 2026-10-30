@@ -104,7 +104,7 @@ a.back{color:var(--cyan);text-decoration:none}
 "use strict";
 // ── i 5 nodi e chi ci gira ──────────────────────────────────────────────
 const NODI = [
-  {id:"mc2",      label:"mc2",      host:"192.168.1.99 · LAN",      operai:["hermes","a0","dsh","opencode","agy"], ip:"192.168.1.99",  porte:{a0:50080, dsh:4080}},
+  {id:"mc2",      label:"mc2",      host:"192.168.1.99 · LAN",      operai:["hermes","a0","dsh","opencode","agy"], ip:"192.168.1.99",  porte:{a0:50080}},
   {id:"omarchy",  label:"omarchy",  host:"192.168.1.98 · LAN",      operai:["hermes","a0","dsh","opencode","agy"], ip:"192.168.1.98",  porte:{a0:50080, dsh:5080}},
   {id:"win",      label:"win",      host:"100.76.22.119 · tailscale",operai:["a0","dsh"],                          ip:"100.76.22.119", porte:{a0:50080, dsh:3080}},
   {id:"nuvola",   label:"nuvola",   host:"87.106.3.15 · VPS",       operai:["a0","opencode","agy"],               ip:"87.106.3.15",   porte:{a0:50080}},
@@ -114,7 +114,7 @@ const NODI = [
 // Dal 21/10 i link http://LAN venivano bloccati da Chrome (HTTPS-Only mode) da pagina https.
 const OFFICINA_HOST = "mc2.tail1b5252.ts.net";
 const OFFICINA = {
-  mc2:      {a0:8443, dsh:8444},
+  mc2:      {a0:8443},   // 2026-10-30: link DSH web su mc2 rimosso (accesso non esposto dalla pagina)
   omarchy:  {a0:8445},
   win:      {a0:8447},
   nuvola:   {a0:8449},
