@@ -1456,6 +1456,40 @@ def collect():
     return data
 
 
+def public_payload(data: dict) -> dict:
+    """Payload PUBBLICO per la landing (web.grivetto.eu).
+
+    Solo cio' che serve a mostrare che il sistema lavora e guadagna:
+    equity totale, delta equity 24h/7g (dal banco, riconciliati), banco,
+    canary, carry, numero bot. NIENTE saldi per account, prezzi, nodi,
+    servizi, repo: quei dati restano su /api/infra.json (protetto da Access).
+    """
+    eb = data.get("equity_breakdown") or {}
+    eq = sum((v.get("eur") or 0) for v in eb.values()
+             if isinstance(v, dict) and v.get("ok"))
+    if not eq:
+        eq = data.get("total_equity") or 0
+    b = data.get("banco") or {}
+    c = data.get("canary") or {}
+    k = data.get("carry") or {}
+    eh = data.get("equity_history") or {}
+    summ = eh.get("summary") or {}
+    return {
+        "generated": data.get("generated"),
+        "ts_iso": data.get("ts_iso"),
+        "equity_eur": round(eq, 2),
+        "pnl_24h_eur": summ.get("d24"),
+        "pnl_7d_eur": summ.get("d7"),
+        "banco": {"ok": b.get("ok"), "esito": b.get("esito"), "age_s": b.get("age_s")},
+        "canary": {"ok": c.get("ok"), "symbol": c.get("symbol"),
+                   "status": c.get("status"), "upl": c.get("upl")},
+        "carry": {"ok": k.get("ok"), "coppie_aperte": k.get("coppie_aperte"),
+                  "upl_totale": k.get("upl_totale")},
+        "node_paper_bots": data.get("node_paper_bots"),
+        "node_live_bots": data.get("node_live_bots"),
+    }
+
+
 class Handler(BaseHTTPRequestHandler):
     def _send(self, code, payload):
         body = json.dumps(payload, indent=1).encode()
@@ -1488,6 +1522,21 @@ class Handler(BaseHTTPRequestHandler):
                     except Exception:
                         pass
                 self._send(200, collect())
+            elif path in ("/api/public.json", "/public.json"):
+                # Endpoint PUBBLICO (landing): payload filtrato, stessi dati ma
+                # senza saldi per account. /api/infra.json resta dietro Access.
+                snap_path = HEALTH_DIR / "infra_snapshot.json"
+                payload = None
+                if snap_path.exists():
+                    try:
+                        p = json.loads(snap_path.read_text())
+                        if time.time() - p.get("generated", 0) <= SNAP_MAX_AGE_S:
+                            payload = p
+                    except Exception:
+                        payload = None
+                if payload is None:
+                    payload = collect()
+                self._send(200, public_payload(payload))
             elif path == "/health":
                 bots = {}
                 for name in ("sol", "ada"):
