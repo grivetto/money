@@ -9,13 +9,15 @@ results.md deve arrivare (a) nell' inbox di Artù su mc2 e (b) su Telegram.
 Modello (v1, prudente e testabile):
 - Scansiona i canali `~/hermes_bridge/<canale>/{requests,results}.md`.
 - requests.md: il blocco NUOVO piu' recente diventa "pending" alla prima
-  vista; dopo GRACE_S di attesa (default 120s, per non pestare il lancio
-  manuale di Artù) e con lock del nodo LIBERO e nodo raggiungibile -> lancia
-  `lancia_turno.sh` con il prompt di wake (una volta sola: lo stato e' la
-  memoria). Lock occupato a eta' >= GRACE -> il turno esiste gia' (Artù o
-  altro): il blocco si marca "noop", MAI doppio lancio. Blocchi piu' vecchi
-  mai visti (arrivati mentre il postino era giu') -> marcati "storico" e
-  loggati, non rilanciati alla cieca.
+  vista; dopo GRACE_S di attesa (margine breve per il lancio manuale di Artù)
+  e con lock del nodo LIBERO e nodo raggiungibile -> lancia `lancia_turno.sh`
+  con il prompt di wake (una volta sola: lo stato e' la memoria). MAI doppio
+  lancio: se il lock e' occupato da un turno recente che copre il blocco, OPPURE
+  un turno del nodo e' gia' partito dopo l'append del blocco (lancio manuale di
+  Artù, anche gia' finito — check sui log di lancio con soglia = mtime di
+  requests.md) -> il blocco si marca "noop". Blocchi piu' vecchi mai visti
+  (arrivati mentre il postino era giu') -> marcati "storico" e loggati, non
+  rilanciati alla cieca.
 - results.md: ogni blocco nuovo -> riga pointer nell' inbox di Artù
   (`hermes_bridge/artu/inbox.md`) + UNA notifica Telegram riassuntiva per run.
 - Fusibile: max MAX_LANCI_ORA auto-sveglie per canale all' ora (antiloop).
@@ -47,7 +49,7 @@ NOTIFICA_TG = HOME / "money" / "ops" / "alerts" / "notifica_tg.py"
 STATO = HOME / ".squadra_postino" / "state.json"
 DIR_LOG = HOME / ".hermes" / "cache" / "scratch" / "nodi"
 
-GRACE_S = 120.0
+GRACE_S = 30.0  # margine per il lancio manuale di Artù; il check post-append evita comunque i doppi
 MAX_LANCI_ORA = 3
 POTA_S = 14 * 86400
 
@@ -173,8 +175,8 @@ def _appendi_inbox(righe: list[str], dry: bool) -> None:
             f.write(r + "\n")
 
 
-def _turno_copre(nodo: str, prima_vista: float) -> bool:
-    """True se un turno del nodo e' PARTITO dopo la prima vista del blocco (blocco coperto).
+def _turno_copre(nodo: str, soglia: float) -> bool:
+    """True se un turno del nodo e' PARTITO dopo `soglia` (epoch): blocco coperto.
     I log di lancio (manuali e auto) stanno in DIR_LOG con righe `START <ISO> nodo=<Nodo>`."""
     try:
         for f in sorted(DIR_LOG.glob("*"), key=lambda p: p.stat().st_mtime, reverse=True)[:40]:
@@ -192,7 +194,7 @@ def _turno_copre(nodo: str, prima_vista: float) -> bool:
                         tzinfo=timezone.utc).timestamp()
                 except ValueError:
                     continue
-                if ts >= prima_vista - 120:
+                if ts >= soglia:
                     return True
     except Exception:
         return False
@@ -237,11 +239,23 @@ def processa_requests(canale: str, stato: dict, ora: float, dry: bool, seed: boo
         return out
     nodo = NODI[canale]["nodo"]
     if not lock_libero(nodo):
-        if _turno_copre(nodo, float(v.get("first_seen", ora))):
+        if _turno_copre(nodo, float(v.get("first_seen", ora)) - 120.0):
             v["status"] = "noop"
             out.append("requests: lock %s occupato, turno recente copre il blocco -> noop %s" % (nodo, v["sig"][:70]))
         else:
             out.append("requests: lock %s occupato ma nessun turno copre il blocco: riprovo al prossimo giro" % nodo)
+        return out
+    # 2b) lock libero ma un turno del nodo e' GIA' PARTITO dopo l'append del
+    # blocco (tipico: lancio manuale di Artù, anche se poi e' finito): coperto,
+    # MAI rilanciare. Soglia = mtime di requests.md (ultimo append del canale),
+    # con 10s di tolleranza per il timing scrittura->lancio.
+    try:
+        ref = req.stat().st_mtime
+    except OSError:
+        ref = float(v.get("first_seen", ora))
+    if _turno_copre(nodo, ref - 10.0):
+        v["status"] = "noop"
+        out.append("requests: turno gia' partito dopo l'append copre il blocco -> noop %s" % v["sig"][:70])
         return out
     if not nodo_raggiungibile(nodo):
         out.append("requests: %s non raggiungibile, riprovo al prossimo giro" % nodo)

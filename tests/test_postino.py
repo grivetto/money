@@ -54,7 +54,7 @@ def test_grace_e_wake(env):
     st = _stato()
     postino.processa_requests("merlino", st, t0, dry=False, seed=False)
     assert ch["wake"] == []  # primo giro: solo 'pending'
-    postino.processa_requests("merlino", st, t0 + 60, dry=False, seed=False)
+    postino.processa_requests("merlino", st, t0 + 10, dry=False, seed=False)
     assert ch["wake"] == []  # entro la grace: attesa
     out = postino.processa_requests("merlino", st, t0 + postino.GRACE_S + 5, dry=False, seed=False)
     assert ch["wake"] == ["merlino"]  # oltre la grace, lock libero: WAKE
@@ -80,6 +80,24 @@ def test_lock_occupato_con_turno_coperto_noop(env):
         "START %s nodo=omarchy prompt=/x\n" % ts, encoding="utf-8")
     postino.processa_requests("merlino", st, t0 + postino.GRACE_S + 5, dry=False, seed=False)
     assert ch["wake"] == []
+    assert list(v["status"] for v in st["blocchi"].values()) == ["noop"]
+
+
+def test_turno_finito_post_append_non_rilancia(env):
+    """Lancio manuale di Artu' (partito dopo l'append) gia' finito, lock libero: MAI rilanciare."""
+    bridge, ch = env
+    _scrivi_requests(env, ["## MSG-ARTU-X | 2026-10-30 21:00 UTC | PENDING", "ping", ""])
+    t0 = time.time()
+    st = _stato()
+    postino.processa_requests("merlino", st, t0, dry=False, seed=False)
+    # il launch manuale e' PARTITO poco dopo l'append ed e' gia' finito (END)
+    postino.DIR_LOG.mkdir(parents=True, exist_ok=True)
+    ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(t0 + 10))
+    (postino.DIR_LOG / "log_omarchy_manuale.txt").write_text(
+        "START %s nodo=omarchy prompt=/w\nEND x rc=0\n" % ts, encoding="utf-8")
+    ch["lock"] = True  # turno finito: lock libero
+    postino.processa_requests("merlino", st, t0 + postino.GRACE_S + 100, dry=False, seed=False)
+    assert ch["wake"] == []  # coperto dal turno manuale: niente rilancio
     assert list(v["status"] for v in st["blocchi"].values()) == ["noop"]
 
 
