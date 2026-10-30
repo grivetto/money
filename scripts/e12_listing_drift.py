@@ -25,7 +25,7 @@ COST_STRESS = 0.0060        # stress x2
 VOL_MIN = 50_000.0          # volume quote prime 24h
 SPLIT_MS = 1748736000000    # 2025-06-01T00:00:00Z (finestra OOS da qui)
 CUT_LO_MS = 1685577600000   # 2023-06-01T00:00:00Z (finestra universo)
-CUT_HI_MS = 1798675200000   # 2026-10-01T00:00:00Z
+CUT_HI_MS = 1790812800000   # 2026-10-01T00:00:00Z (fix 30/10: prima 1798675200000 = 2026-12-31, refuso; impatto nullo sul freeze E12, nessun annuncio oltre il cut)
 T1_N_MIN = 60
 T1_T_MIN = 2.7
 T2_MEAN_MIN = 0.0

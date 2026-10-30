@@ -1,0 +1,194 @@
+{"symbol": "USDCUSDT", "motivo": "stable_fiat_base"}
+{"symbol": "USDTEUR", "motivo": "stable_fiat_base"}
+{"symbol": "PYUSDUSDT", "motivo": "stable_fiat_base"}
+{"symbol": "USDCEUR", "motivo": "stable_fiat_base"}
+{"symbol": "USDEUSDT", "motivo": "stable_fiat_base"}
+{"symbol": "USDEUSDC", "motivo": "stable_fiat_base"}
+{"symbol": "USDTBRL", "motivo": "stable_fiat_base"}
+{"symbol": "USDCBRL", "motivo": "stable_fiat_base"}
+{"symbol": "USDTPLN", "motivo": "stable_fiat_base"}
+{"symbol": "NVDAXUSDT", "motivo": "xstocks_equity"}
+{"symbol": "COINXUSDT", "motivo": "xstocks_equity"}
+{"symbol": "AAPLXUSDT", "motivo": "xstocks_equity"}
+{"symbol": "CRCLXUSDT", "motivo": "xstocks_equity"}
+{"symbol": "METAXUSDT", "motivo": "xstocks_equity"}
+{"symbol": "HOODXUSDT", "motivo": "xstocks_equity"}
+{"symbol": "AMZNXUSDT", "motivo": "xstocks_equity"}
+{"symbol": "GOOGLXUSDT", "motivo": "xstocks_equity"}
+{"symbol": "USD1USDT", "motivo": "stable_fiat_base"}
+{"symbol": "MCDXUSDT", "motivo": "xstocks_equity"}
+{"symbol": "TSLAXUSDT", "motivo": "xstocks_equity"}
+{"symbol": "XUSDUSDT", "motivo": "stable_fiat_base"}
+{"symbol": "RLUSDUSDT", "motivo": "stable_fiat_base"}
+{"symbol": "USATUSDT", "motivo": "stable_fiat_base"}
+{"symbol": "USDTAED", "motivo": "stable_fiat_base"}
+{"symbol": "USDTUSD", "motivo": "stable_fiat_base"}
+{"symbol": "USDCUSD1", "motivo": "stable_fiat_base"}
+{"symbol": "USDSUSDT", "motivo": "stable_fiat_base"}
+{"symbol": "SPCXXUSDT", "motivo": "xstocks_equity"}
+{"symbol": "BTCUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "ETHUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "XRPUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "ETHBTC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "XRPBTC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "DOTUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "XLMUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "LTCUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "DOGEUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "CHZUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "AXSUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "MANAUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "DYDXUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "COMPUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "AAVEUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "YFIUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "LINKUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "SUSHIUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "UNIUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "KSMUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "ICPUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "ADAUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "ETCUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "XTZUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "BCHUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "QNTUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "GRTUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "SOLUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "FILUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "BATUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "ZRXUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "CRVUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "AGLDUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "ANKRUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "WAVESUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "LUNCUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "SHIBUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "ATOMUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "ALGOUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "ENJUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "SANDUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "AVAXUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "WOOUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "FTTUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "IMXUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "ENSUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "CAKEUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "STETHUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "C98USDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "AVAUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "BOBAUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "JASMYUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "GALAUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "WEMIXUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "BICOUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "UMAUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "NEXOUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "SNXUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "1INCHUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "TELUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "LRCUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "LDOUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "ETHUSDC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "BTCUSDC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "QTUMUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "ZENUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "THETAUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "MXUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "RVNUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "EGLDUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "RUNEUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "XLMBTC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "XLMUSDC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "SOLUSDC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "XRPUSDC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "SOLBTC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "XDCUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "HNTUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "ZILUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "HBARUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "FLOWUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "STXUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "LTCUSDC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "LTCBTC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "MANAUSDC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "DOTUSDC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "GMXUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "ACHUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "JSTUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "SUNUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "BTTUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "TRXUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "NFTUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "USTCUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "BNBUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "NEARUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "SDUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "APEUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "FIDAUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "MINAUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "SCUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "GLMRUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "MOVRUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "WBTCUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "GMTUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "CELOUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "APEXUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "CTCUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "OPUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "LUNAUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "BELUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "FORTUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "DOGEUSDC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "FLOKIUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "BABYDOGEUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "WAXPUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "ARUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "ROSEUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "PSGUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "JUVUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "CITYUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "WBTCBTC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "AVAXUSDC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "ADAUSDC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "OPUSDC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "APEXUSDC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "TRXUSDC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "ICPUSDC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "LINKUSDC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "GMTUSDC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "CHZUSDC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "SHIBUSDC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "LDOUSDC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "APEUSDC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "FILUSDC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "ETHWUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "INJUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "MPLXUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "APTUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "APTUSDC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "MCRTUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "MASKUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "PEOPLEUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "TWTUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "MAGICUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "MEEUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "GRAMUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "BONKUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "FLRUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "RPLUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "SSVUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "COREUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "BLURUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "ACSUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "PRIMEUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "IDUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "ARBUSDC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "ARBUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "MBXUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "AXLUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "CGPTUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "SUIUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "SUIUSDC", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "PEPEUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "LMWRUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-18 00:00"}
+{"symbol": "VELOUSDT", "motivo": "primo_bar_pre_finestra", "first": "2023-05-30 00:00"}

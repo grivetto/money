@@ -37,3 +37,5 @@ riapre gate e fix per quella spec.
 - E9_funding_spread_crossvenue.md — MISURATA e archiviata (29/10): NON PROMOSSA (0/5 su 12m); filone funding cross-venue chiuso
 - E11_tsmom_btc_eth.md — MISURATA e archiviata (29/10): NON PROMOSSA (2/5); lane TSMOM chiusa in questa forma
 - E12_listing_drift.md — MISURATA e archiviata (29/10): NON PROMOSSA (4/5; T1 n=23<60, segno OOS positivo t=2,02); lane listing chiusa in questa forma
+
+- E13_listing_drift_universo.md — MISURATA e archiviata (30/10): NON PROMOSSA (4/5; T1 n=86<100); audit Bybit + economia ex-ante in corso, nessuna decisione operativa fino agli esiti

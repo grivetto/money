@@ -107,3 +107,6 @@ STATO DELLA CODA
 
 ## Aggiornamento 2026-10-29 (7) — E12 misurata: lane listing chiusa in questa forma
 - E12_listing_drift.md ... **MISURATA E ARCHIVIATA (Artù 29/10)**: 4/5 — **T1 FALSE per numerosità OOS (n=23 < 60)**; media OOS +69,99% (t 2,02); T2/T3/T4/T5 PASS (Bybit intero n=323, +533,05%, t 8,53). Review consegna Merlino: MANIFEST **37/37**, test **14/14** PRIMA dei numeri, mutate **3/3**, rerun determinismo ok, **misura == smoke bit-a-bit**. Engine+test+freeze nel repo (`scripts/e12_listing_drift.py`, `prove/e12_listing_drift/`); suite 1155. Seguito: eventuale nuova pre-registrazione (universo più ampio per potenza) = decisione Artù; la lane resta chiusa in questa forma.
+
+## Aggiornamento 2026-10-30 (8) — E13 misurata: NON PROMOSSA (4/5); audit Bybit + economia ex-ante in corso
+- E13_listing_drift_universo.md ... **MISURATA (Artù 30/10)**: T1 falso per numerosità (**n OOS 86 < 100**; t 2,72 ≥ 2,7, media +79,8%); T2/T3/T4/T5 PASS (Bybit OOS n=86, +381,8%, t 6,77). **Dissezione**: OKX mediana OOS +1,1% (media coda-driven; 2026 mediana 0,0%); **Bybit win-rate 100% = red flag** → REQ-MD1-20261030-003 (audit inquisitorio) + REQ-MERL-20261030-032 (economia ex-ante + entry ritardata). Nessun canary fino agli esiti. Fix `CUT_HI_MS` E12 (refuso date; numeri E12 identici). Suite 1185.
