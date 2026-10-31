@@ -99,7 +99,7 @@ def main() -> int:
         print()
         print("Primi protocolli target (ottobre 2026):")
         print("  1. Arcus (arcus.xyz) — waitlist, token confermato")
-        print("  2. Polymarket — piazza scommesse, token confermato")
+        print("  2. Polymarket — NESSUN token confermato (ufficiale); Italia close-only (frontend+API), VPN vietata dai ToS: non farmabile dal nostro IP")
         print("  3. Variational — 50% supply alla community")
     
     return 0
