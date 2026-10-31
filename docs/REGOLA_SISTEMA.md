@@ -97,6 +97,18 @@ Responsabilità: definire capitale massimo e size massima; controllare esposizio
 Regola: una strategia può aumentare capitale **soltanto** dopo un periodo di PnL netto riconciliato.
 La perdita di una strategia non deve compromettere il progetto: deve causare riduzione size, ritorno in shadow, sostituzione con la migliore alternativa, aggiornamento dei criteri di selezione.
 
+### Criteri di retrocessione del carry (validati 2026-10-31)
+
+- Funding 7g netto annualizzato per coppia: `>= +2%/anno` OK · `[0,+2)` ridurre · `<0` STOP.
+- Inversione continua del funding `>24h` → STOP.
+- Distanza dalla liquidazione: `<50%` ridurre · `<40%` STOP.
+- `netto_7g` della riconciliazione: `< -0,25 USDC` ridurre · `< -1,00 USDC` STOP/alert.
+- Cashflow 7g (funding + fee): `< -0,50 USDC` STOP.
+- **Riconciliazione**: banco non-quadra per 2 run consecutivi (>10 min) oppure `|exchange - ledger| > 1 USDC`
+  o `> 0,5%` del nozionale → freeze nuove aperture + review entro 24h.
+- **Leg mismatch**: `|delta_qty| > 1%` della qty spot per `>24h` → riallineamento o chiusura della coppia.
+- **Pannello vs riconciliazione**: scostamento del nozionale `>5%` per `>30 min` → alert (e fix del pannello).
+
 # HERMES LEAD — CICLO OPERATIVO
 
 ## Fase 1 — Pre-registrazione
