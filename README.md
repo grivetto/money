@@ -38,22 +38,26 @@ foundation to build on.
 
 ---
 
-## 📊 Status at a glance — 2026-10-20
+## 📊 Status at a glance — 2026-10-31
 
-> **TL;DR** — an honest research rig on real money: the gate has archived everything measured so
-> far; the carry canary **C1** passed its 14-day review on 15/10 and the carry now runs on two
-> more pairs (DOT+ADA) at minimal size; capital ≈ **1,096 EUR**; the automated search keeps
-> matching **zero candidates** against the DSR bar — the rig does not settle for noise.
+> **TL;DR** — a research rig that finally has a *rule*: since 30/10 the operating cycle is
+> pre-registration → code → measure → shadow → canary → reconciled net PnL → controlled scale
+> (`docs/REGOLA_SISTEMA.md`). The gate keeps archiving every measured family (E9 funding-spread,
+> E10 stablecoin flows, E11 TSMOM, E12/E13 listing drift — all closed at real costs); the only
+> survivor is still the **carry**, now running as a delta-neutral canary on **DOT+LTC**; capital
+> ≈ **1,063 EUR**, reconciled. The active lane is **E14** (multi-symbol funding carry) — preflight
+> data in progress, spec frozen only after it.
 
 | | |
 | :--- | :--- |
 | **Tests** | **1,195 passed**, `ruff` clean |
-| **Experiments measured** | every classical family (trend, breakout, rotation, reversal, weekend, capitulation…) plus the pre-registered P-series up to P19b — 20+ measured, every verdict frozen in `prove/` |
-| **Verdicts** | **no family promoted** — all archived at real costs (the trend filone is closed with multiple proofs: portfolio DD never went below 41.5%, gate bar 25%); **S4 continuous hunt exhausted** (316k attempts, 0 candidates — retired 15/10); the only survivor is the **carry**: C1's review **PASSED** (15/10) → live on two more pairs |
-| **Live carry (C1 + DOT+ADA)** | C1 (DOGE, delta-neutral, since 01/10): funding **+0.045 USDC** (~118% of the expected minimum), pair net ≈ +0.05 USDC; **DOT+ADA** (opened 15/10 23:00 UTC): notional ≈ **180 EUR**, uPL +0.36 — minimal size, fully reconciled |
-| **Real orders sent** | only the two **owner-approved, minimal-size** experiments above — nothing else trades; the gate promotes and the owner authorizes |
-| **Capital** | ≈ **1,096 EUR** on OKX (read-only verified) — trading ≈368 · funding ≈194 · Simple Earn ≈534; kept in **USD (USDC/Earn)** by owner decision (16/10) — € swings are decomposed (FX vs the rest) in the daily digest |
-| **Squad & ops** | **20 executors + 2 directors on 5 machines** (`A0` ×5 · `DSH` ×5 · `opencode` ×5 · `agy` ×5 · `Hermes` ×2 — mc2/omarchy/win/nuvola/marcodg1; deliveries reviewed by Hermes), **13 paper bots / 0 live**, live alerting (`@DenaroAlertBot`: 9:00 digest + equity bell at 1,090 €), post-reboot check **49/49** |
+| **Operating rule** | `docs/REGOLA_SISTEMA.md` — one active research lane, one shadow, one canary; a failed lane is archived, never the project |
+| **Experiments measured** | 20+ families, every verdict frozen in `prove/`; latest closures: **E9** funding-spread (0/5), **E10** stablecoin issuance (1/4), **E11** TSMOM (2/5), **E12/E13** listing drift (4/5) |
+| **Verdicts** | **no family promoted** except the carry: C1 review PASSED 15/10, extended to DOT+LTC at minimal size |
+| **Live carry (canary)** | DOT+LTC delta-neutral, notional **182.17 EUR**, uPL **+45.32 EUR**, 48 fills, fees **1.22 $** — banco PASS, reconciliation square, 0 open orders |
+| **Real orders sent** | only owner-approved minimal-size canaries; nothing else trades |
+| **Capital** | **1,062.90 EUR** on OKX (read-only verified): trading 872.61 · funding 13.47 · Simple Earn 176.81 |
+| **Squad & ops** | **4 Hermes** (Lead on mc2, Hermes 1 data on nuvola, Hermes 2 strategy on omarchy, Hermes 3 risk on MARCODG1) + 20 executors on 5 machines; **13 paper bots / 0 live**; live alerting (`@DenaroAlertBot`) |
 | **Last commit** | `main` — see `git log` for the current head |
 
 Repository: `C:\dev\money` locally, `github.com/grivetto/money` remotely. Python package under
@@ -105,9 +109,7 @@ money/cancello.py              8 criteria, 3 verdicts, every reason carries its 
 promosso / archiviato / insufficiente          the verdict is binding
 ```
 
-### The system around the pipeline — updated 2026-10-20
-
-![Denaro — system snapshot, 20/10/2026](FOTO_SISTEMA_2026-10-20.png)
+### The system around the pipeline — updated 2026-10-31
 
 ```
                      ┌──────────────────────── mc2 — the hub ────────────────────────┐
@@ -136,12 +138,11 @@ re-run in-repo) → measure (artifacts frozen in `prove/`) → 8-criteria gate �
 dry bench → canary → minimum-size live. The executors — `A0`, `DSH`, `opencode`, `agy` on all five nodes
 (mc2, omarchy, nuvola, MARCODG1, andromeda) — deliver to Hermes; the **agents node** (Omarchy) hosts
 `DSH-omarchy` and `opencode-omarchy` as systemd services (loopback-only, reached over an ssh
-tunnel); nothing lands without review. Visuals:
-[`FOTO_SISTEMA_2026-10-20.png`](FOTO_SISTEMA_2026-10-20.png) ·
-[`FOTO_SQUADRA_2026-10-20.png`](FOTO_SQUADRA_2026-10-20.png).
+tunnel); nothing lands without review. Team:
+[`assets/squadra.png`](assets/squadra.png).
 Architecture: [`ARCHITETTURA_2026-10-16.md`](ARCHITETTURA_2026-10-16.md).*
 
-![The squad — 20/10/2026](FOTO_SQUADRA_2026-10-20.png)
+![The squad — four Hermes, one process](assets/squadra.png)
 
 ### Core technologies
 
@@ -224,7 +225,7 @@ minimum order and a quarter per position, **no sensible order exists**.
 ## 🧪 Testing — and the independent reproduction
 
 ```
-1021 passed
+1195 passed
 ruff check . → All checks passed
 ```
 
@@ -303,10 +304,10 @@ money/
 │       ├── griglia_adattiva.py   node B — adaptive grid
 │       └── momento_4h.py         node C — 4-hour momentum
 ├── scripts/                  measurement runners, one per hypothesis, plus independent checks
-├── tests/                    1021 offline tests
+├── tests/                    1195 offline tests
 ├── docs/                     01 decision · 02 dry-run bench spec · 03 verdicts · 04 reproduction
 ├── prove/                    raw evidence: verdicts, JSON, comparison with prior evidence
-├── assets/                   banner and architecture diagram
+├── assets/                   banner, icon, architecture and team cards
 ├── legacy/                   the previous codebase, with its history — memory, not foundation
 └── pyproject.toml
 ```
@@ -323,7 +324,7 @@ cd money
 python src/money/costi.py
 
 # the whole suite (offline, no keys, no network)
-python -m pytest tests -q          # 1021 passed
+python -m pytest tests -q          # 1195 passed
 ruff check .
 
 # re-measure a hypothesis on real OKX EEA bars (no keys needed: public data)
@@ -338,28 +339,27 @@ python demo_cancello.py
 
 ## 🚧 Open work, in order of value
 
-1. **The first promoted edge is still missing — the honest headline.** The gate has archived every
-   family measured so far; the live thesis (funding carry) is in validation, not yet promoted.
-   Until an edge passes, nothing scales — that is rule one of the scaling path, not a mood.
-2. **Canary C1 review — 15/10.** The 14-day window closes with pre-registered criteria
-   (`alpha-omega-trading`, `docs/16`); on a green light, the multi-pair carry scale-up deploys —
-   plan written and ready (`docs/20`), owner-gated.
-3. **M1 validation release** (rules of 30/09): block bootstrap, DSR/PBO, ×3 cost scenarios —
-   `coda_catena/M1_release_validazione.md`; it also proposes aligning the gate with the risk
-   mandate (10% DD at deployment sizing) — awaiting the owner's OK.
-4. **Research queue:** P10 closed *insufficient* (23 < 30 trades, not archived) — the next lane
-   re-runs it on more samples. The P-series registry (`prove/REGISTRO_ESPERIMENTI.md`) is the
-   only entrance for new hypotheses.
-5. **A fourth question, not a fourth strategy.** With three families archived, the question is
-   not "which strategy next" but **what makes an edge findable** under this toll, on these
-   markets, with this capital.
+1. **The first promoted edge is still missing — the honest headline.** Every measured family is
+   archived at real costs; the only survivor is the carry canary. The active lane is **E14**
+   (multi-symbol funding carry with dynamic selection): preflight data in progress (Hermes 1),
+   the spec is frozen only after the data check — no numbers before it.
+2. **The canary must earn its keep.** DOT+LTC carry: notional 182.17 EUR, uPL +45.32 EUR, fees
+   1.22 $; Hermes 3 is writing the risk plan (break-even, kill-switch, demotion criteria) —
+   the uncovered DOT exposure (~259 DOT long) must be reduced or hedged.
+3. **VRP — capital-blocked, not data-blocked.** The highest-priority market-neutral family:
+   OKX EEA options require ≥10,000 USD margin, capital is ~1.06k EUR. Queued until capital or a
+   venue allows; the literature preflight is done (`~14%/yr` BTC premium, regime-dependent).
+4. **E13 listing drift — audits in progress** (independent Bybit re-run + ex-ante economics).
+   No operational decision until they land; the family is already archived in this form.
+5. **One entrance for new hypotheses:** `prove/REGISTRO_ESPERIMENTI.md` + `coda_catena/`.
+   A lane that fails is archived with its evidence, and the next pre-registered lane starts.
 
 ---
 
 ## 🗺 Scaling path
 
 ```
-gate (done) → first promoted edge (still missing) → capital (arrived: ~1.1k EUR, deploy gated on the 15/10 review) → frequency
+gate (done) → first promoted edge (still missing) → carry canary (running: 182 EUR notional) → capital (~1.06k EUR) → scale
 ```
 
 The order is not negotiable, and it is the exact inverse of what the previous project did.
@@ -368,11 +368,12 @@ The order is not negotiable, and it is the exact inverse of what the previous pr
 
 ## ⚖️ Disclaimer
 
-This is research code on a real account of **~1,100 EUR** — of which one canary (DOGE funding
-carry) trades at deliberately minimal size, owner-authorized and fully reconciled. The strategies
-of this repo send no orders, and the repo has no execution module by design. Nothing here is
-investment advice. Crypto assets can lose all of their value; the mathematics in `costi.py` exists
-precisely to show how often that happens silently, one toll at a time.
+This is research code on a real account of **~1,060 EUR** — of which one canary (the DOT+LTC
+funding carry, delta-neutral) trades at deliberately minimal size, owner-authorized and fully
+reconciled. The strategies of this repo send no orders, and the repo has no execution module by
+design. Nothing here is investment advice. Crypto assets can lose all of their value; the
+mathematics in `costi.py` exists precisely to show how often that happens silently, one toll at
+a time.
 
 ## 📄 License
 

@@ -106,9 +106,7 @@ money/cancello.py              8 criteri, 3 verdetti, ogni motivo porta il suo n
 promosso / archiviato / insufficiente          il verdetto e' vincolante
 ```
 
-### Il sistema attorno alla pipeline — aggiornato 2026-10-20
-
-![Denaro — foto del sistema, 2026-10-20](FOTO_SISTEMA_2026-10-20.png)
+### Il sistema attorno alla pipeline — aggiornato 2026-10-31
 
 ```
                      ┌──────────────────────── mc2 — l'hub ──────────────────────────┐
@@ -137,12 +135,11 @@ promosso / archiviato / insufficiente          il verdetto e' vincolante
 promozione/archivio → banco a secco → canary → live a taglia minima. Gli esecutori — `A0`, `DSH`, `opencode`, `agy` su tutti e cinque i nodi
 (mc2, omarchy, nuvola, MARCODG1, andromeda) — consegnano a Hermes; il
 **nodo agenti** (Omarchy) ospita `DSH-omarchy` e `opencode-omarchy` come servizi systemd
-(loopback-only, raggiunti via tunnel ssh); niente entra senza review. Visual:
-[`FOTO_SISTEMA_2026-10-20.png`](FOTO_SISTEMA_2026-10-20.png) ·
-[`FOTO_SQUADRA_2026-10-20.png`](FOTO_SQUADRA_2026-10-20.png).
+(loopback-only, raggiunti via tunnel ssh); niente entra senza review. Squadra:
+[`assets/squadra.png`](assets/squadra.png).
 Architettura: [`ARCHITETTURA_2026-10-16.md`](ARCHITETTURA_2026-10-16.md).*
 
-![La squadra — 2026-10-20](FOTO_SQUADRA_2026-10-20.png)
+![La squadra — quattro Hermes, un processo](assets/squadra.png)
 
 ### Le tecnologie usate
 
@@ -155,7 +152,7 @@ Architettura: [`ARCHITETTURA_2026-10-16.md`](ARCHITETTURA_2026-10-16.md).*
 | Modellazione del dominio | **`dataclasses`** (`frozen=True`), `enum`, type hints completi, funzioni pure | il modulo dei costi non fa I/O: non può mentire, e si testa in millisecondi |
 | Modello dei costi | **`money/costi.py`** — frazioni, mai percentuali (`0.0035`, non `0.35`) | così nessun errore di fattore 100 può nascondersi in una moltiplicazione |
 | Cancello | **`money/cancello.py`** — IC bootstrap al 90% con seme fisso, t-stat, profit factor, drawdown, copertura del pedaggio, rilevanza economica, indipendenza dai blocchi | un criterio che non vedi non può essere discusso |
-| Test | **pytest >= 8** (1021 test), **ruff >= 0.5** (`line-length = 120`, regole `E9`+`F`) | solo regole che intercettano errori reali: una CI che grida sempre non protegge niente |
+| Test | **pytest >= 8** (1195 test), **ruff >= 0.5** (`line-length = 120`, regole `E9`+`F`) | solo regole che intercettano errori reali: una CI che grida sempre non protegge niente |
 | Config e pacchetto | **PyYAML >= 6**, **setuptools** (layout `src/`) | `pytest` importa il pacchetto da `src/` senza installazione, così la suite gira su un checkout appena fatto |
 | Prove | **artefatti JSON e testo** in `prove/`, decisioni in Markdown in `docs/` | una misura che non si può rileggere è un'opinione |
 | Controllo di versione | **git**, un solo scrittore per percorso, systemd e cron da versionare in `deploy/` | nel progetto precedente `systemd` e `crontab` non erano versionati, ed è stata la causa di 10 guasti su 12 |
@@ -231,7 +228,7 @@ minimo d'ordine di 1 EUR e un quarto per posizione, **non esiste nessun ordine s
 ## 🧪 Testing — e la riproduzione indipendente
 
 ```
-1021 passed
+1195 passed
 ruff check . → All checks passed
 ```
 
@@ -310,7 +307,7 @@ money/
 │       ├── griglia_adattiva.py   nodo B — griglia adattiva
 │       └── momento_4h.py         nodo C — momento a 4 ore
 ├── scripts/                  runner di misura, uno per ipotesi, piu' le verifiche indipendenti
-├── tests/                    1021 test offline
+├── tests/                    1195 test offline
 ├── docs/                     01 decisione · 02 specifica del banco a secco · 03 verdetti · 04 riproduzione
 ├── prove/                    prove grezze: verdetti, JSON, confronto con l'evidenza precedente
 ├── assets/                   banner e diagramma di architettura
@@ -330,7 +327,7 @@ cd money
 python src/money/costi.py
 
 # tutta la suite (offline, nessuna chiave, nessuna rete)
-python -m pytest tests -q          # 1021 passed
+python -m pytest tests -q          # 1195 passed
 ruff check .
 
 # rimisura una ipotesi su barre reali OKX EEA (nessuna chiave: dati pubblici)

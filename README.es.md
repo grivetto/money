@@ -89,13 +89,13 @@ money/cancello.py              8 criteria, 3 verdicts, every reason carries its 
 promosso / archiviato / insufficiente          the verdict is binding
 ```
 
-### El sistema alrededor de la pipeline — actualizado 20/10/2026
-
-![Denaro — foto del sistema, 20/10/2026](FOTO_SISTEMA_2026-10-20.png)
+### El sistema alrededor de la pipeline — actualizado 31/10/2026
 
 **Primer bot en vivo del proyecto**: carry C1 (DOGE) en OKX EEA desde el 01/10 — tamaño mínimo, totalmente reconciliado, review el 15/10. Alrededor: los cuatro nodos (mc2 hub · MARCODG1 ops + live · nuvola monitorización · **omarchy agentes**: DSH + OpenCode), la fábrica ×100 (tick 3 s, worker 5 s), los operarios A0-mc2/A0-win (Gemini 2.5), DSH ×3 (mc2/omarchy/win), los ejecutores free OpenCode ×2 + agy-omarchy y el juez advisory JEV.
 
-*Visual: [`FOTO_SISTEMA_2026-10-20.png`](FOTO_SISTEMA_2026-10-20.png) · [`FOTO_SQUADRA_2026-10-20.png`](FOTO_SQUADRA_2026-10-20.png). Arquitectura: [`ARCHITETTURA_2026-10-16.md`](ARCHITETTURA_2026-10-16.md).*
+*Equipo: [`assets/squadra.png`](assets/squadra.png). Arquitectura: [`ARCHITETTURA_2026-10-16.md`](ARCHITETTURA_2026-10-16.md).*
+
+![El equipo — cuatro Hermes, un proceso](assets/squadra.png)
 
 ### Tecnologías centrales
 
@@ -108,7 +108,7 @@ promosso / archiviato / insufficiente          the verdict is binding
 | Modelado del dominio | **`dataclasses`** (`frozen=True`), `enum`, type hints completos, funciones puras | el módulo de costes no tiene I/O: no puede mentir, y se testea en milisegundos |
 | Modelo de costes | **`money/costi.py`** — fracciones, nunca porcentajes (`0.0035`, no `0.35`) | para que ningún error de factor 100 pueda esconderse en una multiplicación |
 | Puerta | **`money/cancello.py`** — intervalo de confianza bootstrap al 90% con semilla fija, t-stat, profit factor, drawdown, cobertura del peaje, relevancia económica, independencia de bloques | un criterio que no puedes ver no se puede discutir |
-| Tests | **pytest >= 8** (1021 tests), **ruff >= 0.5** (`line-length = 120`, reglas `E9`+`F`) | solo reglas que atrapan errores reales: un CI que grita siempre no protege nada |
+| Tests | **pytest >= 8** (1195 tests), **ruff >= 0.5** (`line-length = 120`, reglas `E9`+`F`) | solo reglas que atrapan errores reales: un CI que grita siempre no protege nada |
 | Config / empaquetado | **PyYAML >= 6**, **setuptools** (layout `src/`) | `pytest` importa el paquete desde `src/` sin instalación, así que la suite corre en un checkout fresco |
 | Evidencia | **artefactos JSON + texto plano** en `prove/`, decisiones en Markdown en `docs/` | una medición que no se puede releer es una opinión |
 | Control de versiones | **git**, un escritor por ruta, systemd/cron a versionar en `deploy/` | el `systemd` y el `crontab` del proyecto anterior no estaban versionados, y eso causó 10 de 12 caídas |
@@ -178,7 +178,7 @@ orden mínima de 1 EUR y un cuarto por posición, **no existe ninguna orden sens
 ## 🧪 Testing — y la reproducción independiente
 
 ```
-1021 passed
+1195 passed
 ruff check . → All checks passed
 ```
 
@@ -257,7 +257,7 @@ money/
 │       ├── griglia_adattiva.py   node B — adaptive grid
 │       └── momento_4h.py         node C — 4-hour momentum
 ├── scripts/                  measurement runners, one per hypothesis, plus independent checks
-├── tests/                    1021 offline tests
+├── tests/                    1195 offline tests
 ├── docs/                     01 decision · 02 dry-run bench spec · 03 verdicts · 04 reproduction
 ├── prove/                    raw evidence: verdicts, JSON, comparison with prior evidence
 ├── assets/                   banner and architecture diagram
@@ -277,7 +277,7 @@ cd money
 python src/money/costi.py
 
 # the whole suite (offline, no keys, no network)
-python -m pytest tests -q          # 1021 passed
+python -m pytest tests -q          # 1195 passed
 ruff check .
 
 # re-measure a hypothesis on real OKX EEA bars (no keys needed: public data)

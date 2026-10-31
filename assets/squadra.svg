@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <defs>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#00f3ff"/><stop offset="0.5" stop-color="#b026ff"/><stop offset="1" stop-color="#ff2bd6"/>
+    </linearGradient>
+    <linearGradient id="cardbg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b111c"/><stop offset="1" stop-color="#070b12"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#0d1420" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1600" height="1000" fill="#05070c"/>
+  <rect width="1600" height="1000" fill="url(#grid)" opacity="0.55"/>
+  <rect x="0" y="0" width="1600" height="4" fill="url(#accent)"/>
+
+  <!-- header -->
+  <rect x="60" y="48" width="118" height="34" rx="17" fill="#0a1622" stroke="#00f3ff" stroke-width="1.2"/>
+  <text x="119" y="70" font-family="DejaVu Sans Mono, monospace" font-size="15" font-weight="bold" fill="#00f3ff" text-anchor="middle">MONEY</text>
+  <rect x="190" y="48" width="300" height="34" rx="17" fill="#0d0a16" stroke="#b026ff" stroke-width="1"/>
+  <text x="340" y="70" font-family="DejaVu Sans Mono, monospace" font-size="13" fill="#c9a6ff" text-anchor="middle">REGOLA DEL SISTEMA · 2026-10-31</text>
+
+  <text x="60" y="140" font-family="DejaVu Sans, Arial, sans-serif" font-size="50" font-weight="bold" fill="#f2f6ff">La squadra — quattro Hermes, un processo</text>
+  <text x="60" y="182" font-family="DejaVu Sans, Arial, sans-serif" font-size="20" fill="#8fa3bf">ipotesi → codice → misura → shadow → canary → PnL netto → scala controllata</text>
+
+  <rect x="1150" y="48" width="390" height="34" rx="17" fill="#06170f" stroke="#19c37d" stroke-width="1"/>
+  <text x="1345" y="70" font-family="DejaVu Sans Mono, monospace" font-size="13" fill="#4ade80" text-anchor="middle">BANCO PASS · riconciliazione quadra</text>
+  <text x="1540" y="112" font-family="DejaVu Sans Mono, monospace" font-size="22" fill="#f2f6ff" text-anchor="end">equity 1.062,90 €</text>
+  <text x="1540" y="140" font-family="DejaVu Sans Mono, monospace" font-size="13" fill="#8fa3bf" text-anchor="end">13 bot paper · 0 live · canary carry attivo</text>
+
+  <!-- card ARTU -->
+  <g>
+    <rect x="60" y="240" width="350" height="400" rx="18" fill="url(#cardbg)" stroke="#1b2a40" stroke-width="1.2"/>
+    <rect x="60" y="240" width="350" height="4" rx="2" fill="#00f3ff"/>
+    <rect x="84" y="268" width="150" height="26" rx="13" fill="#06141a" stroke="#00f3ff" stroke-width="1"/>
+    <text x="159" y="286" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold" fill="#00f3ff" text-anchor="middle">HERMES LEAD</text>
+    <text x="84" y="352" font-family="DejaVu Sans, Arial, sans-serif" font-size="38" font-weight="bold" fill="#f2f6ff">ARTÙ</text>
+    <text x="84" y="382" font-family="DejaVu Sans Mono, monospace" font-size="14" fill="#7fd8e8">nodo mc2 · hub regia</text>
+    <line x1="84" y1="404" x2="386" y2="404" stroke="#1b2a40" stroke-width="1"/>
+    <text x="84" y="438" font-family="DejaVu Sans, Arial, sans-serif" font-size="17" fill="#dbe6f5">Direzione e misura ufficiale</text>
+    <text x="84" y="476" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#8fa3bf">· decide le lane e le chiude</text>
+    <text x="84" y="502" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#8fa3bf">· unico scrittore git</text>
+    <text x="84" y="528" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#8fa3bf">· verifica contro l'exchange</text>
+    <rect x="84" y="570" width="300" height="42" rx="10" fill="#06141a" stroke="#123040"/>
+    <text x="100" y="596" font-family="DejaVu Sans Mono, monospace" font-size="12" fill="#7fd8e8">lane attiva: E14 preflight dati</text>
+  </g>
+
+  <!-- card MERLINO -->
+  <g>
+    <rect x="440" y="240" width="350" height="400" rx="18" fill="url(#cardbg)" stroke="#1b2a40" stroke-width="1.2"/>
+    <rect x="440" y="240" width="350" height="4" rx="2" fill="#b026ff"/>
+    <rect x="464" y="268" width="150" height="26" rx="13" fill="#120a1c" stroke="#b026ff" stroke-width="1"/>
+    <text x="539" y="286" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold" fill="#c9a6ff" text-anchor="middle">HERMES 2</text>
+    <text x="464" y="352" font-family="DejaVu Sans, Arial, sans-serif" font-size="38" font-weight="bold" fill="#f2f6ff">MERLINO</text>
+    <text x="464" y="382" font-family="DejaVu Sans Mono, monospace" font-size="14" fill="#c9a6ff">nodo omarchy · banco ricerca</text>
+    <line x1="464" y1="404" x2="766" y2="404" stroke="#1b2a40" stroke-width="1"/>
+    <text x="464" y="438" font-family="DejaVu Sans, Arial, sans-serif" font-size="17" fill="#dbe6f5">Strategia e misurazione</text>
+    <text x="464" y="476" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#8fa3bf">· engine deterministici</text>
+    <text x="464" y="502" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#8fa3bf">· test anti-look-ahead prima dei numeri</text>
+    <text x="464" y="528" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#8fa3bf">· TRAIN / OOS separati, report</text>
+    <rect x="464" y="570" width="300" height="42" rx="10" fill="#120a1c" stroke="#2a1a3a"/>
+    <text x="480" y="596" font-family="DejaVu Sans Mono, monospace" font-size="12" fill="#c9a6ff">E10 · E11 · E12 · E13 misurate</text>
+  </g>
+
+  <!-- card MORGANA -->
+  <g>
+    <rect x="820" y="240" width="350" height="400" rx="18" fill="url(#cardbg)" stroke="#1b2a40" stroke-width="1.2"/>
+    <rect x="820" y="240" width="350" height="4" rx="2" fill="#19c37d"/>
+    <rect x="844" y="268" width="150" height="26" rx="13" fill="#06170f" stroke="#19c37d" stroke-width="1"/>
+    <text x="919" y="286" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold" fill="#4ade80" text-anchor="middle">HERMES 1</text>
+    <text x="844" y="352" font-family="DejaVu Sans, Arial, sans-serif" font-size="38" font-weight="bold" fill="#f2f6ff">MORGANA</text>
+    <text x="844" y="382" font-family="DejaVu Sans Mono, monospace" font-size="14" fill="#7fe0b0">nodo nuvola · VPS</text>
+    <line x1="844" y1="404" x2="1146" y2="404" stroke="#1b2a40" stroke-width="1"/>
+    <text x="844" y="438" font-family="DejaVu Sans, Arial, sans-serif" font-size="17" fill="#dbe6f5">Dati, execution, infrastruttura</text>
+    <text x="844" y="476" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#8fa3bf">· dataset con provenienza</text>
+    <text x="844" y="502" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#8fa3bf">· qualità: gap, duplicati, stale</text>
+    <text x="844" y="528" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#8fa3bf">· fee e slippage reali</text>
+    <rect x="844" y="570" width="300" height="42" rx="10" fill="#06170f" stroke="#123a28"/>
+    <text x="860" y="596" font-family="DejaVu Sans Mono, monospace" font-size="12" fill="#4ade80">E14 preflight · DATA_READY/BLOCKED</text>
+  </g>
+
+  <!-- card LANCILLOTTO -->
+  <g>
+    <rect x="1200" y="240" width="350" height="400" rx="18" fill="url(#cardbg)" stroke="#1b2a40" stroke-width="1.2"/>
+    <rect x="1200" y="240" width="350" height="4" rx="2" fill="#ff9f43"/>
+    <rect x="1224" y="268" width="150" height="26" rx="13" fill="#1a1206" stroke="#ff9f43" stroke-width="1"/>
+    <text x="1299" y="286" font-family="DejaVu Sans Mono, monospace" font-size="12" font-weight="bold" fill="#ffbe76" text-anchor="middle">HERMES 3</text>
+    <text x="1224" y="352" font-family="DejaVu Sans, Arial, sans-serif" font-size="38" font-weight="bold" fill="#f2f6ff">LANCILLOTTO</text>
+    <text x="1224" y="382" font-family="DejaVu Sans Mono, monospace" font-size="14" fill="#ffcf9e">nodo MARCODG1 · VPS trading</text>
+    <line x1="1224" y1="404" x2="1526" y2="404" stroke="#1b2a40" stroke-width="1"/>
+    <text x="1224" y="438" font-family="DejaVu Sans, Arial, sans-serif" font-size="17" fill="#dbe6f5">Rischio, canary, PnL reale</text>
+    <text x="1224" y="476" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#8fa3bf">· riconciliazione exchange↔ledger</text>
+    <text x="1224" y="502" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#8fa3bf">· kill-switch e limiti</text>
+    <text x="1224" y="528" font-family="DejaVu Sans, Arial, sans-serif" font-size="14" fill="#8fa3bf">· promozione e retrocessione</text>
+    <rect x="1224" y="570" width="300" height="42" rx="10" fill="#1a1206" stroke="#3a2a14"/>
+    <text x="1240" y="596" font-family="DejaVu Sans Mono, monospace" font-size="12" fill="#ffbe76">piano rischio carry in corso</text>
+  </g>
+
+  <!-- KPI row -->
+  <g font-family="DejaVu Sans Mono, monospace">
+    <rect x="60" y="690" width="245" height="110" rx="14" fill="#0a101a" stroke="#16243a"/>
+    <text x="182" y="736" font-size="30" font-weight="bold" fill="#f2f6ff" text-anchor="middle">1.195</text>
+    <text x="182" y="766" font-size="12" fill="#8fa3bf" text-anchor="middle">test verdi · ruff clean</text>
+
+    <rect x="320" y="690" width="245" height="110" rx="14" fill="#0a101a" stroke="#16243a"/>
+    <text x="442" y="736" font-size="30" font-weight="bold" fill="#f2f6ff" text-anchor="middle">13 / 0</text>
+    <text x="442" y="766" font-size="12" fill="#8fa3bf" text-anchor="middle">bot paper / live</text>
+
+    <rect x="580" y="690" width="245" height="110" rx="14" fill="#0a101a" stroke="#16243a"/>
+    <text x="702" y="736" font-size="30" font-weight="bold" fill="#4ade80" text-anchor="middle">+45,32 €</text>
+    <text x="702" y="766" font-size="12" fill="#8fa3bf" text-anchor="middle">uPL carry DOT+LTC</text>
+
+    <rect x="840" y="690" width="245" height="110" rx="14" fill="#0a101a" stroke="#16243a"/>
+    <text x="962" y="736" font-size="30" font-weight="bold" fill="#f2f6ff" text-anchor="middle">182,17 €</text>
+    <text x="962" y="766" font-size="12" fill="#8fa3bf" text-anchor="middle">nozionale vincolato</text>
+
+    <rect x="1100" y="690" width="245" height="110" rx="14" fill="#0a101a" stroke="#16243a"/>
+    <text x="1222" y="736" font-size="30" font-weight="bold" fill="#ff8fa3" text-anchor="middle">1 / 4</text>
+    <text x="1222" y="766" font-size="12" fill="#8fa3bf" text-anchor="middle">E10 criteri passati · archiviata</text>
+
+    <rect x="1360" y="690" width="180" height="110" rx="14" fill="#0a101a" stroke="#16243a"/>
+    <text x="1450" y="736" font-size="30" font-weight="bold" fill="#f2f6ff" text-anchor="middle">1,22 $</text>
+    <text x="1450" y="766" font-size="12" fill="#8fa3bf" text-anchor="middle">fee cumulate</text>
+  </g>
+
+  <!-- footer -->
+  <line x1="60" y1="870" x2="1540" y2="870" stroke="#16243a" stroke-width="1"/>
+  <text x="60" y="915" font-family="DejaVu Sans, Arial, sans-serif" font-size="16" fill="#8fa3bf">money · dal laboratorio al trading disciplinato — ogni strategia misurata, ogni verdetto congelato</text>
+  <text x="1540" y="915" font-family="DejaVu Sans Mono, monospace" font-size="14" fill="#5f7592" text-anchor="end">github.com/grivetto/money · 2026-10-31</text>
+</svg>
