@@ -122,3 +122,9 @@ STATO DELLA CODA
 ## Aggiornamento 2026-10-31 (9) — E15 misurata: NON PROMOSSA (0/6)
 - E15_carry_soglia.md ... **MISURATA (Artù 31/10): NON PROMOSSA (0/6)** — OOS −0,0718%/gg (t −9,63), 106 switch / 38gg: il costo di inseguimento (31,80 EUR) domina il funding lordo (4,53 EUR). Famiglia funding carry chiusa in questa forma.
 - **Prossima lane: priorità 3, arbitraggio tra venue** — preflight dati dedicato prima della spec.
+
+## Aggiornamento 2026-10-31 (10) — Dottrina: filtro economico + verdetti E16/S2-S4 (numeri, non promesse)
+- Preflight E16 cross-venue (REQ-NUV-010, REVIEW PASS, MANIFEST 173/173): **DATA_READY sui dati ma ECONOMIA ASSENTE** — 0/280 spread incrociati sopra 2× costi RT (mediana −0,023%, p90 +0,022%, universo filtrato 13 simboli). Lane cross-venue spot EEA/EU su major: **CHIUSA in questa forma**; prosecuzione solo come voce nuova (small-cap/quote illiquide/funding cross-venue) con preflight dedicato.
+- Preflight S2/S4 1h/4h (REQ-NUV-011, REVIEW PASS, MANIFEST 7/7): **DATA_BLOCKED** — 1h 95 simboli (<200), 4h 59 (tutte bybit, stantie 19,7g). Le lane S2/S4 richiedono backfill dedicato: **REQ-NUV-20261031-012 dispatchata**.
+- **REGOLA NUOVA (dottrina Artù, da oggi): nessuna spec pre-registrata senza TESI ECONOMICA scritta nella spec** — chi è la controparte, perché perde, perché l'edge persiste. S1/S3 = baseline passiva (nessun investimento ulteriore; il packaging REQ-MERL-035 serve per riproducibilità e per le lane future, non per moltiplicare S1/S3).
+- **Priorità lane:** (1) backfill dati 1h/4h (REQ-NUV-012), (2) liquidazioni/microstructure (L2/OI da raccogliere), (3) funding/basis cross-venue, (4) eventi a calendario (unlock/listing) su universo più ampio.
