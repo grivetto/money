@@ -443,24 +443,6 @@ def gate_dsr(m_oo):
             'ingredienti': ing}
 
 
-def gate_concentrazione(m_oo):
-    """Togliendo la coppia col contributo netto maggiore, la media OOS resta > 0."""
-    contributi = m_oo['contributi_per_coppia']
-    if not contributi:
-        return {'pass': False, 'motivo': 'nessuna coppia'}
-    top = max(contributi, key=lambda s: contributi[s]['pnl_netto'])
-    top_pnl = contributi[top]['pnl_netto']
-    serie_senza = [pnl - (top_pnl * 0.0 if False else 0.0) for pnl in
-                   m_oo['serie_pnl_eur_per_giorno'].values()]
-    # ricostruzione corretta: sottrarre il contributo GIORNALIERO della coppia top
-    serie_senza = []
-    for g, pnl in m_oo['serie_pnl_eur_per_giorno'].items():
-        serie_senza.append(pnl - contributo_giornaliero(top, contributi, g))
-    media = sum(serie_senza) / len(serie_senza) if serie_senza else None
-    return {'pass': media is not None and media > 0, 'coppia_top': top,
-            'pnl_netto_top_eur': top_pnl, 'media_senza_top_eur': media}
-
-
 def calcola_serie(pos_eff, daily, giorni, nozionale, switch):
     """Serie di PnL CONTINUA (stato persistente tra giorni) con dettaglio per coppia.
 
