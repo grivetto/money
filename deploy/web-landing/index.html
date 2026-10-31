@@ -3,17 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Denaro — trading sistematico · web.grivetto.eu</title>
-<meta name="description" content="Denaro: trading sistematico crypto su OKX EEA. La porta del progetto — dashboard della flotta, agenti, squadra e dati live riconciliati.">
+<title>Denaro — il trading · denaro.grivetto.eu</title>
+<meta name="description" content="Denaro: trading sistematico crypto su OKX EEA. L'accesso al progetto — dashboard della flotta, monitoraggio dei nodi e stato del sistema.">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#05070c">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://web.grivetto.eu/">
-<meta property="og:title" content="Denaro — trading sistematico">
-<meta property="og:description" content="Trading sistematico crypto su OKX EEA · dashboard, agenti, squadra e dati live riconciliati.">
-<meta property="og:image" content="https://web.grivetto.eu/trading-2026-10-08.jpg">
-<link rel="canonical" href="https://web.grivetto.eu/">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23070b12'/%3E%3Cpath d='M16 6l9 10-9 10-9-10z' fill='none' stroke='%2358c8ff' stroke-width='2.4'/%3E%3Ccircle cx='16' cy='16' r='2.6' fill='%23b18cff'/%3E%3C/svg%3E">
+<meta property="og:url" content="https://denaro.grivetto.eu/">
+<meta property="og:title" content="Denaro — il trading">
+<meta property="og:description" content="Trading sistematico crypto su OKX EEA · dashboard, monitoring e stato della flotta.">
+<meta property="og:image" content="https://denaro.grivetto.eu/trading-2026-10-08.jpg">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=trade2">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon.png?v=trade2">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png?v=trade2">
+<link rel="shortcut icon" href="/favicon.ico?v=trade2">
+<link rel="apple-touch-icon" href="/favicon-192.png?v=trade2">
 <link rel="preload" as="image" href="trading-2026-10-08.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,8 +51,8 @@
   body::before{
     content:"";position:fixed;inset:0;z-index:-2;
     background:
-      radial-gradient(1100px 560px at 50% 14%, rgba(88,166,255,.10), transparent 62%),
-      linear-gradient(180deg, rgba(5,7,12,.46) 0%, rgba(5,7,12,.70) 52%, rgba(5,7,12,.93) 100%);
+      radial-gradient(1100px 560px at 50% 16%, rgba(88,166,255,.10), transparent 62%),
+      linear-gradient(180deg, rgba(5,7,12,.50) 0%, rgba(5,7,12,.72) 52%, rgba(5,7,12,.93) 100%);
   }
   body::after{
     content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
@@ -63,7 +66,7 @@
   ::selection{background:rgba(88,200,255,.28)}
   a:focus-visible{outline:2px solid rgba(88,200,255,.75);outline-offset:3px;border-radius:12px}
 
-  .frame{width:100%;max-width:920px;display:flex;flex-direction:column;gap:clamp(24px,3.8vh,36px)}
+  .frame{width:100%;max-width:880px;display:flex;flex-direction:column;gap:clamp(26px,4.2vh,40px)}
 
   /* ── top bar ─────────────────────────────────────── */
   .topbar{
@@ -75,22 +78,21 @@
   .brand svg{width:11px;height:11px;color:var(--cyan)}
 
   /* ── hero ────────────────────────────────────────── */
-  .hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:13px}
+  .hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:15px}
   .kicker{
     font-family:var(--mono);font-size:11px;letter-spacing:.36em;text-transform:uppercase;
     color:var(--cyan);opacity:.92;padding-left:.36em;
   }
   .wordmark{
-    font-size:clamp(56px,11vw,104px);font-weight:700;line-height:1;letter-spacing:.055em;
+    font-size:clamp(58px,11.5vw,108px);font-weight:700;line-height:1;letter-spacing:.055em;
     background:linear-gradient(118deg,#7dd3fc 0%,#58a6ff 36%,#a371f7 70%,#e879f9 100%);
     -webkit-background-clip:text;background-clip:text;color:transparent;
     filter:drop-shadow(0 0 28px rgba(88,166,255,.30)) drop-shadow(0 3px 12px rgba(0,0,0,.65));
   }
-  .tagline{color:var(--soft);font-size:clamp(14.5px,2vw,17px);letter-spacing:.015em}
+  .tagline{color:var(--soft);font-size:clamp(15px,2.1vw,18px);letter-spacing:.015em}
   .tagline .hl{font-family:var(--mono);font-size:.9em;color:#9fc6ff;letter-spacing:.03em}
 
-  /* ── live strip ──────────────────────────────────── */
-  .live{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+  .statusrow{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:5px}
   .pill{
     display:inline-flex;align-items:center;gap:9px;padding:8px 16px;border-radius:999px;
     background:rgba(47,227,164,.09);border:1px solid rgba(47,227,164,.34);color:#5ff0bd;
@@ -106,14 +108,33 @@
     border:1px solid var(--border);color:var(--muted);
     font-family:var(--mono);font-size:12px;letter-spacing:.05em;
   }
-  .chip b{color:var(--soft);font-weight:500}
-  .chip.pos b{color:#5ff0bd}
-  .chip.neg b{color:#ff9d9d}
-  .chip.off{border-style:dashed;color:var(--muted-2)}
-  .hidden{display:none!important}
+
+  /* ── KPI live ─────────────────────────────────────── */
+  .kpi{
+    border:1px solid var(--border);border-radius:16px;background:var(--panel);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    padding:18px 20px 15px;display:flex;flex-direction:column;gap:14px;
+  }
+  .kpi-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+  .kpi-title{
+    display:inline-flex;align-items:center;gap:9px;
+    font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--soft);
+  }
+  .kpi-meta{font-family:var(--mono);font-size:11px;color:var(--muted-2)}
+  .kpi-meta.stale{color:#ff9a76}
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+  .stat{
+    display:flex;flex-direction:column;gap:6px;padding:12px 14px;
+    border:1px solid var(--border);border-radius:11px;background:rgba(5,7,12,.35);
+  }
+  .stat-l{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-2)}
+  .stat-v{font-family:var(--mono);font-size:15px;color:var(--ink);font-weight:500}
+  .stat-v.up{color:var(--green)}
+  .stat-v.down{color:#ff7b72}
+  .kpi-foot{font-family:var(--mono);font-size:10.5px;color:var(--muted-2)}
 
   /* ── cards ───────────────────────────────────────── */
-  .cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:14px}
   .card{
     position:relative;display:flex;align-items:center;gap:16px;padding:19px 18px;
     background:var(--panel);border:1px solid var(--border);border-radius:14px;
@@ -168,14 +189,6 @@
   footer a:hover{color:#cfe0f5}
   footer a.sep{color:#3d4b5e;pointer-events:none}
 
-  /* ── foto squadra ────────────────────────────────── */
-  .shot{margin:0;border:1px solid var(--border);border-radius:14px;overflow:hidden}
-  .shot img{display:block;width:100%;height:auto}
-  .shot figcaption{
-    font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:var(--muted-2);
-    padding:10px 15px;border-top:1px solid var(--border);
-  }
-
   @media (max-width:640px){
     .cards{grid-template-columns:1fr}
     footer{justify-content:flex-start}
@@ -191,27 +204,111 @@
   <header class="topbar">
     <span class="brand">
       <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="3"><path d="M16 5l10 11-10 11L6 16z"/></svg>
-      web.grivetto.eu
+      denaro.grivetto.eu
     </span>
-    <span>porta del progetto</span>
+    <span>sala controllo</span>
   </header>
 
   <main class="hero">
-    <p class="kicker">progetto money · trading sistematico</p>
+    <p class="kicker">il trading · accesso al progetto</p>
     <h1 class="wordmark">DENARO</h1>
-    <p class="tagline">Trading sistematico crypto · <span class="hl">OKX&nbsp;EEA</span> · paper e canary live</p>
+    <p class="tagline">Trading sistematico crypto · <span class="hl">OKX&nbsp;EEA</span></p>
+    <div class="statusrow">
+      <span class="pill"><span class="dot"></span>Sistema operativo</span>
+      <span class="chip">flotta · 5 nodi · 13 agenti</span>
+    </div>
   </main>
 
-  <section class="live" id="live" aria-live="polite">
-    <span class="pill hidden" id="pillSistema"><span class="dot"></span>Sistema operativo</span>
-    <span class="chip hidden" id="chipCapitale"></span>
-    <span class="chip hidden" id="chipCanary"></span>
-    <span class="chip hidden" id="chipCarry"></span>
-    <span class="chip hidden" id="chipBots"></span>
-    <span class="chip off hidden" id="chipOff">dati live non disponibili</span>
+  <section class="kpi" aria-label="Stato del sistema — live">
+    <div class="kpi-head">
+      <span class="kpi-title"><span class="dot"></span>stato del sistema — live</span>
+      <span class="kpi-meta" id="kpi-meta">aggiornamento…</span>
+    </div>
+    <div class="kpi-grid" id="kpi-grid">
+      <div class="stat">
+        <span class="stat-l">capitale</span>
+        <span class="stat-v" id="k-equity">—</span>
+      </div>
+      <div class="stat">
+        <span class="stat-l">guadagno 24h</span>
+        <span class="stat-v" id="k-pnl24">—</span>
+      </div>
+      <div class="stat">
+        <span class="stat-l">guadagno 7g</span>
+        <span class="stat-v" id="k-pnl7">—</span>
+      </div>
+      <div class="stat">
+        <span class="stat-l">canary</span>
+        <span class="stat-v" id="k-canary">—</span>
+      </div>
+      <div class="stat">
+        <span class="stat-l">carry</span>
+        <span class="stat-v" id="k-carry">—</span>
+      </div>
+      <div class="stat">
+        <span class="stat-l">bot attivi</span>
+        <span class="stat-v" id="k-bots">—</span>
+      </div>
+      <div class="stat">
+        <span class="stat-l">banco</span>
+        <span class="stat-v" id="k-banco">—</span>
+      </div>
+    </div>
+    <div class="kpi-foot" id="kpi-foot">feed: denaro-api.grivetto.eu/api/public.json · refresh 60s</div>
   </section>
 
   <section class="cards" aria-label="Accessi">
+    <a class="card" href="https://denaro.grivetto.eu/sala">
+      <span class="ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/>
+        </svg>
+      </span>
+      <span>
+        <h2>Sala operativa</h2>
+        <p>squadra all'opera · canali e sessioni live</p>
+      </span>
+      <span class="arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M13 6l6 6-6 6"/>
+        </svg>
+      </span>
+    </a>
+
+    <a class="card" href="https://denaro.grivetto.eu/trading-live">
+      <span class="ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 7l-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/>
+        </svg>
+      </span>
+      <span>
+        <h2>Trading live</h2>
+        <p>denaro reale · carry &amp; canary · P&amp;L riconciliato</p>
+      </span>
+      <span class="arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M13 6l6 6-6 6"/>
+        </svg>
+      </span>
+    </a>
+
+    <a class="card" href="https://denaro.grivetto.eu/trading-live/console" title="Console LIVE — riservata (Cloudflare Access)">
+      <span class="ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49M7.76 16.24a6 6 0 0 1 0-8.49"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 19.07a10 10 0 0 1 0-14.14"/>
+        </svg>
+      </span>
+      <span>
+        <h2>Console LIVE</h2>
+        <p>posizioni aperte in tempo reale · riservata (Access)</p>
+      </span>
+      <span class="arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M13 6l6 6-6 6"/>
+        </svg>
+      </span>
+    </a>
+
     <a class="card" href="https://denaro.grivetto.eu/dashboard">
       <span class="ico" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -220,7 +317,58 @@
       </span>
       <span>
         <h2>Dashboard</h2>
-        <p>flotta · equity · posizioni</p>
+        <p>flotta bot · equity · posizioni</p>
+      </span>
+      <span class="arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M13 6l6 6-6 6"/>
+        </svg>
+      </span>
+    </a>
+
+    <a class="card" href="https://zab.grivetto.eu/" target="_blank" rel="noopener">
+      <span class="ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+        </svg>
+      </span>
+      <span>
+        <h2>Monitoring</h2>
+        <p>nodi · metriche · allarmi</p>
+      </span>
+      <span class="arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M13 6l6 6-6 6"/>
+        </svg>
+      </span>
+    </a>
+
+    <a class="card" href="https://guacamole.grivetto.eu/" target="_blank" rel="noopener">
+      <span class="ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M5 12.5a10 10 0 0 1 14 0"/><path d="M8 15.5a6 6 0 0 1 8 0"/>
+        </svg>
+      </span>
+      <span>
+        <h2>Desktop remoto</h2>
+        <p>Guacamole · nodi della flotta via browser</p>
+      </span>
+      <span class="arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M13 6l6 6-6 6"/>
+        </svg>
+      </span>
+    </a>
+
+    <a class="card" href="https://mc2.tail1b5252.ts.net/" target="_blank" rel="noopener" title="Hermes Wall — accessibile solo da dispositivi nella tailnet">
+      <span class="ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M6 8l3 2.5L6 13M12 13h5"/>
+        </svg>
+      </span>
+      <span>
+        <h2>Hermes Wall</h2>
+        <p>4 agenti CLI live · solo tailnet</p>
       </span>
       <span class="arrow" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -232,12 +380,12 @@
     <a class="card" href="https://denaro.grivetto.eu/agenti">
       <span class="ico" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h6v6H9z"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/>
+          <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
         </svg>
       </span>
       <span>
-        <h2>Agenti</h2>
-        <p>agenti e nodi in campo</p>
+        <h2>Sala controllo</h2>
+        <p>operai · A0 · DSH · accesso protetto</p>
       </span>
       <span class="arrow" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -246,15 +394,15 @@
       </span>
     </a>
 
-    <a class="card" href="https://denaro.grivetto.eu/squadra">
+    <a class="card" href="https://denaro.grivetto.eu/airdrop">
       <span class="ico" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M17 20h5v-2a3 3 0 00-5.36-1.86"/><path d="M9 20H4v-2a3 3 0 015.36-1.86"/><circle cx="12" cy="7" r="3"/><circle cx="19" cy="10" r="2"/><circle cx="5" cy="10" r="2"/>
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
         </svg>
       </span>
       <span>
-        <h2>Squadra</h2>
-        <p>5 nodi · 13 operai · 3 Hermes</p>
+        <h2>Airdrop Farm</h2>
+        <p>wallet on-chain · Flash Earn · campagne attive</p>
       </span>
       <span class="arrow" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -262,109 +410,32 @@
         </svg>
       </span>
     </a>
-
-    <a class="card" href="https://github.com/grivetto/money" target="_blank" rel="noopener">
-      <span class="ico" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
-        </svg>
-      </span>
-      <span>
-        <h2>Codice</h2>
-        <p>repo · grivetto/money</p>
-      </span>
-      <span class="arrow" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M5 12h14M13 6l6 6-6 6"/>
-        </svg>
-      </span>
-    </a>
-
-    <a class="card" href="https://github.com/grivetto/alpha-omega-trading" target="_blank" rel="noopener">
-      <span class="ico" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>
-        </svg>
-      </span>
-      <span>
-        <h2>Alpha-Omega</h2>
-        <p>repo · grivetto/alpha-omega-trading</p>
-      </span>
-      <span class="arrow" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M5 12h14M13 6l6 6-6 6"/>
-        </svg>
-      </span>
-    </a>
-
-
-    <a class="card" href="https://grafana.grivetto.eu" target="_blank" rel="noopener">
-      <span class="ico" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
-        </svg>
-      </span>
-      <span>
-        <h2>Grafana</h2>
-        <p>dati live</p>
-      </span>
-      <span class="arrow" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M5 12h14M13 6l6 6-6 6"/>
-        </svg>
-      </span>
-    </a>
-
-    <a class="card" href="https://zab.grivetto.eu" target="_blank" rel="noopener">
-      <span class="ico" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-        </svg>
-      </span>
-      <span>
-        <h2>Zabbix</h2>
-        <p>monitoraggio flotta</p>
-      </span>
-      <span class="arrow" aria-hidden="true">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M5 12h14M13 6l6 6-6 6"/>
-        </svg>
-      </span>
-    </a>
-
   </section>
 
-  <figure class="shot">
-    <img src="squadra-2026-10-20.png" width="3200" height="2000" loading="lazy" alt="La squadra del progetto money — snapshot 20/10/2026">
-    <figcaption>la squadra · 20/10/2026</figcaption>
-  </figure>
-
   <nav class="linksrow" aria-label="Collegamenti">
-    <a class="ghost" href="/scommessa.html">
+    <a class="ghost" href="https://denaro.grivetto.eu/squadra">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/>
+        <path d="M17 20h5v-2a3 3 0 00-5.36-1.86"/><path d="M9 20H4v-2a3 3 0 015.36-1.86"/><circle cx="12" cy="7" r="3"/><circle cx="19" cy="10" r="2"/><circle cx="5" cy="10" r="2"/>
       </svg>
-      scommessa asimmetrica
+      la squadra
     </a>
-    <a class="ghost" href="/infra.html">
+    <a class="ghost" href="https://github.com/grivetto/money" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M8 3H7a2 2 0 00-2 2v5a2 2 0 01-2 2 2 2 0 012 2v5a2 2 0 002 2h1"/><path d="M16 3h1a2 2 0 012 2v5a2 2 0 002 2 2 2 0 00-2 2v5a2 2 0 01-2 2h-1"/>
+        <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
       </svg>
-      feed infrastruttura
+      codice · grivetto/money
     </a>
   </nav>
 
   <footer>
     <span class="nodes">
       <span class="lbl">nodi</span>
-      <span class="n">mc2</span>·<span class="n">MARCODG1</span>·<span class="n">nuvola</span>·<span class="n">omarchy</span>·<span class="n">win</span>
+      <span class="n">mc2</span>·<span class="n">MARCODG1</span>·<span class="n">nuvola</span>·<span class="n">omarchy</span>·<span class="n">andromeda</span>
     </span>
     <span class="credits">
-      <span id="liveTs">dati live · in attesa</span>
-      <a class="sep">·</a>
       <a href="trading-2026-10-08.jpg" target="_blank" rel="noopener">il trading · 08/10/2026</a>
       <a class="sep">·</a>
-      <span>nessun cookie</span>
+      <a href="https://denaro.grivetto.eu/squadra">la squadra · 11/10/2026</a>
       <a class="sep">·</a>
       <span>© 2026 Sergio Grivetto</span>
     </span>
@@ -373,101 +444,59 @@
 </div>
 <script>
 (function(){
-  "use strict";
-  var FEED = "https://denaro-api.grivetto.eu/api/infra.json";
-  var FRESH_S = 900; // il banco gira ogni 2 minuti; oltre 15' = vecchio
-
-  function $(id){ return document.getElementById(id); }
-
-  function fmtEUR(n){
-    try{ return new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR"}).format(n); }
-    catch(e){ return n.toFixed(2) + " \u20ac"; }
+  var API='https://denaro-api.grivetto.eu/api/public.json';
+  var STALE_S=900;
+  var REFRESH_MS=60000;
+  function $(id){return document.getElementById(id)}
+  function fmtEur(v){
+    if(v===null||v===undefined) return '\u2014';
+    return new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2}).format(v);
   }
-  function fmtPnL(n){
-    var s = (n >= 0 ? "+" : "\u2212") + Math.abs(n).toFixed(2).replace(".", ",");
-    return s + " \u20ac";
+  function pnl(v){
+    if(v===null||v===undefined) return '\u2014';
+    return (v>=0?'+':'\u2212')+' '+fmtEur(Math.abs(v));
   }
-  function ageMin(ts){ return Math.round((Date.now()/1000 - ts)/60); }
-
-  function setText(id, text){ var el = $(id); if(!el) return; el.textContent = text; el.classList.remove("hidden"); }
-  function show(id){ var el = $(id); if(el) el.classList.remove("hidden"); }
-
+  function clsPnl(v){return (v===null||v===undefined)?'':(v>=0?'up':'down')}
   function render(d){
-    var now = Date.now()/1000;
-
-    // banco: riconciliazione contabile (PASS = sistema sano)
-    var b = d.banco || {};
-    if (b.ok && b.esito === "PASS" && b.age_s < FRESH_S){ show("pillSistema"); }
-    else if (b.ok && b.esito){ setText("pillSistema","banco: " + b.esito); }
-
-    // capitale riconciliato (OKX main, feed aggregatore)
-    var eq = null;
-    var eb = d.equity_breakdown || {};
-    var main = eb["OKX main"];
-    if (main && main.ok && typeof main.eur === "number"){ eq = main.eur; }
-    else if (typeof d.total_equity === "number"){ eq = d.total_equity; }
-    if (eq !== null){ setText("chipCapitale","capitale OKX " + fmtEUR(eq)); }
-
-    // canary DOGE (posizione reale, la prima)
-    var c = d.canary || {};
-    if (c && c.ok && c.symbol){
-      var stato = c.status === "open" ? "aperta" : "chiusa";
-      var el = "canary " + c.symbol + " · " + stato + " · ";
-      var wrap = document.createElement("b"); wrap.textContent = fmtPnL(c.upl || 0);
-      var chip = $("chipCanary"); chip.classList.remove("hidden");
-      chip.textContent = el; chip.appendChild(wrap);
-      chip.classList.remove("pos","neg");
-      chip.classList.add((c.upl||0) >= 0 ? "pos" : "neg");
-    }
-
-    // carry DOT/ADA (coppie funding)
-    var k = d.carry || {};
-    if (k && k.ok){
-      var el2 = "carry · " + k.coppie_aperte + " coppie · ";
-      var wrap2 = document.createElement("b"); wrap2.textContent = fmtPnL(k.upl_totale || 0);
-      var chip2 = $("chipCarry"); chip2.classList.remove("hidden");
-      chip2.textContent = el2; chip2.appendChild(wrap2);
-      chip2.classList.remove("pos","neg");
-      chip2.classList.add((k.upl_totale||0) >= 0 ? "pos" : "neg");
-    }
-
-    // flotta bot
-    var paper = d.node_paper_bots, live = d.node_live_bots;
-    if (typeof paper === "number" || typeof live === "number"){
-      setText("chipBots", (paper||0) + " bot paper · " + (live||0) + " live");
-    }
-
-    // freschezza feed
-    var tms = typeof d.generated === "number" ? d.generated * 1000 : Date.parse(d.ts_iso || "");
-    if (tms && !isNaN(tms)){
-      var t = new Date(tms);
-      var hm = ("0"+t.getUTCHours()).slice(-2) + ":" + ("0"+t.getUTCMinutes()).slice(-2);
-      setText("liveTs", "dati live · " + hm + " UTC · denaro-api");
-    }
+    $('k-equity').textContent=fmtEur(d.equity_eur);
+    var p24=$('k-pnl24'); p24.textContent=pnl(d.pnl_24h_eur); p24.className='stat-v '+clsPnl(d.pnl_24h_eur);
+    var p7=$('k-pnl7'); p7.textContent=pnl(d.pnl_7d_eur); p7.className='stat-v '+clsPnl(d.pnl_7d_eur);
+    var c=d.canary||{};
+    $('k-canary').textContent=(c.symbol!==undefined&&c.symbol!==null)
+      ? c.symbol+' '+((c.status===undefined||c.status===null)?'\u2014':c.status)+' '+fmtEur(c.upl)
+      : '\u2014';
+    var y=d.carry||{};
+    $('k-carry').textContent=(y.coppie_aperte!==undefined&&y.coppie_aperte!==null)
+      ? y.coppie_aperte+' coppie \u00b7 '+fmtEur(y.upl_totale)
+      : '\u2014';
+    var pb=(d.node_paper_bots===undefined||d.node_paper_bots===null)?'\u2014':(d.node_paper_bots+' paper');
+    var lb=(d.node_live_bots===undefined||d.node_live_bots===null)?'\u2014':(d.node_live_bots+' live');
+    $('k-bots').textContent=pb+' \u00b7 '+lb;
+    var b=d.banco||{};
+    $('k-banco').textContent=(b.ok===undefined||b.ok===null)
+      ? '\u2014'
+      : ((b.ok?'PASS':'FAIL')+((b.age_s===undefined||b.age_s===null)?'':(' \u00b7 '+b.age_s+'s')));
   }
-
-  function offline(){
-    show("chipOff");
-    setText("liveTs", "dati live non disponibili");
+  function load(){
+    fetch(API,{cache:'no-store'}).then(function(r){
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      return r.json();
+    }).then(function(d){
+      render(d);
+      var age=Number.MAX_VALUE;
+      if(d.generated!==undefined&&d.generated!==null) age=(Date.now()/1000)-d.generated;
+      var m=$('kpi-meta');
+      m.textContent='aggiornato '+((d.ts_iso===undefined||d.ts_iso===null)?'\u2014':d.ts_iso)+(age>STALE_S?' \u00b7 dati non freschi (>15 min)':'');
+      m.className=age>STALE_S?'kpi-meta stale':'kpi-meta';
+    }).catch(function(e){
+      var m=$('kpi-meta');
+      m.textContent='dati live non disponibili';
+      m.className='kpi-meta stale';
+    });
   }
-
-  function load(attempt){
-    attempt = attempt || 0;
-    var ctl = new AbortController();
-    var t = setTimeout(function(){ ctl.abort(); }, 9000);
-    fetch(FEED, {cache:"no-store", signal:ctl.signal})
-      .then(function(r){ clearTimeout(t); if(!r.ok) throw new Error("http "+r.status); return r.json(); })
-      .then(function(d){ render(d); })
-      .catch(function(){
-        clearTimeout(t);
-        if (attempt < 2){ setTimeout(function(){ load(attempt + 1); }, 4000 + attempt * 5000); }
-        else { offline(); }
-      });
-  }
-
-  load(0);
-  setInterval(function(){ load(0); }, 60000);
+  load();
+  setInterval(load,REFRESH_MS);
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4eadd37bb2dea73',t:'MTc5MjY5Njg3Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
