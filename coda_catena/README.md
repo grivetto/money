@@ -114,3 +114,7 @@ STATO DELLA CODA
 ## Aggiornamento 2026-10-30 (7) — E10 misurata: NON PROMOSSA; famiglia on-chain chiusa
 - E10_stablecoin_issuance.md ... **MISURATA (Artù 30/10): NON PROMOSSA (1/4)** — OOS aggregato −0,0418%/g (t −1,12), train +0,176%/g (t 2,52), DSR 0,122; sotto buy&hold. Famiglia on-chain/liquidity CHIUSA, nessuna variante.
 - **Prossima lane (regola sistema, priorità 2): E14 carry funding multi-simbolo con selezione dinamica del paniere** — pre-registrazione in corso (Artù).
+
+## Aggiornamento 2026-10-31 (8) — E14 BLOCKED-dati → E15 pre-registrata
+- E14_carry_selezione.md ... **CHIUSA BLOCKED-dati** (funding OKX ~95,3g, 0/517 con ≥12m): la selezione dinamica per ranking storico non è misurabile; nessuna variante.
+- E15_carry_soglia.md ... **PRE-REGISTRATA (Artù 31/10, lint 7/7)** — carry funding a soglia (10%/5%, cap 5 coppie, capitale vincolato 2× nozionale), universo 517 perp, TRAIN/OOS su 95 giorni. Implementazione: Merlino (REQ-MERL-20261031-034). Se fallisce: famiglia carry chiusa, si passa ad arbitraggio tra venue.
