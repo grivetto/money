@@ -417,10 +417,16 @@ def test_f3_spot_assente_qty0_closed_con_nota(tmp_path, capsys):
 
 def test_f4_letture_discordanti_exit1_zero_ordini(tmp_path, capsys):
     """1a lettura in chiudi_perp vuota, 2a vede -78: discordanti -> exit 1,
-    nessun ordine (lo spot NON viene venduto con lo short scoperto)."""
+    nessun ordine (lo spot NON viene venduto con lo short scoperto).
+
+    MD1-005: la lettura multi-riga aggiunge una chiamata (righe_perp) tra la
+    prima lettura e la rilettura F4 -> servono 3 letture vuote prima della
+    rilettura -78 (misurato: 5 fetch_positions nel flusso). Scenario invariato:
+    prima lettura di chiudi_perp vuota, rilettura -78 = discordanti.
+    """
     mock = MockClientP31(pos_ct=-78.0, pos_side="short", info_pos=-78.0,
                          spot_qty=78.0,
-                         pos_sequence=[-78.0, None, -78.0])
+                         pos_sequence=[None, None, None, -78.0])
     stato_dir = tmp_path / "stato"
     scrivi_stato(stato_dir, {"qty_spot": 78.0, "ct_perp": -78.0})
     rc = mod.esegui(mock, cfg(stato_dir=stato_dir), sleep_fn=noop_sleep)
