@@ -37,8 +37,10 @@ CIECHI_MAX = 3  # giri consecutivi di check non eseguibile prima di dichiarare g
 
 #: Gli operai monitorati: chiave item -> (nome, nodo, strumento)
 OPERAIO_ITEMS = (
-    ("dev.hermes.mc2", "Hermes su mc2", "mc2", "hermes"),
-    ("dev.hermes.omarchy", "Hermes su omarchy", "omarchy", "hermes"),
+    ("dev.hermes.mc2", "Artù (Hermes Lead) su mc2", "mc2", "hermes"),
+    ("dev.hermes.omarchy", "Merlino (Hermes 2) su omarchy", "omarchy", "hermes"),
+    ("dev.hermes.nuvola", "Morgana (Hermes 1) su nuvola", "nuvola", "hermes"),
+    ("dev.hermes.marcodg1", "Lancillotto (Hermes 3) su MARCODG1", "marcodg1", "hermes"),
     ("dev.a0.mc2", "A0 su mc2", "mc2", "a0"),
     ("dev.a0.omarchy", "A0 su omarchy", "omarchy", "a0"),
     ("dev.a0.win", "A0 su win", "win", "a0"),
@@ -64,8 +66,8 @@ ITEM_EXTRA = (
 NODI = {
     "mc2": {"alias": None, "porta_dsh": 4080, "dsh": True, "a0": True, "hermes": True},
     "omarchy": {"alias": "omarchy", "porta_dsh": 5080, "dsh": True, "a0": True, "hermes": True},
-    "nuvola": {"alias": "nuvola", "porta_dsh": None, "dsh": False, "a0": False},
-    "marcodg1": {"alias": "MARCODG1", "porta_dsh": None, "dsh": False, "a0": False},
+    "nuvola": {"alias": "nuvola", "porta_dsh": None, "dsh": False, "a0": False, "hermes": True},
+    "marcodg1": {"alias": "MARCODG1", "porta_dsh": None, "dsh": False, "a0": False, "hermes": True},
 }
 WIN_ALIAS = "winpc"
 
