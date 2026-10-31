@@ -48,3 +48,6 @@
 
 # [29/10/26] Postino di squadra: auto-sveglia i nodi su nuovi messaggi in requests.md (grace 120s, check lock, fusibile 3 lanci/ora), inbox Artu' + Telegram riassuntivo — ogni minuto (ops/squadra/postino.py)
 * * * * * /usr/bin/flock -n /tmp/denaro_postino.lock /home/sergio/money/.venv/bin/python /home/sergio/money/ops/squadra/postino.py >> /home/sergio/money/logs/postino.log 2>&1
+
+# [31/10/26] Backfill E17 (Morgana, REQ-NUV-20261031-012): refresh incrementale 1h/4h okx+binance top250 — ogni 6h, flock condiviso col run full
+47 */6 * * * cd /home/sergio/hermes-scratch/e17 && /usr/bin/flock -n /tmp/e17_full.lock /usr/bin/python3 backfill_e17.py --mode incremental >> logs/cron.log 2>&1
