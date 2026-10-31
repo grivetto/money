@@ -45,6 +45,12 @@ MECCANICA (dichiarata)
 - Guardie: qty = posizione reale riletta (mai > reale, mai segno invertito:
   reduceOnly e' il cap lato exchange); minimi di mercato controllati; coppia
   non nota -> rifiuto (exit 2).
+- --qty (MD1-005): qty SPOT esplicita da vendere. Sovrascrive la qty_spot
+  dello stato per la gamba spot (guardie F3/F5, vendita e riconciliazione
+  incluse): serve quando il saldo reale non coincide con la coppia (es. DOT
+  post-scaling: saldo 337,459 vs stato 77,922). Con --qty la vendita e'
+  PARZIALE se il saldo eccede la qty richiesta (il residuo resta long).
+  Senza --qty il rifiuto F5 resta (mai vendere saldi estranei di default).
 - Kill switch: NON blocca la chiusura (vedi sopra).
 - Scritture SOLO con --execute: stato `data/carry_multi/stato.json`
   (coppia -> status, ts_chiudi, esiti, fee) + riga in `eventi.jsonl`
@@ -53,6 +59,7 @@ MECCANICA (dichiarata)
 Uso:
   .venv/bin/python3 scripts/carry_chiudi.py --coppia DOT              # dry-run
   .venv/bin/python3 scripts/carry_chiudi.py --coppia DOT --motivo "..." [--execute]
+  .venv/bin/python3 scripts/carry_chiudi.py --coppia DOT --qty 337.46  # dry-run, qty spot esplicita
 
 Exit code: 0 = ok / gia' chiusa / dry-run; 1 = errore o FAIL_CHIUSURA;
 2 = rifiuto (guardie, coppia ignota, --execute senza chiavi).
@@ -146,6 +153,10 @@ class Config:
     netto_stimato: Optional[float] = None
     solo_economica: bool = False
     margine: float = 0.0
+    #: MD1-005: qty SPOT esplicita (sovrascrive qty_spot dello stato per la
+    #: gamba spot). None = comportamento storico (rifiuto F5 su saldi
+    #: estranei alla coppia).
+    qty_esplicita: Optional[float] = None
 
 
 # ---------------------------------------------------------------------------
@@ -235,15 +246,40 @@ def _coerenza_info_pos(p: dict, ct: float) -> None:
 
 def leggi_perp_reale(ex, c, controlla: bool = True) -> Tuple[float, str]:
     """(ct con segno, side di chiusura) dalla posizione reale. Unico punto
-    usato da piano e invio; qty_perp ne e' il wrapper di sola lettura."""
+    usato da piano e invio; qty_perp ne e' il wrapper di sola lettura.
+
+    MD1-005: lettura MULTI-RIGA (lezione P34 di money_recon_carry): la stessa
+    instId puo' avere piu' righe (mgnMode isolated + cross) e i contratti si
+    SOMMANO con segno (DOT reale: -84 cross + -253 isolated = -337). La
+    lettura a riga singola del P28 chiudeva solo UNA riga: pericoloso.
+    Righe di segno misto -> PosizioneIncoerente (mai sommare al buio)."""
+    tot = 0.0
+    segni: set = set()
     for p in ex.fetch_positions([c.sym_perp]):
         ct, qty, side = lato_taglia_perp(p)
         if qty <= EPS_CT:
             continue
         if controlla:
             _coerenza_info_pos(p, ct)
-        return ct, side
+        tot += ct
+        segni.add("short" if ct < 0 else "long")
+    if len(segni) > 1:
+        raise PosizioneIncoerente(
+            f"righe perp di segno misto su {c.sym_perp} ({sorted(segni)}): "
+            "nessuna somma, verifica manuale.")
+    if abs(tot) > EPS_CT:
+        return tot, ("sell" if tot > 0 else "buy")
     return 0.0, ""
+
+
+def righe_perp(ex, c) -> list:
+    """Righe di posizione non vuote per l'instId (controlli multi-riga)."""
+    out = []
+    for p in ex.fetch_positions([c.sym_perp]):
+        _ct, qty, _side = lato_taglia_perp(p)
+        if qty > EPS_CT:
+            out.append(p)
+    return out
 
 
 def qty_perp(ex, c) -> float:
@@ -378,6 +414,11 @@ def chiudi_perp(ex, c, cfg: Config, mgn: str, voce: dict, sleep_fn, out) -> Dict
         out(f"  STOP: {e}")
         res["esito"] = "incerto"
         return res
+    if len(righe_perp(ex, c)) > 1:
+        out("  STOP: posizione perp multi-riga: chiusura per-bucket non "
+            "implementata — nessun ordine (verifica manuale).")
+        res["esito"] = "incerto"
+        return res
     if abs(ct) <= EPS_CT:
         # F4: seconda lettura concordante ~1s dopo; arbitro finale lo stato
         sleep_fn(1.0)
@@ -510,6 +551,8 @@ def chiudi_spot(ex, c, cfg: Config, voce: dict, sleep_fn, out) -> Dict[str, Any]
     F2/F6: come chiudi_perp (ordine vivo su eccezione, fill cumulato)."""
     res = _esito_gamba()
     qty_attesa = float(voce.get("qty_spot") or 0)
+    if cfg.qty_esplicita is not None:
+        qty_attesa = cfg.qty_esplicita
     q = qty_spot(ex, c)
     if qty_attesa > EPS_QTY:
         q = min(q, qty_attesa * (1 + TOLL_QTY_REL))
@@ -700,6 +743,10 @@ def esegui(ex, cfg: Config, sleep_fn=time.sleep, out=print) -> int:
 
     # -- posizioni REALI + prezzi indicativi + minimi --
     qty_attesa = float(voce.get("qty_spot") or 0)      # F3/F5: qty della coppia
+    if cfg.qty_esplicita is not None:
+        out(f"NOTA --qty: qty spot esplicita {cfg.qty_esplicita:g} "
+            f"(stato qty_spot={qty_attesa:g}) — gamba spot decisa su questa.")
+        qty_attesa = cfg.qty_esplicita
     toll_qty = max(EPS_QTY, qty_attesa * TOLL_QTY_REL)
     try:
         ct, side_perp = leggi_perp_reale(ex, c)        # punto unico F1
@@ -730,12 +777,18 @@ def esegui(ex, cfg: Config, sleep_fn=time.sleep, out=print) -> int:
                 f"ma in funding/earn ({totale_reale:g}) — serve earn_move "
                 "redeem prima della chiusura, nessun ordine.")
             return 2
-    # -- F5: la qty spot venduta e' quella della coppia, non l'intero saldo --
+    # -- F5: la qty spot venduta e' quella della coppia, non l'intero saldo;
+    # --qty esplicito (MD1-005) autorizza la vendita PARZIALE della sola
+    # qty richiesta (il residuo resta long). --
     if qty_attesa > EPS_QTY and total_t > qty_attesa + toll_qty:
-        out(f"RIFIUTO: saldo spot {total_t:g} supera la qty della coppia "
-            f"{qty_attesa:g} di {total_t - qty_attesa:g} — serve --qty "
-            "esplicito, nessun ordine.")
-        return 2
+        if cfg.qty_esplicita is None:
+            out(f"RIFIUTO: saldo spot {total_t:g} supera la qty della coppia "
+                f"{qty_attesa:g} di {total_t - qty_attesa:g} — serve --qty "
+                "esplicito, nessun ordine.")
+            return 2
+        out(f"NOTA --qty: saldo spot {total_t:g} > qty richiesta "
+            f"{qty_attesa:g}: vendita PARZIALE della sola qty richiesta "
+            f"(residuo {total_t - qty_attesa:g} resta long).")
 
     # -- idempotenza: entrambe le gambe gia' a zero --
     if abs(ct) <= EPS_CT and q_spot <= EPS_QTY:
@@ -754,6 +807,20 @@ def esegui(ex, cfg: Config, sleep_fn=time.sleep, out=print) -> int:
     if total_t > EPS_QTY and free_t <= EPS_QTY:
         out(f"ATTENZIONE: spot {total_t:g} presente ma free=0 (vincolato?): "
             "il sell potrebbe fallire — verifica ordini aperti.")
+
+    righe = righe_perp(ex, c)
+    if len(righe) > 1:
+        dett = "; ".join(
+            f"{lato_taglia_perp(p)[0]:g} ct "
+            f"(mgnMode={((p.get('info') or {}).get('mgnMode') or '?')})"
+            for p in righe)
+        out(f"posizione perp MULTI-RIGA ({len(righe)}): {dett} — "
+            f"somma {ct:g} ct")
+        if cfg.execute:
+            out("RIFIUTO: chiusura per-bucket non implementata in "
+                "carry_chiudi (una riga per mgnMode) — nessun ordine, "
+                "verifica manuale o REQ dedicata.")
+            return 2
 
     stampa_piano(c, cfg, ct, q_spot, t_p, t_s, mgn, side_perp, out)
 
@@ -835,7 +902,7 @@ def esegui(ex, cfg: Config, sleep_fn=time.sleep, out=print) -> int:
         if qty_attesa > EPS_QTY:
             # F3: lo stato dice che la gamba doveva esserci ma il trading e'
             # vuoto: MAI scrivere closed (la qty puo' essere in funding/earn)
-            nota = (f"gamba spot assente ma stato qty_spot={qty_attesa:g} "
+            nota = (f"gamba spot assente ma qty attesa {qty_attesa:g} "
                     "> tolleranza: possibile funding/earn — verifica manuale.")
             registra_esito(cfg, esiti, "chiusura_fallita", nota=nota)
             evento(cfg.stato_dir, "chiusura_fallita", coppia=cfg.coppia,
@@ -909,6 +976,10 @@ def build_parser() -> argparse.ArgumentParser:
                         "sotto soglia rifiuta (exit 2, zero ordini)")
     p.add_argument("--margine", type=float, default=0.0,
                    help="P34-F2: margine USDC oltre fee+basis (default 0)")
+    p.add_argument("--qty", type=float, default=None,
+                   help="MD1-005: qty SPOT esplicita da vendere (sovrascrive "
+                        "qty_spot dello stato per la gamba spot; il saldo "
+                        "oltre la qty resta long)")
     p.add_argument("--env-file", default=None,
                    help="env-file con le chiavi OKX (default: quello del "
                         "carry multi su MARCODG1)")
@@ -924,8 +995,12 @@ def main(argv=None) -> int:
         print(f"RIFIUTO: coppia ignota {nome!r}. Disponibili: {sorted(COPPIE)}",
               file=sys.stderr)
         return 2
+    if args.qty is not None and args.qty <= 0:
+        print(f"RIFIUTO: --qty deve essere > 0 (ricevuto {args.qty:g}).",
+              file=sys.stderr)
+        return 2
     cfg = Config(coppia=nome, motivo=(args.motivo or "").strip(),
-                 execute=args.execute)
+                 execute=args.execute, qty_esplicita=args.qty)
     env_path = Path(args.env_file) if args.env_file else ENV_FILE
     if not env_path.exists():
         if args.execute:
