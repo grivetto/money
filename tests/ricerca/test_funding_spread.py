@@ -65,6 +65,21 @@ def test_missing_venue_epochs_are_not_filled_with_zero():
     assert result.aligned_epochs == 8
 
 
+def test_close_signal_uses_current_event_without_one_epoch_delay():
+    # Seven prior positive observations open the spread at event 8. The
+    # current event is the third sub-threshold event and must close now.
+    points = points_for([0.0002] * 7 + [0.0002, 0.000001, 0.000001, 0.000001])
+    result = e9.simulate_pair(points, "bybit", "binance", "DOT", capital_eur=1000)
+    assert result.trades == 1
+    assert result.open_epochs == 4
+
+
+def test_observations_are_scoped_to_requested_symbol():
+    points = points_for([0.0002] * 8, symbol="DOT") + points_for([0.0001] * 5, symbol="ADA")
+    result = e9.simulate_pair(points, "bybit", "binance", "DOT", capital_eur=1000)
+    assert result.observations == 16
+
+
 def test_report_has_all_five_declared_symbols_and_is_fail_closed():
     points = points_for([0.0002] * 30)
     result = e9.report(points, venue_a="bybit", venue_b="binance", capital_eur=1000)

@@ -150,7 +150,8 @@ def simulate_pair(
     stress_slippage_per_side: float = DEFAULT_SLIPPAGE_PER_SIDE,
 ) -> PairMetrics:
     """Simulate one pair. Every decision at t uses only diffs strictly before t."""
-    by_key: dict[tuple[str, int], float] = {(p.venue, p.ts): p.funding for p in points if p.symbol == symbol}
+    symbol_points = [p for p in points if p.symbol == symbol]
+    by_key: dict[tuple[str, int], float] = {(p.venue, p.ts): p.funding for p in symbol_points}
     timestamps = sorted({ts for venue, ts in by_key if venue in {venue_a, venue_b}
                          and (venue_a, ts) in by_key and (venue_b, ts) in by_key})
     diffs = [by_key[(venue_a, ts)] - by_key[(venue_b, ts)] for ts in timestamps]
@@ -169,9 +170,10 @@ def simulate_pair(
             continue
         rolling = _mean(history)
         sign = 1 if rolling > 0 else -1
-        close_signal = (abs(rolling) < close_threshold and len(history) >= 3
-                        and all(abs(x) < close_threshold for x in history[-3:]))
-        invert_signal = len(history) >= 2 and history[-1] * history[-2] < 0
+        recent = (*history, diffs[i])
+        close_signal = (len(recent) >= 3
+                        and all(abs(x) < close_threshold for x in recent[-3:]))
+        invert_signal = len(recent) >= 2 and recent[-1] * recent[-2] < 0
         if open_state is None and abs(rolling) >= open_threshold:
             open_state = {"ts": ts, "sign": sign, "gross": 0.0, "epochs": 0}
         if open_state is not None:
@@ -214,7 +216,7 @@ def simulate_pair(
     annual_stress = mean_stress * 3 * 365 / capital if capital else 0.0
     verdict = "PASS" if (len(base_returns) >= 200 and mean_base > 0 and (t_stat or 0) >= 2
                           and mean_stress > 0) else "FAIL"
-    return PairMetrics(symbol, venue_a, venue_b, len(points), len(timestamps), len(base_returns),
+    return PairMetrics(symbol, venue_a, venue_b, len(symbol_points), len(timestamps), len(base_returns),
                        len(trades), mean_base, t_stat, ci_low, ci_high, mean_stress,
                        _mean(month_consistency), capital, annual_base, annual_stress, verdict)
 
