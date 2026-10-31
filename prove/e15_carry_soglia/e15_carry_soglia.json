@@ -1,0 +1,1842 @@
+{
+ "spec": {
+  "capitale_eur": 1000.0,
+  "cap_coppie": 5,
+  "nozionale_per_coppia_eur": 100.0,
+  "capitale_vincolato_per_coppia_eur": 200.0,
+  "capitale_vincolato_totale_eur": 1000.0,
+  "soglia_ingresso_fa_pct": 10.0,
+  "soglia_uscita_fa_pct": 5.0,
+  "giorni_negativi_per_uscita": 2,
+  "switch_rt_base": 0.003,
+  "switch_rt_stress": 0.006,
+  "min_bar_storia": 90,
+  "t1_n_min": 30,
+  "t1_t_min": 2.0,
+  "t2_mean_min": 0.0,
+  "t3_t_min": 1.5,
+  "baseline_annuo": 0.03,
+  "n_tentativi_dsr": 2,
+  "seme_ci_bootstrap": 20260101,
+  "giorni_train": 57,
+  "giorni_oos": 38
+ },
+ "input": {
+  "funding_daily_sha256": "e1c04765314f412ec0211ef97da0477c8221cd92e0a64b1efe794c9494a72b4a",
+  "codice_engine_sha256": "72987b99258f84d781a87e66d44b72fce441922a51a963f1e91b0388d5445a77",
+  "n_simboli_funding": 517
+ },
+ "giorni": {
+  "primo_ms": 1785110400000,
+  "ultimo_ms": 1793404800000,
+  "primo_parziale": true,
+  "ultimo_parziale": true,
+  "n_pieni": 95,
+  "train": {
+   "inizio_ms": 1785196800000,
+   "fine_ms": 1790035200000,
+   "n": 57
+  },
+  "oos": {
+   "inizio_ms": 1790121600000,
+   "fine_ms": 1793318400000,
+   "n": 38
+  }
+ },
+ "universo": {
+  "n_funding": 517,
+  "esclusi": {
+   "spot_vuote": 297,
+   "spot_lt90": 6,
+   "perp_lt90": 1,
+   "candele_assenti": 0
+  },
+  "n_universo": 213,
+  "lista": [
+   "1INCH-USDT-SWAP",
+   "2Z-USDT-SWAP",
+   "A-USDT-SWAP",
+   "AAVE-USDT-SWAP",
+   "ACH-USDT-SWAP",
+   "ACT-USDT-SWAP",
+   "ADA-USDT-SWAP",
+   "AEON-USDT-SWAP",
+   "AEVO-USDT-SWAP",
+   "AGLD-USDT-SWAP",
+   "AI-USDT-SWAP",
+   "AIXBT-USDT-SWAP",
+   "ALGO-USDT-SWAP",
+   "ALLO-USDT-SWAP",
+   "ANIME-USDT-SWAP",
+   "APE-USDT-SWAP",
+   "API3-USDT-SWAP",
+   "APT-USDT-SWAP",
+   "AR-USDT-SWAP",
+   "ARB-USDT-SWAP",
+   "ARKM-USDT-SWAP",
+   "ASTER-USDT-SWAP",
+   "ATH-USDT-SWAP",
+   "ATOM-USDT-SWAP",
+   "AUCTION-USDT-SWAP",
+   "AVAX-USDT-SWAP",
+   "AVNT-USDT-SWAP",
+   "AXS-USDT-SWAP",
+   "BABY-USDT-SWAP",
+   "BAND-USDT-SWAP",
+   "BARD-USDT-SWAP",
+   "BASED-USDT-SWAP",
+   "BAT-USDT-SWAP",
+   "BCH-USDT-SWAP",
+   "BERA-USDT-SWAP",
+   "BICO-USDT-SWAP",
+   "BIGTIME-USDT-SWAP",
+   "BIO-USDT-SWAP",
+   "BLUR-USDT-SWAP",
+   "BNB-USDT-SWAP",
+   "BOME-USDT-SWAP",
+   "BONK-USDT-SWAP",
+   "BREV-USDT-SWAP",
+   "BTC-USDT-SWAP",
+   "CC-USDT-SWAP",
+   "CELO-USDT-SWAP",
+   "CFX-USDT-SWAP",
+   "CHIP-USDT-SWAP",
+   "CHZ-USDT-SWAP",
+   "COMP-USDT-SWAP",
+   "CORE-USDT-SWAP",
+   "CRO-USDT-SWAP",
+   "CRV-USDT-SWAP",
+   "CVX-USDT-SWAP",
+   "DASH-USDT-SWAP",
+   "DATA-USDT-SWAP",
+   "DOGE-USDT-SWAP",
+   "DOOD-USDT-SWAP",
+   "DOT-USDT-SWAP",
+   "DYDX-USDT-SWAP",
+   "EDGE-USDT-SWAP",
+   "EGLD-USDT-SWAP",
+   "EIGEN-USDT-SWAP",
+   "ENA-USDT-SWAP",
+   "ENJ-USDT-SWAP",
+   "ENS-USDT-SWAP",
+   "ETC-USDT-SWAP",
+   "ETH-USDT-SWAP",
+   "ETHFI-USDT-SWAP",
+   "ETHW-USDT-SWAP",
+   "FIL-USDT-SWAP",
+   "FLOKI-USDT-SWAP",
+   "FLOW-USDT-SWAP",
+   "FOGO-USDT-SWAP",
+   "GALA-USDT-SWAP",
+   "GAS-USDT-SWAP",
+   "GLM-USDT-SWAP",
+   "GMT-USDT-SWAP",
+   "GMX-USDT-SWAP",
+   "GRAM-USDT-SWAP",
+   "GRASS-USDT-SWAP",
+   "GRT-USDT-SWAP",
+   "GRVT-USDT-SWAP",
+   "HBAR-USDT-SWAP",
+   "HMSTR-USDT-SWAP",
+   "HUMA-USDT-SWAP",
+   "HYPE-USDT-SWAP",
+   "ICP-USDT-SWAP",
+   "IMX-USDT-SWAP",
+   "INJ-USDT-SWAP",
+   "IOST-USDT-SWAP",
+   "IOTA-USDT-SWAP",
+   "IRYS-USDT-SWAP",
+   "JTO-USDT-SWAP",
+   "JUP-USDT-SWAP",
+   "KAITO-USDT-SWAP",
+   "KAT-USDT-SWAP",
+   "KITE-USDT-SWAP",
+   "KMNO-USDT-SWAP",
+   "KSM-USDT-SWAP",
+   "LAYER-USDT-SWAP",
+   "LDO-USDT-SWAP",
+   "LINEA-USDT-SWAP",
+   "LINK-USDT-SWAP",
+   "LIT-USDT-SWAP",
+   "LPT-USDT-SWAP",
+   "LQTY-USDT-SWAP",
+   "LTC-USDT-SWAP",
+   "LUNA-USDT-SWAP",
+   "MAGIC-USDT-SWAP",
+   "MANA-USDT-SWAP",
+   "MASK-USDT-SWAP",
+   "ME-USDT-SWAP",
+   "MEGA-USDT-SWAP",
+   "MEME-USDT-SWAP",
+   "MERL-USDT-SWAP",
+   "MET-USDT-SWAP",
+   "METIS-USDT-SWAP",
+   "MEW-USDT-SWAP",
+   "MINA-USDT-SWAP",
+   "MMT-USDT-SWAP",
+   "MON-USDT-SWAP",
+   "MOODENG-USDT-SWAP",
+   "MORPHO-USDT-SWAP",
+   "MOVE-USDT-SWAP",
+   "NEAR-USDT-SWAP",
+   "NEIRO-USDT-SWAP",
+   "NEO-USDT-SWAP",
+   "NES-USDT-SWAP",
+   "NIGHT-USDT-SWAP",
+   "NMR-USDT-SWAP",
+   "NOT-USDT-SWAP",
+   "OFC-USDT-SWAP",
+   "OKB-USDT-SWAP",
+   "OL-USDT-SWAP",
+   "ONDO-USDT-SWAP",
+   "ONE-USDT-SWAP",
+   "ONT-USDT-SWAP",
+   "OP-USDT-SWAP",
+   "ORDI-USDT-SWAP",
+   "PARTI-USDT-SWAP",
+   "PENDLE-USDT-SWAP",
+   "PENGU-USDT-SWAP",
+   "PEOPLE-USDT-SWAP",
+   "PEPE-USDT-SWAP",
+   "PI-USDT-SWAP",
+   "PNUT-USDT-SWAP",
+   "POL-USDT-SWAP",
+   "PROS-USDT-SWAP",
+   "PROVE-USDT-SWAP",
+   "PUMP-USDT-SWAP",
+   "PYTH-USDT-SWAP",
+   "QTUM-USDT-SWAP",
+   "RAY-USDT-SWAP",
+   "RE-USDT-SWAP",
+   "RENDER-USDT-SWAP",
+   "RESOLV-USDT-SWAP",
+   "ROBO-USDT-SWAP",
+   "RSR-USDT-SWAP",
+   "RVN-USDT-SWAP",
+   "S-USDT-SWAP",
+   "SAHARA-USDT-SWAP",
+   "SAND-USDT-SWAP",
+   "SATS-USDT-SWAP",
+   "SEI-USDT-SWAP",
+   "SENT-USDT-SWAP",
+   "SHIB-USDT-SWAP",
+   "SKY-USDT-SWAP",
+   "SLX-USDT-SWAP",
+   "SNX-USDT-SWAP",
+   "SOL-USDT-SWAP",
+   "SOPH-USDT-SWAP",
+   "SPACE-USDT-SWAP",
+   "SPK-USDT-SWAP",
+   "SSV-USDT-SWAP",
+   "STRK-USDT-SWAP",
+   "STX-USDT-SWAP",
+   "SUI-USDT-SWAP",
+   "SUSHI-USDT-SWAP",
+   "TAO-USDT-SWAP",
+   "THETA-USDT-SWAP",
+   "TIA-USDT-SWAP",
+   "TRB-USDT-SWAP",
+   "TRUMP-USDT-SWAP",
+   "TRX-USDT-SWAP",
+   "TURBO-USDT-SWAP",
+   "UMA-USDT-SWAP",
+   "UNI-USDT-SWAP",
+   "USDC-USDT-SWAP",
+   "VIRTUAL-USDT-SWAP",
+   "W-USDT-SWAP",
+   "WCT-USDT-SWAP",
+   "WET-USDT-SWAP",
+   "WIF-USDT-SWAP",
+   "WLD-USDT-SWAP",
+   "WLFI-USDT-SWAP",
+   "WOO-USDT-SWAP",
+   "XLM-USDT-SWAP",
+   "XPL-USDT-SWAP",
+   "XRP-USDT-SWAP",
+   "XTZ-USDT-SWAP",
+   "YB-USDT-SWAP",
+   "YFI-USDT-SWAP",
+   "YGG-USDT-SWAP",
+   "ZAMA-USDT-SWAP",
+   "ZEC-USDT-SWAP",
+   "ZEN-USDT-SWAP",
+   "ZETA-USDT-SWAP",
+   "ZIL-USDT-SWAP",
+   "ZK-USDT-SWAP",
+   "ZORA-USDT-SWAP",
+   "ZRO-USDT-SWAP",
+   "ZRX-USDT-SWAP"
+  ]
+ },
+ "casi_limite": {
+  "totale_95gg": {
+   "ingresso_bloccato": 0,
+   "uscita_forzata": 0
+  },
+  "n_switch_base": 258,
+  "n_switch_stress": 258
+ },
+ "per_finestra": {
+  "TRAIN": {
+   "n_giorni": 57,
+   "giorni_inizio": 1785196800000,
+   "giorni_fine": 1790035200000,
+   "n_giorni_con_posizioni": 57,
+   "n_giorni_cap_pieno": 56,
+   "n_switch": 152,
+   "n_record_funding_mancanti": 0,
+   "durata_media_posizione_giorni": 5.64,
+   "pnl_totale_eur": -35.0722527,
+   "rendimento_capitale": -0.0350722527,
+   "baseline_earn_finestra": 0.004684931506849315,
+   "media_giornaliera_eur": -0.6153026789473685,
+   "media_giornaliera_pct": -0.0006153026789473685,
+   "t_stat": -3.652882977001574,
+   "ci90_bootstrap_pct": [
+    -0.0009250233914122808,
+    -0.0003847295729035089
+   ],
+   "maxdd_eur": 35.21072720999999,
+   "maxdd_pct": 0.03521072720999999,
+   "contributi_per_coppia": {
+    "PROS-USDT-SWAP": {
+     "giorni": 2,
+     "funding": -0.24170396,
+     "costi": 0.6,
+     "pnl_netto": -0.84170396,
+     "entrate": 2
+    },
+    "NES-USDT-SWAP": {
+     "giorni": 27,
+     "funding": 3.71440285,
+     "costi": 1.5,
+     "pnl_netto": 2.21440285,
+     "entrate": 5
+    },
+    "2Z-USDT-SWAP": {
+     "giorni": 13,
+     "funding": 0.29374520000000004,
+     "costi": 2.4,
+     "pnl_netto": -2.1062548,
+     "entrate": 8
+    },
+    "ALLO-USDT-SWAP": {
+     "giorni": 3,
+     "funding": 0.07784263,
+     "costi": 0.6,
+     "pnl_netto": -0.52215737,
+     "entrate": 2
+    },
+    "ANIME-USDT-SWAP": {
+     "giorni": 4,
+     "funding": -0.91235607,
+     "costi": 0.6,
+     "pnl_netto": -1.51235607,
+     "entrate": 2
+    },
+    "BAND-USDT-SWAP": {
+     "giorni": 3,
+     "funding": 0.0001321899999999973,
+     "costi": 0.8999999999999999,
+     "pnl_netto": -0.8998678099999999,
+     "entrate": 3
+    },
+    "WET-USDT-SWAP": {
+     "giorni": 6,
+     "funding": 0.18671752,
+     "costi": 1.5,
+     "pnl_netto": -1.31328248,
+     "entrate": 5
+    },
+    "A-USDT-SWAP": {
+     "giorni": 18,
+     "funding": 0.4804821800000001,
+     "costi": 3.2999999999999994,
+     "pnl_netto": -2.8195178199999993,
+     "entrate": 11
+    },
+    "ADA-USDT-SWAP": {
+     "giorni": 6,
+     "funding": 0.16575277,
+     "costi": 0.6,
+     "pnl_netto": -0.43424723,
+     "entrate": 2
+    },
+    "AIXBT-USDT-SWAP": {
+     "giorni": 3,
+     "funding": 0.05238925,
+     "costi": 0.6,
+     "pnl_netto": -0.54761075,
+     "entrate": 2
+    },
+    "ETHW-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.03,
+     "costi": 0.3,
+     "pnl_netto": -0.27,
+     "entrate": 1
+    },
+    "MOODENG-USDT-SWAP": {
+     "giorni": 3,
+     "funding": 0.07489507,
+     "costi": 0.8999999999999999,
+     "pnl_netto": -0.82510493,
+     "entrate": 3
+    },
+    "ACT-USDT-SWAP": {
+     "giorni": 15,
+     "funding": 0.35440138000000004,
+     "costi": 2.9999999999999996,
+     "pnl_netto": -2.6455986199999995,
+     "entrate": 10
+    },
+    "AGLD-USDT-SWAP": {
+     "giorni": 4,
+     "funding": 0.10767231,
+     "costi": 1.2,
+     "pnl_netto": -1.0923276899999999,
+     "entrate": 4
+    },
+    "API3-USDT-SWAP": {
+     "giorni": 2,
+     "funding": 0.04984401,
+     "costi": 0.6,
+     "pnl_netto": -0.5501559899999999,
+     "entrate": 2
+    },
+    "ARKM-USDT-SWAP": {
+     "giorni": 1,
+     "funding": -0.00745698,
+     "costi": 0.3,
+     "pnl_netto": -0.30745698,
+     "entrate": 1
+    },
+    "AEVO-USDT-SWAP": {
+     "giorni": 5,
+     "funding": 0.14199626999999998,
+     "costi": 0.8999999999999999,
+     "pnl_netto": -0.75800373,
+     "entrate": 3
+    },
+    "ASTER-USDT-SWAP": {
+     "giorni": 2,
+     "funding": 0.057030069999999995,
+     "costi": 0.3,
+     "pnl_netto": -0.24296993,
+     "entrate": 1
+    },
+    "AVAX-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.01647649,
+     "costi": 0.3,
+     "pnl_netto": -0.28352351,
+     "entrate": 1
+    },
+    "BIGTIME-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.03,
+     "costi": 0.3,
+     "pnl_netto": -0.27,
+     "entrate": 1
+    },
+    "LUNA-USDT-SWAP": {
+     "giorni": 7,
+     "funding": 0.19681283,
+     "costi": 1.2,
+     "pnl_netto": -1.00318717,
+     "entrate": 4
+    },
+    "ALGO-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.03,
+     "costi": 0.3,
+     "pnl_netto": -0.27,
+     "entrate": 1
+    },
+    "APT-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.02193475,
+     "costi": 0.3,
+     "pnl_netto": -0.27806525,
+     "entrate": 1
+    },
+    "SLX-USDT-SWAP": {
+     "giorni": 16,
+     "funding": 1.54215787,
+     "costi": 1.8,
+     "pnl_netto": -0.25784213,
+     "entrate": 6
+    },
+    "EDGE-USDT-SWAP": {
+     "giorni": 19,
+     "funding": 1.03229617,
+     "costi": 2.9999999999999996,
+     "pnl_netto": -1.9677038299999996,
+     "entrate": 10
+    },
+    "1INCH-USDT-SWAP": {
+     "giorni": 2,
+     "funding": -0.039094920000000005,
+     "costi": 0.6,
+     "pnl_netto": -0.63909492,
+     "entrate": 2
+    },
+    "GRVT-USDT-SWAP": {
+     "giorni": 18,
+     "funding": 0.89455403,
+     "costi": 1.8,
+     "pnl_netto": -0.90544597,
+     "entrate": 6
+    },
+    "METIS-USDT-SWAP": {
+     "giorni": 5,
+     "funding": 0.23203868,
+     "costi": 0.8999999999999999,
+     "pnl_netto": -0.6679613199999999,
+     "entrate": 3
+    },
+    "ACH-USDT-SWAP": {
+     "giorni": 10,
+     "funding": 0.23371954999999997,
+     "costi": 2.4,
+     "pnl_netto": -2.16628045,
+     "entrate": 8
+    },
+    "RESOLV-USDT-SWAP": {
+     "giorni": 5,
+     "funding": 0.23080895999999998,
+     "costi": 1.2,
+     "pnl_netto": -0.96919104,
+     "entrate": 4
+    },
+    "LPT-USDT-SWAP": {
+     "giorni": 3,
+     "funding": 0.16909538000000002,
+     "costi": 0.6,
+     "pnl_netto": -0.43090461999999996,
+     "entrate": 2
+    },
+    "ONE-USDT-SWAP": {
+     "giorni": 34,
+     "funding": -0.2300574900000001,
+     "costi": 0.8999999999999999,
+     "pnl_netto": -1.13005749,
+     "entrate": 3
+    },
+    "HMSTR-USDT-SWAP": {
+     "giorni": 2,
+     "funding": 0.06,
+     "costi": 0.6,
+     "pnl_netto": -0.54,
+     "entrate": 2
+    },
+    "ROBO-USDT-SWAP": {
+     "giorni": 6,
+     "funding": 0.31653038,
+     "costi": 1.2,
+     "pnl_netto": -0.88346962,
+     "entrate": 4
+    },
+    "IRYS-USDT-SWAP": {
+     "giorni": 4,
+     "funding": 0.12,
+     "costi": 1.2,
+     "pnl_netto": -1.08,
+     "entrate": 4
+    },
+    "MOVE-USDT-SWAP": {
+     "giorni": 3,
+     "funding": 0.14001527,
+     "costi": 0.6,
+     "pnl_netto": -0.45998472999999995,
+     "entrate": 2
+    },
+    "AI-USDT-SWAP": {
+     "giorni": 7,
+     "funding": 0.30835259,
+     "costi": 1.2,
+     "pnl_netto": -0.89164741,
+     "entrate": 4
+    },
+    "SAHARA-USDT-SWAP": {
+     "giorni": 2,
+     "funding": 0.06763832,
+     "costi": 0.6,
+     "pnl_netto": -0.53236168,
+     "entrate": 2
+    },
+    "MAGIC-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.03,
+     "costi": 0.3,
+     "pnl_netto": -0.27,
+     "entrate": 1
+    },
+    "FLOW-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.03,
+     "costi": 0.3,
+     "pnl_netto": -0.27,
+     "entrate": 1
+    },
+    "BERA-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.03,
+     "costi": 0.3,
+     "pnl_netto": -0.27,
+     "entrate": 1
+    },
+    "AAVE-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.02004165,
+     "costi": 0.3,
+     "pnl_netto": -0.27995834999999997,
+     "entrate": 1
+    },
+    "AEON-USDT-SWAP": {
+     "giorni": 4,
+     "funding": 0.12,
+     "costi": 0.8999999999999999,
+     "pnl_netto": -0.7799999999999999,
+     "entrate": 3
+    },
+    "MMT-USDT-SWAP": {
+     "giorni": 2,
+     "funding": 0.0886401,
+     "costi": 0.3,
+     "pnl_netto": -0.2113599,
+     "entrate": 1
+    },
+    "SPACE-USDT-SWAP": {
+     "giorni": 2,
+     "funding": 0.06,
+     "costi": 0.6,
+     "pnl_netto": -0.54,
+     "entrate": 2
+    },
+    "AUCTION-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.03,
+     "costi": 0.3,
+     "pnl_netto": -0.27,
+     "entrate": 1
+    },
+    "BASED-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.03,
+     "costi": 0.3,
+     "pnl_netto": -0.27,
+     "entrate": 1
+    },
+    "WOO-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.03,
+     "costi": 0.3,
+     "pnl_netto": -0.27,
+     "entrate": 1
+    },
+    "NEIRO-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.03,
+     "costi": 0.3,
+     "pnl_netto": -0.27,
+     "entrate": 1
+    },
+    "OFC-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.03,
+     "costi": 0.3,
+     "pnl_netto": -0.27,
+     "entrate": 1
+    }
+   },
+   "serie_pnl_eur_per_giorno": {
+    "1785196800000": -0.83898339,
+    "1785283200000": -1.05,
+    "1785369600000": -0.46537553,
+    "1785456000000": -0.8833375699999999,
+    "1785542400000": -1.05,
+    "1785628800000": -0.78222898,
+    "1785715200000": -0.7976129699999999,
+    "1785801600000": -0.47737007,
+    "1785888000000": -1.06352351,
+    "1785974400000": -0.76780608,
+    "1786060800000": -1.27604398,
+    "1786147200000": -0.6908952799999999,
+    "1786233600000": -0.15325998,
+    "1786320000000": -1.11554247,
+    "1786406400000": -1.53521013,
+    "1786492800000": -1.05624951,
+    "1786579200000": -0.12989788999999985,
+    "1786665600000": -0.14987919999999977,
+    "1786752000000": 0.01464061000000011,
+    "1786838400000": -0.34154551,
+    "1786924800000": -0.35109572999999994,
+    "1787011200000": -0.6668758699999999,
+    "1787097600000": -0.43538756,
+    "1787184000000": -0.7033008799999999,
+    "1787270400000": -0.7703418099999999,
+    "1787356800000": -0.18841675999999985,
+    "1787443200000": 0.11103111999999998,
+    "1787529600000": -0.32318104000000003,
+    "1787616000000": -0.7242363799999999,
+    "1787702400000": -0.9903478299999999,
+    "1787788800000": -0.4757935999999999,
+    "1787875200000": 0.052417620000000165,
+    "1787961600000": 0.19729826000000006,
+    "1788048000000": -0.44258962,
+    "1788134400000": -1.7750421899999997,
+    "1788220800000": -0.37133108999999986,
+    "1788307200000": -0.22076845999999983,
+    "1788393600000": 0.02775428000000013,
+    "1788480000000": 0.13011841000000002,
+    "1788566400000": 0.5172373000000001,
+    "1788652800000": 0.9648981999999999,
+    "1788739200000": 0.28819975000000003,
+    "1788825600000": 0.21383642000000008,
+    "1788912000000": -0.7914456999999999,
+    "1788998400000": -0.42199045999999996,
+    "1789084800000": -0.1362654299999999,
+    "1789171200000": -0.2363670299999998,
+    "1789257600000": 0.16754724000000004,
+    "1789344000000": -0.461785,
+    "1789430400000": -0.5928960299999999,
+    "1789516800000": -0.3122983199999998,
+    "1789603200000": -9.225245090000001,
+    "1789689600000": -1.32312543,
+    "1789776000000": -0.8611069499999999,
+    "1789862400000": -0.4546097699999999,
+    "1789948800000": -0.015100339999999934,
+    "1790035200000": 0.13847451000000005
+   }
+  },
+  "OOS": {
+   "n_giorni": 38,
+   "giorni_inizio": 1790121600000,
+   "giorni_fine": 1793318400000,
+   "n_giorni_con_posizioni": 38,
+   "n_giorni_cap_pieno": 38,
+   "n_switch": 106,
+   "n_record_funding_mancanti": 0,
+   "durata_media_posizione_giorni": 4.523809523809524,
+   "pnl_totale_eur": -27.274324359999998,
+   "rendimento_capitale": -0.027274324359999998,
+   "baseline_earn_finestra": 0.0031232876712328763,
+   "media_giornaliera_eur": -0.7177453778947368,
+   "media_giornaliera_pct": -0.0007177453778947368,
+   "t_stat": -9.627136358987762,
+   "ci90_bootstrap_pct": [
+    -0.0008459237592105264,
+    -0.0006035499045394739
+   ],
+   "maxdd_eur": 27.27432435999999,
+   "maxdd_pct": 0.02727432435999999,
+   "contributi_per_coppia": {
+    "PROS-USDT-SWAP": {
+     "giorni": 5,
+     "funding": 0.12469919000000002,
+     "costi": 1.2,
+     "pnl_netto": -1.0753008099999999,
+     "entrate": 4
+    },
+    "NES-USDT-SWAP": {
+     "giorni": 11,
+     "funding": 1.0399736700000002,
+     "costi": 0.3,
+     "pnl_netto": 0.7399736700000001,
+     "entrate": 1
+    },
+    "2Z-USDT-SWAP": {
+     "giorni": 8,
+     "funding": 0.23481104999999997,
+     "costi": 0.8999999999999999,
+     "pnl_netto": -0.6651889499999999,
+     "entrate": 3
+    },
+    "ANIME-USDT-SWAP": {
+     "giorni": 2,
+     "funding": -1.3015575,
+     "costi": 0.6,
+     "pnl_netto": -1.9015575,
+     "entrate": 2
+    },
+    "BAND-USDT-SWAP": {
+     "giorni": 2,
+     "funding": 0.028836109999999998,
+     "costi": 0.6,
+     "pnl_netto": -0.57116389,
+     "entrate": 2
+    },
+    "WET-USDT-SWAP": {
+     "giorni": 2,
+     "funding": 0.06,
+     "costi": 0.6,
+     "pnl_netto": -0.54,
+     "entrate": 2
+    },
+    "A-USDT-SWAP": {
+     "giorni": 2,
+     "funding": 0.04538818,
+     "costi": 0.6,
+     "pnl_netto": -0.55461182,
+     "entrate": 2
+    },
+    "ADA-USDT-SWAP": {
+     "giorni": 2,
+     "funding": 0.01702383,
+     "costi": 0.6,
+     "pnl_netto": -0.58297617,
+     "entrate": 2
+    },
+    "AIXBT-USDT-SWAP": {
+     "giorni": 5,
+     "funding": 0.13840874,
+     "costi": 0.8999999999999999,
+     "pnl_netto": -0.7615912599999999,
+     "entrate": 3
+    },
+    "MOODENG-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.03,
+     "costi": 0.3,
+     "pnl_netto": -0.27,
+     "entrate": 1
+    },
+    "ACT-USDT-SWAP": {
+     "giorni": 6,
+     "funding": 0.14214826,
+     "costi": 1.2,
+     "pnl_netto": -1.05785174,
+     "entrate": 4
+    },
+    "AGLD-USDT-SWAP": {
+     "giorni": 12,
+     "funding": 0.33588903000000003,
+     "costi": 0.8999999999999999,
+     "pnl_netto": -0.5641109699999999,
+     "entrate": 3
+    },
+    "API3-USDT-SWAP": {
+     "giorni": 2,
+     "funding": 0.04901883,
+     "costi": 0.6,
+     "pnl_netto": -0.55098117,
+     "entrate": 2
+    },
+    "AEVO-USDT-SWAP": {
+     "giorni": 4,
+     "funding": 0.10519472,
+     "costi": 0.6,
+     "pnl_netto": -0.49480527999999996,
+     "entrate": 2
+    },
+    "BIGTIME-USDT-SWAP": {
+     "giorni": 2,
+     "funding": 0.06,
+     "costi": 0.6,
+     "pnl_netto": -0.54,
+     "entrate": 2
+    },
+    "SLX-USDT-SWAP": {
+     "giorni": 5,
+     "funding": 0.33355708000000006,
+     "costi": 0.6,
+     "pnl_netto": -0.2664429199999999,
+     "entrate": 2
+    },
+    "EDGE-USDT-SWAP": {
+     "giorni": 10,
+     "funding": 0.57673711,
+     "costi": 1.8,
+     "pnl_netto": -1.22326289,
+     "entrate": 6
+    },
+    "1INCH-USDT-SWAP": {
+     "giorni": 3,
+     "funding": -0.004667310000000001,
+     "costi": 0.8999999999999999,
+     "pnl_netto": -0.9046673099999999,
+     "entrate": 3
+    },
+    "GRVT-USDT-SWAP": {
+     "giorni": 6,
+     "funding": 0.20263267000000001,
+     "costi": 1.2,
+     "pnl_netto": -0.9973673299999999,
+     "entrate": 4
+    },
+    "ACH-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.015753800000000002,
+     "costi": 0.3,
+     "pnl_netto": -0.2842462,
+     "entrate": 1
+    },
+    "RESOLV-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.03,
+     "costi": 0.3,
+     "pnl_netto": -0.27,
+     "entrate": 1
+    },
+    "ONE-USDT-SWAP": {
+     "giorni": 11,
+     "funding": -0.26535286000000013,
+     "costi": 0.8999999999999999,
+     "pnl_netto": -1.16535286,
+     "entrate": 3
+    },
+    "ROBO-USDT-SWAP": {
+     "giorni": 14,
+     "funding": 0.75353456,
+     "costi": 1.8,
+     "pnl_netto": -1.04646544,
+     "entrate": 6
+    },
+    "IRYS-USDT-SWAP": {
+     "giorni": 7,
+     "funding": 0.0025180899999999867,
+     "costi": 1.8,
+     "pnl_netto": -1.7974819100000001,
+     "entrate": 6
+    },
+    "AI-USDT-SWAP": {
+     "giorni": 10,
+     "funding": 0.20359616,
+     "costi": 2.1,
+     "pnl_netto": -1.89640384,
+     "entrate": 7
+    },
+    "BERA-USDT-SWAP": {
+     "giorni": 2,
+     "funding": -0.09108314,
+     "costi": 0.6,
+     "pnl_netto": -0.6910831399999999,
+     "entrate": 2
+    },
+    "AEON-USDT-SWAP": {
+     "giorni": 24,
+     "funding": 0.7605094800000003,
+     "costi": 1.8,
+     "pnl_netto": -1.0394905199999998,
+     "entrate": 6
+    },
+    "AUCTION-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.03,
+     "costi": 0.3,
+     "pnl_netto": -0.27,
+     "entrate": 1
+    },
+    "BASED-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.0159792,
+     "costi": 0.3,
+     "pnl_netto": -0.28402079999999996,
+     "entrate": 1
+    },
+    "OFC-USDT-SWAP": {
+     "giorni": 2,
+     "funding": 0.07171628,
+     "costi": 0.3,
+     "pnl_netto": -0.22828372,
+     "entrate": 1
+    },
+    "EGLD-USDT-SWAP": {
+     "giorni": 5,
+     "funding": 0.36000727,
+     "costi": 0.6,
+     "pnl_netto": -0.23999273,
+     "entrate": 2
+    },
+    "KAT-USDT-SWAP": {
+     "giorni": 2,
+     "funding": 0.06,
+     "costi": 0.6,
+     "pnl_netto": -0.54,
+     "entrate": 2
+    },
+    "DATA-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.00283989,
+     "costi": 0.3,
+     "pnl_netto": -0.29716011,
+     "entrate": 1
+    },
+    "GRASS-USDT-SWAP": {
+     "giorni": 2,
+     "funding": 0.07494595,
+     "costi": 0.3,
+     "pnl_netto": -0.22505405,
+     "entrate": 1
+    },
+    "OL-USDT-SWAP": {
+     "giorni": 3,
+     "funding": 0.054747130000000005,
+     "costi": 0.8999999999999999,
+     "pnl_netto": -0.8452528699999999,
+     "entrate": 3
+    },
+    "BOME-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.03,
+     "costi": 0.3,
+     "pnl_netto": -0.27,
+     "entrate": 1
+    },
+    "AR-USDT-SWAP": {
+     "giorni": 4,
+     "funding": 0.09520003999999999,
+     "costi": 1.2,
+     "pnl_netto": -1.10479996,
+     "entrate": 4
+    },
+    "ATH-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.03,
+     "costi": 0.3,
+     "pnl_netto": -0.27,
+     "entrate": 1
+    },
+    "BICO-USDT-SWAP": {
+     "giorni": 3,
+     "funding": 0.07722169000000001,
+     "costi": 0.8999999999999999,
+     "pnl_netto": -0.8227783099999999,
+     "entrate": 3
+    },
+    "LQTY-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.02197117,
+     "costi": 0.3,
+     "pnl_netto": -0.27802883,
+     "entrate": 1
+    },
+    "COMP-USDT-SWAP": {
+     "giorni": 1,
+     "funding": -0.08652272999999999,
+     "costi": 0.3,
+     "pnl_netto": -0.38652273,
+     "entrate": 1
+    },
+    "BARD-USDT-SWAP": {
+     "giorni": 2,
+     "funding": 0.06,
+     "costi": 0.3,
+     "pnl_netto": -0.24,
+     "entrate": 1
+    }
+   },
+   "serie_pnl_eur_per_giorno": {
+    "1790121600000": -0.27136291999999995,
+    "1790208000000": -0.1299037799999999,
+    "1790294400000": -1.25664417,
+    "1790380800000": -0.61188331,
+    "1790467200000": -0.4252865799999999,
+    "1790553600000": -0.48976191,
+    "1790640000000": -0.1548419,
+    "1790726400000": -0.70723193,
+    "1790812800000": -0.33216471999999997,
+    "1790899200000": -0.6071432999999999,
+    "1790985600000": -0.40527483,
+    "1791072000000": -0.6195695399999999,
+    "1791158400000": -0.06248814,
+    "1791244800000": -0.45074914,
+    "1791331200000": -1.08683309,
+    "1791417600000": -0.7077482999999999,
+    "1791504000000": -0.7724570399999999,
+    "1791590400000": -1.0596668999999999,
+    "1791676800000": -0.7623395899999998,
+    "1791763200000": -0.7566174299999999,
+    "1791849600000": -0.8448755399999999,
+    "1791936000000": -0.8372540999999999,
+    "1792022400000": -0.9410934599999999,
+    "1792108800000": -0.7341743099999999,
+    "1792195200000": -0.48282632999999997,
+    "1792281600000": -0.8120297699999999,
+    "1792368000000": -1.37272276,
+    "1792454400000": -1.34852255,
+    "1792540800000": -0.7523702399999999,
+    "1792627200000": -0.8610116099999999,
+    "1792713600000": -0.7986823299999999,
+    "1792800000000": -2.62992836,
+    "1792886400000": -1.05477519,
+    "1792972800000": -0.60165274,
+    "1793059200000": -0.7676228999999999,
+    "1793145600000": -0.15,
+    "1793232000000": -0.44999999999999996,
+    "1793318400000": -0.16481365
+   }
+  },
+  "OOS_STRESS": {
+   "n_giorni": 38,
+   "giorni_inizio": 1790121600000,
+   "giorni_fine": 1793318400000,
+   "n_giorni_con_posizioni": 38,
+   "n_giorni_cap_pieno": 38,
+   "n_switch": 106,
+   "n_record_funding_mancanti": 0,
+   "durata_media_posizione_giorni": 4.523809523809524,
+   "pnl_totale_eur": -59.07432436,
+   "rendimento_capitale": -0.05907432436,
+   "baseline_earn_finestra": 0.0031232876712328763,
+   "media_giornaliera_eur": -1.5545874831578947,
+   "media_giornaliera_pct": -0.0015545874831578948,
+   "t_stat": -13.00380493232608,
+   "ci90_bootstrap_pct": [
+    -0.0017561282290921056,
+    -0.001365900236157895
+   ],
+   "maxdd_eur": 59.07432435999999,
+   "maxdd_pct": 0.05907432435999999,
+   "contributi_per_coppia": {
+    "PROS-USDT-SWAP": {
+     "giorni": 5,
+     "funding": 0.12469919000000002,
+     "costi": 2.4,
+     "pnl_netto": -2.27530081,
+     "entrate": 4
+    },
+    "NES-USDT-SWAP": {
+     "giorni": 11,
+     "funding": 1.0399736700000002,
+     "costi": 0.6,
+     "pnl_netto": 0.4399736700000002,
+     "entrate": 1
+    },
+    "2Z-USDT-SWAP": {
+     "giorni": 8,
+     "funding": 0.23481104999999997,
+     "costi": 1.7999999999999998,
+     "pnl_netto": -1.5651889499999998,
+     "entrate": 3
+    },
+    "ANIME-USDT-SWAP": {
+     "giorni": 2,
+     "funding": -1.3015575,
+     "costi": 1.2,
+     "pnl_netto": -2.5015574999999997,
+     "entrate": 2
+    },
+    "BAND-USDT-SWAP": {
+     "giorni": 2,
+     "funding": 0.028836109999999998,
+     "costi": 1.2,
+     "pnl_netto": -1.1711638899999999,
+     "entrate": 2
+    },
+    "WET-USDT-SWAP": {
+     "giorni": 2,
+     "funding": 0.06,
+     "costi": 1.2,
+     "pnl_netto": -1.14,
+     "entrate": 2
+    },
+    "A-USDT-SWAP": {
+     "giorni": 2,
+     "funding": 0.04538818,
+     "costi": 1.2,
+     "pnl_netto": -1.15461182,
+     "entrate": 2
+    },
+    "ADA-USDT-SWAP": {
+     "giorni": 2,
+     "funding": 0.01702383,
+     "costi": 1.2,
+     "pnl_netto": -1.1829761699999999,
+     "entrate": 2
+    },
+    "AIXBT-USDT-SWAP": {
+     "giorni": 5,
+     "funding": 0.13840874,
+     "costi": 1.7999999999999998,
+     "pnl_netto": -1.6615912599999998,
+     "entrate": 3
+    },
+    "MOODENG-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.03,
+     "costi": 0.6,
+     "pnl_netto": -0.57,
+     "entrate": 1
+    },
+    "ACT-USDT-SWAP": {
+     "giorni": 6,
+     "funding": 0.14214826,
+     "costi": 2.4,
+     "pnl_netto": -2.25785174,
+     "entrate": 4
+    },
+    "AGLD-USDT-SWAP": {
+     "giorni": 12,
+     "funding": 0.33588903000000003,
+     "costi": 1.7999999999999998,
+     "pnl_netto": -1.4641109699999997,
+     "entrate": 3
+    },
+    "API3-USDT-SWAP": {
+     "giorni": 2,
+     "funding": 0.04901883,
+     "costi": 1.2,
+     "pnl_netto": -1.1509811699999999,
+     "entrate": 2
+    },
+    "AEVO-USDT-SWAP": {
+     "giorni": 4,
+     "funding": 0.10519472,
+     "costi": 1.2,
+     "pnl_netto": -1.0948052799999999,
+     "entrate": 2
+    },
+    "BIGTIME-USDT-SWAP": {
+     "giorni": 2,
+     "funding": 0.06,
+     "costi": 1.2,
+     "pnl_netto": -1.14,
+     "entrate": 2
+    },
+    "SLX-USDT-SWAP": {
+     "giorni": 5,
+     "funding": 0.33355708000000006,
+     "costi": 1.2,
+     "pnl_netto": -0.8664429199999999,
+     "entrate": 2
+    },
+    "EDGE-USDT-SWAP": {
+     "giorni": 10,
+     "funding": 0.57673711,
+     "costi": 3.6,
+     "pnl_netto": -3.02326289,
+     "entrate": 6
+    },
+    "1INCH-USDT-SWAP": {
+     "giorni": 3,
+     "funding": -0.004667310000000001,
+     "costi": 1.7999999999999998,
+     "pnl_netto": -1.80466731,
+     "entrate": 3
+    },
+    "GRVT-USDT-SWAP": {
+     "giorni": 6,
+     "funding": 0.20263267000000001,
+     "costi": 2.4,
+     "pnl_netto": -2.19736733,
+     "entrate": 4
+    },
+    "ACH-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.015753800000000002,
+     "costi": 0.6,
+     "pnl_netto": -0.5842461999999999,
+     "entrate": 1
+    },
+    "RESOLV-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.03,
+     "costi": 0.6,
+     "pnl_netto": -0.57,
+     "entrate": 1
+    },
+    "ONE-USDT-SWAP": {
+     "giorni": 11,
+     "funding": -0.26535286000000013,
+     "costi": 1.7999999999999998,
+     "pnl_netto": -2.06535286,
+     "entrate": 3
+    },
+    "ROBO-USDT-SWAP": {
+     "giorni": 14,
+     "funding": 0.75353456,
+     "costi": 3.6,
+     "pnl_netto": -2.8464654400000002,
+     "entrate": 6
+    },
+    "IRYS-USDT-SWAP": {
+     "giorni": 7,
+     "funding": 0.0025180899999999867,
+     "costi": 3.6,
+     "pnl_netto": -3.59748191,
+     "entrate": 6
+    },
+    "AI-USDT-SWAP": {
+     "giorni": 10,
+     "funding": 0.20359616,
+     "costi": 4.2,
+     "pnl_netto": -3.99640384,
+     "entrate": 7
+    },
+    "BERA-USDT-SWAP": {
+     "giorni": 2,
+     "funding": -0.09108314,
+     "costi": 1.2,
+     "pnl_netto": -1.29108314,
+     "entrate": 2
+    },
+    "AEON-USDT-SWAP": {
+     "giorni": 24,
+     "funding": 0.7605094800000003,
+     "costi": 3.6,
+     "pnl_netto": -2.83949052,
+     "entrate": 6
+    },
+    "AUCTION-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.03,
+     "costi": 0.6,
+     "pnl_netto": -0.57,
+     "entrate": 1
+    },
+    "BASED-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.0159792,
+     "costi": 0.6,
+     "pnl_netto": -0.5840208,
+     "entrate": 1
+    },
+    "OFC-USDT-SWAP": {
+     "giorni": 2,
+     "funding": 0.07171628,
+     "costi": 0.6,
+     "pnl_netto": -0.52828372,
+     "entrate": 1
+    },
+    "EGLD-USDT-SWAP": {
+     "giorni": 5,
+     "funding": 0.36000727,
+     "costi": 1.2,
+     "pnl_netto": -0.83999273,
+     "entrate": 2
+    },
+    "KAT-USDT-SWAP": {
+     "giorni": 2,
+     "funding": 0.06,
+     "costi": 1.2,
+     "pnl_netto": -1.14,
+     "entrate": 2
+    },
+    "DATA-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.00283989,
+     "costi": 0.6,
+     "pnl_netto": -0.59716011,
+     "entrate": 1
+    },
+    "GRASS-USDT-SWAP": {
+     "giorni": 2,
+     "funding": 0.07494595,
+     "costi": 0.6,
+     "pnl_netto": -0.5250540499999999,
+     "entrate": 1
+    },
+    "OL-USDT-SWAP": {
+     "giorni": 3,
+     "funding": 0.054747130000000005,
+     "costi": 1.7999999999999998,
+     "pnl_netto": -1.7452528699999998,
+     "entrate": 3
+    },
+    "BOME-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.03,
+     "costi": 0.6,
+     "pnl_netto": -0.57,
+     "entrate": 1
+    },
+    "AR-USDT-SWAP": {
+     "giorni": 4,
+     "funding": 0.09520003999999999,
+     "costi": 2.4,
+     "pnl_netto": -2.30479996,
+     "entrate": 4
+    },
+    "ATH-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.03,
+     "costi": 0.6,
+     "pnl_netto": -0.57,
+     "entrate": 1
+    },
+    "BICO-USDT-SWAP": {
+     "giorni": 3,
+     "funding": 0.07722169000000001,
+     "costi": 1.7999999999999998,
+     "pnl_netto": -1.7227783099999998,
+     "entrate": 3
+    },
+    "LQTY-USDT-SWAP": {
+     "giorni": 1,
+     "funding": 0.02197117,
+     "costi": 0.6,
+     "pnl_netto": -0.5780288299999999,
+     "entrate": 1
+    },
+    "COMP-USDT-SWAP": {
+     "giorni": 1,
+     "funding": -0.08652272999999999,
+     "costi": 0.6,
+     "pnl_netto": -0.68652273,
+     "entrate": 1
+    },
+    "BARD-USDT-SWAP": {
+     "giorni": 2,
+     "funding": 0.06,
+     "costi": 0.6,
+     "pnl_netto": -0.54,
+     "entrate": 1
+    }
+   },
+   "serie_pnl_eur_per_giorno": {
+    "1790121600000": -0.8713629199999999,
+    "1790208000000": -0.7299037799999999,
+    "1790294400000": -1.85664417,
+    "1790380800000": -1.51188331,
+    "1790467200000": -1.3252865799999998,
+    "1790553600000": -1.08976191,
+    "1790640000000": -0.4548419,
+    "1790726400000": -1.90723193,
+    "1790812800000": -0.93216472,
+    "1790899200000": -1.5071432999999999,
+    "1790985600000": -1.0052748299999998,
+    "1791072000000": -1.5195695399999998,
+    "1791158400000": -0.36248813999999996,
+    "1791244800000": -1.05074914,
+    "1791331200000": -2.28683309,
+    "1791417600000": -1.6077483,
+    "1791504000000": -1.6724570399999998,
+    "1791590400000": -2.2596669,
+    "1791676800000": -1.6623395899999998,
+    "1791763200000": -1.6566174299999998,
+    "1791849600000": -1.7448755399999998,
+    "1791936000000": -1.7372541,
+    "1792022400000": -1.8410934599999997,
+    "1792108800000": -1.63417431,
+    "1792195200000": -1.08282633,
+    "1792281600000": -1.7120297699999998,
+    "1792368000000": -2.87272276,
+    "1792454400000": -2.84852255,
+    "1792540800000": -1.6523702399999998,
+    "1792627200000": -1.7610116099999997,
+    "1792713600000": -1.6986823299999998,
+    "1792800000000": -4.12992836,
+    "1792886400000": -2.2547751899999997,
+    "1792972800000": -1.2016527399999999,
+    "1793059200000": -1.6676228999999998,
+    "1793145600000": -0.44999999999999996,
+    "1793232000000": -1.05,
+    "1793318400000": -0.46481364999999997
+   }
+  }
+ },
+ "coppie_oos": [
+  {
+   "instId": "NES-USDT-SWAP",
+   "giorni": 11,
+   "funding": 1.0399736700000002,
+   "costi": 0.3,
+   "pnl_netto": 0.7399736700000001,
+   "entrate": 1
+  },
+  {
+   "instId": "GRASS-USDT-SWAP",
+   "giorni": 2,
+   "funding": 0.07494595,
+   "costi": 0.3,
+   "pnl_netto": -0.22505405,
+   "entrate": 1
+  },
+  {
+   "instId": "OFC-USDT-SWAP",
+   "giorni": 2,
+   "funding": 0.07171628,
+   "costi": 0.3,
+   "pnl_netto": -0.22828372,
+   "entrate": 1
+  },
+  {
+   "instId": "EGLD-USDT-SWAP",
+   "giorni": 5,
+   "funding": 0.36000727,
+   "costi": 0.6,
+   "pnl_netto": -0.23999273,
+   "entrate": 2
+  },
+  {
+   "instId": "BARD-USDT-SWAP",
+   "giorni": 2,
+   "funding": 0.06,
+   "costi": 0.3,
+   "pnl_netto": -0.24,
+   "entrate": 1
+  },
+  {
+   "instId": "SLX-USDT-SWAP",
+   "giorni": 5,
+   "funding": 0.33355708000000006,
+   "costi": 0.6,
+   "pnl_netto": -0.2664429199999999,
+   "entrate": 2
+  },
+  {
+   "instId": "ATH-USDT-SWAP",
+   "giorni": 1,
+   "funding": 0.03,
+   "costi": 0.3,
+   "pnl_netto": -0.27,
+   "entrate": 1
+  },
+  {
+   "instId": "AUCTION-USDT-SWAP",
+   "giorni": 1,
+   "funding": 0.03,
+   "costi": 0.3,
+   "pnl_netto": -0.27,
+   "entrate": 1
+  },
+  {
+   "instId": "BOME-USDT-SWAP",
+   "giorni": 1,
+   "funding": 0.03,
+   "costi": 0.3,
+   "pnl_netto": -0.27,
+   "entrate": 1
+  },
+  {
+   "instId": "MOODENG-USDT-SWAP",
+   "giorni": 1,
+   "funding": 0.03,
+   "costi": 0.3,
+   "pnl_netto": -0.27,
+   "entrate": 1
+  },
+  {
+   "instId": "RESOLV-USDT-SWAP",
+   "giorni": 1,
+   "funding": 0.03,
+   "costi": 0.3,
+   "pnl_netto": -0.27,
+   "entrate": 1
+  },
+  {
+   "instId": "LQTY-USDT-SWAP",
+   "giorni": 1,
+   "funding": 0.02197117,
+   "costi": 0.3,
+   "pnl_netto": -0.27802883,
+   "entrate": 1
+  },
+  {
+   "instId": "BASED-USDT-SWAP",
+   "giorni": 1,
+   "funding": 0.0159792,
+   "costi": 0.3,
+   "pnl_netto": -0.28402079999999996,
+   "entrate": 1
+  },
+  {
+   "instId": "ACH-USDT-SWAP",
+   "giorni": 1,
+   "funding": 0.015753800000000002,
+   "costi": 0.3,
+   "pnl_netto": -0.2842462,
+   "entrate": 1
+  },
+  {
+   "instId": "DATA-USDT-SWAP",
+   "giorni": 1,
+   "funding": 0.00283989,
+   "costi": 0.3,
+   "pnl_netto": -0.29716011,
+   "entrate": 1
+  },
+  {
+   "instId": "COMP-USDT-SWAP",
+   "giorni": 1,
+   "funding": -0.08652272999999999,
+   "costi": 0.3,
+   "pnl_netto": -0.38652273,
+   "entrate": 1
+  },
+  {
+   "instId": "AEVO-USDT-SWAP",
+   "giorni": 4,
+   "funding": 0.10519472,
+   "costi": 0.6,
+   "pnl_netto": -0.49480527999999996,
+   "entrate": 2
+  },
+  {
+   "instId": "BIGTIME-USDT-SWAP",
+   "giorni": 2,
+   "funding": 0.06,
+   "costi": 0.6,
+   "pnl_netto": -0.54,
+   "entrate": 2
+  },
+  {
+   "instId": "KAT-USDT-SWAP",
+   "giorni": 2,
+   "funding": 0.06,
+   "costi": 0.6,
+   "pnl_netto": -0.54,
+   "entrate": 2
+  },
+  {
+   "instId": "WET-USDT-SWAP",
+   "giorni": 2,
+   "funding": 0.06,
+   "costi": 0.6,
+   "pnl_netto": -0.54,
+   "entrate": 2
+  },
+  {
+   "instId": "API3-USDT-SWAP",
+   "giorni": 2,
+   "funding": 0.04901883,
+   "costi": 0.6,
+   "pnl_netto": -0.55098117,
+   "entrate": 2
+  },
+  {
+   "instId": "A-USDT-SWAP",
+   "giorni": 2,
+   "funding": 0.04538818,
+   "costi": 0.6,
+   "pnl_netto": -0.55461182,
+   "entrate": 2
+  },
+  {
+   "instId": "AGLD-USDT-SWAP",
+   "giorni": 12,
+   "funding": 0.33588903000000003,
+   "costi": 0.8999999999999999,
+   "pnl_netto": -0.5641109699999999,
+   "entrate": 3
+  },
+  {
+   "instId": "BAND-USDT-SWAP",
+   "giorni": 2,
+   "funding": 0.028836109999999998,
+   "costi": 0.6,
+   "pnl_netto": -0.57116389,
+   "entrate": 2
+  },
+  {
+   "instId": "ADA-USDT-SWAP",
+   "giorni": 2,
+   "funding": 0.01702383,
+   "costi": 0.6,
+   "pnl_netto": -0.58297617,
+   "entrate": 2
+  },
+  {
+   "instId": "2Z-USDT-SWAP",
+   "giorni": 8,
+   "funding": 0.23481104999999997,
+   "costi": 0.8999999999999999,
+   "pnl_netto": -0.6651889499999999,
+   "entrate": 3
+  },
+  {
+   "instId": "BERA-USDT-SWAP",
+   "giorni": 2,
+   "funding": -0.09108314,
+   "costi": 0.6,
+   "pnl_netto": -0.6910831399999999,
+   "entrate": 2
+  },
+  {
+   "instId": "AIXBT-USDT-SWAP",
+   "giorni": 5,
+   "funding": 0.13840874,
+   "costi": 0.8999999999999999,
+   "pnl_netto": -0.7615912599999999,
+   "entrate": 3
+  },
+  {
+   "instId": "BICO-USDT-SWAP",
+   "giorni": 3,
+   "funding": 0.07722169000000001,
+   "costi": 0.8999999999999999,
+   "pnl_netto": -0.8227783099999999,
+   "entrate": 3
+  },
+  {
+   "instId": "OL-USDT-SWAP",
+   "giorni": 3,
+   "funding": 0.054747130000000005,
+   "costi": 0.8999999999999999,
+   "pnl_netto": -0.8452528699999999,
+   "entrate": 3
+  },
+  {
+   "instId": "1INCH-USDT-SWAP",
+   "giorni": 3,
+   "funding": -0.004667310000000001,
+   "costi": 0.8999999999999999,
+   "pnl_netto": -0.9046673099999999,
+   "entrate": 3
+  },
+  {
+   "instId": "GRVT-USDT-SWAP",
+   "giorni": 6,
+   "funding": 0.20263267000000001,
+   "costi": 1.2,
+   "pnl_netto": -0.9973673299999999,
+   "entrate": 4
+  },
+  {
+   "instId": "AEON-USDT-SWAP",
+   "giorni": 24,
+   "funding": 0.7605094800000003,
+   "costi": 1.8,
+   "pnl_netto": -1.0394905199999998,
+   "entrate": 6
+  },
+  {
+   "instId": "ROBO-USDT-SWAP",
+   "giorni": 14,
+   "funding": 0.75353456,
+   "costi": 1.8,
+   "pnl_netto": -1.04646544,
+   "entrate": 6
+  },
+  {
+   "instId": "ACT-USDT-SWAP",
+   "giorni": 6,
+   "funding": 0.14214826,
+   "costi": 1.2,
+   "pnl_netto": -1.05785174,
+   "entrate": 4
+  },
+  {
+   "instId": "PROS-USDT-SWAP",
+   "giorni": 5,
+   "funding": 0.12469919000000002,
+   "costi": 1.2,
+   "pnl_netto": -1.0753008099999999,
+   "entrate": 4
+  },
+  {
+   "instId": "AR-USDT-SWAP",
+   "giorni": 4,
+   "funding": 0.09520003999999999,
+   "costi": 1.2,
+   "pnl_netto": -1.10479996,
+   "entrate": 4
+  },
+  {
+   "instId": "ONE-USDT-SWAP",
+   "giorni": 11,
+   "funding": -0.26535286000000013,
+   "costi": 0.8999999999999999,
+   "pnl_netto": -1.16535286,
+   "entrate": 3
+  },
+  {
+   "instId": "EDGE-USDT-SWAP",
+   "giorni": 10,
+   "funding": 0.57673711,
+   "costi": 1.8,
+   "pnl_netto": -1.22326289,
+   "entrate": 6
+  },
+  {
+   "instId": "IRYS-USDT-SWAP",
+   "giorni": 7,
+   "funding": 0.0025180899999999867,
+   "costi": 1.8,
+   "pnl_netto": -1.7974819100000001,
+   "entrate": 6
+  },
+  {
+   "instId": "AI-USDT-SWAP",
+   "giorni": 10,
+   "funding": 0.20359616,
+   "costi": 2.1,
+   "pnl_netto": -1.89640384,
+   "entrate": 7
+  },
+  {
+   "instId": "ANIME-USDT-SWAP",
+   "giorni": 2,
+   "funding": -1.3015575,
+   "costi": 0.6,
+   "pnl_netto": -1.9015575,
+   "entrate": 2
+  }
+ ],
+ "gates": {
+  "T1": {
+   "pass": false,
+   "motivo": [
+    "media -0.717745 <= 0",
+    "t -9.627136358987762 < 2.0"
+   ],
+   "n": 38,
+   "media_eur": -0.7177453778947368,
+   "t": -9.627136358987762
+  },
+  "T2": {
+   "pass": false,
+   "media_eur_stress": -1.5545874831578947,
+   "switch_rt": 0.006
+  },
+  "T3": {
+   "pass": false,
+   "motivo": [
+    "media -0.615303 <= 0",
+    "t -3.652882977001574 < 1.5"
+   ],
+   "media_eur": -0.6153026789473685,
+   "t": -3.652882977001574
+  },
+  "T4": {
+   "pass": false,
+   "rendimento_capitale": -0.027274324359999998,
+   "baseline": 0.0031232876712328763
+  },
+  "DSR": {
+   "pass": false,
+   "dsr": 0.0,
+   "sharpe_annuo": -29.836766608722613,
+   "varianza_tentativi": 11.739903179781377,
+   "ingredienti": {
+    "dsr": 0.0,
+    "sharpe_osservato": -29.836766608722613,
+    "sharpe_atteso_massimo": 1.780865911927358,
+    "n_tentativi": 2.0,
+    "n_osservazioni": 38.0,
+    "z": -9.105549373563834
+   }
+  },
+  "concentrazione": {
+   "pass": false,
+   "coppia_top": "NES-USDT-SWAP",
+   "pnl_netto_top_eur": 0.7399736700000001,
+   "media_senza_top_eur": -0.7372183692105263
+  }
+ },
+ "verdetto": {
+  "esito": "FAIL",
+  "per_gate": {
+   "T1": false,
+   "T2": false,
+   "T3": false,
+   "T4": false,
+   "DSR": false,
+   "concentrazione": false
+  }
+ },
+ "dichiarazioni": [
+  "PnL = funding netto - costi switch; NESSUN mark-to-market della basis (ipotesi congelata: \"incassa il funding netto dopo fee e ribilanciamenti\").",
+  "Switch RT intero addebitato all INGRESSO della coppia (conservativo: anticipa il costo di chiusura; rientri pagano di nuovo). Uscita: costo zero.",
+  "Candele 1D usate solo per universo (>=90 bar) ed eseguibilita (bar che copre linizio del giorno); bar del preflight allineate alle 16:00 UTC (verificato).",
+  "27/07 (n_epochs=1, cut OKX 16:00Z) usato SOLO come segnale del 28/07: FA sottostimato ~1/3 quel giorno (formula letterale della spec, n_epochs(t)).",
+  "31/10 (parziale, fuori finestra) non usato ne come segnale ne come misura.",
+  "FA assente (nessun record funding a d-1) -> la coppia NON resta in posizione.",
+  "Record funding assente per una coppia in posizione: contributo 0, conteggiato in n_record_funding_mancanti.",
+  "DSR: sharpe_deflazionato (Bailey & Lopez de Prado) con n_tentativi=2 e varianza tentativi = (1 + SR^2/2)/n (varianza asintotica dello Sharpe, nessun trial aggiuntivo eseguito: soglie congelate).",
+  "CI90: bootstrap i.i.d. su media giornaliera, seme fisso 20260101 (convenzione money.statistica).",
+  "Selezione top-5 per FA(d-1) desc, tie-break instId (deterministico)."
+ ]
+}

@@ -118,3 +118,7 @@ STATO DELLA CODA
 ## Aggiornamento 2026-10-31 (8) — E14 BLOCKED-dati → E15 pre-registrata
 - E14_carry_selezione.md ... **CHIUSA BLOCKED-dati** (funding OKX ~95,3g, 0/517 con ≥12m): la selezione dinamica per ranking storico non è misurabile; nessuna variante.
 - E15_carry_soglia.md ... **PRE-REGISTRATA (Artù 31/10, lint 7/7)** — carry funding a soglia (10%/5%, cap 5 coppie, capitale vincolato 2× nozionale), universo 517 perp, TRAIN/OOS su 95 giorni. Implementazione: Merlino (REQ-MERL-20261031-034). Se fallisce: famiglia carry chiusa, si passa ad arbitraggio tra venue.
+
+## Aggiornamento 2026-10-31 (9) — E15 misurata: NON PROMOSSA (0/6)
+- E15_carry_soglia.md ... **MISURATA (Artù 31/10): NON PROMOSSA (0/6)** — OOS −0,0718%/gg (t −9,63), 106 switch / 38gg: il costo di inseguimento (31,80 EUR) domina il funding lordo (4,53 EUR). Famiglia funding carry chiusa in questa forma.
+- **Prossima lane: priorità 3, arbitraggio tra venue** — preflight dati dedicato prima della spec.

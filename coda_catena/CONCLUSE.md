@@ -40,3 +40,4 @@ riapre gate e fix per quella spec.
 
 - E13_listing_drift_universo.md — MISURATA e archiviata (30/10): NON PROMOSSA (4/5; T1 n=86<100); audit Bybit + economia ex-ante in corso, nessuna decisione operativa fino agli esiti
 - E10_stablecoin_issuance.md — MISURATA e archiviata (30/10): NON PROMOSSA (1/4); famiglia on-chain/liquidity chiusa
+- E15_carry_soglia.md — MISURATA e archiviata (31/10): NON PROMOSSA (0/6); famiglia funding carry chiusa in questa forma

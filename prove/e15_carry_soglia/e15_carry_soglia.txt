@@ -1,0 +1,27 @@
+E15 — carry funding a soglia su universo perp OKX (smoke da dati CONGELATI NUV-009)
+regola: ingresso FA>=10.0% | uscita FA<5.0% o funding negativo x2gg | cap 5 coppie
+capitale 1000 EUR | nozionale/coppia 100 EUR | vincolato/coppia 200 EUR | switch 30bp RT (stress 60bp)
+giorni pieni: 95 | TRAIN 57 | OOS 38 (primo 1785110400000 e ultimo 1793404800000 parziali)
+universo: 517 perp funding -> 213 con coppia spot e >=90 bar (esclusi: {'spot_vuote': 297, 'spot_lt90': 6, 'perp_lt90': 1, 'candele_assenti': 0})
+[TRAIN] n=57gg (pos 57, cap pieno 56) | pnl tot -35.07 EUR | media -0.6153 EUR/gg (-0.0615%) | t=-3.653 | CI90 [-0.0925%, -0.0385%] | maxDD 35.21 EUR (3.52%) | switch 152 | rendim. -3.507% (base Earn 0.468%)
+[OOS] n=38gg (pos 38, cap pieno 38) | pnl tot -27.27 EUR | media -0.7177 EUR/gg (-0.0718%) | t=-9.627 | CI90 [-0.0846%, -0.0604%] | maxDD 27.27 EUR (2.73%) | switch 106 | rendim. -2.727% (base Earn 0.312%)
+[OOS_STRESS] n=38gg (pos 38, cap pieno 38) | pnl tot -59.07 EUR | media -1.5546 EUR/gg (-0.1555%) | t=-13.004 | CI90 [-0.1756%, -0.1366%] | maxDD 59.07 EUR (5.91%) | switch 106 | rendim. -5.907% (base Earn 0.312%)
+--- GATE ---
+  T1: pass=False [['media -0.717745 <= 0', 't -9.627136358987762 < 2.0']]
+  T2: pass=False media_stress=-1.55459 EUR/gg
+  T3: pass=False [['media -0.615303 <= 0', 't -3.652882977001574 < 1.5']]
+  T4: pass=False rend=-2.7274% base=0.3123%
+  DSR: pass=False dsr=0.0000 SR_ann=-29.84
+  concentrazione: pass=False top=NES-USDT-SWAP pnl_top=+0.74 EUR media_senza=-0.73722 EUR/gg
+VERDETTO: FAIL {'T1': False, 'T2': False, 'T3': False, 'T4': False, 'DSR': False, 'concentrazione': False}
+--- top coppie OOS per pnl netto ---
+  NES-USDT-SWAP            giorni= 11 funding=+1.0400 costi=0.3000 pnl=+0.7400 EUR
+  GRASS-USDT-SWAP          giorni=  2 funding=+0.0749 costi=0.3000 pnl=-0.2251 EUR
+  OFC-USDT-SWAP            giorni=  2 funding=+0.0717 costi=0.3000 pnl=-0.2283 EUR
+  EGLD-USDT-SWAP           giorni=  5 funding=+0.3600 costi=0.6000 pnl=-0.2400 EUR
+  BARD-USDT-SWAP           giorni=  2 funding=+0.0600 costi=0.3000 pnl=-0.2400 EUR
+  SLX-USDT-SWAP            giorni=  5 funding=+0.3336 costi=0.6000 pnl=-0.2664 EUR
+  ATH-USDT-SWAP            giorni=  1 funding=+0.0300 costi=0.3000 pnl=-0.2700 EUR
+  AUCTION-USDT-SWAP        giorni=  1 funding=+0.0300 costi=0.3000 pnl=-0.2700 EUR
+  BOME-USDT-SWAP           giorni=  1 funding=+0.0300 costi=0.3000 pnl=-0.2700 EUR
+  MOODENG-USDT-SWAP        giorni=  1 funding=+0.0300 costi=0.3000 pnl=-0.2700 EUR
