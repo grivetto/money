@@ -39,3 +39,4 @@ riapre gate e fix per quella spec.
 - E12_listing_drift.md — MISURATA e archiviata (29/10): NON PROMOSSA (4/5; T1 n=23<60, segno OOS positivo t=2,02); lane listing chiusa in questa forma
 
 - E13_listing_drift_universo.md — MISURATA e archiviata (30/10): NON PROMOSSA (4/5; T1 n=86<100); audit Bybit + economia ex-ante in corso, nessuna decisione operativa fino agli esiti
+- E10_stablecoin_issuance.md — MISURATA e archiviata (30/10): NON PROMOSSA (1/4); famiglia on-chain/liquidity chiusa

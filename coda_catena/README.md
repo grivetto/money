@@ -110,3 +110,7 @@ STATO DELLA CODA
 
 ## Aggiornamento 2026-10-30 (8) — E13 misurata: NON PROMOSSA (4/5); audit Bybit + economia ex-ante in corso
 - E13_listing_drift_universo.md ... **MISURATA (Artù 30/10)**: T1 falso per numerosità (**n OOS 86 < 100**; t 2,72 ≥ 2,7, media +79,8%); T2/T3/T4/T5 PASS (Bybit OOS n=86, +381,8%, t 6,77). **Dissezione**: OKX mediana OOS +1,1% (media coda-driven; 2026 mediana 0,0%); **Bybit win-rate 100% = red flag** → REQ-MD1-20261030-003 (audit inquisitorio) + REQ-MERL-20261030-032 (economia ex-ante + entry ritardata). Nessun canary fino agli esiti. Fix `CUT_HI_MS` E12 (refuso date; numeri E12 identici). Suite 1185.
+
+## Aggiornamento 2026-10-30 (7) — E10 misurata: NON PROMOSSA; famiglia on-chain chiusa
+- E10_stablecoin_issuance.md ... **MISURATA (Artù 30/10): NON PROMOSSA (1/4)** — OOS aggregato −0,0418%/g (t −1,12), train +0,176%/g (t 2,52), DSR 0,122; sotto buy&hold. Famiglia on-chain/liquidity CHIUSA, nessuna variante.
+- **Prossima lane (regola sistema, priorità 2): E14 carry funding multi-simbolo con selezione dinamica del paniere** — pre-registrazione in corso (Artù).

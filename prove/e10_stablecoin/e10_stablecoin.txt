@@ -1,0 +1,31 @@
+=== E10 stablecoin net issuance (USDT+USDC+DAI, 30g) -> BTC/ETH long-only | OKX 1D ===
+stablecoin: nucleo USDT, USDC, DAI | taglio [2019-01-01 -> 2026-10-28] | 2858 giorni | input: /home/sergio/hermes_bridge/nuvola/handoff/REQ-NUV-20261029-006/dati
+prezzi: 2858 barre [2019-01-01 -> 2026-10-28] | /home/sergio/hermes_bridge/nuvola/handoff/REQ-NUV-20261029-006/prezzi
+segnale z: warmup 395g | prime z definite: 2020-01-30 | z definite 2464 | z indefinite dopo l'inizio: 0
+finestre: TRAIN [2020-02-15 -> 2024-06-01) | OOS [2024-06-01 -> 2026-10-28]
+costi: RT 0.20% per switch | stress x2 0.40%
+
+-- OOS --
+asset          n  gg_pos     media/g       t                   CI90boot    stress/g   Sr(g)  Sr(ann)    maxDD
+BTC-USDT     880     158   -0.02875%   -0.96     [-0.07834%, +0.02010%]   -0.03057%  -0.032    -0.62   34.68%
+ETH-USDT     880     158   -0.05491%   -1.12     [-0.13660%, +0.02688%]   -0.05673%  -0.038    -0.72   53.54%
+AGGREGATO    880     158   -0.04183%   -1.12     [-0.10479%, +0.01933%]   -0.04365%  -0.038    -0.72   44.07%
+
+-- TRAIN --
+asset          n  gg_pos     media/g       t                   CI90boot    stress/g   Sr(g)  Sr(ann)    maxDD
+BTC-USDT    1568     694   +0.15073%    2.27     [+0.04092%, +0.25939%]   +0.14946%   0.057     1.09   57.65%
+ETH-USDT    1568     694   +0.20128%    2.49     [+0.06815%, +0.33263%]   +0.20000%   0.063     1.20   63.36%
+AGGREGATO   1568     694   +0.17600%    2.52     [+0.06041%, +0.28904%]   +0.17473%   0.064     1.22   58.40%
+
+-- buy&hold 50/50 (OOS, close-to-close) -- n=880 media/g +0.02186% | Sharpe(g) 0.008 | Sharpe(ann) 0.16 | maxDD 60.18%
+
+-- switch (entrate/uscite) -- BTC 18 | ETH 18 | ultimo stato: BTC FLAT / ETH FLAT
+
+--- esiti (spec E10: 3/3 + DSR) ---
+  T1_oos: FAIL
+  T2_costi_x2: FAIL
+  T3_train: PASS
+  DSR: FAIL
+  DSR=0.1222 (N=2, var=0.000008, sr_visti_train=[0.0572, 0.0628], sr_oos=-0.0378, n_oos=880)
+
+=== ESITO: NON PROMOSSA (1/4) — smoke di validazione: non e' autorizzazione; misura ufficiale: Artu ===

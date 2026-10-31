@@ -47,7 +47,7 @@ foundation to build on.
 
 | | |
 | :--- | :--- |
-| **Tests** | **1,135 passed**, `ruff` clean |
+| **Tests** | **1,195 passed**, `ruff` clean |
 | **Experiments measured** | every classical family (trend, breakout, rotation, reversal, weekend, capitulation…) plus the pre-registered P-series up to P19b — 20+ measured, every verdict frozen in `prove/` |
 | **Verdicts** | **no family promoted** — all archived at real costs (the trend filone is closed with multiple proofs: portfolio DD never went below 41.5%, gate bar 25%); **S4 continuous hunt exhausted** (316k attempts, 0 candidates — retired 15/10); the only survivor is the **carry**: C1's review **PASSED** (15/10) → live on two more pairs |
 | **Live carry (C1 + DOT+ADA)** | C1 (DOGE, delta-neutral, since 01/10): funding **+0.045 USDC** (~118% of the expected minimum), pair net ≈ +0.05 USDC; **DOT+ADA** (opened 15/10 23:00 UTC): notional ≈ **180 EUR**, uPL +0.36 — minimal size, fully reconciled |
@@ -154,7 +154,7 @@ Architecture: [`ARCHITETTURA_2026-10-16.md`](ARCHITETTURA_2026-10-16.md).*
 | Domain modelling | **`dataclasses`** (`frozen=True`), `enum`, full type hints, pure functions | the cost module has no I/O: it cannot lie, and it tests in milliseconds |
 | Cost model | **`money/costi.py`** — fractions, never percentages (`0.0035`, not `0.35`) | so that no factor-of-100 error can hide in a multiplication |
 | Gate | **`money/cancello.py`** — bootstrap CI at 90% with a fixed seed, t-stat, profit factor, drawdown, toll coverage, economic relevance, block independence | a criterion you cannot see cannot be discussed |
-| Tests | **pytest >= 8** (1185 tests), **ruff >= 0.5** (`line-length = 120`, rules `E9`+`F`) | only rules that catch real errors: a CI that always shouts protects nothing |
+| Tests | **pytest >= 8** (1195 tests), **ruff >= 0.5** (`line-length = 120`, rules `E9`+`F`) | only rules that catch real errors: a CI that always shouts protects nothing |
 | Config / packaging | **PyYAML >= 6**, **setuptools** (`src/` layout) | `pytest` imports the package from `src/` with no installation, so the suite runs on a fresh checkout |
 | Evidence | **JSON + plain-text artifacts** in `prove/`, Markdown decisions in `docs/` | a measurement that cannot be re-read is an opinion |
 | Version control | **git**, one writer per path, systemd/cron to be versioned in `deploy/` | the previous project's `systemd` and `crontab` were unversioned, and that caused 10 of 12 outages |

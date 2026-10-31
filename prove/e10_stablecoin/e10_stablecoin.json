@@ -1,0 +1,385 @@
+{
+ "spec": "coda_catena/E10_stablecoin_issuance.md",
+ "data_utc": "2026-10-31 00:22",
+ "dati": {
+  "dati_dir": "/home/sergio/hermes_bridge/nuvola/handoff/REQ-NUV-20261029-006/dati",
+  "prezzi_dir": "/home/sergio/hermes_bridge/nuvola/handoff/REQ-NUV-20261029-006/prezzi",
+  "nucleo": [
+   "usdt",
+   "usdc",
+   "dai"
+  ],
+  "taglio_stablecoin": [
+   "2019-01-01",
+   "2026-10-28"
+  ],
+  "n_giorni_segnale": 2858,
+  "n_barre": 2858,
+  "range_barre": [
+   "2019-01-01",
+   "2026-10-28"
+  ],
+  "griglia_barre": "OKX 1D, timestamp 16:00 UTC, coprono [ts, ts+24h), etichetta = data UTC",
+  "input_sha256": {
+   "dati/defillama_stbl_usdt_1d.json": "a9d78022a0d8f8eb6c0804258866be0d60969087aea91b653dc1ed14833e45d0",
+   "dati/defillama_stbl_usdc_1d.json": "03cd22f25af3f3ad151b0dc8a4c6c417cbee063f3d0709ac0ff9c14445aef093",
+   "dati/defillama_stbl_dai_1d.json": "82cd8d05f4f6ee2b6c1e41707bbb5960f512857a1dd3ada63900262a02077f9a",
+   "prezzi/btc_usdt_1d.json": "74ca45095f637a976b662ec7909b750fbb7a30770fbd17db275680e35bffab52",
+   "prezzi/eth_usdt_1d.json": "fc0e85e090a35013b9ac5f15ae7d3957b77890e9cb03814a0ad7b8a69f7dcb1f"
+  }
+ },
+ "segnale": {
+  "finestra_I": 30,
+  "finestra_z": 365,
+  "prima_z_utile": "2020-01-30",
+  "n_z_definite": 2464,
+  "z_indefinite_dopo_inizio": 0,
+  "soglia_long": 1.0,
+  "soglia_flat": 0.0,
+  "isteresi": "0<z<1 mantiene lo stato precedente",
+  "stato_iniziale": 0
+ },
+ "finestre": {
+  "train": [
+   "2020-02-15",
+   "2024-06-01"
+  ],
+  "oos": [
+   "2024-06-01",
+   "2026-10-28"
+  ]
+ },
+ "costi": {
+  "rt_base": 0.002,
+  "rt_stress": 0.004
+ },
+ "per_asset": {
+  "BTC-USDT": {
+   "train": {
+    "n": 1568,
+    "giorni_in_posizione": 694,
+    "media_giornaliera": 0.0015073279267060042,
+    "t": 2.26592084195389,
+    "ci90_boot": [
+     0.0004092289749080996,
+     0.0025939420070321636
+    ],
+    "sharpe_giornaliero": 0.05722314260634025,
+    "sharpe_annuo": 1.0932466044571676,
+    "max_dd": 0.5764921652599273,
+    "quota_in_posizione": 0.44260204081632654,
+    "stress_media_giornaliera": 0.0014945728246651877,
+    "stress_t": 2.246480554421566,
+    "n_switch": 10
+   },
+   "oos": {
+    "n": 880,
+    "giorni_in_posizione": 158,
+    "media_giornaliera": -0.00028748784923343955,
+    "t": -0.9635771021643268,
+    "ci90_boot": [
+     -0.0007834132154896881,
+     0.0002009837537023015
+    ],
+    "sharpe_giornaliero": -0.03248217748759592,
+    "sharpe_annuo": -0.6205711295512581,
+    "max_dd": 0.34684427823009234,
+    "quota_in_posizione": 0.17954545454545454,
+    "stress_media_giornaliera": -0.0003056696674152577,
+    "stress_t": -1.021591888889621,
+    "n_switch": 8
+   },
+   "n_switch": 18,
+   "switch_log": [
+    {
+     "data": "2020-03-07",
+     "pos": "LONG",
+     "finestra": "train"
+    },
+    {
+     "data": "2020-06-14",
+     "pos": "FLAT",
+     "finestra": "train"
+    },
+    {
+     "data": "2020-07-30",
+     "pos": "LONG",
+     "finestra": "train"
+    },
+    {
+     "data": "2020-10-20",
+     "pos": "FLAT",
+     "finestra": "train"
+    },
+    {
+     "data": "2020-11-18",
+     "pos": "LONG",
+     "finestra": "train"
+    },
+    {
+     "data": "2021-06-27",
+     "pos": "FLAT",
+     "finestra": "train"
+    },
+    {
+     "data": "2023-02-18",
+     "pos": "LONG",
+     "finestra": "train"
+    },
+    {
+     "data": "2023-04-03",
+     "pos": "FLAT",
+     "finestra": "train"
+    },
+    {
+     "data": "2023-09-16",
+     "pos": "LONG",
+     "finestra": "train"
+    },
+    {
+     "data": "2024-05-21",
+     "pos": "FLAT",
+     "finestra": "train"
+    },
+    {
+     "data": "2024-11-13",
+     "pos": "LONG",
+     "finestra": "oos"
+    },
+    {
+     "data": "2025-01-07",
+     "pos": "FLAT",
+     "finestra": "oos"
+    },
+    {
+     "data": "2025-01-31",
+     "pos": "LONG",
+     "finestra": "oos"
+    },
+    {
+     "data": "2025-02-28",
+     "pos": "FLAT",
+     "finestra": "oos"
+    },
+    {
+     "data": "2025-08-16",
+     "pos": "LONG",
+     "finestra": "oos"
+    },
+    {
+     "data": "2025-08-25",
+     "pos": "FLAT",
+     "finestra": "oos"
+    },
+    {
+     "data": "2025-08-30",
+     "pos": "LONG",
+     "finestra": "oos"
+    },
+    {
+     "data": "2025-11-04",
+     "pos": "FLAT",
+     "finestra": "oos"
+    }
+   ]
+  },
+  "ETH-USDT": {
+   "train": {
+    "n": 1568,
+    "giorni_in_posizione": 694,
+    "media_giornaliera": 0.002012762222834731,
+    "t": 2.487635759470966,
+    "ci90_boot": [
+     0.0006815442779158065,
+     0.0033262824485939704
+    ],
+    "sharpe_giornaliero": 0.06282228980871668,
+    "sharpe_annuo": 1.2002181615588856,
+    "max_dd": 0.6336128109287967,
+    "quota_in_posizione": 0.44260204081632654,
+    "stress_media_giornaliera": 0.002000007120793915,
+    "stress_t": 2.471636829224694,
+    "n_switch": 10
+   },
+   "oos": {
+    "n": 880,
+    "giorni_in_posizione": 158,
+    "media_giornaliera": -0.0005491080328034137,
+    "t": -1.1182721081975282,
+    "ci90_boot": [
+     -0.0013659933547619284,
+     0.0002687801194168326
+    ],
+    "sharpe_giornaliero": -0.03769694507716266,
+    "sharpe_annuo": -0.7201991244614059,
+    "max_dd": 0.5353987993368353,
+    "quota_in_posizione": 0.17954545454545454,
+    "stress_media_giornaliera": -0.0005672898509852319,
+    "stress_t": -1.154316555507465,
+    "n_switch": 8
+   },
+   "n_switch": 18,
+   "switch_log": [
+    {
+     "data": "2020-03-07",
+     "pos": "LONG",
+     "finestra": "train"
+    },
+    {
+     "data": "2020-06-14",
+     "pos": "FLAT",
+     "finestra": "train"
+    },
+    {
+     "data": "2020-07-30",
+     "pos": "LONG",
+     "finestra": "train"
+    },
+    {
+     "data": "2020-10-20",
+     "pos": "FLAT",
+     "finestra": "train"
+    },
+    {
+     "data": "2020-11-18",
+     "pos": "LONG",
+     "finestra": "train"
+    },
+    {
+     "data": "2021-06-27",
+     "pos": "FLAT",
+     "finestra": "train"
+    },
+    {
+     "data": "2023-02-18",
+     "pos": "LONG",
+     "finestra": "train"
+    },
+    {
+     "data": "2023-04-03",
+     "pos": "FLAT",
+     "finestra": "train"
+    },
+    {
+     "data": "2023-09-16",
+     "pos": "LONG",
+     "finestra": "train"
+    },
+    {
+     "data": "2024-05-21",
+     "pos": "FLAT",
+     "finestra": "train"
+    },
+    {
+     "data": "2024-11-13",
+     "pos": "LONG",
+     "finestra": "oos"
+    },
+    {
+     "data": "2025-01-07",
+     "pos": "FLAT",
+     "finestra": "oos"
+    },
+    {
+     "data": "2025-01-31",
+     "pos": "LONG",
+     "finestra": "oos"
+    },
+    {
+     "data": "2025-02-28",
+     "pos": "FLAT",
+     "finestra": "oos"
+    },
+    {
+     "data": "2025-08-16",
+     "pos": "LONG",
+     "finestra": "oos"
+    },
+    {
+     "data": "2025-08-25",
+     "pos": "FLAT",
+     "finestra": "oos"
+    },
+    {
+     "data": "2025-08-30",
+     "pos": "LONG",
+     "finestra": "oos"
+    },
+    {
+     "data": "2025-11-04",
+     "pos": "FLAT",
+     "finestra": "oos"
+    }
+   ]
+  }
+ },
+ "aggregato": {
+  "train": {
+   "n": 1568,
+   "giorni_in_posizione": 694,
+   "media_giornaliera": 0.0017600450747703676,
+   "t": 2.520495048835772,
+   "ci90_boot": [
+    0.0006041156452579888,
+    0.002890411362233639
+   ],
+   "sharpe_giornaliero": 0.0636521121778176,
+   "sharpe_annuo": 1.2160718956601944,
+   "max_dd": 0.5839803559551636,
+   "quota_in_posizione": 0.44260204081632654,
+   "stress_media_giornaliera": 0.0017472899727295514,
+   "stress_t": 2.50193521179918,
+   "n_switch": 10
+  },
+  "oos": {
+   "n": 880,
+   "giorni_in_posizione": 158,
+   "media_giornaliera": -0.00041829794101842663,
+   "t": -1.1220925412280933,
+   "ci90_boot": [
+    -0.0010478834284012237,
+    0.00019325638763615055
+   ],
+   "sharpe_giornaliero": -0.037825731848350516,
+   "sharpe_annuo": -0.7226595922701858,
+   "max_dd": 0.4406763871498792,
+   "quota_in_posizione": 0.17954545454545454,
+   "stress_media_giornaliera": -0.0004364797592002448,
+   "stress_t": -1.1689294429697412,
+   "n_switch": 8
+  }
+ },
+ "buyhold_5050_oos": {
+  "n": 880,
+  "media_giornaliera": 0.00021861578193245663,
+  "sharpe_giornaliero": 0.008435754612415164,
+  "sharpe_annuo": 0.1611648655772174,
+  "max_dd": 0.6018050705677873
+ },
+ "esiti": {
+  "T1_oos": false,
+  "T2_costi_x2": false,
+  "T3_train": true,
+  "DSR": false
+ },
+ "promossa": false,
+ "dsr": {
+  "dsr": 0.12217574530167757,
+  "sr_osservato_oos": -0.037825731848350516,
+  "sr_visti_train": [
+   0.05722314260634025,
+   0.06282228980871668
+  ],
+  "var": 7.837612348469941e-06,
+  "n_look": 2,
+  "n_osservazioni": 880
+ },
+ "limiti": [
+  "stablecoin tagliate a [2019-01-01, 2026-10-28]: il 29/10 DefiLlama e' parziale; il taglio d'inizio realizza «storia piena >= 2019» e il warmup dichiarato (primi segnali ~2020-02)",
+  "z_t usa S[t-365..t-1] (esclude t in poi) + S_t al numeratore: causale; la posizione entra all'apertura della barra t+1 (nessun dato >= t+1 usato dalla decisione di t)",
+  "barre OKX 1D a 16:00 UTC (griglia UTC+8); close(i-1)->open(i) alla posizione precedente, open(i)->close(i) alla nuova, sub-rendimenti composti",
+  "costi pagati interamente per switch (nessun netting); slippage non modellato oltre lo stress x2",
+  "aggregato = media dei rendimenti netti delle due gambe (pesi uguali, capitali separati)",
+  "proxy dichiarato (spec): net issuance stablecoin, non netflow exchange"
+ ]
+}
