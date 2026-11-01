@@ -1,6 +1,6 @@
 # E19 — «basis trade su futures datati BTC» (pre-registrazione)
 
-**Data:** 2026-11-01 · **Autore:** Artù · **Stato:** PRE-REGISTRATA (regola congelata PRIMA dei numeri storici)
+**Data:** 2026-11-01 · **Autore:** Artù · **Stato:** ARCHIVIATA — VENUE_BLOCKED (01/11, gate n.1 fallito: futures datati non negoziabili per profilo retail OKX EEA)
 
 ## Come nasce (dichiarato)
 
