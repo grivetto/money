@@ -196,6 +196,9 @@
   @media (prefers-reduced-motion:reduce){
     *{animation:none!important;transition:none!important}
   }
+  .agenti-links{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .agenti-links a{font-family:var(--mono);font-size:11px;color:#9fc6ff;border:1px solid rgba(88,200,255,.35);padding:3px 8px;border-radius:5px;text-decoration:none}
+  .agenti-links a:hover{color:#fff;border-color:#9fc6ff}
 </style>
 </head>
 <body>
@@ -376,6 +379,32 @@
         </svg>
       </span>
     </a>
+    <div class="card">
+      <span class="ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+        </svg>
+      </span>
+      <span>
+        <h2>Agenti · officina</h2>
+        <p>A0 · DSH · opencode — accesso protetto (OTP via email)</p>
+        <div class="agenti-links">
+          <a href="https://a0-mc2.grivetto.eu" target="_blank" rel="noopener">A0 mc2</a>
+          <a href="https://a0-omarchy.grivetto.eu" target="_blank" rel="noopener">A0 omarchy</a>
+          <a href="https://a0-andromeda.grivetto.eu" target="_blank" rel="noopener">A0 andromeda</a>
+          <a href="https://a0-nuvola.grivetto.eu" target="_blank" rel="noopener">A0 nuvola</a>
+          <a href="https://a0-marcodg1.grivetto.eu" target="_blank" rel="noopener">A0 marcodg1</a>
+          <a href="https://dsh-mc2.grivetto.eu" target="_blank" rel="noopener">DSH mc2</a>
+          <a href="https://dsh-omarchy.grivetto.eu" target="_blank" rel="noopener">DSH omarchy</a>
+          <a href="https://opencode-mc2.grivetto.eu" target="_blank" rel="noopener">opencode mc2</a>
+          <a href="https://opencode-omarchy.grivetto.eu" target="_blank" rel="noopener">opencode omarchy</a>
+          <a href="https://opencode-nuvola.grivetto.eu" target="_blank" rel="noopener">opencode nuvola</a>
+          <a href="https://opencode-marcodg1.grivetto.eu" target="_blank" rel="noopener">opencode marcodg1</a>
+        </div>
+      </span>
+    </div>
+
+
 
     <a class="card" href="https://denaro.grivetto.eu/agenti">
       <span class="ico" aria-hidden="true">
