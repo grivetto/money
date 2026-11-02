@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<title>Biondo's LAB — agenti e Hermes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#05080c; --panel:#0a1017; --line:rgba(88,200,255,.25); --text:#dbe6f2;
+    --muted:#7b8da2; --accent:#4cd6ff; --mono:"JetBrains Mono","SFMono-Regular",Consolas,monospace;
+    --sans:"Space Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; min-height:100vh; color:var(--text); font-family:var(--sans);
+    background:
+      radial-gradient(900px 520px at 20% -10%, rgba(30,120,180,.18), transparent 60%),
+      radial-gradient(700px 420px at 100% 10%, rgba(90,60,190,.14), transparent 55%),
+      var(--bg);
+    -webkit-font-smoothing:antialiased; padding:28px 18px 60px;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none;
+    background-image:
+      linear-gradient(rgba(120,170,220,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(120,170,220,.04) 1px, transparent 1px);
+    background-size:42px 42px;
+    mask-image:radial-gradient(ellipse at 50% 0%, #000, transparent 75%);
+  }
+  .wrap{position:relative; max-width:980px; margin:0 auto}
+  header{display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:22px}
+  .brand{display:flex; align-items:center; gap:12px}
+  .brand .logo{width:34px; height:34px; color:var(--accent); filter:drop-shadow(0 0 12px rgba(76,214,255,.35))}
+  .brand h1{margin:0; font-family:var(--mono); font-size:15px; font-weight:600; letter-spacing:.14em; text-transform:uppercase}
+  .brand p{margin:3px 0 0; font-size:11px; color:var(--muted); font-family:var(--mono)}
+  .stato{font-family:var(--mono); font-size:11px; color:var(--muted)}
+  .stato .badge{margin-left:6px}
+  a.back{font-family:var(--mono); font-size:11px; color:var(--accent); text-decoration:none; border:1px solid rgba(88,200,255,.35); padding:5px 10px; border-radius:5px}
+  a.back:hover{border-color:var(--accent)}
+  h2.sec{font-family:var(--mono); font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:26px 0 10px}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(215px,1fr)); gap:12px}
+  .grid.wide{grid-template-columns:repeat(auto-fill, minmax(280px,1fr))}
+  a.card{
+    display:flex; flex-direction:column; gap:8px; padding:14px;
+    background:rgba(13,21,34,.85); border:1px solid var(--line); border-radius:7px;
+    text-decoration:none; color:inherit; position:relative; overflow:hidden;
+    transition:border-color .15s, background .15s;
+  }
+  a.card:hover{border-color:rgba(88,200,255,.5); background:rgba(13,21,34,.97)}
+  a.card h3{margin:0; font-size:14px; font-weight:600}
+  a.card .sub{font-family:var(--mono); font-size:10.5px; color:var(--muted); letter-spacing:.03em}
+  a.card .dett{margin-top:auto; font-family:var(--mono); font-size:10px; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .badge{
+    display:inline-block; font-family:var(--mono); font-size:9.5px; letter-spacing:.1em;
+    padding:2px 8px; border-radius:99px; border:1px solid; text-transform:uppercase;
+  }
+  .badge.on{color:#22c55e; border-color:rgba(34,197,94,.45); background:rgba(34,197,94,.08)}
+  .badge.off{color:#ef4444; border-color:rgba(239,68,68,.45); background:rgba(239,68,68,.08)}
+  .badge.nd{color:#f59e0b; border-color:rgba(245,158,11,.45); background:rgba(245,158,11,.08)}
+  .warn{
+    display:none; margin:0 0 14px; padding:10px 14px; font-family:var(--mono); font-size:11px;
+    color:#ffb454; border:1px solid rgba(255,180,84,.4); border-radius:7px; background:rgba(255,180,84,.06);
+  }
+  .warn.show{display:block}
+  .note{font-family:var(--mono); font-size:10px; color:var(--muted); margin-top:6px}
+  footer{margin-top:34px; font-family:var(--mono); font-size:10.5px; color:var(--muted)}
+  footer a{color:var(--accent); text-decoration:none}
+  @media (max-width:600px){ .grid{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      <div>
+        <h1>Biondo's LAB</h1>
+        <p>4 A0 · flotta agenti</p>
+      </div>
+    </div>
+    <div>
+      <a class="back" href="/">← Denaro</a>
+      <span class="stato" id="stato-ts">stato: —</span>
+    </div>
+  </header>
+
+  <div class="warn" id="warn-stale">dati di stato non aggiornati (ultimo rilevamento &gt; 5 min fa): i badge sono da considerarsi n.d.</div>
+
+  <h2 class="sec">Agent Zero — accesso protetto (OTP via email)</h2>
+  <div class="grid" id="grid-a0"></div>
+
+  <h2 class="sec">Altri agenti — stato</h2>
+  <div class="grid" id="grid-rest"></div>
+
+  <footer>
+    <a href="https://web.grivetto.eu/">web.grivetto.eu</a> · stato operai da
+    <a href="https://agents.grivetto.eu/operai.json" target="_blank" rel="noopener">operai.json</a>
+    (aggiornato ogni minuto su mc2)
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const FEED = "https://agents.grivetto.eu/operai.json";
+
+  const NODI = {
+    mc2:      {nome: "mc2",     ruolo: "Artù — canonico"},
+    omarchy:  {nome: "omarchy", ruolo: "Merlino — sviluppo"},
+    nuvola:   {nome: "nuvola",  ruolo: "Morgana — VPS paper"},
+    marcodg1: {nome: "MARCODG1", ruolo: "Lancillotto — monitor"},
+    win:      {nome: "andromeda", ruolo: "Windows — casa"},
+  };
+
+  const A0 = ["mc2", "omarchy", "nuvola", "marcodg1"];
+
+  function badgeCls(up) {
+    if (up === true) return "on";
+    if (up === false) return "off";
+    return "nd";
+  }
+  function badgeTxt(up) {
+    if (up === true) return "attivo";
+    if (up === false) return "inattivo";
+    return "n.d.";
+  }
+  function card(node, title, sub, href, up, dettaglio) {
+    const a = document.createElement("a");
+    a.className = "card";
+    a.href = href || "#";
+    if (href) { a.target = "_blank"; a.rel = "noopener"; }
+    const h = document.createElement("h3");
+    h.textContent = title;
+    const b = document.createElement("span");
+    b.className = "badge " + badgeCls(up);
+    b.textContent = badgeTxt(up);
+    h.appendChild(document.createTextNode(" "));
+    h.appendChild(b);
+    const s = document.createElement("div");
+    s.className = "sub";
+    s.textContent = sub;
+    const d = document.createElement("div");
+    d.className = "dett";
+    d.textContent = dettaglio || "";
+    d.title = dettaglio || "";
+    a.appendChild(h); a.appendChild(s); a.appendChild(d);
+    return a;
+  }
+
+  function render(data, stale) {
+    const nodi = (data && data.nodi) || {};
+    const gA0 = document.getElementById("grid-a0");
+    const gR = document.getElementById("grid-rest");
+    gA0.innerHTML = ""; gR.innerHTML = "";
+
+    A0.forEach(function(id){
+      const n = nodi[id] || {};
+      const op = (n.operai && n.operai.a0) || {};
+      const up = (n.ok === false) ? "nd" : (n.ok === true ? (op.up === true) : null);
+      gA0.appendChild(card(id, "A0 " + NODI[id].nome, NODI[id].ruolo,
+        "https://a0-" + id + ".grivetto.eu", up, op.dettaglio || ""));
+    });
+
+    // resto: A0 andromeda, DSH, opencode, agy
+    const rest = [];
+    const winN = nodi["win"] || {};
+    const winA0 = (winN.operai && winN.operai.a0) || {};
+    rest.push(["A0 andromeda", "Windows — casa",
+      "https://a0-andromeda.grivetto.eu", winN.ok === false ? "nd" : (winN.ok === true ? (winA0.up === true) : null), winA0.dettaglio]);
+    ["mc2", "omarchy", "win"].forEach(function(id){
+      const n = nodi[id] || {};
+      const op = (n.operai && n.operai.dsh) || {};
+      rest.push(["DSH " + NODI[id].nome, NODI[id].ruolo,
+        (id === "win") ? null : ("https://dsh-" + id + ".grivetto.eu"),
+        n.ok === false ? "nd" : (n.ok === true ? (op.up === true) : null), op.dettaglio]);
+    });
+    ["mc2", "omarchy", "nuvola", "marcodg1"].forEach(function(id){
+      const n = nodi[id] || {};
+      const op = (n.operai && n.operai.opencode) || {};
+      rest.push(["opencode " + NODI[id].nome, NODI[id].ruolo,
+        "https://opencode-" + id + ".grivetto.eu",
+        n.ok === false ? "nd" : (n.ok === true ? (op.up === true) : null), op.dettaglio]);
+    });
+    ["mc2", "omarchy", "nuvola", "marcodg1"].forEach(function(id){
+      const n = nodi[id] || {};
+      const op = (n.operai && n.operai.hermes) || {};
+      rest.push(["Hermes " + NODI[id].nome, NODI[id].ruolo, null,
+        n.ok === false ? "nd" : (n.ok === true ? (op.up === true) : null), op.dettaglio]);
+    });
+    ["mc2", "omarchy", "nuvola", "marcodg1"].forEach(function(id){
+      const n = nodi[id] || {};
+      const op = (n.operai && n.operai.agy) || {};
+      rest.push(["agy " + NODI[id].nome, NODI[id].ruolo, null,
+        n.ok === false ? "nd" : (n.ok === true ? (op.up === true) : null), op.dettaglio]);
+    });
+    rest.forEach(function(r){
+      gR.appendChild(card(null, r[0], r[1], r[2], r[3], r[4]));
+    });
+
+    if (stale) document.getElementById("warn-stale").classList.add("show");
+  }
+
+  fetch(FEED, {cache: "no-store"})
+    .then(function(r){ if (!r.ok) throw new Error("http " + r.status); return r.json(); })
+    .then(function(d){
+      const iso = d.generated_at_iso || null;
+      let stale = true;
+      if (iso) {
+        const age = Date.now() - new Date(iso).getTime();
+        stale = age > 5 * 60 * 1000;
+        document.getElementById("stato-ts").textContent = "stato: " + iso.replace("T", " ").slice(0, 19) + " UTC";
+      } else {
+        document.getElementById("stato-ts").textContent = "stato: timestamp assente";
+      }
+      render(d, stale);
+    })
+    .catch(function(e){
+      document.getElementById("stato-ts").textContent = "stato: non disponibile (" + e.message + ")";
+      render(null, true);
+    });
+})();
+</script>
+</body>
+</html>
