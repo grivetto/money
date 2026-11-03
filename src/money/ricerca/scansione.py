@@ -402,16 +402,27 @@ def seleziona_e_correggi(trials: Sequence[dict], *, min_op: int = MIN_OP,
     # col conteggio dei tentativi, che non sono avvenuti li'.
     valutabili = [t for t in trials if (t["train"]["n"] or 0) >= min_op
                   and t["train"]["sharpe"] is not None]
-    n_tentativi = len(valutabili)
+    n_prove_grezze = len(valutabili)
+    # Prove correlate (correzione Manus 03/11): configurazioni della STESSA famiglia sono
+    # variazioni dello stesso meccanismo, e i simboli sono mercati correlati: non valgono
+    # come prove indipendenti. N_eff = numero di famiglie con almeno un trial valutabile
+    # (regola pre-registrata); il conteggio grezzo resta dichiarato accanto, mai scartato.
+    famiglie = {t.get("famiglia") or t.get("chiave") for t in valutabili}
+    n_prove_effettive = len(famiglie)
     sharpe_train = [t["train"]["sharpe"] for t in valutabili]
     var_sharpe = varianza_da_tentativi(sharpe_train) if len(sharpe_train) >= 2 else 0.0
+    # DECISIONALE = conteggio GREZZO (n_prove_grezze). N_eff e' solo RIPORTATO: ridurlo
+    # abbasserebbe il benchmark Sharpe e alzerebbe il DSR, cioe' renderebbe il filtro piu'
+    # permissivo. Il grezzo e' il valore prudente finche' N_eff non e' pre-registrato.
     for s in selezioni:
         tr = s["train"]
         dsr = None
-        if (tr["n"] or 0) >= 2 and tr["sharpe"] is not None and n_tentativi >= 2:
-            dsr = sharpe_deflazionato(tr["sharpe"], int(tr["n"]), n_tentativi, var_sharpe)
+        if (tr["n"] or 0) >= 2 and tr["sharpe"] is not None and n_prove_grezze >= 1:
+            dsr = sharpe_deflazionato(tr["sharpe"], int(tr["n"]), n_prove_grezze, var_sharpe)["dsr"]
         s["dsr_selezione"] = dsr
-        s["n_tentativi"] = n_tentativi
+        s["n_tentativi"] = n_prove_grezze
+        s["n_prove_grezze"] = n_prove_grezze
+        s["n_prove_effettive"] = n_prove_effettive
 
     candidati = seleziona_sopravvissuti(selezioni, min_op=min_op, soglia_dsr=soglia_dsr)
     top_oos = sorted(
@@ -422,10 +433,12 @@ def seleziona_e_correggi(trials: Sequence[dict], *, min_op: int = MIN_OP,
         "selezioni": selezioni,
         "candidati": candidati,
         "top_oos": top_oos,
-        "n_tentativi": n_tentativi,
+        "n_tentativi": n_prove_grezze,       # compatibilita' meta (n_trials_valutabili)
+        "n_prove_grezze": n_prove_grezze,
+        "n_prove_effettive": n_prove_effettive,
         "varianza_sharpe_train": var_sharpe,
-        "sr0_benchmark": (sharpe_atteso_massimo(n_tentativi, var_sharpe)
-                          if n_tentativi >= 2 else 0.0),
+        "sr0_benchmark": (sharpe_atteso_massimo(n_prove_grezze, var_sharpe)
+                          if n_prove_grezze >= 2 else 0.0),
     }
 
 
@@ -477,6 +490,8 @@ def scansiona(serie_per_simbolo: Dict[str, SerieBarre], *, griglia: Sequence[dic
             "simboli": sorted(serie_per_simbolo),
             "n_trials": len(trials),
             "n_trials_valutabili": n_tentativi,
+            "n_prove_grezze": correzione["n_prove_grezze"],
+            "n_prove_effettive": correzione["n_prove_effettive"],
             "tariffa": f"{tar.venue.value} ({tar.condizione})",
             "giro_misto": tar.giro_misto,
             "slippage_per_lato": slippage,
