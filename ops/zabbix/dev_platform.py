@@ -64,8 +64,8 @@ ITEM_EXTRA = (
 
 #: Nodi Linux: alias ssh (None = locale su mc2), porta dsh-web, quali operai ha
 NODI = {
-    "mc2": {"alias": None, "porta_dsh": 4080, "dsh": True, "a0": True, "hermes": True},
-    "omarchy": {"alias": "omarchy", "porta_dsh": 5080, "dsh": True, "a0": True, "hermes": True},
+    "mc2": {"alias": None, "porta_dsh": 4080, "host_dsh": "127.0.0.1", "dsh": True, "a0": True, "hermes": True},
+    "omarchy": {"alias": "omarchy", "porta_dsh": 5080, "host_dsh": "192.168.1.98", "dsh": True, "a0": True, "hermes": True},
     "nuvola": {"alias": "nuvola", "porta_dsh": None, "dsh": False, "a0": False, "hermes": True},
     "marcodg1": {"alias": "MARCODG1", "porta_dsh": None, "dsh": False, "a0": False, "hermes": True},
 }
@@ -105,9 +105,10 @@ def _snippet(cfg: dict) -> str:
                      "http://127.0.0.1:50080/ 2>/dev/null)")
     if cfg.get("dsh"):
         porta = cfg["porta_dsh"]
+        host = cfg.get("host_dsh") or "127.0.0.1"
         righe.append("echo dsh=$(systemctl is-active dsh-web 2>/dev/null)")
         righe.append(f"echo dsh_http=$(curl -s -o /dev/null -w '%{{http_code}}' --max-time 5 "
-                     f"http://127.0.0.1:{porta}/ 2>/dev/null)")
+                     f"http://{host}:{porta}/ 2>/dev/null)")
     righe.append("echo opencode=$(systemctl is-active opencode 2>/dev/null)")
     righe.append("echo opencode_port=$(ss -ltn 2>/dev/null | grep -q ':49374' && echo 1 || echo 0)")
     righe.append("echo agy=$(XDG_RUNTIME_DIR=/run/user/$(id -u) "
@@ -152,7 +153,7 @@ def raccogli_win() -> dict | None:
                              WIN_ALIAS, "docker inspect agent-zero --format {{.State.Status}}"],
                             capture_output=True, text=True, timeout=60)
         r3 = subprocess.run(["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10",
-                             WIN_ALIAS, "curl.exe -s -o NUL --max-time 8 http://127.0.0.1:50080/ "
+                             WIN_ALIAS, "curl.exe -s -o NUL --max-time 8 http://127.0.0.1:48080/ "
                                         "&& echo UP || echo DOWN"],
                             capture_output=True, text=True, timeout=60)
         if r1.returncode != 0 and r2.returncode != 0:
@@ -184,7 +185,7 @@ def valuta(nodo: str, lett: dict | None) -> dict:
             fuori["a0"] = None
         else:
             fuori["a0"] = 1 if (stato_a0 == "running"
-                                and lett.get("a0_http") == "200") else 0
+                                and lett.get("a0_http") in ("200", "302", "401")) else 0
     if "dsh" in lett:
         dsh, http = lett.get("dsh", ""), lett.get("dsh_http", "")
         if not dsh:
