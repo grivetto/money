@@ -1,0 +1,107 @@
+{
+ "fonte": "misura indipendente Artu (mc2, endpoint pubblici ccxt)",
+ "rounds": 27,
+ "primo_ts": "2026-11-03T22:18:42.742Z",
+ "ultimo_ts": "2026-11-03T22:25:33.441Z",
+ "breakeven_bp": {
+  "min": 35,
+  "max": 50
+ },
+ "coppie": {
+  "BTC/USDT": {
+   "n": 27,
+   "gap_mediano_bp": 0.33,
+   "gap_media_bp": 0.33,
+   "gap_p90_bp": 0.55,
+   "gap_max_bp": 0.95,
+   "tick_sopra_35bp": 0,
+   "pct": 0.0
+  },
+  "ETH/USDT": {
+   "n": 27,
+   "gap_mediano_bp": 0.22,
+   "gap_media_bp": 0.32,
+   "gap_p90_bp": 0.74,
+   "gap_max_bp": 1.31,
+   "tick_sopra_35bp": 0,
+   "pct": 0.0
+  },
+  "SOL/USDT": {
+   "n": 27,
+   "gap_mediano_bp": -1.07,
+   "gap_media_bp": -0.59,
+   "gap_p90_bp": 0.0,
+   "gap_max_bp": 0.0,
+   "tick_sopra_35bp": 0,
+   "pct": 0.0
+  },
+  "XRP/USDT": {
+   "n": 27,
+   "gap_mediano_bp": -0.78,
+   "gap_media_bp": -0.43,
+   "gap_p90_bp": 0.0,
+   "gap_max_bp": 0.78,
+   "tick_sopra_35bp": 0,
+   "pct": 0.0
+  },
+  "DOGE/USDT": {
+   "n": 27,
+   "gap_mediano_bp": -1.32,
+   "gap_media_bp": -0.88,
+   "gap_p90_bp": 0.0,
+   "gap_max_bp": 0.0,
+   "tick_sopra_35bp": 0,
+   "pct": 0.0
+  },
+  "ADA/USDT": {
+   "n": 27,
+   "gap_mediano_bp": -5.24,
+   "gap_media_bp": -4.85,
+   "gap_p90_bp": -5.23,
+   "gap_max_bp": 0.0,
+   "tick_sopra_35bp": 0,
+   "pct": 0.0
+  },
+  "DOT/USDT": {
+   "n": 27,
+   "gap_mediano_bp": 0.0,
+   "gap_media_bp": -0.35,
+   "gap_p90_bp": 1.06,
+   "gap_max_bp": 1.06,
+   "tick_sopra_35bp": 0,
+   "pct": 0.0
+  },
+  "LTC/USDT": {
+   "n": 27,
+   "gap_mediano_bp": -1.83,
+   "gap_media_bp": -1.42,
+   "gap_p90_bp": 0.0,
+   "gap_max_bp": 0.0,
+   "tick_sopra_35bp": 0,
+   "pct": 0.0
+  },
+  "LINK/USDT": {
+   "n": 27,
+   "gap_mediano_bp": 0.9,
+   "gap_media_bp": 0.63,
+   "gap_p90_bp": 1.8,
+   "gap_max_bp": 2.7,
+   "tick_sopra_35bp": 0,
+   "pct": 0.0
+  },
+  "AVAX/USDT": {
+   "n": 27,
+   "gap_mediano_bp": -1.17,
+   "gap_media_bp": -1.12,
+   "gap_p90_bp": 0.0,
+   "gap_max_bp": 4.67,
+   "tick_sopra_35bp": 0,
+   "pct": 0.0
+  }
+ },
+ "sintesi": {
+  "tick_totali": 270,
+  "tick_sopra_breakeven_35bp": 0,
+  "pct_sopra": 0.0
+ }
+}
