@@ -18,8 +18,8 @@ per "promosso", quindi il codice di produzione si scrive come
 e non esiste modo di dimenticarsene, perche' non c'e' nessuna scorciatoia: ogni criterio
 produce un motivo **con il numero dentro**, e i motivi si leggono.
 
-GLI OTTO CRITERI (tutti devono passare)
-=======================================
+GLI OTTO CRITERI (tutti devono passare) PIU' LA COERENZA COL KILL SWITCH
+=======================================================================
 1. Numerosita'   : almeno `MIN_OPERAZIONI` = 30 operazioni e almeno
                    `MIN_N_EFFETTIVO` = 30 osservazioni effettive. Sotto, il verdetto e'
                    **"insufficiente"**, non "archiviato".
@@ -40,6 +40,9 @@ GLI OTTO CRITERI (tutti devono passare)
                    **estrapolazione** e va dichiarata come tale (vedi sotto).
 8. Indipendenza  : l'expectancy non deve dipendere da un solo blocco contiguo. Se togliendo
                    il blocco migliore diventa negativa, si archivia (vedi sotto).
+9. Coerenza kill : il drawdown storico (o stressato, se dichiarato) non deve superare la
+                   soglia live del kill switch (`DD_LIVE_MASSIMO`): si promuove solo cio'
+                   che il sizing autorizzato rende coerente col limite operativo.
 
 CRITERIO 8 — LA DIPENDENZA DA UN SOLO BLOCCO
 ============================================
@@ -110,6 +113,7 @@ from typing import Callable, Dict, Optional, Sequence, Tuple
 
 from . import statistica
 from .costi import Tariffa, get_tariffa, movimento_minimo
+from .rischio import DEFAULT as DEFAULT_RISCHIO
 
 # --- le soglie, tutte in un posto solo e tutte dichiarate -------------------------------
 
@@ -140,6 +144,11 @@ PROFIT_FACTOR_MINIMO: float = 1.20
 
 #: Drawdown massimo accettabile sul capitale di riferimento.
 MAX_DRAWDOWN: float = 0.25
+
+#: Soglia live del kill switch (unica fonte: `money.rischio.DEFAULT.drawdown_arresto`).
+#: Criterio 9 (correzione Manus 03/11): un DD storico (o stressato) oltre questa soglia
+#: rende il sizing incoerente col limite operativo: si promuove solo cio' che il live regge.
+DD_LIVE_MASSIMO: float = DEFAULT_RISCHIO.drawdown_arresto
 
 #: L'edge netto per operazione dev'essere almeno 3 volte il pedaggio per operazione:
 #: 1x = pareggio, 2x = margine che una variazione di slippage cancella, 3x = margine vero.
@@ -192,6 +201,9 @@ class Esito:
     tariffa: Tariffa
     tipo: str = "misto"
     note: str = ""
+    #: Drawdown stressato (scenario avverso), se dichiarato dal chiamante. Se assente il
+    #: criterio di coerenza col kill switch usa il drawdown storico.
+    max_drawdown_stressato: Optional[float] = None
 
     @property
     def pedaggio_per_operazione(self) -> float:
@@ -675,6 +687,18 @@ def _criteri() -> Tuple[Criterio, ...]:
              f"conto non regge").replace(".", ","))
         return ok, motivo, {"max_drawdown": dd}
 
+    def c_kill_coerenza(esito: Esito, s: dict, opt: dict) -> Tuple[bool, str, dict]:
+        dd = (esito.max_drawdown_stressato if esito.max_drawdown_stressato is not None
+              else esito.max_drawdown)
+        lim = opt["dd_live_massimo"]
+        etichetta = "stressato" if esito.max_drawdown_stressato is not None else "storico"
+        ok = dd <= lim
+        motivo = (f"coerenza col kill switch: DD {etichetta} {dd:.2%} <= soglia live {lim:.0%}" if ok
+                  else (f"coerenza col kill switch: DD {etichetta} {dd:.2%} > soglia live "
+                        f"{lim:.0%}: il drawdown atteso supererebbe il kill switch — "
+                        f"il sizing non e' coerente col limite operativo"))
+        return ok, motivo, {"dd_uso": dd, "dd_live_massimo": lim}
+
     def c_pedaggio(esito: Esito, s: dict, opt: dict) -> Tuple[bool, str, dict]:
         exp = s.get("expectancy")
         ped = esito.pedaggio_per_operazione
@@ -740,6 +764,7 @@ def _criteri() -> Tuple[Criterio, ...]:
         ("t_stat", c_tstat),
         ("profit_factor", c_profit_factor),
         ("drawdown", c_drawdown),
+        ("coerenza_kill_switch", c_kill_coerenza),
         ("pedaggio_coperto", c_pedaggio),
         ("rilevanza_economica", c_rilevanza),
         ("indipendenza_dai_blocchi", c_blocchi),
@@ -874,6 +899,7 @@ def giudica(esito: Esito,
         "t_minimo": T_STAT_MINIMO,
         "pf_minimo": PROFIT_FACTOR_MINIMO,
         "max_drawdown": MAX_DRAWDOWN,
+        "dd_live_massimo": DD_LIVE_MASSIMO,
         "margine_pedaggio": MARGINE_PEDAGGIO,
         "capitale": capitale_riferimento,
         "soglia_eur": soglia_eur_anno,
@@ -907,6 +933,11 @@ def giudica(esito: Esito,
     s["giorni_osservati"] = esito.giorni_osservati
     s["esposizione_media"] = esito.esposizione_media
     s["max_drawdown"] = esito.max_drawdown
+    s["dd_storico"] = esito.max_drawdown
+    s["dd_stressato"] = (esito.max_drawdown_stressato
+                         if esito.max_drawdown_stressato is not None
+                         else esito.max_drawdown)
+    s["dd_live_massimo"] = DD_LIVE_MASSIMO
     if motivi:
         return Verdetto("archiviato", tuple(motivi), s)
     # Il pedaggio qui e' per costruzione > 0 (altrimenti il criterio 6 non avrebbe potuto

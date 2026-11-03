@@ -133,3 +133,89 @@ def leggi(path: str | Path) -> PromotionArtifact:
     art = PromotionArtifact(**d)
     art.valida()
     return art
+
+
+# --- PASS_PAPER: la fase intermedia, SENZA capitale (correzione Manus 03/11) -------------
+
+
+@dataclass(frozen=True)
+class PaperArtifact:
+    """Prova che un'ipotesi ha superato il gate statistico, SENZA sbloccare capitale.
+
+    Stato PASS_PAPER: tra "gate superato" e "capitale live" esiste una fase paper
+    formalmente autorizzata. Questo artefatto NON e' un `PromotionArtifact`: l'Esecutore
+    (che legge SOLO `PromotionArtifact.leggi`) lo rifiuta per costruzione — verdetto
+    assente, campi di capitale assenti. Stesse garanzie di immutabilita' (hash) e
+    scadenza (TTL) della promozione.
+    """
+
+    strategy_id: str
+    nome: str
+    creato: str            # ISO UTC
+    scade: str             # ISO UTC
+    dsr: float
+    costi: Dict[str, Any] = field(default_factory=dict)
+    metriche: Dict[str, Any] = field(default_factory=dict)
+    commit: str = ""
+    hash: str = ""
+
+    def contenuto_hash(self) -> str:
+        d = asdict(self)
+        d.pop("hash", None)
+        canonico = json.dumps(d, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+        return "paper" + hashlib.sha256(canonico.encode()).hexdigest()[:24]
+
+    def a_dict(self) -> Dict[str, Any]:
+        return asdict(self)
+
+    def valida(self, *, adesso: Optional[datetime] = None) -> None:
+        if self.contenuto_hash() != self.hash:
+            raise PromozioneInvalida("paper: hash manomesso")
+        if self.dsr < 0.95:
+            raise PromozioneInvalida(f"paper: DSR {self.dsr:.4f} < 0.95")
+        ora = adesso or datetime.now(timezone.utc)
+        try:
+            scad = datetime.fromisoformat(self.scade)
+        except ValueError:
+            raise PromozioneInvalida(f"paper: scadenza illeggibile {self.scade!r}") from None
+        if scad.tzinfo is None:
+            scad = scad.replace(tzinfo=timezone.utc)
+        if ora > scad:
+            raise PromozioneInvalida("paper scaduto: riverificare prima dell'uso")
+
+
+def crea_paper(*, strategy_id: str, nome: str, dsr: float,
+               costi: Optional[Dict[str, Any]] = None,
+               metriche: Optional[Dict[str, Any]] = None,
+               commit: str = "", ttl_giorni: int = TTL_GIORNI_DEFAULT) -> PaperArtifact:
+    """Costruisce e firma un artefatto PASS_PAPER (solo se il DSR regge)."""
+    if dsr < 0.95:
+        raise PromozioneInvalida(f"paper: DSR {dsr:.4f} < 0.95")
+    ora = datetime.now(timezone.utc)
+    scad = ora + timedelta(days=int(ttl_giorni))
+    grezzo = {
+        "strategy_id": strategy_id, "nome": nome,
+        "creato": ora.isoformat(timespec="seconds"), "scade": scad.isoformat(timespec="seconds"),
+        "dsr": float(dsr), "costi": costi or {}, "metriche": metriche or {},
+        "commit": commit,
+    }
+    canonico = json.dumps(grezzo, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+    art = PaperArtifact(**grezzo,
+                        hash="paper" + hashlib.sha256(canonico.encode()).hexdigest()[:24])
+    art.valida()
+    return art
+
+
+def scrivi_paper(art: PaperArtifact, cartella: str | Path) -> Path:
+    d = Path(cartella)
+    d.mkdir(parents=True, exist_ok=True)
+    p = d / f"{art.creato[:10]}-{art.strategy_id}.paper.json"
+    p.write_text(json.dumps(art.a_dict(), ensure_ascii=False, indent=1), encoding="utf-8")
+    return p
+
+
+def leggi_paper(path: str | Path) -> PaperArtifact:
+    d = json.loads(Path(path).read_text(encoding="utf-8"))
+    art = PaperArtifact(**d)
+    art.valida()
+    return art
