@@ -31,7 +31,7 @@ PUSH = {
     "marcodg1": ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=6", "-p", "2222",
                  "sergio@127.0.0.1"],                       # tunnel inverso mc2
     "nuvola": ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=6",
-               "sergio@100.87.24.42"],                      # tailscale
+               "sergio@100.105.26.114"],                     # tailscale mc2 (nuovo IP post-reinstall 02/11)
 }
 
 
