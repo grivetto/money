@@ -1,0 +1,223 @@
+Analisi del cancello di promozione/pre-trade di Denaro
+Commit verificato: aa8feec8Repository: grivetto/moneyData verifica: 3 novembre 2026
+
+Diagnosi in una frase
+Il cancello non rifiuta tutto per un singolo bug: la catena richiede contemporaneamente un campione sufficiente, un edge netto statisticamente robusto, un margine minimo di 3× il costo, bassa concentrazione temporale, rilevanza economica e, dopo il passaggio statistico, un artefatto di promozione valido. Le misure E8–E19 mostrano soprattutto edge assenti o non persistenti, non soltanto soglie troppo basse.
+
+1. Dove si blocca una proposta
+La catena reale è:
+
+spec -> screener G1 -> gate statistico G2 -> PromotionArtifact G3
+ -> gate pre-trade G4 -> governatore drawdown -> gate carry G5 -> ordine
+
+Il primo filtro operativo è scripts/ipotesi_veloce.py:136-150 e src/money/ricerca/scansione.py:337-364. Una selezione viene proposta solo se:
+
+OOS contiene almeno 30 operazioni;
+expectancy OOS è positiva;
+t-stat OOS è positivo;
+DSR della selezione in TRAIN è almeno 0,95.
+
+Il gate statistico src/money/cancello.py:587-746 richiede poi tutti gli otto criteri:
+
+almeno 30 operazioni;
+almeno 30 osservazioni effettive;
+IC bootstrap 90% con estremo inferiore positivo;
+t-stat superiore a 1,65, con minimo tra naive e Newey–West quando c’è dipendenza;
+profit factor superiore a 1,20;
+expectancy almeno 3× il pedaggio;
+almeno 10 EUR/anno su 1.000 EUR;
+expectancy positiva anche togliendo il blocco temporale migliore.
+
+A questo si aggiunge il criterio cross-simbolo dello screener: almeno il 60% dei simboli deve avere expectancy positiva e la media deve restare positiva (scripts/ipotesi_veloce.py:200-221).
+
+2. Motivi effettivi rilevati nelle esperienze
+Le evidenze nel registro mostrano quattro categorie diverse.
+
+A. Proposte che non hanno edge netto
+E7: il lordo era appena positivo, ma il netto dopo costi era -0,2213% per trade, con profit factor netto 0,9325 e drawdown composto oltre il 100%.
+
+E9: il lordo era positivo, ma su Bybit↔Binance tutti i cinque simboli avevano media netta negativa dopo i costi; il test OOS breve Bybit↔OKX aveva soltanto 2 simboli positivi su 5 e non persistenza del segno.
+
+E10: il TRAIN era positivo, mentre l’OOS era negativo e sotto la baseline buy-and-hold; DSR 0,122.
+
+E11: il TRAIN era positivo, l’OOS era negativo e il DSR era 0,361.
+
+E15: il funding lordo OOS era +4,53 EUR, contro 31,80 EUR di costi di switch; la strategia moriva per turnover, non per un errore del gate.
+
+Questi casi non vanno “sbloccati” abbassando le soglie: il risultato osservato è incompatibile con una promozione prudente.
+
+B. Proposte con effetto ma potenza insufficiente
+E12 aveva OOS positivo ma soltanto 23 operazioni contro una soglia di 60 prevista dalla sua spec.
+
+E13 aveva OOS positivo, ma n=86 contro il requisito di 100. Inoltre la media era fortemente coda-driven: mediana circa +1,1%, mentre la media era circa +79,8%. Questo è un motivo per chiedere audit economico e non un motivo per promuovere automaticamente.
+
+P10 aveva 23 operazioni OOS e quindi è rimasta insufficiente, non archiviata.
+
+C. Proposte bloccate da rischio o robustezza
+P2, P6 e P11 hanno mostrato drawdown di portafoglio oltre il 25%. P11 aveva expectancy OOS negativa e drawdown del 77,2%.
+
+E2 è il caso più importante: è il primo caso che ha superato gli 8 criteri del cancello su 1.543 operazioni. Tuttavia non era pronto per il capitale perché il DSR dipendeva dalla convenzione di conteggio:
+
+circa 0,9515 contando 9 look long;
+circa 0,899 contando 12 prove;
+molto più basso includendo una variante short nella stessa varianza.
+
+Inoltre aveva autocorrelazione lag-1 +0,52, n_eff=135, t HAC 2,28, t sui giorni distinti 1,38, 2022 negativo e 2026 piatto. Quindi ha superato il cancello formale, ma non la robustezza richiesta per una promozione responsabile.
+
+D. Proposte bloccate prima della misura economica
+E19 è stata bloccata dal venue: al conto EEA non risultavano disponibili i futures datati necessari. In questo caso il problema non è il cancello statistico ma la disponibilità effettiva dello strumento.
+
+3. Il cancello è troppo chiuso?
+3.1 Soglia 3× pedaggio
+La regola è codificata in src/money/cancello.py:678-694:
+
+expectancy netta >= 3 × movimento_minimo(tariffa, tipo)
+
+È una regola economica, non una soglia statistica. Con una tariffa costosa può diventare dominante. I test lo dichiarano esplicitamente: una expectancy positiva di +0,20% viene archiviata con il pedaggio caro perché non raggiunge 3×0,55%=1,65% (tests/test_cancello.py:268-290).
+
+La regola è difendibile come margine operativo, ma non deve essere trattata come una legge universale. Va sostituita con un modello per strategia:
+
+expectancy netta >= costi round-trip + slippage p95 + costo capitale
+ + buffer di errore stimato
+
+Il moltiplicatore 3× può restare come default conservativo, ma dovrebbe essere un parametro dichiarato per famiglia e non un motivo per archiviare un edge che potrebbe essere economicamente valido con bassa frequenza e costi minori.
+
+3.2 DSR e numero di prove
+La funzione DSR richiede la varianza degli Sharpe dei tentativi (src/money/statistica.py:304-358). Il motore di scansione però usa tutti i tentativi valutabili config×simbolo come N (src/money/ricerca/scansione.py:388-414), anche se la selezione finale sceglie il miglior simbolo per configurazione.
+
+Questo può sovrastimare il numero di prove indipendenti quando i simboli sono correlati o quando più configurazioni sono quasi duplicate. Il problema non è usare il DSR; è usare il conteggio grezzo come se ogni prova fosse indipendente.
+
+Correzione consigliata:
+
+conservare N_raw;
+stimare N_eff per correlazione tra risultati delle prove o raggruppamento per famiglia/simbolo;
+calcolare e riportare entrambi;
+usare una regola pre-registrata, ad esempio N_eff = numero di cluster indipendenti, non scegliere il valore dopo aver visto il risultato.
+
+Non bisogna semplicemente abbassare il DSR da 0,95 a una soglia arbitraria.
+
+3.3 Bug/incoerenza dell’opzione --cumulativi
+In scripts/ipotesi_veloce.py:158-159 l’opzione --cumulativi dichiara di aggiungere tentativi storici al conteggio DSR. In realtà:
+
+la scansione viene chiamata senza passare il conteggio cumulativo (:185-186);
+il DSR viene calcolato dentro scansione.scansiona sulla lista locale dei tentativi (scansione.py:388-414);
+--cumulativi viene aggiunto solo al valore n_tentativi_dsr riportato e al campo n_tentativi_cumulativi dell’artefatto (ipotesi_veloce.py:188-190 e :282-287).
+
+Quindi, nel percorso dello screener, il DSR effettivamente usato per il verdetto non è cumulativo, anche se l’artefatto dichiara un conteggio cumulativo. Questo è da correggere per allineare codice, documentazione e artefatti.
+
+La correzione deve fare una sola cosa, in modo esplicito:
+
+DSR = funzione(SR selezionato, N_eff cumulativo, varianza dei tentativi nel perimetro dichiarato)
+
+e deve salvare nel report il perimetro esatto usato.
+
+3.4 n_effettivo >= 30
+Il gate calcola n_effettivo dalla autocorrelazione dei ritorni (src/money/cancello.py:841-850, src/money/statistica.py:209-238). È una protezione sensata quando le operazioni sono clusterizzate, ma la stima è sensibile alla prima autocorrelazione non positiva e non usa automaticamente la durata reale delle posizioni.
+
+Per E2 il valore n=1.543 è sceso a n_eff=135: non è un bug, ma dimostra che il numero di trade non equivale al numero di eventi indipendenti.
+
+Miglioria:
+
+passare al gate la durata media o gli identificativi degli eventi indipendenti quando disponibili;
+distinguere n_trade, n_eventi, n_giorni e n_eff_statistico;
+non dichiarare “30 osservazioni indipendenti” se il motore ha soltanto 30 trade derivati dallo stesso evento o dalla stessa posizione.
+
+3.5 Drawdown di promozione contro kill switch
+Il gate statistico ammette max_drawdown <=25% (src/money/cancello.py:141-142), mentre il rischio live arresta nuove aperture al drawdown del 10% (src/money/rischio.py:80-87 e relativo esecutore).
+
+Non è necessariamente un errore: il 25% può essere un limite storico di eleggibilità, mentre il 10% può essere un limite operativo di sicurezza. Però manca una regola di riconciliazione. Una strategia può superare il gate storico con DD 20% e venire fermata live a 10% prima di osservare il proprio profilo previsto.
+
+Correzione consigliata:
+
+DD_live_stop = max(DD_storico_OOS stressato × fattore prudenziale, limite assoluto)
+
+oppure, più semplicemente:
+
+promuovere soltanto strategie con DD storico stressato <=10%; oppure
+dichiarare formalmente che la promozione autorizza solo un sotto-sizing tale che il DD live atteso resti sotto il 10%.
+
+Il criterio non deve lasciare due definizioni incompatibili dello stesso rischio.
+
+4. Il gate carry è un cancello separato
+src/money/esecuzione/cancello_carry.py:43-60 impone:
+
+leva 1x;
+distanza liquidazione almeno 50%;
+delta massimo 0,5%;
+costo ciclo almeno 0,05%;
+funding positivo;
+payback massimo 90 periodi, cioè circa 30 giorni a funding 8h.
+
+Questa separazione dal gate direzionale è corretta: un carry delta-neutral non dovrebbe essere dimensionato con stop ATR direzionale. Però il gate è molto sensibile al funding atteso e al payback. Con funding p10 basso e costi di switch elevati, rifiuterà quasi tutto anche se il funding lordo occasionale è positivo.
+
+Per E15 la diagnosi è concreta: il sistema inseguiva eventi di funding, generava 106 ingressi in 38 giorni e i costi di switch dominavano il funding lordo. Non va corretto alzando la size; va ridotto il turnover o chiusa la tesi economica.
+
+5. Cosa correggere adesso
+P0 — correggere l’incoerenza DSR
+Modificare scripts/ipotesi_veloce.py e il motore di scansione affinché --cumulativi partecipi realmente al calcolo DSR, oppure rinominare l’opzione e dichiarare che è soltanto metadato. Aggiungere test che falliscano se il DSR calcolato non cambia quando cambia il perimetro cumulativo.
+
+P0 — produrre una diagnosi per gate e non un solo “non passa”
+Ogni proposta deve produrre una tabella:
+
+G1 screener PASS/FAIL + numeri
+G2 numerosità PASS/FAIL + n/n_eff
+G2 IC PASS/FAIL + IC iid/block
+G2 t PASS/FAIL + t/t HAC
+G2 pedaggio PASS/FAIL + expectancy/costo/soglia
+G2 DD PASS/FAIL + DD
+G2 indipendenza PASS/FAIL + blocco migliore
+G3 DSR PASS/FAIL + N_raw/N_eff/varianza
+G4 live BLOCKED/READY + motivo
+G5 carry BLOCKED/READY + payback/delta/costo
+
+Il codice già conserva molti motivi in criteri_falliti; serve esporli in modo uniforme negli artefatti e nei report giornalieri.
+
+P1 — separare i tipi di esito
+Usare stati distinti:
+
+DATA_BLOCKED: dati o venue mancanti;
+INSUFFICIENT: campione troppo corto;
+FAIL_ECONOMICS: edge netto negativo o sotto costi;
+FAIL_STATISTICS: IC/t/DSR;
+FAIL_RISK: drawdown, concentrazione o indipendenza;
+PASS_PAPER: gate superato ma ancora in paper;
+PROMOTABLE: autorizzabile al capitale minimo.
+
+Questo evita di chiamare “nessun bot passa” quando alcuni sono semplicemente bloccati dai dati e altri sono stati falsificati.
+
+P1 — correggere il DSR per prove correlate
+Conservare N_raw e introdurre una convenzione pre-registrata per N_eff. Non usare il numero più favorevole dopo il risultato. Per E2, per esempio, la decisione dovrebbe essere ripetuta con il perimetro dichiarato prima della misura: 9 configurazioni long, oppure famiglia completa comprensiva delle varianti effettivamente esplorate.
+
+P1 — introdurre un percorso PASS_PAPER
+E2 dimostra che 8/8 criteri non sono sufficienti per armare subito capitale quando DSR e robustezza di regime restano borderline. Serve uno stato intermedio esplicito:
+
+PASS_PAPER -> osservazione forward congelata -> PASS_CAPITALE
+
+con capitale massimo piccolo, TTL breve, stop operativo e criteri di uscita pre-registrati. Non deve bypassare il gate: deve essere una fase formalmente prevista dopo il gate statistico e prima della promozione capitale.
+
+P2 — rendere il pedaggio specifico per strategia
+Conservare il costo effettivo per venue e lato maker/taker, ma calcolare il buffer come scenario:
+
+costo base
+costo stress x2
+slippage p95
+costo capitale/margine
+buffer di errore
+
+La regola 3× può restare come default per strategie ad alto turnover, ma non va applicata senza distinzione a carry lento, basis a scadenza e strategie event-driven.
+
+P2 — allineare drawdown storico e live
+Il gate deve riportare sia:
+
+DD storico non stressato
+DD storico stressato
+DD massimo autorizzato live
+
+La promozione deve essere negata se il sizing autorizzato non rende coerenti il DD atteso e il kill switch operativo.
+
+Conclusione
+Il cancello sta facendo correttamente il lavoro principale: impedisce di trasformare segnali positivi in capitale reale quando l’edge scompare fuori campione, viene mangiato dai costi o dipende da una coda o da un regime.
+
+Tuttavia non è ancora completamente coerente come sistema di decisione. Il problema tecnico più importante è l’incoerenza di --cumulativi con il DSR effettivamente calcolato. Il problema metodologico più importante è il conteggio grezzo delle prove correlate. Il problema di governance più importante è l’assenza di uno stato esplicito PASS_PAPER tra “gate superato” e “capitale live”.
+
+La conclusione operativa è quindi: non abbassare globalmente le soglie e non armare un bot solo perché ha passato un test. Correggere prima DSR cumulativo, conteggio delle prove, report per gate e riconciliazione del drawdown; poi rivalutare E2 in una fase paper formalmente autorizzata. E8–E19, invece, non sono principalmente vittime di un cancello troppo chiuso: la maggior parte è stata fermata da costi, OOS negativo, potenza insufficiente, drawdown, dati o venue non disponibili.
