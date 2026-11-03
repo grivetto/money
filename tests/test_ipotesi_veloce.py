@@ -87,3 +87,57 @@ def test_valida_accetta_ipotesi_corretta():
           "confine": "2024-06-01", "simboli": ["BTC/USDT"],
           "configs": [{"famiglia": "mom_abs", "L": 20}]}
     IPV.valida(ip)  # non solleva
+
+
+# --- correzioni Manus 03/11 (P1a: DSR cumulativo; fail-closed; PASS_PAPER) ---------------
+
+def _sel_sharpe(sharpe=0.25, n_tr=250, n_cum=None, dsr_loc=0.99):
+    """Selezione con Sharpe di addestramento: serve al ricalcolo DSR cumulativo."""
+    s = _sel(dsr=dsr_loc)
+    s["train"]["sharpe"] = sharpe
+    s["train"]["n"] = n_tr
+    return s
+
+
+def test_dsr_cambia_col_perimetro_cumulativo():
+    """Il DSR che decide deve CAMBIARE quando si aggiungono tentativi storici (non solo
+    il campo dell'artefatto): piu' prove -> benchmark Sharpe piu' alto -> DSR piu' basso."""
+    sel = _sel_sharpe()
+    var = 0.02
+    eff_piccolo, loc1, cum1 = IPV.dsr_effettivo(sel, n_cumulativo=24, varianza_sharpe=var)
+    eff_grande, loc2, cum2 = IPV.dsr_effettivo(sel, n_cumulativo=400, varianza_sharpe=var)
+    assert cum1 is not None and cum2 is not None
+    assert cum2 < cum1, "con piu' tentativi il DSR cumulativo deve scendere"
+    assert eff_grande <= eff_piccolo
+    assert eff_grande == min(loc2, cum2)   # il piu' prudente fra locale e cumulativo
+
+
+def test_dsr_cumulativo_none_senza_ingredienti_fail_closed():
+    """Senza Sharpe di addestramento il DSR cumulativo NON si calcola: deve essere None,
+    non il locale (altrimenti il controllo cumulativo salta in silenzio)."""
+    sel = _sel(dsr=0.99)               # nessun train.sharpe
+    eff, loc, cum = IPV.dsr_effettivo(sel, n_cumulativo=400, varianza_sharpe=0.02)
+    assert cum is None and eff is None and loc == 0.99
+
+
+def test_verdetto_fail_closed_se_dsr_effettivo_none():
+    """Chiave presente ma None = DSR non calcolabile -> RESPINTA, NON ricadere sul locale."""
+    sel = _sel(dsr=0.99)
+    sel["dsr_effettivo"] = None
+    v, m = IPV.verdetto(sel, min_op=30, soglia_dsr=0.95)
+    assert v == "RESPINTA" and "DSR" in m
+
+
+def test_verdetto_legacy_senza_chiave_usa_dsr_selezione():
+    """Artefatti legacy senza `dsr_effettivo`: si legge il DSR di selezione (compat)."""
+    sel = _sel(dsr=0.97)
+    assert "dsr_effettivo" not in sel
+    v, _ = IPV.verdetto(sel, min_op=30, soglia_dsr=0.95)
+    assert v == "PROMOSSA"
+
+
+def test_cumulativo_puo_solo_abbassare_il_dsr():
+    """Il DSR decisionale non puo' essere PIU' permissivo del locale."""
+    sel = _sel_sharpe(dsr_loc=0.80)
+    eff, loc, cum = IPV.dsr_effettivo(sel, n_cumulativo=24, varianza_sharpe=0.02)
+    assert eff <= loc

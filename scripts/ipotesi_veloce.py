@@ -67,6 +67,7 @@ from money.costi import get_tariffa  # noqa: E402
 from money.dati import Scarica  # noqa: E402
 from money.esecuzione import promozione as PR  # noqa: E402
 from money.ricerca import scansione as S  # noqa: E402
+from money.statistica import sharpe_deflazionato  # noqa: E402
 from scansione import SLIPPAGE_PER_LATO, TARIFFA, carica_universo  # noqa: E402
 
 RADICE = Path(__file__).resolve().parents[1]
@@ -133,11 +134,45 @@ def _dsr_valore(sel: dict):
     return raw
 
 
+def dsr_effettivo(sel: dict, *, n_cumulativo: int, varianza_sharpe: float) -> tuple:
+    """(dsr_effettivo, dsr_locale, dsr_cumulativo) — correzione Manus 03/11 (P1a).
+
+    Il DSR che decide e' il piu' prudente fra quello locale della scansione (N dell'ipotesi)
+    e quello ricalcolato con l'N cumulativo (tentativi dell'ipotesi + storici). Il ricalcolo
+    usa lo Sharpe e la numerosita' della finestra di ADDESTRAMENTO (dove la selezione e'
+    avvenuta, fix 13/10) e la varianza degli Sharpe dei tentativi dichiarata dalla scansione.
+    Fail-closed: senza Sharpe o con campione corto -> dsr_effettivo None (mai un default
+    permissivo).
+    """
+    dsr_locale = _dsr_valore(sel)
+    if not n_cumulativo or n_cumulativo < 1:
+        return dsr_locale, dsr_locale, None
+    tr = sel.get("train") or {}
+    sr = tr.get("sharpe")
+    n_tr = tr.get("n")
+    if sr is None or not n_tr or n_tr < 2:
+        return None, dsr_locale, None
+    try:
+        out = sharpe_deflazionato(float(sr), int(n_tr), int(n_cumulativo),
+                                  float(varianza_sharpe))
+    except ValueError:
+        return None, dsr_locale, None
+    dsr_cum = out["dsr"]
+    eff = min(dsr_locale, dsr_cum) if dsr_locale is not None else dsr_cum
+    return eff, dsr_locale, dsr_cum
+
+
 def verdetto(sel: dict, *, min_op: int, soglia_dsr: float) -> tuple[str, str]:
     """(PROMOSSA/RESPINTA, motivo). L'ordine dei controlli e' deliberato."""
     o = sel.get("oos") or {}
     tr = sel.get("train") or {}
-    dsr = _dsr_valore(sel)
+    # Fail-closed (correzione Manus 03/11): se lo screener ha calcolato il DSR effettivo
+    # (chiave presente, anche se None = non calcolabile) quello DECIDE. Il fallback sul
+    # DSR locale vale SOLO per artefatti legacy che non hanno la chiave.
+    if "dsr_effettivo" in sel:
+        dsr = sel["dsr_effettivo"]
+    else:
+        dsr = _dsr_valore(sel)
     if (o.get("n") or 0) < min_op:
         return "RESPINTA", f"verifica con {o.get('n') or 0} operazioni < {min_op} (campione insufficiente)"
     if not ((o.get("expectancy") or 0.0) > 0.0):
@@ -145,9 +180,36 @@ def verdetto(sel: dict, *, min_op: int, soglia_dsr: float) -> tuple[str, str]:
     if not ((o.get("t_stat") or 0.0) > 0.0):
         return "RESPINTA", f"t-stat {o.get('t_stat')} non positivo (effetto indistinguibile da zero)"
     if dsr is None or dsr < soglia_dsr:
-        return "RESPINTA", f"DSR {dsr if dsr is None else round(dsr, 4)} < {soglia_dsr} (selezione multipla)"
+        extra = " cumulativo" if sel.get("dsr_cumulativo") is not None else ""
+        return "RESPINTA", (f"DSR{extra} {dsr if dsr is None else round(dsr, 4)} "
+                            f"< {soglia_dsr} (selezione multipla)")
     return "PROMOSSA", (f"n={o.get('n')} exp={o.get('expectancy'):.4f} t={o.get('t_stat'):.2f} "
                         f"DSR={dsr:.4f} (train n={tr.get('n')}, exp={tr.get('expectancy')})")
+
+
+def _gate_report(e: dict, cross: dict) -> dict:
+    """Report per gate (correzione Manus 03/11): ogni proposta dichiara il proprio esito
+    per gate, con i numeri — mai un solo "non passa"."""
+    o = e.get("oos") or {}
+    return {
+        "G1_screener": {
+            "esito": e.get("verdetto"),
+            "motivo": e.get("motivo"),
+            "n_oos": o.get("n"),
+            "expectancy": o.get("expectancy"),
+            "t_stat": o.get("t_stat"),
+            "dsr": e.get("dsr"),
+            "dsr_locale": e.get("dsr_locale"),
+            "dsr_cumulativo": e.get("dsr_cumulativo"),
+        },
+        "G2_cross_simbolo": {
+            "esito": cross.get("verdetto_meccanismo"),
+            "quota_positiva": cross.get("quota_positiva"),
+            "media_attesa": cross.get("media_attesa"),
+            "n_simboli": cross.get("n_simboli"),
+        },
+        "G3_sblocco": e.get("sblocco"),
+    }
 
 
 def main() -> int:
@@ -159,7 +221,11 @@ def main() -> int:
                     help="tentativi storici cumulativi da aggiungere al conteggio DSR")
     ap.add_argument("--estensione", default="", help="modulo con stato_fn per famiglie nuove")
     ap.add_argument("--promuovi", action="store_true",
-                    help="se una selezione e' PROMOSSA, scrive un PromotionArtifact (sblocca il capitale)")
+                    help="se una selezione e' PROMOSSA, scrive un artefatto di fase (default: "
+                         "PaperArtifact PASS_PAPER, capitale CONGELATO)")
+    ap.add_argument("--live", action="store_true",
+                    help="con --promuovi: scrive un PromotionArtifact (sblocca il capitale) "
+                         "invece del PaperArtifact di default")
     ap.add_argument("--capitale", type=float, default=100.0,
                     help="capitale massimo che la promozione autorizza (default 100 EUR)")
     ap.add_argument("--json", action="store_true", help="stampa solo il risultato JSON")
@@ -187,6 +253,23 @@ def main() -> int:
 
     # DSR onesto: se richiesto, il conteggio dei tentativi include anche lo storico cumulativo.
     n_eff = res["meta"]["n_trials_valutabili"] + max(0, a.cumulativi)
+    var_sharpe = res["meta"].get("varianza_sharpe_train") or 0.0
+
+    # Correzione Manus 03/11 (P1a): --cumulativi deve CAMBIARE il DSR usato dal verdetto,
+    # non solo il campo dell'artefatto. Il DSR cumulativo ricalcola il deflated Sharpe
+    # della selezione (finestra di ADDESTRAMENTO, come da fix 13/10) con l'N cumulativo;
+    # vale il piu' prudente fra locale e cumulativo (fail-closed: senza ingredienti -> None).
+    for sel in res["selezioni"]:
+        if a.cumulativi > 0:
+            eff, loc, cum = dsr_effettivo(sel, n_cumulativo=n_eff,
+                                          varianza_sharpe=var_sharpe)
+        else:
+            loc = _dsr_valore(sel)
+            eff, cum = loc, None
+        sel["dsr_locale"] = loc
+        sel["dsr_cumulativo"] = cum
+        sel["dsr_effettivo"] = eff
+        sel["n_cumulativo"] = n_eff
 
     esiti = []
     for sel in res["selezioni"]:
@@ -194,7 +277,9 @@ def main() -> int:
         esiti.append({
             "config": sel["chiave"], "simbolo": sel["simbolo"],
             "train": sel["train"], "oos": sel["oos"],
-            "dsr": _dsr_valore(sel), "verdetto": v, "motivo": motivo,
+            "dsr": sel["dsr_effettivo"], "dsr_locale": sel["dsr_locale"],
+            "dsr_cumulativo": sel["dsr_cumulativo"], "n_cumulativo": sel["n_cumulativo"],
+            "verdetto": v, "motivo": motivo,
         })
 
     # --- consistenza cross-simbolo: il meccanismo regge su PIU' simboli, o e' un caso? ---
@@ -219,6 +304,17 @@ def main() -> int:
         consistenza.append({"config": chiave, "n_simboli": len(oos_exp),
                             "quota_positiva": round(quota, 3), "media_attesa": round(media, 6),
                             "verdetto_meccanismo": vm})
+
+    # --- report per gate (correzione Manus 03/11): ogni proposta dichiara il suo esito
+    # per gate, con i numeri — mai un solo "non passa" --------------------------------
+    coerenti = {c["config"]: c for c in consistenza}
+    for e in esiti:
+        cross = coerenti.get(e["config"], {})
+        if e["verdetto"] == "PROMOSSA" and cross.get("verdetto_meccanismo") == "COERENTE":
+            e["sblocco"] = "pass_paper"
+        else:
+            e["sblocco"] = "bloccato"
+        e["gate"] = _gate_report(e, cross)
 
     out = {
         "ts": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -262,9 +358,10 @@ def main() -> int:
         p.write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
         print(f"  artefatto: {p.relative_to(RADICE)}")
 
-    # --- lo sblocco del capitale: SOLO via PromotionArtifact, e SOLO su PROMOSSA --------
+    # --- fase post-gate (correzione Manus 03/11): default PASS_PAPER, capitale CONGELATO.
     # Il capitale di validazione (~100 EUR) NON si arma per "testare l'infra": si arma solo
-    # quando un'ipotesi supera il cancello E il meccanismo e' coerente su piu' simboli.
+    # con --live esplicito, quando un'ipotesi supera il cancello E il meccanismo e' coerente
+    # su piu' simboli. Senza --live si scrive un PaperArtifact (prove/pass_paper/).
     if a.promuovi:
         promosse = [e for e in esiti if e["verdetto"] == "PROMOSSA"]
         if not promosse:
@@ -272,25 +369,54 @@ def main() -> int:
             return 0
         # la migliore promossa, ma solo se il meccanismo e' coerente cross-simbolo
         migliore = max(promosse, key=lambda e: e["oos"].get("expectancy") or 0.0)
-        coerenti = {c["config"]: c for c in consistenza}
         mc = coerenti.get(migliore["config"], {})
         if mc.get("verdetto_meccanismo") != "COERENTE":
             print(f"  [promozione] RIFIUTATA: il meccanismo {migliore['config']} non e' "
                   f"coerente cross-simbolo ({mc.get('quota_positiva')} positivi). "
                   "Una selezione su un simbolo fortunato non basta.")
             return 0
-        art = PR.crea(
-            strategy_id=_slug(migliore["config"]), nome=str(ip.get("nome")),
-            capitale_max_eur=float(a.capitale),
-            n_tentativi_ipotesi=res["meta"]["n_trials_valutabili"],
-            n_tentativi_cumulativi=max(n_eff, res["meta"]["n_trials_valutabili"]),
-            dsr=float(migliore["dsr"]), costi={"tariffa": TARIFFA, "slippage_lato": slippage},
-            metriche={"oos": migliore["oos"], "train": migliore["train"],
-                      "simbolo": migliore["simbolo"], "config": migliore["config"]})
-        pp = PR.scrivi(art, RADICE / "prove" / "promozioni")
-        print(f"  [promozione] ARTEFATTO SCRITTO: {pp.relative_to(RADICE)}")
-        print(f"  [promozione] capitale autorizzato {art.capitale_max_eur:.0f} EUR, "
-              f"scade {art.scade[:10]}, DS R {art.dsr:.4f}, N cumulativo {art.n_tentativi_cumulativi}")
+        metriche = {"oos": migliore["oos"], "train": migliore["train"],
+                    "simbolo": migliore["simbolo"], "config": migliore["config"],
+                    "dsr_locale": migliore["dsr_locale"],
+                    "dsr_cumulativo": migliore["dsr_cumulativo"],
+                    "n_cumulativo": migliore["n_cumulativo"]}
+        costi = {"tariffa": TARIFFA, "slippage_lato": slippage}
+        if a.live:
+            # Manus 03/11: --live NON salta la fase paper. Serve un PaperArtifact PASS_PAPER
+            # valido (firma, non scaduto) per la STESSA strategia, scritto in prove/pass_paper/.
+            sid = _slug(migliore["config"])
+            paper_ok = False
+            cart = RADICE / "prove" / "pass_paper"
+            for pf in sorted(cart.glob("*.paper.json")) if cart.exists() else []:
+                try:
+                    pa = PR.leggi_paper(pf)   # valida hash, DSR>=0.95 e TTL (solleva se invalido)
+                except Exception:
+                    continue
+                if pa.strategy_id == sid:
+                    paper_ok = True
+                    break
+            if not paper_ok:
+                print(f"  [promozione] LIVE RIFIUTATO: nessun PaperArtifact PASS_PAPER valido e "
+                      f"non scaduto per {sid} in prove/pass_paper/. Esegui prima senza --live.")
+                return 0
+            art = PR.crea(
+                strategy_id=_slug(migliore["config"]), nome=str(ip.get("nome")),
+                capitale_max_eur=float(a.capitale),
+                n_tentativi_ipotesi=res["meta"]["n_trials_valutabili"],
+                n_tentativi_cumulativi=max(n_eff, res["meta"]["n_trials_valutabili"]),
+                dsr=float(migliore["dsr"]), costi=costi, metriche=metriche)
+            pp = PR.scrivi(art, RADICE / "prove" / "promozioni")
+            print(f"  [promozione] ARTEFATTO LIVE SCRITTO: {pp.relative_to(RADICE)}")
+            print(f"  [promozione] capitale autorizzato {art.capitale_max_eur:.0f} EUR, "
+                  f"scade {art.scade[:10]}, DS R {art.dsr:.4f}, "
+                  f"N cumulativo {art.n_tentativi_cumulativi}")
+        else:
+            art = PR.crea_paper(
+                strategy_id=_slug(migliore["config"]), nome=str(ip.get("nome")),
+                dsr=float(migliore["dsr"]), costi=costi, metriche=metriche)
+            pp = PR.scrivi_paper(art, RADICE / "prove" / "pass_paper")
+            print(f"  [pass_paper] ARTEFATTO SCRITTO: {pp.relative_to(RADICE)} "
+                  f"(capitale CONGELATO: per sbloccarlo serve --live)")
     return 0
 
 
